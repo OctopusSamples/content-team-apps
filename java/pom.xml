@@ -143,6 +143,7 @@
     <module>jenkins-pipeline-builder-github-backend</module>
     <module>pipeline-builder-utils</module>
     <module>jenkins-pipeline-builder-java</module>
+    <module>github-actions-pipeline-builder</module>
   </modules>
 
   <name>jenkins-pipeline-builder-backend</name>

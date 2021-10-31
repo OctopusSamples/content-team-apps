@@ -2,7 +2,7 @@ package com.octopus.resource;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
-import com.octopus.builders.PipelineBuilder;
+import com.octopus.jenkins.builders.PipelineBuilder;
 import com.octopus.repoclients.RepoClient;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
