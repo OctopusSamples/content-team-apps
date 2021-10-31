@@ -1,10 +1,15 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 import java.util.List;
 
+/**
+ * A mock repo client for testing pipeline builders.
+ */
 public class DotnetTestRepoClient extends TestRepoClient {
+
   static int count = 0;
+
   /**
    * A mock repo accessor that pretends to find (or not find) project files and wrapper scripts.
    *

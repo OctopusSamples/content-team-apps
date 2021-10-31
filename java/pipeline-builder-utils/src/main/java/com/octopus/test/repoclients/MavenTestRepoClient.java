@@ -1,27 +1,31 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 
-public class GradleTestRepoClient extends TestRepoClient {
+/**
+ * A mock repo client for testing Maven repositories.
+ */
+public class MavenTestRepoClient extends TestRepoClient {
   static int count = 0;
+
   /**
    * A mock repo accessor that pretends to find (or not find) project files and wrapper scripts.
    *
    * @param repo        The git repo
    * @param findWrapper true if this accessor is to report finding a wrapper script,
    */
-  public GradleTestRepoClient(final String repo, final boolean findWrapper) {
+  public MavenTestRepoClient(final String repo, final boolean findWrapper) {
     super(repo, findWrapper);
     ++count;
   }
 
   @Override
   public boolean testFile(final String path) {
-    if (path.endsWith("build.gradle") || path.endsWith("build.gradle.kts")) {
+    if (path.endsWith("pom.xml")) {
       return true;
     }
 
-    if (findWrapper && path.endsWith("gradlew")) {
+    if (findWrapper && path.endsWith("mvnw")) {
       return true;
     }
 
@@ -30,6 +34,6 @@ public class GradleTestRepoClient extends TestRepoClient {
 
   @Override
   public Try<String> getRepoName() {
-    return Try.of(() -> "gradle" + count + "application");
+    return Try.of(() -> "maven" + count + "application");
   }
 }

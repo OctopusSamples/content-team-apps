@@ -1,8 +1,11 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 
-public class NodeTestRepoClient extends TestRepoClient {
+/**
+ * A mock repo client for testing Python repositories.
+ */
+public class PythonTestRepoClient extends TestRepoClient {
   static int count = 0;
 
   /**
@@ -10,14 +13,14 @@ public class NodeTestRepoClient extends TestRepoClient {
    *
    * @param repo The git repo
    */
-  public NodeTestRepoClient(final String repo) {
-    super(repo, false);
+  public PythonTestRepoClient(final String repo, final String branch) {
+    super(repo, branch, false);
     ++count;
   }
 
   @Override
   public boolean testFile(String path) {
-    if (path.endsWith("package.json")) {
+    if (path.endsWith("requirements.txt")) {
       return true;
     }
 
@@ -26,6 +29,6 @@ public class NodeTestRepoClient extends TestRepoClient {
 
   @Override
   public Try<String> getRepoName() {
-    return Try.of(() -> "nodejs" + count + "application");
+    return Try.of(() -> "python" + count + "application");
   }
 }

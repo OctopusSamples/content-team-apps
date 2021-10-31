@@ -1,8 +1,12 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 
+/**
+ * A mock repo client for testing Ruby repositories.
+ */
 public class RubyTestRepoClient extends TestRepoClient {
+
   static int count = 0;
 
   /**

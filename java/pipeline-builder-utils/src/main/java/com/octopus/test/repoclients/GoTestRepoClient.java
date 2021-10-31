@@ -1,8 +1,11 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 
-public class PhpTestRepoClient extends TestRepoClient {
+/**
+ * A mock repo client for testing Go repositories.
+ */
+public class GoTestRepoClient extends TestRepoClient {
   static int count = 0;
 
   /**
@@ -10,23 +13,22 @@ public class PhpTestRepoClient extends TestRepoClient {
    *
    * @param repo The git repo
    */
-  public PhpTestRepoClient(final String repo) {
-    super(repo, false);
+  public GoTestRepoClient(final String repo, final String branch) {
+    super(repo, branch, false);
     ++count;
   }
 
   @Override
   public boolean testFile(String path) {
-    if (path.endsWith("composer.json")) {
+    if (path.endsWith("go.mod")) {
       return true;
     }
 
     return false;
-
   }
 
   @Override
   public Try<String> getRepoName() {
-    return Try.of(() -> "php" + count + "application");
+    return Try.of(() -> "go" + count + "application");
   }
 }

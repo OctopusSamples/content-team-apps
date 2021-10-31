@@ -1,8 +1,12 @@
-package com.octopus.repoclients;
+package com.octopus.test.repoclients;
 
+import com.octopus.repoclients.RepoClient;
 import io.vavr.control.Try;
 import java.util.List;
 
+/**
+ * A base class for mock repo clients.
+ */
 public abstract class TestRepoClient implements RepoClient {
 
   private final String branch;
