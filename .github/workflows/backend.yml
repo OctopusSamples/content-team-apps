@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      APP_GITHUB_SECRET: ${{ inputs.app_github_secret }}                                                                                       
-      APP_GITHUB_ID: ${{ inputs.app_github_id }}
+      APP_GITHUB_SECRET: ${{ secrets.APP_GITHUB_SECRET }}                                                                                       
+      APP_GITHUB_ID: ${{ secrets.APP_GITHUB_ID }}
 
     steps:
       - uses: actions/checkout@v1
