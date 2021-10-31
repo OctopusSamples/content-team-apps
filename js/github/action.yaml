@@ -47,10 +47,10 @@ runs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: 0.1.${{ github.run_number }}
-        release_name: Release 0.1.${{ github.run_number }}
+        tag_name: 0.1.${{ inputs.run_number }}
+        release_name: Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
@@ -58,7 +58,7 @@ runs:
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: js/jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
@@ -68,8 +68,8 @@ runs:
     - name: Push Package
       run: >
         octo push --package jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
-        --server ${{ secrets.OCTOPUS_SERVER }}
-        --apiKey ${{ secrets.OCTOPUS_APIKEY }}
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
         --space "Content Team"
       shell: bash
       working-directory: js
@@ -79,8 +79,8 @@ runs:
         octo create-release
         --project "Jenkins Pipeline Generator Frontend"
         --deployTo "Development"
-        --server ${{ secrets.OCTOPUS_SERVER }}
-        --apiKey ${{ secrets.OCTOPUS_APIKEY }}
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
         --space "Content Team"
       shell: bash
       working-directory: js
