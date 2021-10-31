@@ -5,11 +5,11 @@ import com.octopus.jenkins.builders.java.JavaGradleBuilder;
 import com.octopus.jenkins.builders.java.JavaMavenBuilder;
 import com.octopus.jenkins.builders.nodejs.NodejsBuilder;
 import com.octopus.jenkins.builders.php.PhpComposerBuilder;
-import com.octopus.repoclients.DotnetTestRepoClient;
-import com.octopus.repoclients.GradleTestRepoClient;
-import com.octopus.repoclients.MavenTestRepoClient;
-import com.octopus.repoclients.NodeTestRepoClient;
-import com.octopus.repoclients.PhpTestRepoClient;
+import com.octopus.test.repoclients.DotnetTestRepoClient;
+import com.octopus.test.repoclients.GradleTestRepoClient;
+import com.octopus.test.repoclients.MavenTestRepoClient;
+import com.octopus.test.repoclients.NodeTestRepoClient;
+import com.octopus.test.repoclients.PhpTestRepoClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
