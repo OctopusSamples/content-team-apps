@@ -46,11 +46,6 @@ runs:
       run: gu install native-image
       shell: bash
 
-    - name: Install Octopus Deploy CLI
-      uses: OctopusDeploy/install-octocli@v1
-      with:
-        version: 7.4.3124
-
     - name: Checkstyle
       run: mvn --batch-mode checkstyle:check
       shell: bash

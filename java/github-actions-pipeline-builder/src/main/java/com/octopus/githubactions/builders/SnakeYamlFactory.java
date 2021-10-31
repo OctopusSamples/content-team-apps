@@ -2,7 +2,9 @@ package com.octopus.githubactions.builders;
 
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.On;
+import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.UsesStep;
+import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import org.yaml.snakeyaml.DumperOptions;
@@ -10,6 +12,8 @@ import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -24,10 +28,23 @@ public final class SnakeYamlFactory {
    * @return A configured instance of SnakeYAML.
    */
   public static Yaml getConfiguredYaml() {
-    final Representer representer = new Representer();
+    final Representer representer = new Representer() {
+      @Override
+      protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue,Tag customTag) {
+        // if value of property is null, ignore it.
+        if (propertyValue == null) {
+          return null;
+        }
+        else {
+          return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+        }
+      }
+    };
 
     representer.addClassTag(Workflow.class, Tag.MAP);
     representer.addClassTag(UsesStep.class, Tag.MAP);
+    representer.addClassTag(UsesWith.class, Tag.MAP);
+    representer.addClassTag(RunStep.class, Tag.MAP);
 
     final TypeDescription onDesc = new TypeDescription(On.class);
     onDesc.substituteProperty("workflow_dispatch", WorkflowDispatch.class,
