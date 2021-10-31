@@ -1,0 +1,23 @@
+name: jenkins-pipeline-frontend
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./js/github
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
+          run_number: ${{ github.run_number }}
