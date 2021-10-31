@@ -83,7 +83,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         tag_name: jenkins-pipeline-frontend.0.1.${{ inputs.run_number }}
-        release_name: Release 0.1.${{ inputs.run_number }}
+        release_name: Jenkins Pipeline Frontend Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
