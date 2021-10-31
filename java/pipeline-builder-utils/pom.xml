@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>jenkins-pipeline-builder-utils</artifactId>
+  <artifactId>pipeline-builder-utils</artifactId>
   <dependencies>
     <dependency>
       <artifactId>junit-jupiter-api</artifactId>
@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>jenkins-pipeline-builder-backend</artifactId>
+    <artifactId>content-team-apps</artifactId>
     <groupId>com.octopus</groupId>
     <version>1.0</version>
   </parent>

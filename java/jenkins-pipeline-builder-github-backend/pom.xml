@@ -45,7 +45,7 @@
 
   <dependencies>
     <dependency>
-      <artifactId>jenkins-pipeline-builder-utils</artifactId>
+      <artifactId>pipeline-builder-utils</artifactId>
       <groupId>com.octopus</groupId>
       <version>1.0</version>
     </dependency>
@@ -103,7 +103,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>jenkins-pipeline-builder-backend</artifactId>
+    <artifactId>content-team-apps</artifactId>
     <groupId>com.octopus</groupId>
     <version>1.0</version>
   </parent>
@@ -149,8 +149,8 @@
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
