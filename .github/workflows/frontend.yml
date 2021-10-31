@@ -2,6 +2,8 @@ name: jenkins-pipeline-frontend
 
 on:
   push:
+    paths:
+    - 'js/**'
   workflow_dispatch:
 
 jobs:

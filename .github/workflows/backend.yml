@@ -2,6 +2,8 @@ name: jenkins-pipeline-backend
 
 on:
   push:
+    paths:
+    - 'java/**'
   workflow_dispatch:
 
 jobs:
