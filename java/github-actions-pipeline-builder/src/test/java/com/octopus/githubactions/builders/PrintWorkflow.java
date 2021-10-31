@@ -1,7 +1,7 @@
 package com.octopus.githubactions.builders;
 
 import com.octopus.githubactions.builders.java.JavaMavenBuilder;
-import com.octopus.repoclients.MavenTestRepoClient;
+import com.octopus.test.repoclients.MavenTestRepoClient;
 import org.junit.jupiter.api.Test;
 
 public class PrintWorkflow {
