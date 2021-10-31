@@ -108,8 +108,8 @@ runs:
     - name: Push Package
       run: >
         octo push --package jenkins-pipeline-builder-github-backend-lambda.0.1.0.${{ inputs.run_number }}.zip
-        --server ${{ inputs.octopus_server }}
-        --apiKey ${{ inputs.octopus_apikey }}
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
       shell: bash
       working-directory: java
@@ -132,8 +132,8 @@ runs:
     - name: Push SBOM Package
       run: >
         octo push --package jenkins-pipeline-builder-github-backend-lambda-sbom.0.1.0.${{ inputs.run_number }}.zip
-        --server ${{ inputs.octopus_server }}
-        --apiKey ${{ inputs.octopus_apikey }}
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
       shell: bash
       working-directory: java
@@ -143,8 +143,8 @@ runs:
         octo create-release
         --project "Jenkins Pipeline Generator"
         --deployTo "Development"
-        --server ${{ inputs.octopus_server }}
-        --apiKey ${{ inputs.octopus_apikey }}
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
       shell: bash
 
