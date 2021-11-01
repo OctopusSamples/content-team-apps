@@ -5,6 +5,7 @@
 export interface DynamicConfig {
     settings: {
         basename: string,
+        generateApiPath: string,
         title: string
     },
     useDefaultTheme?: boolean

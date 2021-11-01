@@ -13,8 +13,9 @@ export async function loadConfig(): Promise<DynamicConfig> {
         .catch(error => "There was a problem with your request.") ||
         {settings: {basename: baseUrl}};
     config.settings.basename = baseUrl;
-    // If nothing was set, use a default value
+    // Set some default values if the config file was not present or not configured
     config.settings.title = config.settings.title || "Pipeline Builder";
+    config.settings.generateApiPath = config.settings.generateApiPath || "/api/pipeline/jenkins/generate";
     return config;
 }
 

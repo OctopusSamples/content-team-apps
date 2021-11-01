@@ -38,7 +38,7 @@ const Template: FC<{}> = (): ReactElement => {
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch(context.settings.basename + '/api/pipeline/jenkins/generate?repo=' + state.url)
+                await fetch(context.settings.basename + '/' + context.settings.generateApiPath + '?repo=' + state.url)
                     .then(response => response.text())
                     .catch(error => "There was a problem with your request.")
 
@@ -52,7 +52,7 @@ const Template: FC<{}> = (): ReactElement => {
 
         getTemplate();
     })
-    
+
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
 
     return (
