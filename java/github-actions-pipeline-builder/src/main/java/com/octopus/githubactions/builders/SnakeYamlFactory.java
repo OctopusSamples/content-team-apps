@@ -60,6 +60,12 @@ public final class SnakeYamlFactory {
     buildDesc.setExcludes("runsOn");
     representer.addTypeDescription(buildDesc);
 
+    final TypeDescription withDesc = new TypeDescription(UsesWith.class);
+    withDesc.substituteProperty("if", String.class,
+        "getIfProperty", "setIfProperty");
+    withDesc.setExcludes("ifProperty");
+    representer.addTypeDescription(withDesc);
+
     final DumperOptions options = new DumperOptions();
     options.setDefaultFlowStyle(FlowStyle.BLOCK);
 
