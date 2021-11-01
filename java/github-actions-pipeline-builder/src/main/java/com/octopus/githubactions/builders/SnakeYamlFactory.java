@@ -11,7 +11,6 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -30,12 +29,15 @@ public final class SnakeYamlFactory {
   public static Yaml getConfiguredYaml() {
     final Representer representer = new Representer() {
       @Override
-      protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue,Tag customTag) {
+      protected NodeTuple representJavaBeanProperty(
+          final Object javaBean,
+          final Property property,
+          final Object propertyValue,
+          final Tag customTag) {
         // if value of property is null, ignore it.
         if (propertyValue == null) {
           return null;
-        }
-        else {
+        } else {
           return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         }
       }

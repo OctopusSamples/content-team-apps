@@ -10,6 +10,7 @@ import lombok.Data;
 @Builder
 public class RunStep implements Step {
   private String name;
+  private String id;
   private String run;
   private String shell;
 }
