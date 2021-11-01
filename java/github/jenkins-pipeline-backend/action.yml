@@ -62,7 +62,7 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: List dependencies
-      run: mvn --batch-mode dependency:tree --no-transfer-progress
+      run: mvn --batch-mode dependency:tree --no-transfer-progress -DskipTests
       shell: bash
       working-directory: java
 
