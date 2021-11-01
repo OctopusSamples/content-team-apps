@@ -198,7 +198,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .build())
                         .add(UsesWith.builder()
                             .name("Generate Octopus Deploy build information")
-                            .uses("xo-energy/action-octopus-build-information@v1.0.0")
+                            .uses("xo-energy/action-octopus-build-information@v1.1.2")
                             .with(new ImmutableMap.Builder<String, String>()
                                 .put("octopus_api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
                                 .put("octopus_project", accessor.getRepoName().get())
