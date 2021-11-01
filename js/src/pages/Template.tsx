@@ -52,8 +52,7 @@ const Template: FC<{}> = (): ReactElement => {
 
         getTemplate();
     })
-
-    const context = useContext(AppContext);
+    
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
 
     return (
