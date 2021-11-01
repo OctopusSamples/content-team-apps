@@ -9,7 +9,7 @@ export async function loadConfig(): Promise<DynamicConfig> {
     const baseUrl = getBaseUrl();
 
     try {
-        const config = await fetch(baseUrl + "/Development/config.json")
+        const config = await fetch(baseUrl + "/config.json")
             .then(response => response.json())
             .catch(error => "There was a problem with your request.")
         config.settings.basename = baseUrl;
