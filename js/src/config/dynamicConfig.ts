@@ -3,6 +3,9 @@
  * and environment.
  */
 export interface DynamicConfig {
-    basename: string
+    settings: {
+        basename: string,
+        title: string
+    },
     useDefaultTheme?: boolean
 }

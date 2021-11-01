@@ -9,8 +9,6 @@ import {UnControlled as CodeMirror} from 'react-codemirror2';
 import lightSpinner from './images/spinnerLight.gif'
 import lightDark from './images/spinnerDark.gif'
 
-// constants
-import {APP_TITLE} from "../utils/constants";
 import {useLocation} from "react-router-dom";
 import {AppContext} from "../App";
 
@@ -60,7 +58,7 @@ const Template: FC<{}> = (): ReactElement => {
         <>
             <Helmet>
                 <title>
-                    {APP_TITLE}
+                    {context.settings.title}
                 </title>
             </Helmet>
             <Grid

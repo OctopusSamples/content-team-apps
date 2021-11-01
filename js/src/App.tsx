@@ -2,6 +2,8 @@ import React, {useReducer} from "react";
 import {createMuiTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
+// app routes
+import {routes} from "./config";
 
 // components
 import Layout from "./components/Layout";
@@ -9,18 +11,15 @@ import Layout from "./components/Layout";
 // theme
 import {darkTheme, lightTheme} from "./theme/appTheme";
 
-// app routes
-import {routes} from "./config";
-
-// constants
-import {APP_TITLE} from "./utils/constants";
-
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
 
 // define app context
-export const AppContext = React.createContext<DynamicConfig>({basename: "", useDefaultTheme: true});
+export const AppContext = React.createContext<DynamicConfig>({
+    settings: {basename: "", title: ""},
+    useDefaultTheme: true
+});
 
 // default component
 const DefaultComponent = () => <div>No Component Defined.</div>;
@@ -29,7 +28,7 @@ function App(config: DynamicConfig) {
 
     const [useDefaultTheme, toggle] = useReducer(
         (theme) => {
-            localStorage.setItem('defaultTheme',  String(!theme));
+            localStorage.setItem('defaultTheme', String(!theme));
             return !theme;
         },
         localStorage.getItem('defaultTheme') !== "false");
@@ -41,13 +40,13 @@ function App(config: DynamicConfig) {
     return (
         <>
             <Helmet>
-                <title>{APP_TITLE}</title>
+                <title>{config.settings.title}</title>
             </Helmet>
             <AppContext.Provider value={{...config, useDefaultTheme}}>
                 <ThemeProvider theme={theme}>
-                    <Router basename={config.basename}>
+                    <Router basename={config.settings.basename}>
                         <Switch>
-                            <Layout toggleTheme={toggle} useDefaultTheme={useDefaultTheme}>
+                            <Layout toggleTheme={toggle} useDefaultTheme={useDefaultTheme} config={config}>
                                 {/* for each route config, a react route is created */}
                                 {routes.map((route: RouteItem) =>
                                     route.subRoutes ? (

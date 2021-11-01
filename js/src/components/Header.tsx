@@ -12,9 +12,8 @@ import {
 } from "@material-ui/core";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import Brightness3Icon from "@material-ui/icons/Brightness3";
-
-// constants
-import {APP_TITLE} from "../utils/constants";
+import {FC, useContext} from "react";
+import {AppContext} from "../App";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -56,11 +55,12 @@ interface HeaderProps {
     useDefaultTheme: boolean;
 }
 
-const Header = ({
+const Header: FC<HeaderProps> = ({
                     toggleTheme,
-                    useDefaultTheme,
+                    useDefaultTheme
                 }: HeaderProps) => {
     const classes = useStyles();
+    const context = useContext(AppContext);
     return (
         <AppBar
             position="relative"
@@ -71,7 +71,7 @@ const Header = ({
                 <div className={classes.title}>
                     <Link href={`${process.env.PUBLIC_URL}/index.html`} className={classes.heading}>
                         <Typography variant="h6" noWrap>
-                            {APP_TITLE}
+                            {context.settings.title}
                         </Typography>
                     </Link>
                 </div>

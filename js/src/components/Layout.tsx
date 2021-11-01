@@ -5,6 +5,7 @@ import {createStyles, CssBaseline, makeStyles, Theme,} from "@material-ui/core";
 // components
 import Header from "./Header";
 import Footer from "./Footer";
+import {DynamicConfig} from "../config/dynamicConfig";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,6 +32,7 @@ interface LayoutProps {
     toggleTheme: () => void;
     useDefaultTheme: boolean;
     children: ReactNode;
+    config: DynamicConfig
 }
 
 // functional component
@@ -38,6 +40,7 @@ const Layout: FC<LayoutProps> = ({
                                      toggleTheme,
                                      useDefaultTheme,
                                      children,
+                                     config
                                  }: LayoutProps) => {
     const classes = useStyles();
     return (

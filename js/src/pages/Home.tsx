@@ -1,4 +1,4 @@
-import {FC, ReactElement, useState} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Helmet} from "react-helmet";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {Button, FormLabel, Grid, Link, TextField} from "@material-ui/core";
@@ -12,8 +12,8 @@ import ruby from './logos/ruby.png';
 import dotnetcore from './logos/dotnetcore.png';
 
 // constants
-import {APP_TITLE} from "../utils/constants";
 import {useHistory} from "react-router-dom";
+import {AppContext} from "../App";
 
 // define css-in-js
 const useStyles = makeStyles(() =>
@@ -42,7 +42,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const Home: FC<{}> = (): ReactElement => {
+const Home: FC<{ }> = (): ReactElement => {
     const history = useHistory();
 
     function handleClick() {
@@ -64,11 +64,13 @@ const Home: FC<{}> = (): ReactElement => {
     );
     const [error, setError] = useState("");
 
+    const context = useContext(AppContext);
+
     return (
         <>
             <Helmet>
                 <title>
-                    {APP_TITLE}
+                    {context.settings.title}
                 </title>
             </Helmet>
             <Grid
