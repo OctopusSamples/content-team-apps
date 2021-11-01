@@ -7,13 +7,13 @@ import {DynamicConfig} from "./config/dynamicConfig";
  */
 export async function loadConfig(): Promise<DynamicConfig> {
     const baseUrl = getBaseUrl();
+    const defaultResponse = {settings: {basename: baseUrl}};
 
     const config = await fetch(baseUrl + "/config.json")
-        .then(response => response.ok ? response.json() : null)
-        .catch(error => "There was a problem with your request.") ||
-        {settings: {basename: baseUrl}};
-    config.settings.basename = baseUrl;
+        .then(response => response.ok ? response.json() : defaultResponse)
+        .catch(error => defaultResponse);
     // Set some default values if the config file was not present or not configured
+    config.settings.basename = baseUrl;
     config.settings.title = config.settings.title || "Pipeline Builder";
     config.settings.generateApiPath = config.settings.generateApiPath || "/api/pipeline/jenkins/generate";
     return config;
