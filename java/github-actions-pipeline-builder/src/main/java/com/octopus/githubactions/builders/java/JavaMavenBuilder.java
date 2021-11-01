@@ -87,13 +87,13 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .name("Set Version")
                             .shell("bash")
                             .run(
-                                "mvn --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
+                                mavenExecutable() + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
                             .build())
                         .add(RunStep.builder()
                             .name("List Dependencies")
                             .shell("bash")
                             .run(
-                                "mvn --batch-mode dependency:tree --no-transfer-progress > dependencies.txt")
+                                mavenExecutable() + " --batch-mode dependency:tree --no-transfer-progress > dependencies.txt")
                             .build())
                         .add(UsesWith.builder()
                             .name("Collect Dependencies")
@@ -107,7 +107,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .name("List Dependency Updates")
                             .shell("bash")
                             .run(
-                                "mvn --batch-mode versions:display-dependency-updates > dependencyUpdates.txt")
+                                mavenExecutable() + " --batch-mode versions:display-dependency-updates > dependencyUpdates.txt")
                             .build())
                         .add(UsesWith.builder()
                             .name("Collect Dependency Updates")
@@ -120,7 +120,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                         .add(RunStep.builder()
                             .name("Test")
                             .shell("bash")
-                            .run("mvn --batch-mode -Dmaven.test.failure.ignore=true test")
+                            .run(mavenExecutable() + " --batch-mode -Dmaven.test.failure.ignore=true test")
                             .build())
                         .add(UsesWith.builder()
                             .name("Report")
@@ -136,7 +136,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                         .add(RunStep.builder()
                             .name("Package")
                             .shell("bash")
-                            .run("mvn --batch-mode -DskipTests=true package")
+                            .run(mavenExecutable() + " --batch-mode -DskipTests=true package")
                             .build())
                         .add(RunStep.builder()
                             .name("Get Artifact")
@@ -222,6 +222,10 @@ public class JavaMavenBuilder implements PipelineBuilder {
                     .build())
                 .build())
             .build());
+  }
+
+  private String mavenExecutable() {
+    return usesWrapper ? "./mvnw" : "mvn";
   }
 
   private boolean usesWrapper(@NonNull final RepoClient accessor) {
