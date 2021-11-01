@@ -71,6 +71,11 @@ runs:
       shell: bash
       working-directory: java
 
+    - name: Test
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
