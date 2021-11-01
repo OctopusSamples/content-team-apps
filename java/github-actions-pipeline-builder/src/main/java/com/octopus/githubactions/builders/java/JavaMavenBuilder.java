@@ -171,7 +171,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                         .add(RunStep.builder()
                             .name("Trigger Octopus Deployment")
                             .shell("bash")
-                            .run("octo create-release --project \"MyProject\" --deployTo \"Development\" --server ${{ secrets.OCTOPUS_SERVER_URL }} --apiKey ${{ secrets.OCTOPUS_API_TOKEN }}")
+                            .run("octo create-release --project \"" + accessor.getRepoName() + "\" --deployTo \"Development\" --server ${{ secrets.OCTOPUS_SERVER_URL }} --apiKey ${{ secrets.OCTOPUS_API_TOKEN }}")
                             .build())
                         .build())
                     .build())
