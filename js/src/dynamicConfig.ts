@@ -13,6 +13,8 @@ export async function loadConfig(): Promise<DynamicConfig> {
             .then(response => response.json())
             .catch(error => "There was a problem with your request.")
         config.settings.basename = baseUrl;
+        // If nothing was set, use a default value
+        config.settings.title = config.settings.title || "Pipeline Builder";
         return config;
     } catch {
         return {settings: {basename: baseUrl, title: "Pipeline Builder"}}
