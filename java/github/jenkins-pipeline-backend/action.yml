@@ -52,7 +52,7 @@ runs:
       working-directory: java
 
     - name: Install modules
-      run: mvn --batch-mode install
+      run: mvn --batch-mode install -DskipTests
       shell: bash
       working-directory: java
 
@@ -62,7 +62,7 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: List dependencies
-      run: mvn --batch-mode dependency:tree --no-transfer-progress -DskipTests
+      run: mvn --batch-mode dependency:tree --no-transfer-progress
       shell: bash
       working-directory: java
 
