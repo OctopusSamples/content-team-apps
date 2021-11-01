@@ -8,17 +8,14 @@ import {DynamicConfig} from "./config/dynamicConfig";
 export async function loadConfig(): Promise<DynamicConfig> {
     const baseUrl = getBaseUrl();
 
-    try {
-        const config = await fetch(baseUrl + "/config.json")
-            .then(response => response.json())
-            .catch(error => "There was a problem with your request.")
-        config.settings.basename = baseUrl;
-        // If nothing was set, use a default value
-        config.settings.title = config.settings.title || "Pipeline Builder";
-        return config;
-    } catch {
-        return {settings: {basename: baseUrl, title: "Pipeline Builder"}}
-    }
+    const config = await fetch(baseUrl + "/config.json")
+        .then(response => response.ok ? response.json() : null)
+        .catch(error => "There was a problem with your request.") ||
+        {settings: {basename: baseUrl, title: "Pipeline Builder"}};
+    config.settings.basename = baseUrl;
+    // If nothing was set, use a default value
+    config.settings.title = config.settings.title || "Pipeline Builder";
+    return config;
 }
 
 function getBaseUrl() {
