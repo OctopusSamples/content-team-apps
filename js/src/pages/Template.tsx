@@ -33,10 +33,12 @@ const Template: FC<{}> = (): ReactElement => {
 
     const [template, setTemplate] = useState("Loading...");
 
+    const context = useContext(AppContext);
+
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch('/Development/api/pipeline/jenkins/generate?repo=' + state.url)
+                await fetch(context.settings.basename + '/api/pipeline/jenkins/generate?repo=' + state.url)
                     .then(response => response.text())
                     .catch(error => "There was a problem with your request.")
 
