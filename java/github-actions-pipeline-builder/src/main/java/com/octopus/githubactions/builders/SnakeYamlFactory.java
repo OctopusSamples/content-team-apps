@@ -68,6 +68,7 @@ public final class SnakeYamlFactory {
 
     final DumperOptions options = new DumperOptions();
     options.setDefaultFlowStyle(FlowStyle.BLOCK);
+    options.setWidth(4096);
 
     return new Yaml(representer, options);
   }
