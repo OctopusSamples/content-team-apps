@@ -2,13 +2,12 @@ package com.octopus.githubactions.builders.dsl;
 
 import java.util.Map;
 import lombok.Builder;
-import lombok.Data;
 
 /**
  * Represents a step with name, id, uses, with, and env properties.
  */
 @Builder
-@Data
+@lombok.Data
 public class UsesWith implements Step {
 
   private String name;

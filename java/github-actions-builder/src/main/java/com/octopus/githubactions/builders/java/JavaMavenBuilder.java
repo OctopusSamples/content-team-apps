@@ -4,6 +4,7 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.SnakeYamlFactory;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
@@ -14,7 +15,6 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
-import com.octopus.builders.PipelineBuilder;
 import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
@@ -90,13 +90,15 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .name("Set Version")
                             .shell("bash")
                             .run(
-                                mavenExecutable() + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
+                                mavenExecutable()
+                                    + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
                             .build())
                         .add(RunStep.builder()
                             .name("List Dependencies")
                             .shell("bash")
                             .run(
-                                mavenExecutable() + " --batch-mode dependency:tree --no-transfer-progress > dependencies.txt")
+                                mavenExecutable()
+                                    + " --batch-mode dependency:tree --no-transfer-progress > dependencies.txt")
                             .build())
                         .add(UsesWith.builder()
                             .name("Collect Dependencies")
@@ -110,7 +112,8 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .name("List Dependency Updates")
                             .shell("bash")
                             .run(
-                                mavenExecutable() + " --batch-mode versions:display-dependency-updates > dependencyUpdates.txt")
+                                mavenExecutable()
+                                    + " --batch-mode versions:display-dependency-updates > dependencyUpdates.txt")
                             .build())
                         .add(UsesWith.builder()
                             .name("Collect Dependency Updates")
@@ -123,7 +126,8 @@ public class JavaMavenBuilder implements PipelineBuilder {
                         .add(RunStep.builder()
                             .name("Test")
                             .shell("bash")
-                            .run(mavenExecutable() + " --batch-mode -Dmaven.test.failure.ignore=true test")
+                            .run(mavenExecutable()
+                                + " --batch-mode -Dmaven.test.failure.ignore=true test")
                             .build())
                         .add(UsesWith.builder()
                             .name("Report")
@@ -147,7 +151,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .shell("bash")
                             .run(
                                 "# Find the largest WAR or JAR, and assume that was what we intended to build.\n"
-                                + "echo \"::set-output name=artifact::$(find target -type f \\( -iname \\*.jar -o -iname \\*.war \\) -printf \"%p\\n\" | sort -n | head -1)\"")
+                                    + "echo \"::set-output name=artifact::$(find target -type f \\( -iname \\*.jar -o -iname \\*.war \\) -printf \"%p\\n\" | sort -n | head -1)\"")
                             .build())
                         .add(RunStep.builder()
                             .name("Get Artifact Name")
@@ -165,7 +169,8 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                 .build())
                             .with(new ImmutableMap.Builder<String, String>()
                                 .put("tag_name", "${{ steps.determine_version.outputs.semVer }}")
-                                .put("release_name", "Release ${{ steps.determine_version.outputs.semVer }}")
+                                .put("release_name",
+                                    "Release ${{ steps.determine_version.outputs.semVer }}")
                                 .put("draft", "false")
                                 .put("prerelease", "false")
                                 .build())
@@ -188,14 +193,18 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .name("Create Octopus Artifact")
                             .id("get_octopus_artifact")
                             .shell("bash")
-                            .run("file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\"" + accessor.getRepoName().get() + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}; echo \"::set-output name=artifact::${octofile}\"\nls -la")
+                            .run(
+                                "file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\""
+                                    + accessor.getRepoName().get()
+                                    + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}; echo \"::set-output name=artifact::${octofile}\"\nls -la")
                             .build())
                         .add(UsesWith.builder()
                             .name("Push to Octopus")
                             .uses("OctopusDeploy/push-package-action@v1.1.1")
                             .with(new ImmutableMap.Builder<String, String>()
                                 .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
-                                .put("packages", "${{ steps.get_octopus_artifact.outputs.artifact }}")
+                                .put("packages",
+                                    "${{ steps.get_octopus_artifact.outputs.artifact }}")
                                 .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
                                 .build())
                             .build())
@@ -206,7 +215,8 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                 .put("octopus_api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
                                 .put("octopus_project", accessor.getRepoName().get())
                                 .put("octopus_server", "${{ secrets.OCTOPUS_SERVER_URL }}")
-                                .put("push_version", "${{ steps.determine_version.outputs.semVer }}")
+                                .put("push_version",
+                                    "${{ steps.determine_version.outputs.semVer }}")
                                 .put("push_package_ids", accessor.getRepoName().get())
                                 .put("output_path", "octopus")
                                 .build())
