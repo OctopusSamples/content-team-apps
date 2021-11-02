@@ -3,8 +3,10 @@ name: github-actions-backend
 on:
   push:
     paths:
-    - 'java/**'
-    - '!java/jenkins*/**'
+    - 'java/pom.xml'
+    - 'java/pipeline-builder-utils/**'
+    - 'java/github-actions-builder-github-backend/**'
+    - 'java/github-actions-builder/**'
   workflow_dispatch:
 
 jobs:
