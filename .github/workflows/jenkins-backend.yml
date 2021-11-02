@@ -4,7 +4,7 @@ on:
   push:
     paths:
     - 'java/**'
-    - '!java/github*/**
+    - '!java/github*/**'
   workflow_dispatch:
 
 jobs:
