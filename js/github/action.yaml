@@ -39,7 +39,7 @@ runs:
       working-directory: js
 
     - name: Create zip
-      run: cd build; zip -r ../jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip .
+      run: cd build; zip -r ../pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip .
       shell: bash
       working-directory: js
 
@@ -49,8 +49,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: jenkins-pipeline-backend.0.1.${{ inputs.run_number }}
-        release_name: Jenkins Pipeline Backend Release 0.1.${{ inputs.run_number }}
+        tag_name: pipeline-backend.0.1.${{ inputs.run_number }}
+        release_name: Pipeline Backend Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
@@ -61,13 +61,13 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: js/jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
-        asset_name: jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        asset_path: js/pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        asset_name: pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
         asset_content_type: application/zip
 
     - name: Push Package
       run: >
-        octo push --package jenkins-pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        octo push --package pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -78,6 +78,17 @@ runs:
       run: >
         octo create-release
         --project "Jenkins Pipeline Generator Frontend"
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+      working-directory: js
+
+    - name: Trigger deployment
+      run: >
+        octo create-release
+        --project "GitHub Action Workflow Generator Frontend"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
