@@ -60,6 +60,7 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
   }
 
   private ProxyResponse generatePipeline(final String repo) {
+    LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
     }
@@ -72,6 +73,8 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
         .findFirst()
         .map(b -> b.generate(accessor))
         .orElse("No suitable builders were found.");
+
+    LOG.log(DEBUG, "pipeline: \n" + pipeline);
 
     return new ProxyResponse(
         "200",
