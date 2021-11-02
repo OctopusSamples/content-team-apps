@@ -151,7 +151,7 @@ runs:
     - name: Trigger deployment
       run: >
         octo create-release
-        --project "GitHub Actions Generator"
+        --project "Github Action Workflow Generator"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}

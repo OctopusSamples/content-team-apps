@@ -3,6 +3,7 @@ name: github-actions-backend
 on:
   push:
     paths:
+    - '.github/workflows/github-backend.yml'
     - 'java/pom.xml'
     - 'java/github-actions-backend/**'
     - 'java/pipeline-builder-utils/**'

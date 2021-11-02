@@ -3,6 +3,7 @@ name: jenkins-pipeline-backend
 on:
   push:
     paths:
+    - '.github/workflows/jenkins-backend.yml'
     - 'java/pom.xml'
     - 'java/jenkins-pipeline-backend/**'
     - 'java/pipeline-builder-utils/**'
