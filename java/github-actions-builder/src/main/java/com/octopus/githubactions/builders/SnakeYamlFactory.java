@@ -3,7 +3,6 @@ package com.octopus.githubactions.builders;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.On;
 import com.octopus.githubactions.builders.dsl.RunStep;
-import com.octopus.githubactions.builders.dsl.UsesStep;
 import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
@@ -44,7 +43,6 @@ public final class SnakeYamlFactory {
     };
 
     representer.addClassTag(Workflow.class, Tag.MAP);
-    representer.addClassTag(UsesStep.class, Tag.MAP);
     representer.addClassTag(UsesWith.class, Tag.MAP);
     representer.addClassTag(RunStep.class, Tag.MAP);
 

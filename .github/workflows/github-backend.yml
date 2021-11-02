@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'java/**'
+    - '!java/jenkins*/**
   workflow_dispatch:
 
 jobs:
