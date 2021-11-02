@@ -14,7 +14,7 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
-import com.octopus.jenkins.builders.PipelineBuilder;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
 import org.jboss.logging.Logger;

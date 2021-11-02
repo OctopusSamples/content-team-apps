@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.jenkins.builders.PipelineBuilder;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
 import java.util.Map;

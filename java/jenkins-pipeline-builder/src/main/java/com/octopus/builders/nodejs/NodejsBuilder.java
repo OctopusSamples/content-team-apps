@@ -1,8 +1,9 @@
-package com.octopus.jenkins.builders.python;
+package com.octopus.builders.nodejs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
-import com.octopus.jenkins.builders.java.JavaGitBuilder;
+import com.octopus.builders.PipelineBuilder;
+import com.octopus.builders.java.JavaGitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;
@@ -13,20 +14,23 @@ import com.octopus.jenkins.dsl.FunctionManyArgs;
 import com.octopus.jenkins.dsl.FunctionTrailingLambda;
 import com.octopus.jenkins.dsl.StringContent;
 import com.octopus.repoclients.RepoClient;
+import java.util.Map;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
 /**
- * Python builder.
+ * Node JS builder.
  */
-public class PythonBuilder implements PipelineBuilder {
+public class NodejsBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(PythonBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(NodejsBuilder.class.toString());
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
+  private boolean useYarn = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    return accessor.testFile("requirements.txt");
+    useYarn = accessor.testFile("yarn.lock");
+    return accessor.testFile("package.json");
   }
 
   @Override
@@ -35,10 +39,6 @@ public class PythonBuilder implements PipelineBuilder {
         .name("pipeline")
         .children(new ImmutableList.Builder<Element>()
             .addAll(GIT_BUILDER.createTopComments())
-            .add(Comment.builder()
-                .content(
-                    "* JUnit: https://plugins.jenkins.io/junit/")
-                .build())
             .add(GIT_BUILDER.createParameters(accessor))
             .add(Function1Arg.builder().name("agent").value("any").build())
             .add(FunctionTrailingLambda.builder()
@@ -46,8 +46,9 @@ public class PythonBuilder implements PipelineBuilder {
                 .children(new ImmutableList.Builder<Element>()
                     .add(GIT_BUILDER.createEnvironmentStage())
                     .add(GIT_BUILDER.createCheckoutStep(accessor))
-                    .add(createDependenciesStep(accessor))
+                    .add(createDependenciesStep())
                     .add(createTestStep())
+                    .add(createBuildStep(accessor))
                     .add(createPackageStep(accessor))
                     .add(GIT_BUILDER.createDeployStage(accessor))
                     .build())
@@ -58,11 +59,11 @@ public class PythonBuilder implements PipelineBuilder {
         .toString();
   }
 
-  private Element createDependenciesStep(@NonNull final RepoClient accessor) {
-    final String command = accessor.testFile("setup.py")
-        ? "pip install ."
-        : "pip install -r requirements.txt";
+  private String getPackageManager() {
+    return useYarn ? "yarn" : "npm";
+  }
 
+  private Element createDependenciesStep() {
     return Function1ArgTrailingLambda.builder()
         .name("stage")
         .arg("Dependencies")
@@ -71,7 +72,7 @@ public class PythonBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        command,
+                        getPackageManager() + " install",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -83,15 +84,7 @@ public class PythonBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "pip install pipdeptree",
-                        ArgType.STRING))
-                    .build())
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script",
-                        "pipdeptree > dependencies.txt",
+                        getPackageManager() + " list --all > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -105,18 +98,12 @@ public class PythonBuilder implements PipelineBuilder {
             .add(Comment.builder()
                 .content("List any dependency updates.")
                 .build())
-            .add(Comment.builder()
-                .content(
-                    "\"pip list --outdated\" can return the error \"AttributeError: module 'html5lib.treebuilders.etree' has no attribute 'getETreeModule'\"\n"
-                        + "in some circumstances. We'll allow this to fail by ensuring the command below always has an exit code of 0, but you can remove the\n"
-                        + "\"|| true\" to see any failures.")
-                .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "pip list --outdated --format=freeze > dependencieupdates.txt || true",
+                        getPackageManager() + " outdated > dependencieupdates.txt || true",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -141,47 +128,47 @@ public class PythonBuilder implements PipelineBuilder {
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "pip install pytest",
+                        getPackageManager() + " test || true",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
-                    .build())
-                .build())
-            .add(Comment.builder()
-                .content(
-                    "Allow pytest to fail by always generating an exit code of zero.\n"
-                        + "https://docs.pytest.org/en/latest/reference/exit-codes.html\n"
-                        + "The junit plugin can pass or fail depending on the presence or absence of tests.")
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument(
-                        "script",
-                        "pytest --junitxml=results.xml || true",
-                        ArgType.STRING))
-                    .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
-                    .build())
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("junit")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("testResults", "results.xml", ArgType.STRING))
-                    .add(new Argument("allowEmptyResults ", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
             .build()))
         .build();
   }
 
-  private Element createPackageStep(@NonNull final RepoClient accessor) {
-    if (!accessor.testFile("setup.py")) {
-      return createZipStep(accessor);
+  private Element createBuildStep(@NonNull final RepoClient accessor) {
+    if (scriptExists(accessor, "build")) {
+      return Function1ArgTrailingLambda.builder()
+          .name("stage")
+          .arg("Build")
+          .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
+              .add(FunctionManyArgs.builder()
+                  .name("sh")
+                  .args(new ImmutableList.Builder<Argument>()
+                      .add(new Argument(
+                          "script",
+                          getPackageManager() + " run build",
+                          ArgType.STRING))
+                      .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
+                      .build())
+                  .build())
+              .build()))
+          .build();
     }
 
-    return createSetup();
+    return Element.builder().build();
   }
 
-  private Element createZipStep(@NonNull final RepoClient accessor) {
+  private boolean scriptExists(@NonNull final RepoClient accessor, @NonNull final String script) {
+    return accessor.getFile("package.json")
+        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
+        .mapTry(m -> (Map) (m.get("scripts")))
+        .mapTry(s -> s.containsKey(script))
+        .getOrElse(false);
+  }
+
+  private Element createPackageStep(@NonNull final RepoClient accessor) {
     return Function1ArgTrailingLambda.builder()
         .name("stage")
         .arg("Package")
@@ -191,11 +178,19 @@ public class PythonBuilder implements PipelineBuilder {
                 .name("script")
                 .children(new ImmutableList.Builder<Element>()
                     .add(StringContent.builder()
-                        .content("octopusPack(\n"
+                        .content("def sourcePath = \".\"\n"
+                            + "def outputPath = \".\"\n"
+                            + "\n"
+                            + "if (fileExists(\"build\")) {\n"
+                            + "\tsourcePath = \"build\"\n"
+                            + "\toutputPath = \"..\"\n"
+                            + "}\n"
+                            + "\n"
+                            + "octopusPack(\n"
                             + "\tadditionalArgs: '',\n"
-                            + "\tsourcePath: '.',\n"
-                            + "\toutputPath : \".\",\n"
-                            + "\tincludePaths: \"**/*.py\\n**/*.pyc\\n**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
+                            + "\tsourcePath: sourcePath,\n"
+                            + "\toutputPath : outputPath,\n"
+                            + "\tincludePaths: \"**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
                             + "\toverwriteExisting: true, \n"
                             + "\tpackageFormat: 'zip', \n"
                             + "\tpackageId: '" + accessor.getRepoName().getOrElse("application")
@@ -206,25 +201,6 @@ public class PythonBuilder implements PipelineBuilder {
                             + "env.ARTIFACTS = \"" + accessor.getRepoName().getOrElse("application")
                             + ".${env.VERSION_SEMVER}.zip\"")
                         .build())
-                    .build())
-                .build())
-            .build()))
-        .build();
-  }
-
-  private Element createSetup() {
-    return Function1ArgTrailingLambda.builder()
-        .name("stage")
-        .arg("Package")
-        .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument(
-                        "script",
-                        "python setup.py sdist",
-                        ArgType.STRING))
-                    .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
             .build()))

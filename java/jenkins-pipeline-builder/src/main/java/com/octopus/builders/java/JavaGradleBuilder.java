@@ -1,9 +1,9 @@
-package com.octopus.jenkins.builders.java;
+package com.octopus.builders.java;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;
@@ -12,27 +12,29 @@ import com.octopus.jenkins.dsl.Function1Arg;
 import com.octopus.jenkins.dsl.Function1ArgTrailingLambda;
 import com.octopus.jenkins.dsl.FunctionManyArgs;
 import com.octopus.jenkins.dsl.FunctionTrailingLambda;
-import com.octopus.jenkins.dsl.StringContent;
 import com.octopus.repoclients.RepoClient;
+import java.util.Arrays;
 import java.util.List;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
 /**
- * A pipeline builder for Maven projects.
+ * A pipeline builder for Gradle projects.
  */
-public class JavaMavenBuilder implements PipelineBuilder {
+public class JavaGradleBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(JavaMavenBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(JavaGradleBuilder.class.toString());
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
+  private static final String[] GRADLE_BUILD_FILES = {"build.gradle", "build.gradle.kts"};
+  private static final String GRADLE_OUTPUT_DIR = "build/libs";
   private boolean usesWrapper = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "JavaMavenBuilder.canBuild(RepoClient)");
+    LOG.log(DEBUG, "JavaGradleBuilder.canBuild(RepoClient)");
 
-    if (accessor.testFile("pom.xml")) {
-      LOG.log(DEBUG, "pom.xml file was found");
+    if (Arrays.stream(GRADLE_BUILD_FILES).anyMatch(accessor::testFile)) {
+      LOG.log(DEBUG, String.join(" or ", GRADLE_BUILD_FILES) + " was found");
       usesWrapper = usesWrapper(accessor);
       LOG.log(DEBUG, "Wrapper script was " + (usesWrapper ? "" : "not ") + "found");
       return true;
@@ -50,7 +52,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
             .add(Comment.builder()
                 .content(
                     "* JUnit: https://plugins.jenkins.io/junit/\n"
-                        + "* Maven Integration: https://plugins.jenkins.io/maven-plugin/")
+                        + "* Gradle: https://plugins.jenkins.io/gradle/")
                 .build())
             .add(GIT_BUILDER.createParameters(accessor))
             .add(FunctionTrailingLambda.builder()
@@ -66,8 +68,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                     .add(createDependenciesStep())
                     .add(createBuildStep())
                     .add(createTestStep())
-                    .add(createPackageStep())
-                    .add(GIT_BUILDER.createDeployStep("target", accessor))
+                    .add(GIT_BUILDER.createDeployStep(GRADLE_OUTPUT_DIR, accessor))
                     .add(GIT_BUILDER.createDeployStage(accessor))
                     .build())
                 .build())
@@ -77,12 +78,12 @@ public class JavaMavenBuilder implements PipelineBuilder {
         .toString();
   }
 
-  private boolean usesWrapper(@NonNull final RepoClient accessor) {
-    return accessor.testFile("mvnw");
+  private Boolean usesWrapper(@NonNull final RepoClient accessor) {
+    return accessor.testFile("gradlew");
   }
 
-  private String mavenExecutable() {
-    return usesWrapper ? "./mvnw" : "mvn";
+  private String gradleExecutable() {
+    return usesWrapper ? "./gradlew" : "gradle";
   }
 
   private List<Element> createTools() {
@@ -90,7 +91,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
         .add(Function1Arg.builder().name("jdk").value("Java").build());
 
     if (!usesWrapper) {
-      list.add(Function1Arg.builder().name("maven").value("Maven").build());
+      list.add(Function1Arg.builder().name("gradle").value("Gradle").build());
     }
 
     return list.build();
@@ -103,25 +104,13 @@ public class JavaMavenBuilder implements PipelineBuilder {
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
             .add(Comment.builder()
                 .content(
-                    "Download the dependencies and plugins before we attempt to do any further actions")
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script", mavenExecutable()
-                        + " --batch-mode dependency:resolve-plugins dependency:go-offline",
-                        ArgType.STRING))
-                    .build())
-                .build())
-            .add(Comment.builder()
-                .content(
                     "Save the dependencies that went into this build into an artifact. This allows you to review any builds for vulnerabilities later on.")
                 .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        mavenExecutable() + " --batch-mode dependency:tree > dependencies.txt",
+                        gradleExecutable() + " dependencies --console=plain > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -129,24 +118,6 @@ public class JavaMavenBuilder implements PipelineBuilder {
                 .name("archiveArtifacts")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("artifacts", "dependencies.txt", ArgType.STRING))
-                    .add(new Argument("fingerprint", "true", ArgType.BOOLEAN))
-                    .build())
-                .build())
-            .add(Comment.builder()
-                .content("List any dependency updates.")
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script", mavenExecutable()
-                        + " --batch-mode versions:display-dependency-updates > dependencieupdates.txt",
-                        ArgType.STRING))
-                    .build())
-                .build())
-            .add(FunctionManyArgs.builder()
-                .name("archiveArtifacts")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("artifacts", "dependencieupdates.txt", ArgType.STRING))
                     .add(new Argument("fingerprint", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
@@ -159,31 +130,13 @@ public class JavaMavenBuilder implements PipelineBuilder {
         .name("stage")
         .arg("Build")
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .add(Comment.builder()
-                .content("Set the build number on the generated artifact.")
-                .build())
-            .add(Function1Arg.builder()
-                .name("sh")
-                .value(mavenExecutable()
-                    + " --batch-mode build-helper:parse-version versions:set \\\n"
-                    + "-DnewVersion=\\\\${parsedVersion.majorVersion}.\\\\${parsedVersion.minorVersion}.\\\\${parsedVersion.incrementalVersion}.${BUILD_NUMBER}")
-                .build())
+            .addAll(GIT_BUILDER.createGitVersionSteps())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script", mavenExecutable() + " --batch-mode -DskipTests clean compile",
-                        ArgType.STRING))
+                    .add(new Argument("script",
+                        gradleExecutable() + " clean assemble --console=plain", ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
-                    .build())
-                .build())
-            .add(FunctionTrailingLambda.builder()
-                .name("script")
-                .children(new ImmutableList.Builder<Element>()
-                    .add(StringContent.builder()
-                        .content("env.VERSION_SEMVER = sh (script: '" + mavenExecutable()
-                            + " -q -Dexec.executable=echo -Dexec.args=\\'${project.version}\\' --non-recursive exec:exec', returnStdout: true)\n"
-                          + "env.VERSION_SEMVER = env.VERSION_SEMVER.trim()")
-                        .build())
                     .build())
                 .build())
             .build()))
@@ -199,32 +152,15 @@ public class JavaMavenBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        mavenExecutable() + " --batch-mode -Dmaven.test.failure.ignore=true test",
+                        gradleExecutable() + " check --console=plain || true",
                         ArgType.STRING))
                     .build())
                 .build())
             .add(FunctionManyArgs.builder()
                 .name("junit")
                 .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("testResults", "target/surefire-reports/*.xml",
-                        ArgType.STRING))
+                    .add(new Argument("testResults", "build/test-results/**/*.xml", ArgType.STRING))
                     .add(new Argument("allowEmptyResults ", "true", ArgType.BOOLEAN))
-                    .build())
-                .build())
-            .build()))
-        .build();
-  }
-
-  private Element createPackageStep() {
-    return Function1ArgTrailingLambda.builder()
-        .name("stage")
-        .arg("Package")
-        .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .add(FunctionManyArgs.builder()
-                .name("sh")
-                .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script",
-                        mavenExecutable() + " --batch-mode package -DskipTests", ArgType.STRING))
                     .build())
                 .build())
             .build()))

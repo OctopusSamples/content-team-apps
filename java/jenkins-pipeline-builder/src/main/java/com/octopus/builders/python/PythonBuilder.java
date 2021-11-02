@@ -1,8 +1,8 @@
-package com.octopus.jenkins.builders.go;
+package com.octopus.builders.python;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
-import com.octopus.jenkins.builders.java.JavaGitBuilder;
+import com.octopus.builders.PipelineBuilder;
+import com.octopus.builders.java.JavaGitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;
@@ -13,25 +13,20 @@ import com.octopus.jenkins.dsl.FunctionManyArgs;
 import com.octopus.jenkins.dsl.FunctionTrailingLambda;
 import com.octopus.jenkins.dsl.StringContent;
 import com.octopus.repoclients.RepoClient;
-import io.vavr.control.Try;
-import java.util.List;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
 /**
- * Go builder.
+ * Python builder.
  */
-public class GoBuilder implements PipelineBuilder {
+public class PythonBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(GoBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(PythonBuilder.class.toString());
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    final Try<List<String>> files = accessor.getWildcardFiles("*.go");
-
-    return accessor.testFile("go.mod")
-        || (files.isSuccess() && !files.get().isEmpty());
+    return accessor.testFile("requirements.txt");
   }
 
   @Override
@@ -44,15 +39,17 @@ public class GoBuilder implements PipelineBuilder {
                 .content(
                     "* JUnit: https://plugins.jenkins.io/junit/")
                 .build())
+            .add(GIT_BUILDER.createParameters(accessor))
             .add(Function1Arg.builder().name("agent").value("any").build())
             .add(FunctionTrailingLambda.builder()
                 .name("stages")
                 .children(new ImmutableList.Builder<Element>()
-                    .add(createEnvironmentStage())
+                    .add(GIT_BUILDER.createEnvironmentStage())
                     .add(GIT_BUILDER.createCheckoutStep(accessor))
                     .add(createDependenciesStep(accessor))
                     .add(createTestStep())
-                    .add(createBuildStep())
+                    .add(createPackageStep(accessor))
+                    .add(GIT_BUILDER.createDeployStage(accessor))
                     .build())
                 .build())
             .build()
@@ -61,22 +58,10 @@ public class GoBuilder implements PipelineBuilder {
         .toString();
   }
 
-  private Element createEnvironmentStage() {
-    return Function1ArgTrailingLambda.builder()
-        .name("stage")
-        .arg("Environment")
-        .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .add(StringContent.builder()
-                .content("echo \"PATH = ${env.PATH}\"\necho \"GOPATH = ${env.GOPATH}\"")
-                .build())
-            .build()))
-        .build();
-  }
-
   private Element createDependenciesStep(@NonNull final RepoClient accessor) {
-    if (!accessor.testFile("go.mod")) {
-      return Element.builder().build();
-    }
+    final String command = accessor.testFile("setup.py")
+        ? "pip install ."
+        : "pip install -r requirements.txt";
 
     return Function1ArgTrailingLambda.builder()
         .name("stage")
@@ -86,7 +71,7 @@ public class GoBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "go get ./...",
+                        command,
                         ArgType.STRING))
                     .build())
                 .build())
@@ -98,7 +83,15 @@ public class GoBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "go list > dependencies.txt",
+                        "pip install pipdeptree",
+                        ArgType.STRING))
+                    .build())
+                .build())
+            .add(FunctionManyArgs.builder()
+                .name("sh")
+                .args(new ImmutableList.Builder<Argument>()
+                    .add(new Argument("script",
+                        "pipdeptree > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -114,14 +107,16 @@ public class GoBuilder implements PipelineBuilder {
                 .build())
             .add(Comment.builder()
                 .content(
-                    "https://stackoverflow.com/a/55866702/8246539")
+                    "\"pip list --outdated\" can return the error \"AttributeError: module 'html5lib.treebuilders.etree' has no attribute 'getETreeModule'\"\n"
+                        + "in some circumstances. We'll allow this to fail by ensuring the command below always has an exit code of 0, but you can remove the\n"
+                        + "\"|| true\" to see any failures.")
                 .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "go list -u -m -f \"{{if .Update}}{{.}}{{end}}\" all > dependencieupdates.txt",
+                        "pip list --outdated --format=freeze > dependencieupdates.txt || true",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -141,25 +136,28 @@ public class GoBuilder implements PipelineBuilder {
         .name("stage")
         .arg("Test")
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .add(Comment.builder()
-                .content("https://golangrepo.com/repo/gotestyourself-gotestsum")
-                .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "go install gotest.tools/gotestsum@latest",
+                        "pip install pytest",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
+            .add(Comment.builder()
+                .content(
+                    "Allow pytest to fail by always generating an exit code of zero.\n"
+                        + "https://docs.pytest.org/en/latest/reference/exit-codes.html\n"
+                        + "The junit plugin can pass or fail depending on the presence or absence of tests.")
+                .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "gotestsum --junitfile results.xml || true",
+                        "pytest --junitxml=results.xml || true",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
@@ -175,17 +173,56 @@ public class GoBuilder implements PipelineBuilder {
         .build();
   }
 
-  private Element createBuildStep() {
+  private Element createPackageStep(@NonNull final RepoClient accessor) {
+    if (!accessor.testFile("setup.py")) {
+      return createZipStep(accessor);
+    }
+
+    return createSetup();
+  }
+
+  private Element createZipStep(@NonNull final RepoClient accessor) {
     return Function1ArgTrailingLambda.builder()
         .name("stage")
-        .arg("Build")
+        .arg("Package")
+        .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
+            .addAll(GIT_BUILDER.createGitVersionSteps())
+            .add(FunctionTrailingLambda.builder()
+                .name("script")
+                .children(new ImmutableList.Builder<Element>()
+                    .add(StringContent.builder()
+                        .content("octopusPack(\n"
+                            + "\tadditionalArgs: '',\n"
+                            + "\tsourcePath: '.',\n"
+                            + "\toutputPath : \".\",\n"
+                            + "\tincludePaths: \"**/*.py\\n**/*.pyc\\n**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
+                            + "\toverwriteExisting: true, \n"
+                            + "\tpackageFormat: 'zip', \n"
+                            + "\tpackageId: '" + accessor.getRepoName().getOrElse("application")
+                            + "', \n"
+                            + "\tpackageVersion: env.VERSION_SEMVER, \n"
+                            + "\ttoolId: 'Default', \n"
+                            + "\tverboseLogging: false)\n"
+                            + "env.ARTIFACTS = \"" + accessor.getRepoName().getOrElse("application")
+                            + ".${env.VERSION_SEMVER}.zip\"")
+                        .build())
+                    .build())
+                .build())
+            .build()))
+        .build();
+  }
+
+  private Element createSetup() {
+    return Function1ArgTrailingLambda.builder()
+        .name("stage")
+        .arg("Package")
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "go build",
+                        "python setup.py sdist",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())

@@ -1,10 +1,10 @@
-package com.octopus.jenkins.builders;
+package com.octopus.builders;
 
-import com.octopus.jenkins.builders.dotnet.DotnetCoreBuilder;
-import com.octopus.jenkins.builders.java.JavaGradleBuilder;
-import com.octopus.jenkins.builders.java.JavaMavenBuilder;
-import com.octopus.jenkins.builders.nodejs.NodejsBuilder;
-import com.octopus.jenkins.builders.php.PhpComposerBuilder;
+import com.octopus.builders.dotnet.DotnetCoreBuilder;
+import com.octopus.builders.java.JavaGradleBuilder;
+import com.octopus.builders.java.JavaMavenBuilder;
+import com.octopus.builders.nodejs.NodejsBuilder;
+import com.octopus.builders.php.PhpComposerBuilder;
 import com.octopus.test.repoclients.DotnetTestRepoClient;
 import com.octopus.test.repoclients.GradleTestRepoClient;
 import com.octopus.test.repoclients.MavenTestRepoClient;

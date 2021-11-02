@@ -1,7 +1,7 @@
-package com.octopus.jenkins.builders.java;
+package com.octopus.builders.java;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.GitBuilder;
+import com.octopus.builders.GitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;

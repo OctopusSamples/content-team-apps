@@ -1,10 +1,10 @@
-package com.octopus.jenkins.builders.dotnet;
+package com.octopus.builders.dotnet;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.GitBuilder;
-import com.octopus.jenkins.builders.PipelineBuilder;
+import com.octopus.builders.GitBuilder;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;

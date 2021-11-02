@@ -1,8 +1,8 @@
-package com.octopus.jenkins.builders.ruby;
+package com.octopus.builders.ruby;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
-import com.octopus.jenkins.builders.java.JavaGitBuilder;
+import com.octopus.builders.PipelineBuilder;
+import com.octopus.builders.java.JavaGitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;

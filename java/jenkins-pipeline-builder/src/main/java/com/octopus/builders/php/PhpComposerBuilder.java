@@ -1,9 +1,8 @@
-package com.octopus.jenkins.builders.nodejs;
+package com.octopus.builders.php;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
-import com.octopus.jenkins.builders.java.JavaGitBuilder;
+import com.octopus.builders.PipelineBuilder;
+import com.octopus.builders.java.JavaGitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;
@@ -14,23 +13,23 @@ import com.octopus.jenkins.dsl.FunctionManyArgs;
 import com.octopus.jenkins.dsl.FunctionTrailingLambda;
 import com.octopus.jenkins.dsl.StringContent;
 import com.octopus.repoclients.RepoClient;
-import java.util.Map;
+import io.vavr.control.Try;
+import java.util.List;
 import lombok.NonNull;
+import org.apache.commons.io.FilenameUtils;
 import org.jboss.logging.Logger;
 
 /**
- * Node JS builder.
+ * PHP builder.
  */
-public class NodejsBuilder implements PipelineBuilder {
+public class PhpComposerBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(NodejsBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(PhpComposerBuilder.class.toString());
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
-  private boolean useYarn = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    useYarn = accessor.testFile("yarn.lock");
-    return accessor.testFile("package.json");
+    return accessor.testFile("composer.json");
   }
 
   @Override
@@ -39,6 +38,10 @@ public class NodejsBuilder implements PipelineBuilder {
         .name("pipeline")
         .children(new ImmutableList.Builder<Element>()
             .addAll(GIT_BUILDER.createTopComments())
+            .add(Comment.builder()
+                .content(
+                    "* JUnit: https://plugins.jenkins.io/junit/")
+                .build())
             .add(GIT_BUILDER.createParameters(accessor))
             .add(Function1Arg.builder().name("agent").value("any").build())
             .add(FunctionTrailingLambda.builder()
@@ -47,8 +50,7 @@ public class NodejsBuilder implements PipelineBuilder {
                     .add(GIT_BUILDER.createEnvironmentStage())
                     .add(GIT_BUILDER.createCheckoutStep(accessor))
                     .add(createDependenciesStep())
-                    .add(createTestStep())
-                    .add(createBuildStep(accessor))
+                    .add(createTestStep(accessor))
                     .add(createPackageStep(accessor))
                     .add(GIT_BUILDER.createDeployStage(accessor))
                     .build())
@@ -57,10 +59,6 @@ public class NodejsBuilder implements PipelineBuilder {
         )
         .build()
         .toString();
-  }
-
-  private String getPackageManager() {
-    return useYarn ? "yarn" : "npm";
   }
 
   private Element createDependenciesStep() {
@@ -72,7 +70,7 @@ public class NodejsBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        getPackageManager() + " install",
+                        "composer install",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -84,7 +82,7 @@ public class NodejsBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        getPackageManager() + " list --all > dependencies.txt",
+                        "composer show --all > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -103,7 +101,7 @@ public class NodejsBuilder implements PipelineBuilder {
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        getPackageManager() + " outdated > dependencieupdates.txt || true",
+                        "composer outdated > dependencieupdates.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -118,7 +116,13 @@ public class NodejsBuilder implements PipelineBuilder {
         .build();
   }
 
-  private Element createTestStep() {
+  private Element createTestStep(@NonNull final RepoClient accessor) {
+
+    final Try<List<String>> testFiles = accessor.getWildcardFiles("*Test.php");
+    final String directory = testFiles.isSuccess() && !testFiles.get().isEmpty()
+        ? FilenameUtils.getPath(testFiles.get().get(0))
+        : "tests";
+
     return Function1ArgTrailingLambda.builder()
         .name("stage")
         .arg("Test")
@@ -128,44 +132,20 @@ public class NodejsBuilder implements PipelineBuilder {
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        getPackageManager() + " test || true",
+                        "vendor/bin/phpunit --log-junit results.xml " + directory + " || true",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
+            .add(FunctionManyArgs.builder()
+                .name("junit")
+                .args(new ImmutableList.Builder<Argument>()
+                    .add(new Argument("testResults", "results.xml", ArgType.STRING))
+                    .add(new Argument("allowEmptyResults ", "true", ArgType.BOOLEAN))
+                    .build())
+                .build())
             .build()))
         .build();
-  }
-
-  private Element createBuildStep(@NonNull final RepoClient accessor) {
-    if (scriptExists(accessor, "build")) {
-      return Function1ArgTrailingLambda.builder()
-          .name("stage")
-          .arg("Build")
-          .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-              .add(FunctionManyArgs.builder()
-                  .name("sh")
-                  .args(new ImmutableList.Builder<Argument>()
-                      .add(new Argument(
-                          "script",
-                          getPackageManager() + " run build",
-                          ArgType.STRING))
-                      .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
-                      .build())
-                  .build())
-              .build()))
-          .build();
-    }
-
-    return Element.builder().build();
-  }
-
-  private boolean scriptExists(@NonNull final RepoClient accessor, @NonNull final String script) {
-    return accessor.getFile("package.json")
-        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
-        .mapTry(m -> (Map) (m.get("scripts")))
-        .mapTry(s -> s.containsKey(script))
-        .getOrElse(false);
   }
 
   private Element createPackageStep(@NonNull final RepoClient accessor) {
@@ -178,19 +158,11 @@ public class NodejsBuilder implements PipelineBuilder {
                 .name("script")
                 .children(new ImmutableList.Builder<Element>()
                     .add(StringContent.builder()
-                        .content("def sourcePath = \".\"\n"
-                            + "def outputPath = \".\"\n"
-                            + "\n"
-                            + "if (fileExists(\"build\")) {\n"
-                            + "\tsourcePath = \"build\"\n"
-                            + "\toutputPath = \"..\"\n"
-                            + "}\n"
-                            + "\n"
-                            + "octopusPack(\n"
+                        .content("octopusPack(\n"
                             + "\tadditionalArgs: '',\n"
-                            + "\tsourcePath: sourcePath,\n"
-                            + "\toutputPath : outputPath,\n"
-                            + "\tincludePaths: \"**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
+                            + "\tsourcePath: '.',\n"
+                            + "\toutputPath : \".\",\n"
+                            + "\tincludePaths: \"**/*.php\\n**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
                             + "\toverwriteExisting: true, \n"
                             + "\tpackageFormat: 'zip', \n"
                             + "\tpackageId: '" + accessor.getRepoName().getOrElse("application")

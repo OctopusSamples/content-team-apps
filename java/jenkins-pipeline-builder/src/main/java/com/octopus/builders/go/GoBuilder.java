@@ -1,8 +1,8 @@
-package com.octopus.jenkins.builders.php;
+package com.octopus.builders.go;
 
 import com.google.common.collect.ImmutableList;
-import com.octopus.jenkins.builders.PipelineBuilder;
-import com.octopus.jenkins.builders.java.JavaGitBuilder;
+import com.octopus.builders.PipelineBuilder;
+import com.octopus.builders.java.JavaGitBuilder;
 import com.octopus.jenkins.dsl.ArgType;
 import com.octopus.jenkins.dsl.Argument;
 import com.octopus.jenkins.dsl.Comment;
@@ -16,20 +16,22 @@ import com.octopus.repoclients.RepoClient;
 import io.vavr.control.Try;
 import java.util.List;
 import lombok.NonNull;
-import org.apache.commons.io.FilenameUtils;
 import org.jboss.logging.Logger;
 
 /**
- * PHP builder.
+ * Go builder.
  */
-public class PhpComposerBuilder implements PipelineBuilder {
+public class GoBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(PhpComposerBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(GoBuilder.class.toString());
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    return accessor.testFile("composer.json");
+    final Try<List<String>> files = accessor.getWildcardFiles("*.go");
+
+    return accessor.testFile("go.mod")
+        || (files.isSuccess() && !files.get().isEmpty());
   }
 
   @Override
@@ -42,17 +44,15 @@ public class PhpComposerBuilder implements PipelineBuilder {
                 .content(
                     "* JUnit: https://plugins.jenkins.io/junit/")
                 .build())
-            .add(GIT_BUILDER.createParameters(accessor))
             .add(Function1Arg.builder().name("agent").value("any").build())
             .add(FunctionTrailingLambda.builder()
                 .name("stages")
                 .children(new ImmutableList.Builder<Element>()
-                    .add(GIT_BUILDER.createEnvironmentStage())
+                    .add(createEnvironmentStage())
                     .add(GIT_BUILDER.createCheckoutStep(accessor))
-                    .add(createDependenciesStep())
-                    .add(createTestStep(accessor))
-                    .add(createPackageStep(accessor))
-                    .add(GIT_BUILDER.createDeployStage(accessor))
+                    .add(createDependenciesStep(accessor))
+                    .add(createTestStep())
+                    .add(createBuildStep())
                     .build())
                 .build())
             .build()
@@ -61,7 +61,23 @@ public class PhpComposerBuilder implements PipelineBuilder {
         .toString();
   }
 
-  private Element createDependenciesStep() {
+  private Element createEnvironmentStage() {
+    return Function1ArgTrailingLambda.builder()
+        .name("stage")
+        .arg("Environment")
+        .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
+            .add(StringContent.builder()
+                .content("echo \"PATH = ${env.PATH}\"\necho \"GOPATH = ${env.GOPATH}\"")
+                .build())
+            .build()))
+        .build();
+  }
+
+  private Element createDependenciesStep(@NonNull final RepoClient accessor) {
+    if (!accessor.testFile("go.mod")) {
+      return Element.builder().build();
+    }
+
     return Function1ArgTrailingLambda.builder()
         .name("stage")
         .arg("Dependencies")
@@ -70,7 +86,7 @@ public class PhpComposerBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "composer install",
+                        "go get ./...",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -82,7 +98,7 @@ public class PhpComposerBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "composer show --all > dependencies.txt",
+                        "go list > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -96,12 +112,16 @@ public class PhpComposerBuilder implements PipelineBuilder {
             .add(Comment.builder()
                 .content("List any dependency updates.")
                 .build())
+            .add(Comment.builder()
+                .content(
+                    "https://stackoverflow.com/a/55866702/8246539")
+                .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "composer outdated > dependencieupdates.txt",
+                        "go list -u -m -f \"{{if .Update}}{{.}}{{end}}\" all > dependencieupdates.txt",
                         ArgType.STRING))
                     .build())
                 .build())
@@ -116,23 +136,30 @@ public class PhpComposerBuilder implements PipelineBuilder {
         .build();
   }
 
-  private Element createTestStep(@NonNull final RepoClient accessor) {
-
-    final Try<List<String>> testFiles = accessor.getWildcardFiles("*Test.php");
-    final String directory = testFiles.isSuccess() && !testFiles.get().isEmpty()
-        ? FilenameUtils.getPath(testFiles.get().get(0))
-        : "tests";
-
+  private Element createTestStep() {
     return Function1ArgTrailingLambda.builder()
         .name("stage")
         .arg("Test")
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
+            .add(Comment.builder()
+                .content("https://golangrepo.com/repo/gotestyourself-gotestsum")
+                .build())
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        "vendor/bin/phpunit --log-junit results.xml " + directory + " || true",
+                        "go install gotest.tools/gotestsum@latest",
+                        ArgType.STRING))
+                    .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
+                    .build())
+                .build())
+            .add(FunctionManyArgs.builder()
+                .name("sh")
+                .args(new ImmutableList.Builder<Argument>()
+                    .add(new Argument(
+                        "script",
+                        "gotestsum --junitfile results.xml || true",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
@@ -148,31 +175,19 @@ public class PhpComposerBuilder implements PipelineBuilder {
         .build();
   }
 
-  private Element createPackageStep(@NonNull final RepoClient accessor) {
+  private Element createBuildStep() {
     return Function1ArgTrailingLambda.builder()
         .name("stage")
-        .arg("Package")
+        .arg("Build")
         .children(GIT_BUILDER.createStepsElement(new ImmutableList.Builder<Element>()
-            .addAll(GIT_BUILDER.createGitVersionSteps())
-            .add(FunctionTrailingLambda.builder()
-                .name("script")
-                .children(new ImmutableList.Builder<Element>()
-                    .add(StringContent.builder()
-                        .content("octopusPack(\n"
-                            + "\tadditionalArgs: '',\n"
-                            + "\tsourcePath: '.',\n"
-                            + "\toutputPath : \".\",\n"
-                            + "\tincludePaths: \"**/*.php\\n**/*.html\\n**/*.htm\\n**/*.css\\n**/*.js\\n**/*.min\\n**/*.map\\n**/*.sql\\n**/*.png\\n**/*.jpg\\n**/*.jpeg\\n**/*.gif\\n**/*.json\\n**/*.env\\n**/*.txt\\n**/Procfile\",\n"
-                            + "\toverwriteExisting: true, \n"
-                            + "\tpackageFormat: 'zip', \n"
-                            + "\tpackageId: '" + accessor.getRepoName().getOrElse("application")
-                            + "', \n"
-                            + "\tpackageVersion: env.VERSION_SEMVER, \n"
-                            + "\ttoolId: 'Default', \n"
-                            + "\tverboseLogging: false)\n"
-                            + "env.ARTIFACTS = \"" + accessor.getRepoName().getOrElse("application")
-                            + ".${env.VERSION_SEMVER}.zip\"")
-                        .build())
+            .add(FunctionManyArgs.builder()
+                .name("sh")
+                .args(new ImmutableList.Builder<Argument>()
+                    .add(new Argument(
+                        "script",
+                        "go build",
+                        ArgType.STRING))
+                    .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
             .build()))

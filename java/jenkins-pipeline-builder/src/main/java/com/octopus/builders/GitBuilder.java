@@ -1,4 +1,4 @@
-package com.octopus.jenkins.builders;
+package com.octopus.builders;
 
 import com.google.common.collect.ImmutableList;
 import com.octopus.jenkins.dsl.ArgType;

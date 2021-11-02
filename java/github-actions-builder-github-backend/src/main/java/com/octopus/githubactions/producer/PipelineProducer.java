@@ -2,7 +2,7 @@ package com.octopus.githubactions.producer;
 
 import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
-import com.octopus.jenkins.builders.PipelineBuilder;
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.java.JavaMavenBuilder;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
