@@ -1,5 +1,7 @@
 package com.octopus.githubactions.builders.java;
 
+import static org.jboss.logging.Logger.Level.DEBUG;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.githubactions.builders.SnakeYamlFactory;
@@ -27,6 +29,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
+    LOG.log(DEBUG, "JavaMavenBuilder.canBuild(RepoClient)");
     if (accessor.testFile("pom.xml")) {
       usesWrapper = usesWrapper(accessor);
       return true;
@@ -37,6 +40,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
 
   @Override
   public String generate(@NonNull final RepoClient accessor) {
+    LOG.log(DEBUG, "JavaMavenBuilder.generate(RepoClient)");
     return SnakeYamlFactory.getConfiguredYaml().dump(
         Workflow.builder()
             .name("Java Maven Build")
