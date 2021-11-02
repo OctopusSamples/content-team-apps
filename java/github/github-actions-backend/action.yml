@@ -92,8 +92,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: github-actions-pipeline-frontend.0.1.${{ inputs.run_number }}
-        release_name: GitHub Actions Frontend Release 0.1.${{ inputs.run_number }}
+        tag_name: github-actions-pipeline-backend.0.1.${{ inputs.run_number }}
+        release_name: GitHub Actions Backend Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
