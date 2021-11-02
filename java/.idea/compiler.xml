@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="github-actions-builder" />
         <module name="jenkins-pipeline-builder" />
+        <module name="jenkins-pipeline-builder-java" />
         <module name="github-actions-builder-github-backend" />
         <module name="pipeline-builder-utils" />
         <module name="jenkins-pipeline-builder-github-backend" />
