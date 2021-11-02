@@ -71,10 +71,20 @@ runs:
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
-    - name: Test
+    - name: Test Backend
       run: mvn --batch-mode test
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
+
+    - name: Test Pipelines
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java/jenkins-pipeline-builder
+
+    - name: Test Common
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java/pipeline-builder-utils
 
     - name: Create Release
       id: create_release

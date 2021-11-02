@@ -71,10 +71,20 @@ runs:
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
-    - name: Test
+    - name: Test Backend
       run: mvn --batch-mode test
       shell: bash
       working-directory: java/github-actions-builder-github-backend
+
+    - name: Test Pipelines
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java/github-actions-builder
+
+    - name: Test Common
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java/pipeline-builder-utils
 
     - name: Create Release
       id: create_release
@@ -94,7 +104,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: java/github-actions-builder-github-backend/target/jenkins-pipeline-builder-github-backend-runner
+        asset_path: java/github-actions-builder-github-backend/target/github-actions-builder-github-backend-runner
         asset_name: github_actions-builder-github-backend-runner
         asset_content_type: application/octet-stream
 
