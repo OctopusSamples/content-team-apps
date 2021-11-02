@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/github-actions-pipeline-builder/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/github-actions-pipeline-builder/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/github-actions-builder-github-backend/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/github-actions-builder-github-backend/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/github-actions-builder/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/github-actions-builder/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jenkins-pipeline-builder-github-backend/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jenkins-pipeline-builder-github-backend/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jenkins-pipeline-builder/src/main/java" charset="UTF-8" />

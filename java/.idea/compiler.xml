@@ -7,18 +7,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="jenkins-pipeline-builder-java" />
-        <module name="github-actions-pipeline-builder" />
-        <module name="jenkins-pipeline-builder-github-backend" />
+        <module name="github-actions-builder" />
+        <module name="jenkins-pipeline-builder" />
+        <module name="github-actions-builder-github-backend" />
         <module name="pipeline-builder-utils" />
+        <module name="jenkins-pipeline-builder-github-backend" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="jenkins-pipeline-builder" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="github-actions-builder-github-backend" options="-parameters" />
       <module name="jenkins-pipeline-builder-github-backend" options="-parameters" />
       <module name="jenkinspipelinebuildergithubbackend" options="-parameters" />
     </option>
