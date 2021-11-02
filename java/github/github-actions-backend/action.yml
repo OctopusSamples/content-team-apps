@@ -74,7 +74,7 @@ runs:
     - name: Test
       run: mvn --batch-mode test
       shell: bash
-      working-directory: java
+      working-directory: java/github-actions-builder-github-backend
 
     - name: Create Release
       id: create_release
