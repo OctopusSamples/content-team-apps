@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'java/pom.xml'
+    - 'java/github-actions-backend/**'
     - 'java/pipeline-builder-utils/**'
     - 'java/github-actions-builder-github-backend/**'
     - 'java/github-actions-builder/**'

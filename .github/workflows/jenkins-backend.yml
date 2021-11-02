@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'java/pom.xml'
+    - 'java/jenkins-pipeline-backend/**'
     - 'java/pipeline-builder-utils/**'
     - 'java/jenkins-pipeline-builder-github-backend/**'
     - 'java/jenkins-pipeline-builder/**'
