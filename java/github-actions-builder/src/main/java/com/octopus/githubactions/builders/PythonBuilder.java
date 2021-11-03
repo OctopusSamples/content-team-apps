@@ -3,6 +3,7 @@ package com.octopus.githubactions.builders;
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
@@ -10,6 +11,7 @@ import com.octopus.githubactions.builders.dsl.On;
 import com.octopus.githubactions.builders.dsl.Push;
 import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.Step;
+import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
@@ -46,6 +48,14 @@ public class PythonBuilder implements PipelineBuilder {
                                 .steps(
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
+                                        .add(UsesWith.builder()
+                                            .name("Set up Ruby")
+                                            .uses("actions/setup-python@v2")
+                                            .with(
+                                                new ImmutableMap.Builder<String, String>()
+                                                    .put("python-version", "3.x")
+                                                    .build())
+                                            .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
                                         .add(GIT_BUILDER.installOctopusCli())
