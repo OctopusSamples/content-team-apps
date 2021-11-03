@@ -119,11 +119,17 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                 .id("get_octopus_artifact")
                                                 .shell("bash")
                                                 .run(
-                                                    "file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\""
+                                                    "# Octopus expects artifacts to have a specific file format\n"
+                                                        + "file=\"${{ steps.get_artifact.outputs.artifact }}\"\n"
+                                                        + "extension=\"${file##*.}\"\n"
+                                                        + "octofile=\""
                                                         + accessor
                                                             .getRepoName()
                                                             .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}\necho \"::set-output name=artifact::${octofile}\"\nls -la")
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\n"
+                                                        + "cp ${file} ${octofile}\n"
+                                                        + "echo \"::set-output name=artifact::${octofile}\"\n"
+                                                        + "ls -la")
                                                 .build())
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
