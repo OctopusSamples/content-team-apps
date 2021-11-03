@@ -92,8 +92,18 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .run(
                                                     "dotnet test -l:trx || true")
                                                 .build())
-                                        .add(GIT_BUILDER.buildJunitReport("DotNET Tests",
-                                            "results.xml"))
+                                        .add(UsesWith.builder()
+                                            .name("Report")
+                                            .uses("dorny/test-reporter@v1")
+                                            .ifProperty("always()")
+                                            .with(
+                                                new ImmutableMap.Builder<String, String>()
+                                                    .put("name", "DotNET Tests")
+                                                    .put("path", "**/test-results.trx" )
+                                                    .put("reporter", "dotnet-trx")
+                                                    .put("fail-on-error", "false")
+                                                    .build())
+                                            .build())
                                         .add(RunStep.builder()
                                             .name("Publish")
                                             .run(
