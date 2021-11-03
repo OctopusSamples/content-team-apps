@@ -53,8 +53,12 @@ public class RubyBuilder implements PipelineBuilder {
                                             .uses("actions/setup-ruby@v1")
                                             .with(
                                                 new ImmutableMap.Builder<String, String>()
-                                                    .put("ruby-version", "3.0")
+                                                    .put("ruby-version", "2.7")
                                                     .build())
+                                            .build())
+                                        .add(RunStep.builder()
+                                            .name("Install Bundler")
+                                            .run("gem install bundler")
                                             .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
