@@ -116,12 +116,15 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .id("get_artifact_name")
                                                 .shell("bash")
                                                 .run(
-                                                    "path=\"${{ steps.get_artifact.outputs.artifact }}\"; echo \"::set-output name=artifact::${path##*/}\"")
+                                                    "# Get the filename without a path\n"
+                                                        + "path=\"${{ steps.get_artifact.outputs.artifact }}\"\n"
+                                                        + "echo \"::set-output name=artifact::${path##*/}\"")
                                                 .build())
                                         .add(GIT_BUILDER.createGitHubRelease())
-                                        .add(GIT_BUILDER.uploadToGitHubRelease(
-                                            "${{ steps.get_artifact.outputs.artifact }}",
-                                            "${{ steps.get_artifact_name.outputs.artifact }}"))
+                                        .add(
+                                            GIT_BUILDER.uploadToGitHubRelease(
+                                                "${{ steps.get_artifact.outputs.artifact }}",
+                                                "${{ steps.get_artifact_name.outputs.artifact }}"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Create Octopus Artifact")
