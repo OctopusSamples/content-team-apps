@@ -196,7 +196,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                             .run(
                                 "file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\""
                                     + accessor.getRepoName().get()
-                                    + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}; echo \"::set-output name=artifact::${octofile}\"\nls -la")
+                                    + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}\necho \"::set-output name=artifact::${octofile}\"\nls -la")
                             .build())
                         .add(UsesWith.builder()
                             .name("Push to Octopus")

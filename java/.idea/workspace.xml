@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Fixed up some escaping">
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="The escaping wasn't actually wrong">
       <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,7 +62,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
-      <workItem from="1635899835178" duration="1466000" />
+      <workItem from="1635899835178" duration="1540000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -85,7 +85,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635901508130</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="The escaping wasn't actually wrong">
+      <created>1635901937833</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1635901937833</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -106,6 +113,7 @@
     <MESSAGE value="Don't use RegisterForReflection in downstream library" />
     <MESSAGE value="Add workspace file" />
     <MESSAGE value="Fixed up some escaping" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed up some escaping" />
+    <MESSAGE value="The escaping wasn't actually wrong" />
+    <option name="LAST_COMMIT_MESSAGE" value="The escaping wasn't actually wrong" />
   </component>
 </project>
