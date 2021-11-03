@@ -87,7 +87,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Build")
                                                 .shell("bash")
-                                                .run((!scriptExists(accessor, "build") ? "# package.json does not define a build script, so the build command is comments out.\n# " : "") + getPackageManager() + " run build")
+                                                .run((!scriptExists(accessor, "build") ? "# package.json does not define a build script, so the build command is commented out.\n# " : "") + getPackageManager() + " run build")
                                                 .build())
                                         .add(
                                             RunStep.builder()

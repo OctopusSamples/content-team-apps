@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Added some comments">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Don't include the build script if it can not be found">
       <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/test/java/com/octopus/githubactions/builders/PrintWorkflow.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/test/java/com/octopus/githubactions/builders/PrintWorkflow.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +115,7 @@
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
       <workItem from="1635899835178" duration="2275000" />
-      <workItem from="1635909205353" duration="11086000" />
+      <workItem from="1635909205353" duration="11148000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -302,7 +299,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635930429957</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Don't include the build script if it can not be found">
+      <created>1635931406733</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1635931406733</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -344,7 +348,8 @@
     <MESSAGE value="Dont expand paths" />
     <MESSAGE value="Remove some redundant steps" />
     <MESSAGE value="Added some comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added some comments" />
+    <MESSAGE value="Don't include the build script if it can not be found" />
+    <option name="LAST_COMMIT_MESSAGE" value="Don't include the build script if it can not be found" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
