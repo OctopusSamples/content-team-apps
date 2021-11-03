@@ -1,5 +1,5 @@
 import React, {useReducer} from "react";
-import {createMuiTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
+import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
 // app routes
@@ -34,7 +34,7 @@ function App(config: DynamicConfig) {
         localStorage.getItem('defaultTheme') !== "false");
 
     // define custom theme
-    let theme: Theme = createMuiTheme(useDefaultTheme ? lightTheme : darkTheme);
+    let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
     theme = responsiveFontSizes(theme);
 
     return (
