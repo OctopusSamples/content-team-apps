@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="github-actions-builder" />
         <module name="jenkins-pipeline-builder" />
         <module name="jenkins-pipeline-builder-java" />
         <module name="github-actions-builder-github-backend" />
@@ -15,7 +16,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="github-actions-builder" target="17" />
       <module name="jenkins-pipeline-builder" target="17" />
     </bytecodeTargetLevel>
   </component>

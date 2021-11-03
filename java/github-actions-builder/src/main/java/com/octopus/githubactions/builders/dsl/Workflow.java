@@ -1,12 +1,15 @@
 package com.octopus.githubactions.builders.dsl;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * Represents the entire workflow.
  */
-@lombok.Data
+@Data
 @Builder
+@RegisterForReflection
 public class Workflow {
 
   private String name;

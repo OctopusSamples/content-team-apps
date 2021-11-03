@@ -1,12 +1,15 @@
 package com.octopus.githubactions.builders.dsl;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * Represents the top level on property.
  */
-@lombok.Data
+@Data
 @Builder
+@RegisterForReflection
 public class On {
 
   private Push push;

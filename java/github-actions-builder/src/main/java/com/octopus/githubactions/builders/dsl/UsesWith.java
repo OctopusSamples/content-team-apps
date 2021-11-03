@@ -1,13 +1,16 @@
 package com.octopus.githubactions.builders.dsl;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.Map;
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * Represents a step with name, id, uses, with, and env properties.
  */
 @Builder
-@lombok.Data
+@Data
+@RegisterForReflection
 public class UsesWith implements Step {
 
   private String name;

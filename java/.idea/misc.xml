@@ -12,11 +12,6 @@
         <option value="$PROJECT_DIR$/jenkins-pipeline-builder/pom.xml" />
       </list>
     </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/github-actions-builder/pom.xml" />
-      </set>
-    </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="azul-17" project-jdk-type="JavaSDK" />
 </project>

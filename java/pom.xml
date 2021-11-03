@@ -66,14 +66,10 @@
     </pluginManagement>
   </build>
   <dependencies>
-    <!--
-      Lombok needs to have the compile scope:
-      https://github.com/quarkusio/quarkus/issues/1904
-    -->
     <dependency>
       <artifactId>lombok</artifactId>
       <groupId>org.projectlombok</groupId>
-      <scope>compile</scope>
+      <scope>provided</scope>
       <version>1.18.22</version>
     </dependency>
     <dependency>
