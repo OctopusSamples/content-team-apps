@@ -1,6 +1,7 @@
 {
   "settings": {
     "basename": "",
-    "title": "Pipeline Builder"
+    "title": "Pipeline Builder",
+    "generateApiPath": ""
   }
 }
