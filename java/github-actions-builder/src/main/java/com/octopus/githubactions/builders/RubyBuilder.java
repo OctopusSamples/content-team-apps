@@ -112,7 +112,7 @@ public class RubyBuilder implements PipelineBuilder {
                                                         + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
                                                         + " --format zip \\\n"
                                                         + " --overwrite \\\n"
-                                                        + " --include '**/*.rb \\\n"
+                                                        + " --include '**/*.rb' \\\n"
                                                         + " --include '**/*.html' \\\n"
                                                         + " --include '**/*.htm' \\\n"
                                                         + " --include '**/*.css' \\\n"
