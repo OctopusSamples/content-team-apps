@@ -94,6 +94,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .run(
                                                     "SOURCEPATH=.\n"
                                                         + "OUTPUTPATH=.\n"
+                                                        + "# If there is a build directory, assume that is what we want to package\n"
                                                         + "if [[ -d \"build\" ]]; then\n"
                                                         + "  SOURCEPATH=build\n"
                                                         + "  OUTPUTPATH=...\n"

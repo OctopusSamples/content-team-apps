@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Dont expand paths">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/GitBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/GitBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaGradleBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaGradleBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" afterDir="false" />
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Remove some redundant steps">
       <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
       <workItem from="1635899835178" duration="2275000" />
-      <workItem from="1635909205353" duration="9595000" />
+      <workItem from="1635909205353" duration="9864000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -238,7 +234,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635928309526</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Remove some redundant steps">
+      <created>1635929869389</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1635929869389</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -278,7 +281,8 @@
     <MESSAGE value="Add run number to make tag unique" />
     <MESSAGE value="Fixed push path" />
     <MESSAGE value="Dont expand paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dont expand paths" />
+    <MESSAGE value="Remove some redundant steps" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove some redundant steps" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
