@@ -120,7 +120,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "packages=()\n"
                                                     + "for path in \"${uniquepaths}\"; do\n"
                                                     + "  # Get the directory name four deep, which is typically the project folder\n"
-                                                    + "  dir=$(pwd)/../../../..\n"
+                                                    + "  dir=${path}/../../../..\n"
                                                     + "  parentdir=$(builtin cd $dir; pwd)\n"
                                                     + "  projectname=${parentdir##*/}\n"
                                                     + "  # Package the published files\n"
@@ -149,7 +149,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 new ImmutableMap.Builder<String, String>()
                                                     .put("files",
                                                         "${{ steps.package.outputs.artifacts_new_line }}")
-                                                    .put("tag",
+                                                    .put("tag_name",
                                                         "${{ steps.determine_version.outputs.semVer }}.${{ github.run_number }}")
                                                     .put("draft", "false")
                                                     .put("prerelease", "false")
