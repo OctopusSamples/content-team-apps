@@ -1,12 +1,9 @@
-package com.octopus.githubactions.builders.java;
+package com.octopus.githubactions.builders;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.octopus.builders.PipelineBuilder;
-import com.octopus.githubactions.builders.GitBuilder;
-import com.octopus.githubactions.builders.SnakeYamlFactory;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
 import com.octopus.githubactions.builders.dsl.On;
@@ -16,31 +13,30 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
-import java.util.Map;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
-/** Builds a GitHub Actions Workflow for Node.js projects. */
-public class NodeJsBuilder implements PipelineBuilder {
+/**
+ * Builds a GitHub Actions Workflow for DotNET Core projects.
+ */
+public class DotNetCoreBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(NodeJsBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(DotNetCoreBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
-  private boolean useYarn = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "NodeJsBuilder.canBuild(RepoClient)");
-    useYarn = accessor.testFile("yarn.lock");
-    return accessor.testFile("package.json");
+    LOG.log(DEBUG, "DotNetCoreBuilder.canBuild(RepoClient)");
+    return accessor.testFile("Gemfile");
   }
 
   @Override
   public String generate(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "JavaMavenBuilder.generate(RepoClient)");
+    LOG.log(DEBUG, "DotNetCoreBuilder.generate(RepoClient)");
     return SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
-                .name("Node.js Build")
+                .name("DotNET Core Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch()).build())
                 .jobs(
                     Jobs.builder()
@@ -57,15 +53,13 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Install Dependencies")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " install")
+                                                .run("dotnet restore")
                                                 .build())
                                         .add(
                                             RunStep.builder()
                                                 .name("List Dependencies")
                                                 .shell("bash")
-                                                .run(
-                                                    getPackageManager()
-                                                        + " list --all > dependencies.txt")
+                                                .run("dotnet list package > dependencies.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencies())
                                         .add(
@@ -73,27 +67,23 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .name("List Dependency Updates")
                                                 .shell("bash")
                                                 .run(
-                                                    getPackageManager()
-                                                        + " outdated > dependencyUpdates.txt || true")
+                                                    "dotnet list package --outdated > dependencyUpdates.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
                                             RunStep.builder()
                                                 .name("Test")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " test || true")
-                                                .build())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Build")
-                                                .shell("bash")
                                                 .run(
-                                                    (!scriptExists(accessor, "build")
-                                                            ? "# package.json does not define a build script, so the build command is commented out.\n# "
-                                                            : "")
-                                                        + getPackageManager()
-                                                        + " run build")
+                                                    "dotnet test -l:trx || true")
                                                 .build())
+                                        .add(GIT_BUILDER.buildJunitReport("DotNET Tests",
+                                            "results.xml"))
+                                        .add(RunStep.builder()
+                                            .name("Publish")
+                                            .run(
+                                                "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.semVer }}")
+                                            .build())
                                         .add(
                                             RunStep.builder()
                                                 .name("Package")
@@ -101,22 +91,18 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .run(
                                                     "SOURCEPATH=.\n"
                                                         + "OUTPUTPATH=.\n"
-                                                        + "# If there is a build directory, assume that is what we want to package\n"
-                                                        + "if [[ -d \"build\" ]]; then\n"
-                                                        + "  SOURCEPATH=build\n"
-                                                        + "  OUTPUTPATH=...\n"
-                                                        + "fi\n"
                                                         + "octo pack \\\n"
                                                         + " --basePath ${SOURCEPATH} \\\n"
                                                         + " --outFolder ${OUTPUTPATH} \\\n"
                                                         + " --id "
                                                         + accessor
-                                                            .getRepoName()
-                                                            .getOrElse("application")
+                                                        .getRepoName()
+                                                        .getOrElse("application")
                                                         + " \\\n"
                                                         + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
                                                         + " --format zip \\\n"
                                                         + " --overwrite \\\n"
+                                                        + " --include '**/*.rb \\\n"
                                                         + " --include '**/*.html' \\\n"
                                                         + " --include '**/*.htm' \\\n"
                                                         + " --include '**/*.css' \\\n"
@@ -150,18 +136,5 @@ public class NodeJsBuilder implements PipelineBuilder {
                                 .build())
                         .build())
                 .build());
-  }
-
-  private boolean scriptExists(@NonNull final RepoClient accessor, @NonNull final String script) {
-    return accessor
-        .getFile("package.json")
-        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
-        .mapTry(m -> (Map) (m.get("scripts")))
-        .mapTry(s -> s.containsKey(script))
-        .getOrElse(false);
-  }
-
-  private String getPackageManager() {
-    return useYarn ? "yarn" : "npm";
   }
 }

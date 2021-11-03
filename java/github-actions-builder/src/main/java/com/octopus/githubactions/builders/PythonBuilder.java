@@ -1,12 +1,9 @@
-package com.octopus.githubactions.builders.java;
+package com.octopus.githubactions.builders;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.octopus.builders.PipelineBuilder;
-import com.octopus.githubactions.builders.GitBuilder;
-import com.octopus.githubactions.builders.SnakeYamlFactory;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
 import com.octopus.githubactions.builders.dsl.On;
@@ -16,33 +13,30 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
-import java.util.Map;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
 /**
- * Builds a GitHub Actions Workflow for Node.js projects.
+ * Builds a GitHub Actions Workflow for Python projects.
  */
-public class PhpComposerBuilder implements PipelineBuilder {
+public class PythonBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(PhpComposerBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(PythonBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
-  private boolean useYarn = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "NodeJsBuilder.canBuild(RepoClient)");
-    useYarn = accessor.testFile("yarn.lock");
-    return accessor.testFile("package.json");
+    LOG.log(DEBUG, "PythonBuilder.canBuild(RepoClient)");
+    return accessor.testFile("requirements.txt");
   }
 
   @Override
   public String generate(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "JavaMavenBuilder.generate(RepoClient)");
+    LOG.log(DEBUG, "PythonBuilder.generate(RepoClient)");
     return SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
-                .name("Node.js Build")
+                .name("Python Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch()).build())
                 .jobs(
                     Jobs.builder()
@@ -59,14 +53,14 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Install Dependencies")
                                                 .shell("bash")
-                                                .run("composer install")
+                                                .run("pip install -r requirements.txt")
                                                 .build())
                                         .add(
                                             RunStep.builder()
                                                 .name("List Dependencies")
                                                 .shell("bash")
                                                 .run(
-                                                    "composer show --all > dependencies.txt")
+                                                    "pip install pipdeptree; pipdeptree > dependencies.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencies())
                                         .add(
@@ -74,7 +68,7 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                 .name("List Dependency Updates")
                                                 .shell("bash")
                                                 .run(
-                                                    "composer outdated > dependencyUpdates.txt")
+                                                    "pip list --outdated --format=freeze > dependencyUpdates.txt || true")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
@@ -82,9 +76,10 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "vendor/bin/phpunit --log-junit results.xml tests || true")
+                                                    "pip install pytest; pytest --junitxml=results.xml || true")
                                                 .build())
-                                        .add(GIT_BUILDER.buildJunitReport("PHP Tests", "results.xml"))
+                                        .add(GIT_BUILDER.buildJunitReport("Python Tests",
+                                            "results.xml"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Package")
@@ -92,11 +87,6 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                 .run(
                                                     "SOURCEPATH=.\n"
                                                         + "OUTPUTPATH=.\n"
-                                                        + "# If there is a build directory, assume that is what we want to package\n"
-                                                        + "if [[ -d \"build\" ]]; then\n"
-                                                        + "  SOURCEPATH=build\n"
-                                                        + "  OUTPUTPATH=...\n"
-                                                        + "fi\n"
                                                         + "octo pack \\\n"
                                                         + " --basePath ${SOURCEPATH} \\\n"
                                                         + " --outFolder ${OUTPUTPATH} \\\n"
@@ -108,7 +98,8 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                         + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
                                                         + " --format zip \\\n"
                                                         + " --overwrite \\\n"
-                                                        + " --include '**/*.php' \\\n"
+                                                        + " --include '**/*.py' \\\n"
+                                                        + " --include '**/*.pyc' \\\n"
                                                         + " --include '**/*.html' \\\n"
                                                         + " --include '**/*.htm' \\\n"
                                                         + " --include '**/*.css' \\\n"

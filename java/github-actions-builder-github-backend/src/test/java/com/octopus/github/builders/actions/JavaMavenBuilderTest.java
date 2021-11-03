@@ -3,7 +3,7 @@ package com.octopus.github.builders.actions;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.githubactions.builders.java.JavaMavenBuilder;
+import com.octopus.githubactions.builders.JavaMavenBuilder;
 import com.octopus.http.StringHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
 import org.junit.jupiter.api.Test;

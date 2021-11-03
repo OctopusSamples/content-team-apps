@@ -1,10 +1,13 @@
 package com.octopus.githubactions.producer;
 
 import com.octopus.builders.PipelineBuilder;
-import com.octopus.githubactions.builders.java.JavaGradleBuilder;
-import com.octopus.githubactions.builders.java.JavaMavenBuilder;
-import com.octopus.githubactions.builders.java.NodeJsBuilder;
-import com.octopus.githubactions.builders.java.PhpComposerBuilder;
+import com.octopus.githubactions.builders.GoBuilder;
+import com.octopus.githubactions.builders.JavaGradleBuilder;
+import com.octopus.githubactions.builders.JavaMavenBuilder;
+import com.octopus.githubactions.builders.NodeJsBuilder;
+import com.octopus.githubactions.builders.PhpComposerBuilder;
+import com.octopus.githubactions.builders.PythonBuilder;
+import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
@@ -94,5 +97,38 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getPhpBuilder() {
     return new PhpComposerBuilder();
+  }
+
+  /**
+   * Produces the Python pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getPythonBuilder() {
+    return new PythonBuilder();
+  }
+
+  /**
+   * Produces the Go pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getGoBuilder() {
+    return new GoBuilder();
+  }
+
+  /**
+   * Produces the Ruby pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getRubyBuilder() {
+    return new RubyBuilder();
   }
 }
