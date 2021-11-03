@@ -95,7 +95,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .run(
                                                     "\"::set-output name=artifact::"
                                                         + accessor.getRepoName()
-                                                        + "${{ steps.determine_version.outputs.semVer }}.zip"
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
                                         .add(
@@ -106,7 +106,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .run(
                                                     "echo \"::set-output name=artifact::"
                                                         + accessor.getRepoName()
-                                                        + "${{ steps.determine_version.outputs.semVer }}.zip"
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
                                         .add(GIT_BUILDER.createGitHubRelease())
