@@ -127,7 +127,9 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\""
-                                                        + accessor.getRepoName().get()
+                                                        + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}\necho \"::set-output name=artifact::${octofile}\"\nls -la")
                                                 .build())
                                         .add(

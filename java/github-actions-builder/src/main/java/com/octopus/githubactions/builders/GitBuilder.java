@@ -120,10 +120,10 @@ public class GitBuilder {
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("octopus_api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
-                .put("octopus_project", accessor.getRepoName().get())
+                .put("octopus_project", accessor.getRepoName().getOrElse("application"))
                 .put("octopus_server", "${{ secrets.OCTOPUS_SERVER_URL }}")
                 .put("push_version", "${{ steps.determine_version.outputs.semVer }}")
-                .put("push_package_ids", accessor.getRepoName().get())
+                .put("push_package_ids", accessor.getRepoName().getOrElse("application"))
                 .put("output_path", "octopus")
                 .build())
         .build();
@@ -137,7 +137,7 @@ public class GitBuilder {
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
-                .put("project", accessor.getRepoName().get())
+                .put("project", accessor.getRepoName().getOrElse("application"))
                 .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
                 .put("deploy_to", "Development")
                 .build())
