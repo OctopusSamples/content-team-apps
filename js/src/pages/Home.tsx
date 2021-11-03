@@ -43,7 +43,9 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const Home: FC<CommonProps> = (): ReactElement => {
+const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
+    props.setCopyText("");
+
     const history = useHistory();
 
     function handleClick() {
