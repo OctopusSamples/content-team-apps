@@ -13,6 +13,7 @@ import {useLocation} from "react-router-dom";
 import {AppContext} from "../App";
 
 require('codemirror/mode/groovy/groovy');
+require('codemirror/mode/yaml/yaml');
 require('codemirror/mode/javascript/javascript');
 
 // define css-in-js
@@ -54,6 +55,7 @@ const Template: FC<{}> = (): ReactElement => {
     })
 
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
+    const mode = context?.settings?.editorFormat || 'javascript';
 
     return (
         <>
@@ -74,7 +76,7 @@ const Template: FC<{}> = (): ReactElement => {
                         value={template}
                         className={classes.flexGrowColumn}
                         options={{
-                            mode: 'groovy',
+                            mode: mode,
                             theme: theme,
                             lineNumbers: true
                         }}

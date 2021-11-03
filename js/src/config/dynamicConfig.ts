@@ -6,7 +6,8 @@ export interface DynamicConfig {
     settings: {
         basename: string,
         generateApiPath: string,
-        title: string
+        title: string,
+        editorFormat: string
     },
     useDefaultTheme?: boolean
 }

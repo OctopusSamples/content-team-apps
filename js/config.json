@@ -2,6 +2,7 @@
   "settings": {
     "basename": "",
     "title": "Pipeline Builder",
-    "generateApiPath": ""
+    "generateApiPath": "",
+    "editorFormat": ""
   }
 }
