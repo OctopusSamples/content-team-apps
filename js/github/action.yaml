@@ -1,4 +1,4 @@
-name: 'Jenkins Pipeline Frontend'
+name: 'Pipeline Frontend'
 inputs:
   octopus_server_url:  
     required: true
