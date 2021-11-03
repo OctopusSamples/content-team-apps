@@ -1,6 +1,5 @@
 package com.octopus.githubactions.builders.dsl;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,6 @@ import lombok.Data;
  */
 @Data
 @Builder
-@RegisterForReflection
 public class On {
 
   private Push push;

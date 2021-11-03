@@ -1,6 +1,5 @@
 package com.octopus.githubactions.builders.dsl;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,6 @@ import lombok.Data;
  */
 @Builder
 @Data
-@RegisterForReflection
 public class UsesWith implements Step {
 
   private String name;
