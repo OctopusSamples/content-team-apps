@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 /** Contains a number of common steps shared between builders. */
 public class GitBuilder {
+  /** Build the checkout step. */
   public Step checkOutStep() {
     return UsesWith.builder()
         .uses("actions/checkout@v1")
@@ -15,6 +16,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the GiotVersion installation step. */
   public Step gitVersionInstallStep() {
     return UsesWith.builder()
         .name("Install GitVersion")
@@ -23,6 +25,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the step to calculate the versions from git. */
   public Step getVersionCalculate() {
     return UsesWith.builder()
         .name("Determine Version")
@@ -31,6 +34,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the Octopus CLI installation step. */
   public Step installOctopusCli() {
     return UsesWith.builder()
         .name("Install Octopus Deploy CLI")
@@ -39,6 +43,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the test processing step. */
   public Step buildJunitReport(@NonNull final String path) {
     return UsesWith.builder()
         .name("Report")
@@ -54,6 +59,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the github release creation step. */
   public Step createGitHubRelease() {
     return UsesWith.builder()
         .name("Create Release")
@@ -73,6 +79,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the step to upload file to the github release. */
   public Step uploadToGitHubRelease() {
     return UsesWith.builder()
         .name("Upload Release Asset")
@@ -91,6 +98,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the step to push files to Octopus. */
   public Step pushToOctopus(@NonNull final String packages) {
     return UsesWith.builder()
         .name("Push to Octopus")
@@ -104,6 +112,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the step to push Octopus build information. */
   public Step uploadOctopusBuildInfo(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Generate Octopus Deploy build information")
@@ -120,6 +129,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the step to create an Octopus release. */
   public Step createOctopusRelease(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Create Octopus Release")
@@ -134,6 +144,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the dependency collection step. */
   public Step collectDependencies() {
     return UsesWith.builder()
         .name("Collect Dependencies")
@@ -146,6 +157,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the dependency updates collection step. */
   public Step collectDependencyUpdates() {
     return UsesWith.builder()
         .name("Collect Dependency Updates")
@@ -158,6 +170,7 @@ public class GitBuilder {
         .build();
   }
 
+  /** Build the java installation step. */
   public Step installJava() {
     return UsesWith.builder()
         .name("Set up JDK 1.17")
