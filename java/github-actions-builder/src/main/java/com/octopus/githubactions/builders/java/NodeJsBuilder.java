@@ -89,12 +89,51 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .build())
                                         .add(
                                             RunStep.builder()
+                                                .name("Package")
+                                                .shell("bash")
+                                                .run(
+                                                    "SOURCEPATH=.\n"
+                                                        + "OUTPUTPATH=.\n"
+                                                        + "if [[ -d \"build\" ]]; then\n"
+                                                        + "  SOURCEPATH=build\n"
+                                                        + "  OUTPUTPATH=...\n"
+                                                        + "fi\n"
+                                                        + "octo pack"
+                                                        + " --basePath ${SOURCEPATH}"
+                                                        + " --outFolder ${OUTPUTPATH}"
+                                                        + " --id "
+                                                        + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
+                                                        + " --version ${{ steps.determine_version.outputs.semVer }}"
+                                                        + " --format zip"
+                                                        + " --overwrite"
+                                                        + " --include **/*.html"
+                                                        + " --include **/*.htm"
+                                                        + " --include **/*.css"
+                                                        + " --include **/*.js"
+                                                        + " --include **/*.min"
+                                                        + " --include **/*.map"
+                                                        + " --include **/*.sql"
+                                                        + " --include **/*.png"
+                                                        + " --include **/*.jpg"
+                                                        + " --include **/*.jpeg"
+                                                        + " --include **/*.gif"
+                                                        + " --include **/*.json"
+                                                        + " --include **/*.env"
+                                                        + " --include **/*.txt"
+                                                        + " --include **/*.Procfile")
+                                                .build())
+                                        .add(
+                                            RunStep.builder()
                                                 .name("Get Artifact Path")
                                                 .id("get_artifact")
                                                 .shell("bash")
                                                 .run(
                                                     "\"::set-output name=artifact::"
-                                                        + accessor.getRepoName().getOrElse("application")
+                                                        + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
@@ -105,7 +144,9 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "echo \"::set-output name=artifact::"
-                                                        + accessor.getRepoName().getOrElse("application")
+                                                        + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
