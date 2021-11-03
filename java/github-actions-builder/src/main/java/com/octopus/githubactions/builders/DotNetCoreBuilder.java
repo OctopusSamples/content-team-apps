@@ -130,7 +130,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "  --version ${{ steps.determine_version.outputs.semVer }} \\\n"
                                                     + "  --format zip \\\n"
                                                     + "  --overwrite\n"
-                                                    + "  packages=(${packages[@]} \"${path}/${projectname}.${{ steps.determine_version.outputs.semVer }}.zip)\")\n"
+                                                    + "  packages=(${packages[@]} \"${path}/${projectname}.${{ steps.determine_version.outputs.semVer }}.zip\")\n"
                                                     + "done\n"
                                                     + "# Join the array with commas\n"
                                                     + "printf -v joined \"%s,\" \"${packages[@]}\"\n"
