@@ -151,7 +151,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "# Multiline strings require some care in a workflow\n"
                                                     + "joinednewline=\"${joinednewline//'%'/'%25'}\"\n"
                                                     + "joinednewline=\"${joinednewline//$'\\n'/'%0A'}\"\n"
-                                                    + "joinednewline=\"${joinednewline//$'\\r'/'%0D'}\""
+                                                    + "joinednewline=\"${joinednewline//$'\\r'/'%0D'}\"\n"
                                                     + "# Save the list of packages newline separated as an output variable\n"
                                                     + "echo \"::set-output name=artifacts_new_line::${joinednewline%\\n}\""
                                             )
