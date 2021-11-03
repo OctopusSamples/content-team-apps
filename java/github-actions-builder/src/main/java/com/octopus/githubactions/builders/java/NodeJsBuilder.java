@@ -131,7 +131,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .id("get_artifact")
                                                 .shell("bash")
                                                 .run(
-                                                    "\"::set-output name=artifact::"
+                                                    "echo \"::set-output name=artifact::"
                                                         + accessor
                                                             .getRepoName()
                                                             .getOrElse("application")
