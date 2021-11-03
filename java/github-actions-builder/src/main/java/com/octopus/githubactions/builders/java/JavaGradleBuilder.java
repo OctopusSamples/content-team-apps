@@ -47,7 +47,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
     return SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
-                .name("Java Maven Build")
+                .name("Java Gradle Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch()).build())
                 .jobs(
                     Jobs.builder()
