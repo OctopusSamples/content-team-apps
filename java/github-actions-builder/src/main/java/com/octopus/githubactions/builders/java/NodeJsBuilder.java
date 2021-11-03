@@ -2,6 +2,7 @@ package com.octopus.githubactions.builders.java;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.GitBuilder;
@@ -15,6 +16,7 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
+import java.util.Map;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
@@ -85,7 +87,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Build")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " run build")
+                                                .run((!scriptExists(accessor, "build") ? "# package.json does not define a build script, so the build command is comments out.\n# " : "") + getPackageManager() + " run build")
                                                 .build())
                                         .add(
                                             RunStep.builder()
@@ -142,6 +144,14 @@ public class NodeJsBuilder implements PipelineBuilder {
                                 .build())
                         .build())
                 .build());
+  }
+
+  private boolean scriptExists(@NonNull final RepoClient accessor, @NonNull final String script) {
+    return accessor.getFile("package.json")
+        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
+        .mapTry(m -> (Map) (m.get("scripts")))
+        .mapTry(s -> s.containsKey(script))
+        .getOrElse(false);
   }
 
   private String getPackageManager() {

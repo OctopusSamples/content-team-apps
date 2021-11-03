@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Added some comments">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaGradleBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaGradleBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/test/java/com/octopus/githubactions/builders/PrintWorkflow.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/test/java/com/octopus/githubactions/builders/PrintWorkflow.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +48,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.PrintWorkflow.printNodeJsWorkflow">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -55,6 +56,37 @@
         </value>
       </option>
       <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PrintWorkflow" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="github-actions-builder" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.octopus.githubactions.builders.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.octopus.githubactions.builders" />
+      <option name="MAIN_CLASS_NAME" value="com.octopus.githubactions.builders.PrintWorkflow" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PrintWorkflow.printNodeJsWorkflow" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="github-actions-builder" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.octopus.githubactions.builders.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.octopus.githubactions.builders" />
+      <option name="MAIN_CLASS_NAME" value="com.octopus.githubactions.builders.PrintWorkflow" />
+      <option name="METHOD_NAME" value="printNodeJsWorkflow" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -70,6 +102,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.PrintWorkflow.printNodeJsWorkflow" />
+        <item itemvalue="JUnit.PrintWorkflow" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -80,7 +118,7 @@
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
       <workItem from="1635899835178" duration="2275000" />
-      <workItem from="1635909205353" duration="10157000" />
+      <workItem from="1635909205353" duration="11086000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -257,7 +295,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635930309050</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Added some comments">
+      <created>1635930429957</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1635930429957</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
