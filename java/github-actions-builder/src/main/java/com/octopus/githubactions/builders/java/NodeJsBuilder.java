@@ -125,34 +125,13 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                         + " --include '**/*.txt' \\\n"
                                                         + " --include '**/*.Procfile'")
                                                 .build())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Get Artifact Path")
-                                                .id("get_artifact")
-                                                .shell("bash")
-                                                .run(
-                                                    "echo \"::set-output name=artifact::"
-                                                        + accessor
-                                                            .getRepoName()
-                                                            .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"
-                                                        + "\"")
-                                                .build())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Get Artifact Name")
-                                                .id("get_artifact_name")
-                                                .shell("bash")
-                                                .run(
-                                                    "echo \"::set-output name=artifact::"
-                                                        + accessor
-                                                            .getRepoName()
-                                                            .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"
-                                                        + "\"")
-                                                .build())
                                         .add(GIT_BUILDER.createGitHubRelease())
-                                        .add(GIT_BUILDER.uploadToGitHubRelease())
+                                        .add(
+                                            GIT_BUILDER.uploadToGitHubRelease(
+                                                accessor.getRepoName().getOrElse("application")
+                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip",
+                                                accessor.getRepoName().getOrElse("application")
+                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
                                                 "${{ steps.get_artifact.outputs.artifact }}"))

@@ -80,7 +80,7 @@ public class GitBuilder {
   }
 
   /** Build the step to upload file to the github release. */
-  public Step uploadToGitHubRelease() {
+  public Step uploadToGitHubRelease(@NonNull final String path, @NonNull final String name) {
     return UsesWith.builder()
         .name("Upload Release Asset")
         .uses("actions/upload-release-asset@v1")
@@ -91,8 +91,8 @@ public class GitBuilder {
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("upload_url", "${{ steps.create_release.outputs.upload_url }}")
-                .put("asset_path", "${{ steps.get_artifact.outputs.artifact }}")
-                .put("asset_name", "${{ steps.get_artifact_name.outputs.artifact }}")
+                .put("asset_path", path)
+                .put("asset_name", name)
                 .put("asset_content_type", "application/octet-stream")
                 .build())
         .build();

@@ -107,7 +107,10 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                     "path=\"${{ steps.get_artifact.outputs.artifact }}\"; echo \"::set-output name=artifact::${path##*/}\"")
                                                 .build())
                                         .add(GIT_BUILDER.createGitHubRelease())
-                                        .add(GIT_BUILDER.uploadToGitHubRelease())
+                                        .add(
+                                            GIT_BUILDER.uploadToGitHubRelease(
+                                                "${{ steps.get_artifact.outputs.artifact }}",
+                                                "${{ steps.get_artifact_name.outputs.artifact }}"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Create Octopus Artifact")
@@ -115,7 +118,9 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "file=\"${{ steps.get_artifact.outputs.artifact }}\"\nextension=\"${file##*.}\"\noctofile=\""
-                                                        + accessor.getRepoName().getOrElse("application")
+                                                        + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\ncp ${file} ${octofile}\necho \"::set-output name=artifact::${octofile}\"\nls -la")
                                                 .build())
                                         .add(
