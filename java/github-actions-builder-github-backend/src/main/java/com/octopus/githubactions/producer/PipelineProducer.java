@@ -1,5 +1,6 @@
 package com.octopus.githubactions.producer;
 
+import com.octopus.githubactions.builders.java.JavaGradleBuilder;
 import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
 import com.octopus.builders.PipelineBuilder;
@@ -58,5 +59,16 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getMavenBuilder() {
     return new JavaMavenBuilder();
+  }
+
+  /**
+   * Produces the Gradle pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getGradleBuilder() {
+    return new JavaGradleBuilder();
   }
 }

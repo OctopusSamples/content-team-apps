@@ -3,7 +3,6 @@ package com.octopus.githubactions.builders.java;
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.GitBuilder;
 import com.octopus.githubactions.builders.SnakeYamlFactory;
@@ -13,25 +12,29 @@ import com.octopus.githubactions.builders.dsl.On;
 import com.octopus.githubactions.builders.dsl.Push;
 import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.Step;
-import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
+import java.util.Arrays;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
-/** Builds a GitHub Actions Workflow for Maven projects. */
-public class JavaMavenBuilder implements PipelineBuilder {
+/** Builds a GitHub Actions Workflow for Gradle projects. */
+public class JavaGradleBuilder implements PipelineBuilder {
 
-  private static final Logger LOG = Logger.getLogger(JavaMavenBuilder.class.toString());
+  private static final Logger LOG = Logger.getLogger(JavaGradleBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
+  private static final String[] GRADLE_BUILD_FILES = {"build.gradle", "build.gradle.kts"};
   private boolean usesWrapper = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "JavaMavenBuilder.canBuild(RepoClient)");
-    if (accessor.testFile("pom.xml")) {
+    LOG.log(DEBUG, "JavaGradleBuilder.canBuild(RepoClient)");
+
+    if (Arrays.stream(GRADLE_BUILD_FILES).anyMatch(accessor::testFile)) {
+      LOG.log(DEBUG, String.join(" or ", GRADLE_BUILD_FILES) + " was found");
       usesWrapper = usesWrapper(accessor);
+      LOG.log(DEBUG, "Wrapper script was " + (usesWrapper ? "" : "not ") + "found");
       return true;
     }
 
@@ -60,48 +63,31 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                         .add(GIT_BUILDER.installJava())
                                         .add(
                                             RunStep.builder()
-                                                .name("Set Version")
-                                                .shell("bash")
-                                                .run(
-                                                    mavenExecutable()
-                                                        + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
-                                                .build())
-                                        .add(
-                                            RunStep.builder()
                                                 .name("List Dependencies")
                                                 .shell("bash")
                                                 .run(
-                                                    mavenExecutable()
-                                                        + " --batch-mode dependency:tree --no-transfer-progress > dependencies.txt")
+                                                    gradleExecutable()
+                                                        + " dependencies --console=plain > dependencies.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencies())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("List Dependency Updates")
-                                                .shell("bash")
-                                                .run(
-                                                    mavenExecutable()
-                                                        + " --batch-mode versions:display-dependency-updates > dependencyUpdates.txt")
-                                                .build())
-                                        .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
                                             RunStep.builder()
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    mavenExecutable()
-                                                        + " --batch-mode -Dmaven.test.failure.ignore=true test")
+                                                    gradleExecutable()
+                                                        + " check --console=plain || true")
                                                 .build())
                                         .add(
                                             GIT_BUILDER.buildJunitReport(
-                                                "target/surefire-reports/*.xml"))
+                                                "build/test-results/**/*.xml"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Package")
                                                 .shell("bash")
                                                 .run(
-                                                    mavenExecutable()
-                                                        + " --batch-mode -DskipTests=true package")
+                                                    gradleExecutable()
+                                                        + " clean assemble --console=plain")
                                                 .build())
                                         .add(
                                             RunStep.builder()
@@ -143,11 +129,11 @@ public class JavaMavenBuilder implements PipelineBuilder {
                 .build());
   }
 
-  private String mavenExecutable() {
-    return usesWrapper ? "./mvnw" : "mvn";
+  private String gradleExecutable() {
+    return usesWrapper ? "./gradlew" : "gradle";
   }
 
   private boolean usesWrapper(@NonNull final RepoClient accessor) {
-    return accessor.testFile("mvnw");
+    return accessor.testFile("gradlew");
   }
 }

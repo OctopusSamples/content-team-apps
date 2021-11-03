@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="The escaping wasn't actually wrong">
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Fixed up a line break">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/GitBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaGradleBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/producer/PipelineProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/producer/PipelineProducer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/JavaMavenBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -12,8 +17,23 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="20NzSBNvS99bz2wh6Xi77LQgIcV" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -27,17 +47,16 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -62,7 +81,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
-      <workItem from="1635899835178" duration="1540000" />
+      <workItem from="1635899835178" duration="2275000" />
+      <workItem from="1635909205353" duration="1617000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -92,7 +112,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635901937833</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fixed up a line break">
+      <created>1635902007477</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1635902007477</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -108,12 +135,18 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Don't use RegisterForReflection in downstream library" />
     <MESSAGE value="Add workspace file" />
     <MESSAGE value="Fixed up some escaping" />
     <MESSAGE value="The escaping wasn't actually wrong" />
-    <option name="LAST_COMMIT_MESSAGE" value="The escaping wasn't actually wrong" />
+    <MESSAGE value="Fixed up a line break" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed up a line break" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
