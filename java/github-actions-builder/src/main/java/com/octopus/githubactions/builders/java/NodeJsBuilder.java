@@ -89,7 +89,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .build())
                                         .add(
                                             RunStep.builder()
-                                                .name("Get Artifact")
+                                                .name("Get Artifact Path")
                                                 .id("get_artifact")
                                                 .shell("bash")
                                                 .run(
