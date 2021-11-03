@@ -51,7 +51,6 @@ public class NodeJsBuilder implements PipelineBuilder {
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
                                         .add(GIT_BUILDER.installOctopusCli())
-                                        .add(GIT_BUILDER.installJava())
                                         .add(
                                             RunStep.builder()
                                                 .name("Install Dependencies")
@@ -82,9 +81,6 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(getPackageManager() + " test || true")
                                                 .build())
-                                        .add(
-                                            GIT_BUILDER.buildJunitReport(
-                                                "target/surefire-reports/*.xml"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Build")
