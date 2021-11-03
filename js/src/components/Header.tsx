@@ -78,6 +78,13 @@ const Header: FC<HeaderProps> = ({
                         </Typography>
                     </Link>
                 </div>
+                {copyText &&
+                <IconButton onClick={() => navigator.clipboard.writeText(copyText)}>
+                    <Tooltip title={"Copy to clipboard"} placement={"bottom"}>
+                        <ContentCopy/>
+                    </Tooltip>
+                </IconButton>
+                }
                 <IconButton onClick={toggleTheme}>
                     {useDefaultTheme ? (
                         <Tooltip title="Switch to dark mode" placement="bottom">
@@ -89,13 +96,6 @@ const Header: FC<HeaderProps> = ({
                         </Tooltip>
                     )}
                 </IconButton>
-                {copyText &&
-                <IconButton>
-                    <Tooltip title={"Copy to clipboard"} placement={"bottom"}>
-                        <ContentCopy/>
-                    </Tooltip>
-                </IconButton>
-                }
             </Toolbar>
         </AppBar>
     );
