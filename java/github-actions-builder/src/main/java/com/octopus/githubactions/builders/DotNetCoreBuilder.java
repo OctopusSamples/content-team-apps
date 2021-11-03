@@ -147,6 +147,11 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "echo \"::set-output name=artifacts::${joined%,}\"\n"
                                                     + "# Do the same again, but use new lines as the separator\n"
                                                     + "printf -v joinednewline \"%s\\n\" \"${packages[@]}\"\n"
+                                                    + "# https://trstringer.com/github-actions-multiline-strings/\n"
+                                                    + "# Multiline strings require some care in a workflow\n"
+                                                    + "joinednewline=\"${joinednewline//'%'/'%25'}\"\n"
+                                                    + "joinednewline=\"${joinednewline//$'\\n'/'%0A'}\"\n"
+                                                    + "joinednewline=\"${joinednewline//$'\\r'/'%0D'}\""
                                                     + "# Save the list of packages newline separated as an output variable\n"
                                                     + "echo \"::set-output name=artifacts_new_line::${joinedNewLine%\\n}\""
                                             )
