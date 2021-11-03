@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import Brightness3Icon from "@material-ui/icons/Brightness3";
+import ContentCopy from '@material-ui/icons/ContentCopy';
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
 
@@ -53,12 +54,14 @@ const useStyles = makeStyles((theme: Theme) =>
 interface HeaderProps {
     toggleTheme: () => void;
     useDefaultTheme: boolean;
+    copyText?: string;
 }
 
 const Header: FC<HeaderProps> = ({
-                    toggleTheme,
-                    useDefaultTheme
-                }: HeaderProps) => {
+                                     toggleTheme,
+                                     useDefaultTheme,
+                                     copyText
+                                 }: HeaderProps) => {
     const classes = useStyles();
     const context = useContext(AppContext);
     return (
@@ -86,6 +89,13 @@ const Header: FC<HeaderProps> = ({
                         </Tooltip>
                     )}
                 </IconButton>
+                {copyText &&
+                <IconButton>
+                    <Tooltip title={"Copy to clipboard"} placement={"bottom"}>
+                        <ContentCopy/>
+                    </Tooltip>
+                </IconButton>
+                }
             </Toolbar>
         </AppBar>
     );

@@ -11,6 +11,7 @@ import lightDark from './images/spinnerDark.gif'
 
 import {useLocation} from "react-router-dom";
 import {AppContext} from "../App";
+import {CommonProps} from "../model/RouteItem.model";
 
 require('codemirror/mode/groovy/groovy');
 require('codemirror/mode/yaml/yaml');
@@ -28,11 +29,9 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const Template: FC<{}> = (): ReactElement => {
+const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
     const classes = useStyles();
     const {state} = useLocation<{ url: string }>();
-
-    const [template, setTemplate] = useState("Loading...");
 
     const context = useContext(AppContext);
 
@@ -43,12 +42,7 @@ const Template: FC<{}> = (): ReactElement => {
                     .then(response => response.text())
                     .catch(error => "There was a problem with your request.")
 
-            const spinner = document.getElementById("spinner");
-            if (spinner !== null && spinner.parentElement !== null) {
-                spinner.parentElement.removeChild(spinner);
-            }
-
-            setTemplate(template);
+            props.setCopyText(template);
         }
 
         getTemplate();
@@ -73,7 +67,7 @@ const Template: FC<{}> = (): ReactElement => {
             >
                 <Grid item xs={12} className={classes.flexGrowColumn}>
                     <CodeMirror
-                        value={template}
+                        value={props.copyText}
                         className={classes.flexGrowColumn}
                         options={{
                             mode: mode,
@@ -83,6 +77,7 @@ const Template: FC<{}> = (): ReactElement => {
                     />
                 </Grid>
             </Grid>
+            {!props.copyText &&
             <img alt="loading" id="spinner" src={context.useDefaultTheme ? lightSpinner : lightDark} style={{
                 position: "fixed",
                 top: "50%",
@@ -91,6 +86,7 @@ const Template: FC<{}> = (): ReactElement => {
                 marginLeft: "-64px",
                 zIndex: 1000
             }}/>
+            }
         </>
     );
 };
