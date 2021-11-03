@@ -1,7 +1,14 @@
 package com.octopus.githubactions.configuration;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import com.octopus.githubactions.builders.dsl.*;
+import com.octopus.githubactions.builders.dsl.Build;
+import com.octopus.githubactions.builders.dsl.Jobs;
+import com.octopus.githubactions.builders.dsl.On;
+import com.octopus.githubactions.builders.dsl.Push;
+import com.octopus.githubactions.builders.dsl.RunStep;
+import com.octopus.githubactions.builders.dsl.UsesWith;
+import com.octopus.githubactions.builders.dsl.Workflow;
+import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 
 /**
  * An empty class used to list classes that we need to expose for reflection.
