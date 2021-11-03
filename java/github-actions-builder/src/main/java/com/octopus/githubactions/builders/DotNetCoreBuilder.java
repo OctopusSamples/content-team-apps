@@ -53,6 +53,14 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                 .steps(
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
+                                        .add(UsesWith.builder()
+                                            .name("Set up DotNET Core")
+                                            .uses("actions/setup-dotnet@v1")
+                                            .with(
+                                                new ImmutableMap.Builder<String, String>()
+                                                    .put("dotnet-version", "3.1.402")
+                                                    .build())
+                                            .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
                                         .add(GIT_BUILDER.installOctopusCli())
@@ -121,7 +129,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "# Do the same again, but use new lines as the separator\n"
                                                     + "printf -v joinednewline \"%s\\n\" \"${packages[@]}\"\n"
                                                     + "# Save the list of packages newline separated as an output variable\n"
-                                                    + "echo \"::set-output name=artifacts_new_line::${joinedNewLine%,}\""
+                                                    + "echo \"::set-output name=artifacts_new_line::${joinedNewLine%\\n}\""
                                             )
                                             .build())
                                         .add(UsesWith.builder()
