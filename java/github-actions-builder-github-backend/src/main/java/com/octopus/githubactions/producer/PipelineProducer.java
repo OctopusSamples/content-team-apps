@@ -1,11 +1,12 @@
 package com.octopus.githubactions.producer;
 
+import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.java.JavaGradleBuilder;
+import com.octopus.githubactions.builders.java.JavaMavenBuilder;
 import com.octopus.githubactions.builders.java.NodeJsBuilder;
+import com.octopus.githubactions.builders.java.PhpComposerBuilder;
 import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
-import com.octopus.builders.PipelineBuilder;
-import com.octopus.githubactions.builders.java.JavaMavenBuilder;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
 import java.util.Optional;
@@ -82,5 +83,16 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getNodeJsBuilder() {
     return new NodeJsBuilder();
+  }
+
+  /**
+   * Produces the PHP pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getPhpBuilder() {
+    return new PhpComposerBuilder();
   }
 }

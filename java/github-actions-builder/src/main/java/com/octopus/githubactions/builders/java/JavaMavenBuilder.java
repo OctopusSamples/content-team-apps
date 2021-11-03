@@ -18,7 +18,9 @@ import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
-/** Builds a GitHub Actions Workflow for Maven projects. */
+/**
+ * Builds a GitHub Actions Workflow for Maven projects.
+ */
 public class JavaMavenBuilder implements PipelineBuilder {
 
   private static final Logger LOG = Logger.getLogger(JavaMavenBuilder.class.toString());
@@ -92,7 +94,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .build())
                                         .add(
                                             GIT_BUILDER.buildJunitReport(
-                                                "target/surefire-reports/*.xml"))
+                                                "Maven Tests", "target/surefire-reports/*.xml"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Package")

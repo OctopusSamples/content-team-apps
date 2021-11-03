@@ -44,14 +44,14 @@ public class GitBuilder {
   }
 
   /** Build the test processing step. */
-  public Step buildJunitReport(@NonNull final String path) {
+  public Step buildJunitReport(@NonNull final String name, @NonNull final String path) {
     return UsesWith.builder()
         .name("Report")
         .uses("dorny/test-reporter@v1")
         .ifProperty("always()")
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("name", "Maven Tests")
+                .put("name", name)
                 .put("path", path)
                 .put("reporter", "java-junit")
                 .put("fail-on-error", "false")

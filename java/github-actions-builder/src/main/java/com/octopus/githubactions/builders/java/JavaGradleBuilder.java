@@ -19,7 +19,9 @@ import java.util.Arrays;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
-/** Builds a GitHub Actions Workflow for Gradle projects. */
+/**
+ * Builds a GitHub Actions Workflow for Gradle projects.
+ */
 public class JavaGradleBuilder implements PipelineBuilder {
 
   private static final Logger LOG = Logger.getLogger(JavaGradleBuilder.class.toString());
@@ -80,7 +82,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                 .build())
                                         .add(
                                             GIT_BUILDER.buildJunitReport(
-                                                "build/test-results/**/*.xml"))
+                                                "Gradle Tests", "build/test-results/**/*.xml"))
                                         .add(
                                             RunStep.builder()
                                                 .name("Package")
@@ -124,8 +126,8 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                         + "extension=\"${file##*.}\"\n"
                                                         + "octofile=\""
                                                         + accessor
-                                                            .getRepoName()
-                                                            .getOrElse("application")
+                                                        .getRepoName()
+                                                        .getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\n"
                                                         + "cp ${file} ${octofile}\n"
                                                         + "echo \"::set-output name=artifact::${octofile}\"\n"
