@@ -42,7 +42,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
     return SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
-                .name("Java Maven Build")
+                .name("Node.js Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch()).build())
                 .jobs(
                     Jobs.builder()
