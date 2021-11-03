@@ -74,7 +74,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     getPackageManager()
-                                                        + " outdated > dependencieupdates.txt || true")
+                                                        + " outdated > dependencyUpdates.txt || true")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
