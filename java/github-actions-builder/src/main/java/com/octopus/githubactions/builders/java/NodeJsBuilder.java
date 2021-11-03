@@ -155,7 +155,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                         .add(GIT_BUILDER.uploadToGitHubRelease())
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
-                                                "${{ steps.get_octopus_artifact.outputs.artifact }}"))
+                                                "${{ steps.get_artifact.outputs.artifact }}"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
                                         .add(GIT_BUILDER.createOctopusRelease(accessor))
                                         .build())

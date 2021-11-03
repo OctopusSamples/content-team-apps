@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Fixed command">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/GitBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/GitBuilder.java" afterDir="false" />
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Add run number to make tag unique">
+      <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
       <workItem from="1635899835178" duration="2275000" />
-      <workItem from="1635909205353" duration="8338000" />
+      <workItem from="1635909205353" duration="8464000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -214,7 +213,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635927365715</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Add run number to make tag unique">
+      <created>1635927751573</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1635927751573</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -251,7 +257,8 @@
     <MESSAGE value="Added octo pack step" />
     <MESSAGE value="Create a multiline command" />
     <MESSAGE value="Fixed command" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed command" />
+    <MESSAGE value="Add run number to make tag unique" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add run number to make tag unique" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
