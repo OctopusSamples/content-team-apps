@@ -87,7 +87,12 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Build")
                                                 .shell("bash")
-                                                .run((!scriptExists(accessor, "build") ? "# package.json does not define a build script, so the build command is commented out.\n# " : "") + getPackageManager() + " run build")
+                                                .run(
+                                                    (!scriptExists(accessor, "build")
+                                                            ? "# package.json does not define a build script, so the build command is commented out.\n# "
+                                                            : "")
+                                                        + getPackageManager()
+                                                        + " run build")
                                                 .build())
                                         .add(
                                             RunStep.builder()
@@ -137,7 +142,8 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                     + ".${{ steps.determine_version.outputs.semVer }}.zip"))
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
-                                                "${{ steps.get_artifact.outputs.artifact }}"))
+                                                accessor.getRepoName().getOrElse("application")
+                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
                                         .add(GIT_BUILDER.createOctopusRelease(accessor))
                                         .build())
@@ -147,7 +153,8 @@ public class NodeJsBuilder implements PipelineBuilder {
   }
 
   private boolean scriptExists(@NonNull final RepoClient accessor, @NonNull final String script) {
-    return accessor.getFile("package.json")
+    return accessor
+        .getFile("package.json")
         .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
         .mapTry(m -> (Map) (m.get("scripts")))
         .mapTry(s -> s.containsKey(script))
