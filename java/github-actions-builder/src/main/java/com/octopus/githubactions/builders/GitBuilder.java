@@ -6,6 +6,7 @@ import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
 
+/** Contains a number of common steps shared between builders. */
 public class GitBuilder {
   public Step checkOutStep() {
     return UsesWith.builder()

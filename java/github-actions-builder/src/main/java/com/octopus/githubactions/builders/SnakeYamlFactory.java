@@ -15,9 +15,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-/**
- * Builds preconfigured instances of SnakeYAML.
- */
+/** Builds preconfigured instances of SnakeYAML. */
 public final class SnakeYamlFactory {
 
   /**
@@ -26,41 +24,40 @@ public final class SnakeYamlFactory {
    * @return A configured instance of SnakeYAML.
    */
   public static Yaml getConfiguredYaml() {
-    final Representer representer = new Representer() {
-      @Override
-      protected NodeTuple representJavaBeanProperty(
-          final Object javaBean,
-          final Property property,
-          final Object propertyValue,
-          final Tag customTag) {
-        // if value of property is null, ignore it.
-        if (propertyValue == null) {
-          return null;
-        } else {
-          return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        }
-      }
-    };
+    final Representer representer =
+        new Representer() {
+          @Override
+          protected NodeTuple representJavaBeanProperty(
+              final Object javaBean,
+              final Property property,
+              final Object propertyValue,
+              final Tag customTag) {
+            // if value of property is null, ignore it.
+            if (propertyValue == null) {
+              return null;
+            } else {
+              return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+            }
+          }
+        };
 
     representer.addClassTag(Workflow.class, Tag.MAP);
     representer.addClassTag(UsesWith.class, Tag.MAP);
     representer.addClassTag(RunStep.class, Tag.MAP);
 
     final TypeDescription onDesc = new TypeDescription(On.class);
-    onDesc.substituteProperty("workflow_dispatch", WorkflowDispatch.class,
-        "getWorkflowDispatch", "setWorkflowDispatch");
+    onDesc.substituteProperty(
+        "workflow_dispatch", WorkflowDispatch.class, "getWorkflowDispatch", "setWorkflowDispatch");
     onDesc.setExcludes("workflowDispatch");
     representer.addTypeDescription(onDesc);
 
     final TypeDescription buildDesc = new TypeDescription(Build.class);
-    buildDesc.substituteProperty("runs-on", String.class,
-        "getRunsOn", "setRunsOn");
+    buildDesc.substituteProperty("runs-on", String.class, "getRunsOn", "setRunsOn");
     buildDesc.setExcludes("runsOn");
     representer.addTypeDescription(buildDesc);
 
     final TypeDescription withDesc = new TypeDescription(UsesWith.class);
-    withDesc.substituteProperty("if", String.class,
-        "getIfProperty", "setIfProperty");
+    withDesc.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
     withDesc.setExcludes("ifProperty");
     representer.addTypeDescription(withDesc);
 
