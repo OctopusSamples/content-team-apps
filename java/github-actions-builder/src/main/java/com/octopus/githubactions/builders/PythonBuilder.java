@@ -49,7 +49,7 @@ public class PythonBuilder implements PipelineBuilder {
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
                                         .add(UsesWith.builder()
-                                            .name("Set up Ruby")
+                                            .name("Set up Python")
                                             .uses("actions/setup-python@v2")
                                             .with(
                                                 new ImmutableMap.Builder<String, String>()
