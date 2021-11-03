@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Fixed up artifact name">
+    <list default="true" id="7f6e875b-dd5f-435a-8654-3e1dd9914304" name="Changes" comment="Forgot the dot">
       <change beforePath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/github-actions-builder/src/main/java/com/octopus/githubactions/builders/java/NodeJsBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -78,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1635899832827</updated>
       <workItem from="1635899835178" duration="2275000" />
-      <workItem from="1635909205353" duration="4078000" />
+      <workItem from="1635909205353" duration="4745000" />
     </task>
     <task id="LOCAL-00001" summary="Don't use RegisterForReflection in downstream library">
       <created>1635900132253</created>
@@ -157,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635912712894</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Forgot the dot">
+      <created>1635913365035</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1635913365035</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -187,7 +194,8 @@
     <MESSAGE value="Fixed a few issues with the nodejs builder" />
     <MESSAGE value="Fixed up some accesses of the repo name" />
     <MESSAGE value="Fixed up artifact name" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed up artifact name" />
+    <MESSAGE value="Forgot the dot" />
+    <option name="LAST_COMMIT_MESSAGE" value="Forgot the dot" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -94,7 +94,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "\"::set-output name=artifact::"
-                                                        + accessor.getRepoName()
+                                                        + accessor.getRepoName().getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
@@ -105,7 +105,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "echo \"::set-output name=artifact::"
-                                                        + accessor.getRepoName()
+                                                        + accessor.getRepoName().getOrElse("application")
                                                         + ".${{ steps.determine_version.outputs.semVer }}.zip"
                                                         + "\"")
                                                 .build())
