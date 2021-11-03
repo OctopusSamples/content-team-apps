@@ -1,6 +1,7 @@
 package com.octopus.githubactions.builders;
 
 import com.octopus.repoclients.RepoClient;
+import com.octopus.test.repoclients.DotnetTestRepoClient;
 import com.octopus.test.repoclients.MavenTestRepoClient;
 import com.octopus.test.repoclients.NodeTestRepoClient;
 import com.octopus.test.repoclients.PhpTestRepoClient;
@@ -31,6 +32,15 @@ public class PrintWorkflow {
     final PhpComposerBuilder builder = new PhpComposerBuilder();
     final RepoClient client =
         new PhpTestRepoClient("https://github.com/OctopusSamples/RandomQuotes-PHP");
+    builder.canBuild(client);
+    System.out.println(builder.generate(client));
+  }
+
+  @Test
+  public void printDotNetWorkflow() {
+    final DotNetCoreBuilder builder = new DotNetCoreBuilder();
+    final RepoClient client =
+        new DotnetTestRepoClient("https://github.com/OctopusSamples/RandomQuotes");
     builder.canBuild(client);
     System.out.println(builder.generate(client));
   }

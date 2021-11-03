@@ -1,6 +1,7 @@
 package com.octopus.githubactions.producer;
 
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.githubactions.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.builders.GoBuilder;
 import com.octopus.githubactions.builders.JavaGradleBuilder;
 import com.octopus.githubactions.builders.JavaMavenBuilder;
@@ -130,5 +131,16 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getRubyBuilder() {
     return new RubyBuilder();
+  }
+
+  /**
+   * Produces the DotNET Core pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getDOtNetCore() {
+    return new DotNetCoreBuilder();
   }
 }

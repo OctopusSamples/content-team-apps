@@ -3,6 +3,7 @@ package com.octopus.githubactions.builders;
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
@@ -10,9 +11,12 @@ import com.octopus.githubactions.builders.dsl.On;
 import com.octopus.githubactions.builders.dsl.Push;
 import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.Step;
+import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
+import java.util.List;
+import java.util.regex.Pattern;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
@@ -23,11 +27,14 @@ public class DotNetCoreBuilder implements PipelineBuilder {
 
   private static final Logger LOG = Logger.getLogger(DotNetCoreBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
+  private static final Pattern DOT_NET_CORE_REGEX = Pattern.compile(
+      "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk\"");
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    LOG.log(DEBUG, "DotNetCoreBuilder.canBuild(RepoClient)");
-    return accessor.testFile("Gemfile");
+    LOG.log(DEBUG, "DotnetCoreBuilder.canBuild(RepoClient)");
+
+    return hasSolutionFiles(accessor) && hasDotNetCoreProjectFiles(accessor);
   }
 
   @Override
@@ -84,57 +91,81 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             .run(
                                                 "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.semVer }}")
                                             .build())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Package")
-                                                .shell("bash")
-                                                .run(
-                                                    "SOURCEPATH=.\n"
-                                                        + "OUTPUTPATH=.\n"
-                                                        + "octo pack \\\n"
-                                                        + " --basePath ${SOURCEPATH} \\\n"
-                                                        + " --outFolder ${OUTPUTPATH} \\\n"
-                                                        + " --id "
-                                                        + accessor
-                                                        .getRepoName()
-                                                        .getOrElse("application")
-                                                        + " \\\n"
-                                                        + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
-                                                        + " --format zip \\\n"
-                                                        + " --overwrite \\\n"
-                                                        + " --include '**/*.rb \\\n"
-                                                        + " --include '**/*.html' \\\n"
-                                                        + " --include '**/*.htm' \\\n"
-                                                        + " --include '**/*.css' \\\n"
-                                                        + " --include '**/*.js' \\\n"
-                                                        + " --include '**/*.min' \\\n"
-                                                        + " --include '**/*.map' \\\n"
-                                                        + " --include '**/*.sql' \\\n"
-                                                        + " --include '**/*.png' \\\n"
-                                                        + " --include '**/*.jpg' \\\n"
-                                                        + " --include '**/*.jpeg' \\\n"
-                                                        + " --include '**/*.gif' \\\n"
-                                                        + " --include '**/*.json' \\\n"
-                                                        + " --include '**/*.env' \\\n"
-                                                        + " --include '**/*.txt' \\\n"
-                                                        + " --include '**/*.Procfile'")
-                                                .build())
-                                        .add(GIT_BUILDER.createGitHubRelease())
-                                        .add(
-                                            GIT_BUILDER.uploadToGitHubRelease(
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip",
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                        .add(RunStep.builder()
+                                            .name("Package")
+                                            .id("package")
+                                            .run(
+                                                "# Find the publish directories\n"
+                                                    + "shopt -s globstar; paths=(); for i in **/publish/*.dll; do paths=(${paths[@]} ${i%/*}); done\n"
+                                                    + "eval uniquepaths=($(printf \"%s\\n\" \"${paths[@]}\" | sort -u))\n"
+                                                    + "# For each publish dir, create a package\n"
+                                                    + "packages=()\n"
+                                                    + "for path in \"${uniquepaths}\"; do\n"
+                                                    + "  # Get the directory name four deep, which is typically the project folder\n"
+                                                    + "  dir=$(pwd)/../../../..\n"
+                                                    + "  parentdir=$(builtin cd $dir; pwd)\n"
+                                                    + "  projectname=${parentdir##*/}\n"
+                                                    + "  # Package the published files\n"
+                                                    + "  octo pack \\\n"
+                                                    + "  --basePath ${path} \\\n"
+                                                    + "  --id ${projectname} \\\n"
+                                                    + "  --version ${{ steps.determine_version.outputs.semVer }} \\\n"
+                                                    + "  --format zip \\\n"
+                                                    + "  --overwrite\n"
+                                                    + "  packages=(${packages[@]} \"${path}/${projectname}.${{ steps.determine_version.outputs.semVer }}.zip)\")\n"
+                                                    + "done\n"
+                                                    + "# Join the array with commas\n"
+                                                    + "printf -v joined \"%s,\" \"${packages[@]}\"\n"
+                                                    + "# Save the list of packages as an output variable\n"
+                                                    + "echo \"::set-output name=artifacts::${joined%,}\"\n"
+                                                    + "# Do the same again, but use new lines as the separator\n"
+                                                    + "printf -v joinednewline \"%s\\n\" \"${packages[@]}\"\n"
+                                                    + "# Save the list of packages newline separated as an output variable\n"
+                                                    + "echo \"::set-output name=artifacts_new_line::${joinedNewLine%,}\""
+                                            )
+                                            .build())
+                                        .add(UsesWith.builder()
+                                            .name("Create Release")
+                                            .uses("softprops/action-gh-release@v1")
+                                            .with(
+                                                new ImmutableMap.Builder<String, String>()
+                                                    .put("files",
+                                                        "${{ steps.package.outputs.artifacts_new_line }}")
+                                                    .put("tag",
+                                                        "${{ steps.determine_version.outputs.semVer }}.${{ github.run_number }}")
+                                                    .put("draft", "false")
+                                                    .put("prerelease", "false")
+                                                    .build())
+                                            .build())
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                                "${{ steps.package.outputs.artifacts }}"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
                                         .add(GIT_BUILDER.createOctopusRelease(accessor))
                                         .build())
                                 .build())
                         .build())
                 .build());
+  }
+
+  private boolean hasSolutionFiles(@NonNull final RepoClient accessor) {
+    final List<String> files = accessor.getWildcardFiles("*.sln").getOrElse(List.of());
+    LOG.log(DEBUG, "Found " + files.size() + " solution files");
+    files.forEach(s -> LOG.log(DEBUG, "  " + s));
+    return !files.isEmpty();
+  }
+
+  private boolean hasDotNetCoreProjectFiles(@NonNull final RepoClient accessor) {
+    final List<String> projectFiles = accessor.getWildcardFiles("**/*.csproj").getOrElse(List.of());
+    LOG.log(DEBUG, "Found " + projectFiles.size() + " project files");
+    projectFiles.forEach(s -> LOG.log(DEBUG, "  " + s));
+
+    /*
+     https://natemcmaster.com/blog/2017/03/09/vs2015-to-vs2017-upgrade/ provides some great insights
+     into the various project file formats.
+     */
+    return projectFiles
+        .stream()
+        .anyMatch(f -> DOT_NET_CORE_REGEX.matcher(accessor.getFile(f).getOrElse("")).find());
   }
 }
