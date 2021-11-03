@@ -140,7 +140,7 @@ public class PipelineProducer {
    */
   @ApplicationScoped
   @Produces
-  public PipelineBuilder getDOtNetCore() {
+  public PipelineBuilder getDotNetCore() {
     return new DotNetCoreBuilder();
   }
 }
