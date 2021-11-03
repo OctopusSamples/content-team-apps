@@ -99,7 +99,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             .with(
                                                 new ImmutableMap.Builder<String, String>()
                                                     .put("name", "DotNET Tests")
-                                                    .put("path", "**/test-results.trx" )
+                                                    .put("path", "**/*.trx" )
                                                     .put("reporter", "dotnet-trx")
                                                     .put("fail-on-error", "false")
                                                     .build())
