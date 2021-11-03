@@ -153,7 +153,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "joinednewline=\"${joinednewline//$'\\n'/'%0A'}\"\n"
                                                     + "joinednewline=\"${joinednewline//$'\\r'/'%0D'}\""
                                                     + "# Save the list of packages newline separated as an output variable\n"
-                                                    + "echo \"::set-output name=artifacts_new_line::${joinedNewLine%\\n}\""
+                                                    + "echo \"::set-output name=artifacts_new_line::${joinednewline%\\n}\""
                                             )
                                             .build())
                                         .add(UsesWith.builder()
