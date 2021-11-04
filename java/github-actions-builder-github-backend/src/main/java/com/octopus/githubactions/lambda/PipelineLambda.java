@@ -67,6 +67,15 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
 
     accessor.setRepo(repo);
 
+    if (!accessor.testRepo()) {
+      return new ProxyResponse(
+          "200",
+          repo + " does not appear to be a public GitHub repository. Please try again.",
+          new ImmutableMap.Builder<String, String>()
+              .put("Content-Type", "text/plain")
+              .build());
+    }
+
     final String pipeline = builders.stream()
         .parallel()
         .filter(b -> b.canBuild(accessor))

@@ -55,4 +55,11 @@ public interface RepoClient {
    * @return The name of the repo.
    */
   Try<String> getRepoName();
+
+  /**
+   * Tests the supplied url
+   *
+   * @return true if the url was a valid repo, and false otherwise
+   */
+  boolean testRepo();
 }

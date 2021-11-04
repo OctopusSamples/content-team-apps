@@ -68,4 +68,7 @@ public abstract class TestRepoClient implements RepoClient {
   public Try<String> getRepoName() {
     return Try.failure(new Exception("not implemented"));
   }
+
+  @Override
+  public boolean testRepo() {return true;}
 }

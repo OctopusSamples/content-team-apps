@@ -139,6 +139,14 @@ public class GithubRepoClient implements RepoClient {
     return getDetails().map(GithubRepoDetails::getRepository);
   }
 
+  @Override
+  public boolean testRepo() {
+    return getDetails()
+        .flatMap(d -> httpClient.get(
+            "https://github.com/" + d.getUsername() + "/" + d.getRepository() + "/"))
+        .isSuccess();
+  }
+
   /**
    * Extract the details of a GitHub repo from the url.
    *
