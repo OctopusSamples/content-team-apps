@@ -38,8 +38,23 @@ runs:
       shell: bash
       working-directory: js
 
+    - name: Install CycloneDX
+      run: npm install -g @cyclonedx/bom
+      shell: bash
+      working-directory: js
+
+    - name: Generate SBOM
+      run: cyclonedx-bom
+      shell: bash
+      working-directory: js
+
     - name: Create zip
       run: cd build; zip -r ../pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip .
+      shell: bash
+      working-directory: js
+
+    - name: Create zip
+      run: zip pipeline-builder-github-frontend-sbom.0.1.0.${{ inputs.run_number }}.zip bom.xml
       shell: bash
       working-directory: js
 
@@ -68,6 +83,15 @@ runs:
     - name: Push Package
       run: >
         octo push --package pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+      working-directory: js
+
+    - name: Push SBOM Package
+      run: >
+        octo push --package pipeline-builder-github-frontend-sbom.0.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
