@@ -39,6 +39,6 @@ function setupGoogleAnalytics(tag: string) {
 function addScript(src) {
     const s = document.createElement('script');
     s.setAttribute('src', src);
-    s.setAttribute('async', 'true')
+    s.setAttribute('async', 'async')
     document.body.appendChild(s);
 }
