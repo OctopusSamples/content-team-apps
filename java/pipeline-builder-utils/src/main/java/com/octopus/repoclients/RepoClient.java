@@ -57,7 +57,7 @@ public interface RepoClient {
   Try<String> getRepoName();
 
   /**
-   * Tests the supplied url
+   * Tests the supplied url.
    *
    * @return true if the url was a valid repo, and false otherwise
    */

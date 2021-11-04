@@ -70,5 +70,7 @@ public abstract class TestRepoClient implements RepoClient {
   }
 
   @Override
-  public boolean testRepo() {return true;}
+  public boolean testRepo() {
+    return true;
+  }
 }
