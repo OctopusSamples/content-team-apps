@@ -8,6 +8,9 @@ export interface DynamicConfig {
         generateApiPath: string,
         title: string,
         editorFormat: string
+        google: {
+            tag: string
+        }
     },
     useDefaultTheme?: boolean
 }

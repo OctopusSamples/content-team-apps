@@ -3,6 +3,9 @@
     "basename": "",
     "title": "Pipeline Builder",
     "generateApiPath": "",
-    "editorFormat": ""
+    "editorFormat": "",
+    "google": {
+      "tag": ""
+    }
   }
 }
