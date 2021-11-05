@@ -76,6 +76,7 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
               .build());
     }
 
+    System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "20");
     final String pipeline = builders.stream()
         .parallel()
         .filter(b -> b.canBuild(accessor))
