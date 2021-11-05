@@ -133,6 +133,20 @@ public class NodejsBuilder implements PipelineBuilder {
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
+            .add(Comment.builder()
+                .content(
+                    "The step above always passes. The results should be processed and the pipeline passed or failed with a step like junit (depending on the report format).")
+                .build())
+            .add(Comment.builder()
+                .content(FunctionManyArgs.builder()
+                    .name("junit")
+                    .args(new ImmutableList.Builder<Argument>()
+                        .add(new Argument("testResults", "report.xml",
+                            ArgType.STRING))
+                        .add(new Argument("allowEmptyResults ", "true", ArgType.BOOLEAN))
+                        .build())
+                    .build().toString())
+                .build())
             .build()))
         .build();
   }
