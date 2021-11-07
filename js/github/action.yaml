@@ -108,11 +108,33 @@ runs:
         --space "Content Team"
       shell: bash
 
+    - name: Trigger deployment Jenkins Pipelines Security env
+      run: >
+        octo deploy-release
+        --project "Jenkins Pipeline Generator Frontend"
+        --deployTo "Development (Security)"
+        --version latest
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+
     - name: Trigger deployment Github Actions
       run: >
         octo create-release
         --project "GitHub Action Workflow Generator Frontend"
         --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+
+    - name: Trigger deployment Github Actions Security env
+      run: >
+        octo deploy-release
+        --project "GitHub Action Workflow Generator Frontend"
+        --deployTo "Development (Security)"
+        --version latest
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
