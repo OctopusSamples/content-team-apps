@@ -25,7 +25,7 @@ function getBaseUrl() {
         if (url.endsWith(".html") || url.endsWith(".htm")) {
             return url.substr(0, url.lastIndexOf('/'));
         } else if (url.endsWith("/")) {
-            url.substring(0, url.length - 1);
+            return url.substring(0, url.length - 1);
         }
 
         return url;
