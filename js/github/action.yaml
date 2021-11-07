@@ -98,7 +98,7 @@ runs:
       shell: bash
       working-directory: js
 
-    - name: Trigger deployment
+    - name: Trigger deployment Jenkins Pipelines
       run: >
         octo create-release
         --project "Jenkins Pipeline Generator Frontend"
@@ -107,9 +107,8 @@ runs:
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
       shell: bash
-      working-directory: js
 
-    - name: Trigger deployment
+    - name: Trigger deployment Github Actions
       run: >
         octo create-release
         --project "GitHub Action Workflow Generator Frontend"
@@ -118,4 +117,3 @@ runs:
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
       shell: bash
-      working-directory: js
