@@ -1,7 +1,7 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Helmet} from "react-helmet";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Button, FormLabel, Grid, Link, TextField} from "@material-ui/core";
+import {Button, FormLabel, Grid, Link, TextField, Theme} from "@material-ui/core";
 import maven from './logos/maven.png';
 import gradle from './logos/gradle.png';
 import nodejs from './logos/nodejs.png';
@@ -17,7 +17,7 @@ import {AppContext} from "../App";
 import {CommonProps} from "../model/RouteItem.model";
 
 // define css-in-js
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             flex: 1,
@@ -33,9 +33,16 @@ const useStyles = makeStyles(() =>
             height: "64px",
             cursor: "pointer"
         },
-        sampleLabel: {
+        sampleLabelContainer: {
             textAlign: "center",
-            margin: "1em"
+            margin: "1em",
+        },
+        sampleLabel: {
+            color: theme.palette.text.primary
+        },
+        leftFormLabel: {
+            marginRight: "1em",
+            color: theme.palette.text.primary
         },
         error: {
             marginTop: "1em"
@@ -94,7 +101,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
                         <Grid item xs={2}
                               justify="flex-end"
                               container={true}>
-                            <FormLabel style={{marginRight: "1em"}}>{"GitHub URL"}</FormLabel>
+                            <FormLabel className={classes.leftFormLabel}>{"GitHub URL"}</FormLabel>
                         </Grid>
                         <Grid item xs={8}>
                             <TextField id={"url"} fullWidth={true} value={url}
@@ -118,8 +125,8 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
                     justifyContent={"center"}
                     xs={12}
                 >
-                    <Grid item xs={12} className={classes.sampleLabel}>
-                        <FormLabel>Sample Projects</FormLabel>
+                    <Grid item xs={12} className={classes.sampleLabelContainer}>
+                        <FormLabel className={classes.sampleLabel}>Sample Projects</FormLabel>
                     </Grid>
                     <Grid item md={1} sm={2} xs={3}>
                         <Link

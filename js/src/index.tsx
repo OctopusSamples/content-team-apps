@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 import {loadConfig} from "./dynamicConfig";
 
 loadConfig().then((config) => {
-    setupGoogleAnalytics(config.settings.google.tag);
+    setupGoogleAnalytics(config.settings?.google?.tag);
 
     ReactDOM.render(
         <React.StrictMode>
@@ -25,6 +25,8 @@ reportWebVitals();
 
 
 function setupGoogleAnalytics(tag: string) {
+    if (!tag) return;
+
     addScript("https://www.googletagmanager.com/gtag/js?id=" + tag)
     window.dataLayer = window.dataLayer || [];
 
