@@ -72,7 +72,8 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                         options={{
                             mode: mode,
                             theme: theme,
-                            lineNumbers: true
+                            lineNumbers: true,
+                            readOnly: true
                         }}
                     />
                 </Grid>
