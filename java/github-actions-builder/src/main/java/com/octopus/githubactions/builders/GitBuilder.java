@@ -8,12 +8,13 @@ import lombok.NonNull;
 
 /** Contains a number of common steps shared between builders. */
 public class GitBuilder {
+  /** Builds the common top level comments for the workflow. */
   public String getInitialComments() {
     return """
-        The following workflow provides an opinionated template you can customize for your own needs.
-        To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
-        set the OCTOPUS_SERVER_URL secret to the Octopus URL.
-        Get a trial Octopus instance from https://octopus.com/start
+        # The following workflow provides an opinionated template you can customize for your own needs.
+        # To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
+        # set the OCTOPUS_SERVER_URL secret to the Octopus URL.
+        # Get a trial Octopus instance from https://octopus.com/start
         """;
   }
 
