@@ -35,7 +35,9 @@ public class GitBuilder {
                     + "* Pipeline Utility Steps Plugin: https://wiki.jenkins.io/display/JENKINS/Pipeline+Utility+Steps+Plugin\n"
                     + "* Git: https://plugins.jenkins.io/git/\n"
                     + "* Workflow Aggregator: https://plugins.jenkins.io/workflow-aggregator/\n"
-                    + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/")
+                    + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/.\n"
+                    + "Instructions for configuring the Octopus plugin can be found at\n"
+                    + "https://octopus.com/docs/packaging-applications/build-servers/jenkins#configure-the-octopus-deploy-plugin")
             .build())
         .build();
   }
