@@ -8,6 +8,13 @@ import lombok.NonNull;
 
 /** Contains a number of common steps shared between builders. */
 public class GitBuilder {
+  public String getInitialComments() {
+    return """
+        The following workflow provides an opinionated template you can customize for your own needs.
+        Get a trial Octopus instance from https://octopus.com/start
+        """;
+  }
+
   /** Build the checkout step. */
   public Step checkOutStep() {
     return UsesWith.builder()
