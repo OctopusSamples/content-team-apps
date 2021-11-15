@@ -37,7 +37,8 @@ public class GitBuilder {
                     + "* Workflow Aggregator: https://plugins.jenkins.io/workflow-aggregator/\n"
                     + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/.\n"
                     + "Instructions for configuring the Octopus plugin can be found at\n"
-                    + "https://octopus.com/docs/packaging-applications/build-servers/jenkins#configure-the-octopus-deploy-plugin")
+                    + "https://octopus.com/docs/packaging-applications/build-servers/jenkins#configure-the-octopus-deploy-plugin\n"
+                    + "Get a trial Octopus instance from https://octopus.com/start")
             .build())
         .build();
   }
