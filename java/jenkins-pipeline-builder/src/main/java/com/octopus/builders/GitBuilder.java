@@ -29,16 +29,17 @@ public class GitBuilder {
     return new ImmutableList.Builder<Element>()
         .add(Comment.builder()
             .content(
-                "The following pipeline provides an opinionated template you can customize for your own needs.\n"
+                "The following pipeline provides an opinionated template you can customize for your own needs.\n\n"
+                    + "Instructions for configuring the Octopus plugin can be found at\n"
+                    + "https://octopus.com/docs/packaging-applications/build-servers/jenkins#configure-the-octopus-deploy-plugin\n\n"
+                    + "Get a trial Octopus instance from https://octopus.com/start\n\n"
                     +
                     "This pipeline requires the following plugins:\n"
                     + "* Pipeline Utility Steps Plugin: https://wiki.jenkins.io/display/JENKINS/Pipeline+Utility+Steps+Plugin\n"
                     + "* Git: https://plugins.jenkins.io/git/\n"
                     + "* Workflow Aggregator: https://plugins.jenkins.io/workflow-aggregator/\n"
-                    + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/.\n\n"
-                    + "Instructions for configuring the Octopus plugin can be found at\n"
-                    + "https://octopus.com/docs/packaging-applications/build-servers/jenkins#configure-the-octopus-deploy-plugin\n\n"
-                    + "Get a trial Octopus instance from https://octopus.com/start")
+                    + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/."
+                    )
             .build())
         .build();
   }
