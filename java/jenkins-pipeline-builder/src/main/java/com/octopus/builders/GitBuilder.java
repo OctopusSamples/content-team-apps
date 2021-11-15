@@ -29,7 +29,9 @@ public class GitBuilder {
     return new ImmutableList.Builder<Element>()
         .add(Comment.builder()
             .content(
-                "This pipeline requires the following plugins:\n"
+                "The following pipeline provides an opinionated template you can customize for your own needs.\n"
+                    +
+                    "This pipeline requires the following plugins:\n"
                     + "* Pipeline Utility Steps Plugin: https://wiki.jenkins.io/display/JENKINS/Pipeline+Utility+Steps+Plugin\n"
                     + "* Git: https://plugins.jenkins.io/git/\n"
                     + "* Workflow Aggregator: https://plugins.jenkins.io/workflow-aggregator/\n"
@@ -289,6 +291,10 @@ public class GitBuilder {
     return Function1ArgTrailingLambda.builder().name("stage")
         .arg("Deployment")
         .children(createStepsElement(new ImmutableList.Builder<Element>()
+            .add(Comment.builder()
+                .content("This stage assumes you perform the deployment with Octopus Deploy.\n"
+                    + "The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.")
+                .build())
             .add(FunctionManyArgs.builder()
                 .name("octopusPushPackage")
                 .args(new ImmutableList.Builder<Argument>()
