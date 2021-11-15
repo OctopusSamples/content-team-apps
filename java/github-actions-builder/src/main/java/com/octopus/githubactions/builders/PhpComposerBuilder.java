@@ -35,112 +35,114 @@ public class PhpComposerBuilder implements PipelineBuilder {
   @Override
   public String generate(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "PhpComposerBuilder.generate(RepoClient)");
-    return SnakeYamlFactory.getConfiguredYaml()
-        .dump(
-            Workflow.builder()
-                .name("PHP Build")
-                .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch()).build())
-                .jobs(
-                    Jobs.builder()
-                        .build(
-                            Build.builder()
-                                .runsOn("ubuntu-latest")
-                                .steps(
-                                    new ImmutableList.Builder<Step>()
-                                        .add(GIT_BUILDER.checkOutStep())
-                                        .add(UsesWith.builder()
-                                            .name("Set up Python")
-                                            .uses("actions/setup-python@v2")
-                                            .with(
-                                                new ImmutableMap.Builder<String, String>()
-                                                    .put("python-version", "3.x")
-                                                    .build())
-                                            .build())
-                                        .add(GIT_BUILDER.gitVersionInstallStep())
-                                        .add(GIT_BUILDER.getVersionCalculate())
-                                        .add(GIT_BUILDER.installOctopusCli())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Install Dependencies")
-                                                .shell("bash")
-                                                .run("composer install")
-                                                .build())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("List Dependencies")
-                                                .shell("bash")
-                                                .run(
-                                                    "composer show --all > dependencies.txt")
-                                                .build())
-                                        .add(GIT_BUILDER.collectDependencies())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("List Dependency Updates")
-                                                .shell("bash")
-                                                .run(
-                                                    "composer outdated > dependencyUpdates.txt")
-                                                .build())
-                                        .add(GIT_BUILDER.collectDependencyUpdates())
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Test")
-                                                .shell("bash")
-                                                .run(
-                                                    "vendor/bin/phpunit --log-junit results.xml tests || true")
-                                                .build())
-                                        .add(GIT_BUILDER.buildJunitReport("PHP Tests",
-                                            "results.xml"))
-                                        .add(
-                                            RunStep.builder()
-                                                .name("Package")
-                                                .shell("bash")
-                                                .run(
-                                                    "SOURCEPATH=.\n"
-                                                        + "OUTPUTPATH=.\n"
-                                                        + "octo pack \\\n"
-                                                        + " --basePath ${SOURCEPATH} \\\n"
-                                                        + " --outFolder ${OUTPUTPATH} \\\n"
-                                                        + " --id "
-                                                        + accessor
-                                                        .getRepoName()
-                                                        .getOrElse("application")
-                                                        + " \\\n"
-                                                        + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
-                                                        + " --format zip \\\n"
-                                                        + " --overwrite \\\n"
-                                                        + " --include '**/*.php' \\\n"
-                                                        + " --include '**/*.html' \\\n"
-                                                        + " --include '**/*.htm' \\\n"
-                                                        + " --include '**/*.css' \\\n"
-                                                        + " --include '**/*.js' \\\n"
-                                                        + " --include '**/*.min' \\\n"
-                                                        + " --include '**/*.map' \\\n"
-                                                        + " --include '**/*.sql' \\\n"
-                                                        + " --include '**/*.png' \\\n"
-                                                        + " --include '**/*.jpg' \\\n"
-                                                        + " --include '**/*.jpeg' \\\n"
-                                                        + " --include '**/*.gif' \\\n"
-                                                        + " --include '**/*.json' \\\n"
-                                                        + " --include '**/*.env' \\\n"
-                                                        + " --include '**/*.txt' \\\n"
-                                                        + " --include '**/*.Procfile'")
-                                                .build())
-                                        .add(GIT_BUILDER.createGitHubRelease())
-                                        .add(
-                                            GIT_BUILDER.uploadToGitHubRelease(
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip",
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
-                                        .add(
-                                            GIT_BUILDER.pushToOctopus(
-                                                accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
-                                        .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
-                                        .add(GIT_BUILDER.createOctopusRelease(accessor))
-                                        .build())
-                                .build())
+    return GIT_BUILDER.getInitialComments() + "\n" +
+        SnakeYamlFactory.getConfiguredYaml()
+            .dump(
+                Workflow.builder()
+                    .name("PHP Build")
+                    .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                         .build())
-                .build());
+                    .jobs(
+                        Jobs.builder()
+                            .build(
+                                Build.builder()
+                                    .runsOn("ubuntu-latest")
+                                    .steps(
+                                        new ImmutableList.Builder<Step>()
+                                            .add(GIT_BUILDER.checkOutStep())
+                                            .add(UsesWith.builder()
+                                                .name("Set up Python")
+                                                .uses("actions/setup-python@v2")
+                                                .with(
+                                                    new ImmutableMap.Builder<String, String>()
+                                                        .put("python-version", "3.x")
+                                                        .build())
+                                                .build())
+                                            .add(GIT_BUILDER.gitVersionInstallStep())
+                                            .add(GIT_BUILDER.getVersionCalculate())
+                                            .add(GIT_BUILDER.installOctopusCli())
+                                            .add(
+                                                RunStep.builder()
+                                                    .name("Install Dependencies")
+                                                    .shell("bash")
+                                                    .run("composer install")
+                                                    .build())
+                                            .add(
+                                                RunStep.builder()
+                                                    .name("List Dependencies")
+                                                    .shell("bash")
+                                                    .run(
+                                                        "composer show --all > dependencies.txt")
+                                                    .build())
+                                            .add(GIT_BUILDER.collectDependencies())
+                                            .add(
+                                                RunStep.builder()
+                                                    .name("List Dependency Updates")
+                                                    .shell("bash")
+                                                    .run(
+                                                        "composer outdated > dependencyUpdates.txt")
+                                                    .build())
+                                            .add(GIT_BUILDER.collectDependencyUpdates())
+                                            .add(
+                                                RunStep.builder()
+                                                    .name("Test")
+                                                    .shell("bash")
+                                                    .run(
+                                                        "vendor/bin/phpunit --log-junit results.xml tests || true")
+                                                    .build())
+                                            .add(GIT_BUILDER.buildJunitReport("PHP Tests",
+                                                "results.xml"))
+                                            .add(
+                                                RunStep.builder()
+                                                    .name("Package")
+                                                    .shell("bash")
+                                                    .run(
+                                                        "SOURCEPATH=.\n"
+                                                            + "OUTPUTPATH=.\n"
+                                                            + "octo pack \\\n"
+                                                            + " --basePath ${SOURCEPATH} \\\n"
+                                                            + " --outFolder ${OUTPUTPATH} \\\n"
+                                                            + " --id "
+                                                            + accessor
+                                                            .getRepoName()
+                                                            .getOrElse("application")
+                                                            + " \\\n"
+                                                            + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
+                                                            + " --format zip \\\n"
+                                                            + " --overwrite \\\n"
+                                                            + " --include '**/*.php' \\\n"
+                                                            + " --include '**/*.html' \\\n"
+                                                            + " --include '**/*.htm' \\\n"
+                                                            + " --include '**/*.css' \\\n"
+                                                            + " --include '**/*.js' \\\n"
+                                                            + " --include '**/*.min' \\\n"
+                                                            + " --include '**/*.map' \\\n"
+                                                            + " --include '**/*.sql' \\\n"
+                                                            + " --include '**/*.png' \\\n"
+                                                            + " --include '**/*.jpg' \\\n"
+                                                            + " --include '**/*.jpeg' \\\n"
+                                                            + " --include '**/*.gif' \\\n"
+                                                            + " --include '**/*.json' \\\n"
+                                                            + " --include '**/*.env' \\\n"
+                                                            + " --include '**/*.txt' \\\n"
+                                                            + " --include '**/*.Procfile'")
+                                                    .build())
+                                            .add(GIT_BUILDER.createGitHubRelease())
+                                            .add(
+                                                GIT_BUILDER.uploadToGitHubRelease(
+                                                    accessor.getRepoName().getOrElse("application")
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip",
+                                                    accessor.getRepoName().getOrElse("application")
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                            .add(
+                                                GIT_BUILDER.pushToOctopus(
+                                                    accessor.getRepoName().getOrElse("application")
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                            .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
+                                            .add(GIT_BUILDER.createOctopusRelease(accessor))
+                                            .build())
+                                    .build())
+                            .build())
+                    .build());
   }
 }
