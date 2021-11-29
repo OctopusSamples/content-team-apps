@@ -1,0 +1,124 @@
+step "Create API Gateway" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGateway}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                {
+                	"Resources": {
+                		"RestApi": {
+                			"Type": "AWS::ApiGateway::RestApi",
+                			"Properties": {
+                				"Description": "My API Gateway",
+                				"Name": "Jenkins Pipeline API",
+                                "BinaryMediaTypes": ["*/*"],
+                				"EndpointConfiguration": {
+                					"Types": [
+                						"REGIONAL"
+                					]
+                				}
+                			}
+                		},
+                		"Web": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                				},
+                				"PathPart": "{proxy+}"
+                			}
+                		},
+                		"Api": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                				},
+                				"PathPart": "api"
+                			}
+                		},
+                		"ApiPipeline": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Ref": "Api"
+                				},
+                				"PathPart": "pipeline"
+                			}
+                		},
+                		"ApiPipelineJenkins": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Ref": "ApiPipeline"
+                				},
+                				"PathPart": "jenkins"
+                			}
+                		},
+                		"ApiPipelineJenkinsGenerate": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Ref": "ApiPipelineJenkins"
+                				},
+                				"PathPart": "generate"
+                			}
+                		}
+                	},
+                	"Outputs": {
+                		"RestApi": {
+                			"Description": "The REST API",
+                			"Value": {
+                				"Ref": "RestApi"
+                			}
+                		},
+                		"RootResourceId": {
+                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
+                			"Value": {
+                				"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                			}
+                		},
+                		"Web": {
+                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
+                			"Value": {
+                				"Ref": "Web"
+                			}
+                		},
+                		"#{PipelineEndpointVariableName}": {
+                			"Description": "ID of the resource exposing the Jenkins pipeline generate function",
+                			"Value": {
+                				"Ref": "ApiPipelineJenkinsGenerate"
+                			}
+                		}
+                	}
+                }
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.RunOnServer = "true"
+        }
+        worker_pool_variable = "WorkerPool"
+    }
+}
