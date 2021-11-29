@@ -195,9 +195,11 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                                     "logs:CreateLogGroup",
                                     "logs:PutLogEvents"
                                   ],
-                                  "Resource": {
-                					  "Ref": "LambdaVersion#{DeploymentId}"
-                				   }
+                                  "Resource": [
+                                    {
+                                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}*:*"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -256,7 +258,26 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                         "Action": "lambda:InvokeFunction",
                         "Principal": "apigateway.amazonaws.com",
                         "SourceArn": {
-                          "Ref": "LambdaVersion#{DeploymentId}"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {"Ref": "RestApi"},
+                              "/*/*"
+                            ]
+                          ]
                         }
                       }
                     },
