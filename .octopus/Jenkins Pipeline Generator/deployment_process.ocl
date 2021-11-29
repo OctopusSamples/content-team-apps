@@ -195,11 +195,9 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                                     "logs:CreateLogGroup",
                                     "logs:PutLogEvents"
                                   ],
-                                  "Resource": [
-                                    {
-                                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}*:*"
-                                    }
-                                  ]
+                                  "Resource": {
+                					  "Ref": "LambdaVersion#{DeploymentId}"
+                				   }
                                 }
                               ]
                             }
