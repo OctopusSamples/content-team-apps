@@ -250,11 +250,8 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                       "Type": "AWS::Lambda::Permission",
                       "Properties": {
                         "FunctionName": {
-                          "Fn::GetAtt": [
-                            "LambdaOne",
-                            "Arn"
-                          ]
-                        },
+                		  "Ref": "LambdaVersion#{DeploymentId}"
+                	    },
                         "Action": "lambda:InvokeFunction",
                         "Principal": "apigateway.amazonaws.com",
                         "SourceArn": {
