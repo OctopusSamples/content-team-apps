@@ -528,7 +528,7 @@ step "Slack - Send Simple Notification - Bash" {
             Octopus.Action.Template.Id = "ActionTemplates-1721"
             Octopus.Action.Template.Version = "1"
             ssn_Color = "danger"
-            ssn_HookUrl = "https://hooks.slack.com/services/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"
+            ssn_HookUrl = "#{Slack.Hook}"
             ssn_IconUrl = "https://octopus.com/content/resources/favicon.png"
             ssn_Message = "Open #{Octopus.Web.ServerUri}#{Octopus.Web.DeploymentLink} to review the logs."
             ssn_Title = "Vulnerabilities found in Jenkins Pipeline Generator"
