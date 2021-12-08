@@ -137,6 +137,7 @@ public class GitBuilder {
                 .put("octopus_server", "${{ secrets.OCTOPUS_SERVER_URL }}")
                 .put("push_version", "${{ steps.determine_version.outputs.semVer }}")
                 .put("push_package_ids", accessor.getRepoName().getOrElse("application"))
+                .put("push_overwrite_mode", "OverwriteExisting")
                 .put("output_path", "octopus")
                 .build())
         .build();
