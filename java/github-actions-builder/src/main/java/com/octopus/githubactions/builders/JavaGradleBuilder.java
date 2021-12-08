@@ -128,7 +128,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                         + accessor
                                                         .getRepoName()
                                                         .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\n"
+                                                        + ".${{ steps.determine_version.outputs.fullSemVer }}.${extension}\"\n"
                                                         + "cp ${file} ${octofile}\n"
                                                         + "echo \"::set-output name=artifact::${octofile}\"\n"
                                                         + "ls -la")

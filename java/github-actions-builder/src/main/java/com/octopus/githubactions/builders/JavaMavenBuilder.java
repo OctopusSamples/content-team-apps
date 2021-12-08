@@ -64,7 +64,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     mavenExecutable()
-                                                        + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
+                                                        + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.fullSemVer }}")
                                                 .build())
                                         .add(
                                             RunStep.builder()
@@ -140,7 +140,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                         + accessor
                                                         .getRepoName()
                                                         .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\n"
+                                                        + ".${{ steps.determine_version.outputs.fullSemVer }}.${extension}\"\n"
                                                         + "cp ${file} ${octofile}\n"
                                                         + "echo \"::set-output name=artifact::${octofile}\"\n"
                                                         + "ls -la")

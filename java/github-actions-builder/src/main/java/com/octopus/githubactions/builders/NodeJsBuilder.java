@@ -116,7 +116,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                         .getRepoName()
                                                         .getOrElse("application")
                                                         + " \\\n"
-                                                        + " --version ${{ steps.determine_version.outputs.semVer }} \\\n"
+                                                        + " --version ${{ steps.determine_version.outputs.fullSemVer }} \\\n"
                                                         + " --format zip \\\n"
                                                         + " --overwrite \\\n"
                                                         + " --include '**/*.html' \\\n"
@@ -139,13 +139,13 @@ public class NodeJsBuilder implements PipelineBuilder {
                                         .add(
                                             GIT_BUILDER.uploadToGitHubRelease(
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip",
+                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip",
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip"))
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.semVer }}.zip"))
+                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
                                         .add(GIT_BUILDER.createOctopusRelease(accessor))
                                         .build())
