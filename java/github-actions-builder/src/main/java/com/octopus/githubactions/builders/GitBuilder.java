@@ -120,6 +120,7 @@ public class GitBuilder {
                 .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
                 .put("packages", packages)
                 .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
+                .put("overwrite_mode", "OverwriteExisting")
                 .build())
         .build();
   }
