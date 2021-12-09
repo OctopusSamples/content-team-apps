@@ -43,7 +43,7 @@ public class GitBuilder {
         .name("Determine Version")
         .id("determine_version")
         .uses("gittools/actions/gitversion/execute@v0.9.7")
-        .with(new ImmutableMap.Builder<String, String>().put("additionalArguments", "/overrideconfig mode=mainline").build())
+        .with(new ImmutableMap.Builder<String, String>().put("additionalArguments", "/overrideconfig mode=Mainline").build())
         .build();
   }
 
