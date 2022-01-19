@@ -16,6 +16,9 @@ public class GitBuilder {
         # To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
         # set the OCTOPUS_SERVER_URL secret to the Octopus URL.
         #
+        # Double check the "project" and "deploy_to" properties in the "Create Octopus Release" step
+        # match your Octopus projects and environments.
+        #
         # Get a trial Octopus instance from https://octopus.com/start
         """;
   }
