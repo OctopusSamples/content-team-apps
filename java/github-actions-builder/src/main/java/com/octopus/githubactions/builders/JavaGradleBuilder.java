@@ -98,7 +98,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "# Find the largest WAR or JAR, and assume that was what we intended to build.\n"
-                                                        + "echo \"::set-output name=artifact::$(find target -type f \\( -iname \\*.jar -o -iname \\*.war \\) -printf \"%p\\n\" | sort -n | head -1)\"")
+                                                        + "echo \"::set-output name=artifact::$(find build -type f \\( -iname \\*.jar -o -iname \\*.war \\) -printf \"%p\\n\" | sort -n | head -1)\"")
                                                 .build())
                                         .add(
                                             RunStep.builder()
