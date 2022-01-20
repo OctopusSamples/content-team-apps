@@ -106,13 +106,10 @@ public class GitBuilder {
     return UsesWith.builder()
         .name("Tag Release")
         .uses("mathieudutour/github-tag-action@v6.0")
-        .env(
-            new ImmutableMap.Builder<String, String>()
-                .put("GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}")
-                .build())
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("custom_tag ", "${{ steps.determine_version.outputs.majorMinorPatch }}")
+                .put("custom_tag", "${{ steps.determine_version.outputs.majorMinorPatch }}")
+                .put("github_token", "${{ secrets.GITHUB_TOKEN }}")
                 .build())
         .build();
   }
