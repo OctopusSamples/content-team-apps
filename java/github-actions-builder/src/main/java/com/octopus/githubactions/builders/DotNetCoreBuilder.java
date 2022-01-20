@@ -178,6 +178,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                         "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                                                     .put("draft", "false")
                                                     .put("prerelease", "false")
+                                                    .put("target_commitish", "${{ github.sha }}")
                                                     .build())
                                             .build())
                                         .add(
