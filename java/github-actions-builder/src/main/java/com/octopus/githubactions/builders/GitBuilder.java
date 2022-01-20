@@ -75,7 +75,13 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the github release creation step. */
+  /**
+   * Build the github release creation step.
+   * Note that in order to allow reruns, we must incorporate the run_number and run_attempt
+   * into the release name. This allows the artifacts from a particular attempt to be captured.
+   * In order to use github releases from an Octopus feed, the release tags must be valid semver.
+   * So we embed the run_number and run_attempt in the metadata.
+   */
   public Step createGitHubRelease() {
     return UsesWith.builder()
         .name("Create Release")
