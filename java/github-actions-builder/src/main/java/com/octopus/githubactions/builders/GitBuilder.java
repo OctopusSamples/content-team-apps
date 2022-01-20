@@ -87,8 +87,8 @@ public class GitBuilder {
                 .build())
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("tag_name", "${{ steps.determine_version.outputs.semVer }}-run${{ github.run_number }}-attempt${{ github.run_attempt }}")
-                .put("release_name", "Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}")
+                .put("tag_name", "${{ steps.determine_version.outputs.major }}.${{ steps.determine_version.outputs.minor }}.${{ steps.determine_version.outputs.patch }}-run${{ github.run_number }}-attempt${{ github.run_attempt }}")
+                .put("release_name", "Release ${{ steps.determine_version.outputs.major }}.${{ steps.determine_version.outputs.minor }}.${{ steps.determine_version.outputs.patch }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}")
                 .put("draft", "false")
                 .put("prerelease", "false")
                 .build())
