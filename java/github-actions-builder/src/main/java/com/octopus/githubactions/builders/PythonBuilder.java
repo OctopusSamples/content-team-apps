@@ -128,6 +128,7 @@ public class PythonBuilder implements PipelineBuilder {
                                                         + " --include '**/*.txt' \\\n"
                                                         + " --include '**/*.Procfile'")
                                                 .build())
+                                        .add(GIT_BUILDER.tagRepo())
                                         .add(GIT_BUILDER.createGitHubRelease())
                                         .add(
                                             GIT_BUILDER.uploadToGitHubRelease(

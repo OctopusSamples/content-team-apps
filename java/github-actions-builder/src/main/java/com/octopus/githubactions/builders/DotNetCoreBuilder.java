@@ -166,6 +166,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "echo \"::set-output name=versions_new_line::${versionsjoinednewline%\\n}\"\n"
                                             )
                                             .build())
+                                        .add(GIT_BUILDER.tagRepo())
                                         .add(UsesWith.builder()
                                             .name("Create Release")
                                             .uses("softprops/action-gh-release@v1")

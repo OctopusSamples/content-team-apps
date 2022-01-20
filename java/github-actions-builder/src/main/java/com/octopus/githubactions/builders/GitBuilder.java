@@ -101,6 +101,22 @@ public class GitBuilder {
         .build();
   }
 
+  /** Tag the repo with the release */
+  public Step tagRepo() {
+    return UsesWith.builder()
+        .name("Tag Release")
+        .uses("mathieudutour/github-tag-action@v6.0")
+        .env(
+            new ImmutableMap.Builder<String, String>()
+                .put("GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}")
+                .build())
+        .with(
+            new ImmutableMap.Builder<String, String>()
+                .put("custom_tag ", "${{ steps.determine_version.outputs.majorMinorPatch }}")
+                .build())
+        .build();
+  }
+
   /** Build the step to upload file to the github release. */
   public Step uploadToGitHubRelease(@NonNull final String path, @NonNull final String name) {
     return UsesWith.builder()
