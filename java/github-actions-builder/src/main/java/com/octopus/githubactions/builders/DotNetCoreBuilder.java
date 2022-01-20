@@ -109,7 +109,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                         .add(RunStep.builder()
                                             .name("Publish")
                                             .run(
-                                                "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.fullSemVer }}")
+                                                "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.assemblySemVer }}")
                                             .build())
                                         .add(RunStep.builder()
                                             .name("Package")
@@ -139,11 +139,11 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "  octo pack \\\n"
                                                     + "  --basePath ${path} \\\n"
                                                     + "  --id ${projectname} \\\n"
-                                                    + "  --version ${{ steps.determine_version.outputs.semVer }} \\\n"
+                                                    + "  --version ${{ steps.determine_version.outputs.majorMinorPatch }} \\\n"
                                                     + "  --format zip \\\n"
                                                     + "  --overwrite\n"
-                                                    + "  packages=(${packages[@]} \"${projectname}.${{ steps.determine_version.outputs.semVer }}.zip\")\n"
-                                                    + "  versions=(${versions[@]} \"${projectname}:${{ steps.determine_version.outputs.semVer }}\")\n"
+                                                    + "  packages=(${packages[@]} \"${projectname}.${{ steps.determine_version.outputs.majorMinorPatch }}.zip\")\n"
+                                                    + "  versions=(${versions[@]} \"${projectname}:${{ steps.determine_version.outputs.majorMinorPatch }}\")\n"
                                                     + "done\n"
                                                     + "# Join the array with commas\n"
                                                     + "printf -v joined \"%s,\" \"${packages[@]}\"\n"

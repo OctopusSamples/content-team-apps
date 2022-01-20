@@ -107,7 +107,7 @@ public class PythonBuilder implements PipelineBuilder {
                                                         .getRepoName()
                                                         .getOrElse("application")
                                                         + " \\\n"
-                                                        + " --version ${{ steps.determine_version.outputs.fullSemVer }} \\\n"
+                                                        + " --version ${{ steps.determine_version.outputs.majorMinorPatch }} \\\n"
                                                         + " --format zip \\\n"
                                                         + " --overwrite \\\n"
                                                         + " --include '**/*.py' \\\n"
@@ -132,19 +132,19 @@ public class PythonBuilder implements PipelineBuilder {
                                         .add(
                                             GIT_BUILDER.uploadToGitHubRelease(
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip",
+                                                    + ".${{ steps.determine_version.outputs.majorMinorPatch }}.zip",
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip"))
+                                                    + ".${{ steps.determine_version.outputs.majorMinorPatch }}.zip"))
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
                                                 accessor.getRepoName().getOrElse("application")
-                                                    + ".${{ steps.determine_version.outputs.fullSemVer }}.zip"))
+                                                    + ".${{ steps.determine_version.outputs.majorMinorPatch }}.zip"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
                                         .add(GIT_BUILDER.createOctopusRelease(
                                             accessor,
                                             accessor.getRepoName().getOrElse("application")
                                                 + ":"
-                                                + "${{ steps.determine_version.outputs.fullSemVer }}"))
+                                                + "${{ steps.determine_version.outputs.majorMinorPatch }}"))
                                         .build())
                                 .build())
                         .build())
