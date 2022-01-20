@@ -129,6 +129,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "done\n"
                                                     + "# For each publish dir, create a package\n"
                                                     + "packages=()\n"
+                                                    + "versions=()\n"
                                                     + "for path in \"${uniquepaths[@]}\"; do\n"
                                                     + "  # Get the directory name four deep, which is typically the project folder\n"
                                                     + "  dir=${path}/../../../..\n"
@@ -142,6 +143,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "  --format zip \\\n"
                                                     + "  --overwrite\n"
                                                     + "  packages=(${packages[@]} \"${projectname}.${{ steps.determine_version.outputs.semVer }}.zip\")\n"
+                                                    + "  versions=(${versions[@]} \"${projectname}:${{ steps.determine_version.outputs.semVer }}\")\n"
                                                     + "done\n"
                                                     + "# Join the array with commas\n"
                                                     + "printf -v joined \"%s,\" \"${packages[@]}\"\n"
@@ -154,8 +156,14 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "joinednewline=\"${joinednewline//'%'/'%25'}\"\n"
                                                     + "joinednewline=\"${joinednewline//$'\\n'/'%0A'}\"\n"
                                                     + "joinednewline=\"${joinednewline//$'\\r'/'%0D'}\"\n"
+                                                    + "# Now build a new line separated list of versions\n"
+                                                    + "printf -v versionsjoinednewline \"%s\\n\" \"${versions[@]}\"\n"
+                                                    + "versionsjoinednewline=\"${versionsjoinednewline//'%'/'%25'}\"\n"
+                                                    + "versionsjoinednewline=\"${versionsjoinednewline//$'\\n'/'%0A'}\"\n"
+                                                    + "versionsjoinednewline=\"${versionsjoinednewline//$'\\r'/'%0D'}\"\n"
                                                     + "# Save the list of packages newline separated as an output variable\n"
-                                                    + "echo \"::set-output name=artifacts_new_line::${joinednewline%\\n}\""
+                                                    + "echo \"::set-output name=artifacts_new_line::${joinednewline%\\n}\"\n"
+                                                    + "echo \"::set-output name=versions_new_line::${versionsjoinednewline%\\n}\"\n"
                                             )
                                             .build())
                                         .add(UsesWith.builder()
@@ -175,7 +183,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             GIT_BUILDER.pushToOctopus(
                                                 "${{ steps.package.outputs.artifacts }}"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
-                                        .add(GIT_BUILDER.createOctopusRelease(accessor))
+                                        .add(GIT_BUILDER.createOctopusRelease(accessor, "${{ steps.package.outputs.versions_new_line }}"))
                                         .build())
                                 .build())
                         .build())

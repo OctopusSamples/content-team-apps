@@ -131,13 +131,20 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                         + ".${{ steps.determine_version.outputs.fullSemVer }}.${extension}\"\n"
                                                         + "cp ${file} ${octofile}\n"
                                                         + "echo \"::set-output name=artifact::${octofile}\"\n"
+                                                        + "# The version used when creating a release is the package id, colon, and version\n"
+                                                        + "octoversion=\""
+                                                        + accessor
+                                                        .getRepoName()
+                                                        .getOrElse("application")
+                                                        + ":${{ steps.determine_version.outputs.fullSemVer }}\"\n"
+                                                        + "echo \"::set-output name=version::${octoversion}\"\n"
                                                         + "ls -la")
                                                 .build())
                                         .add(
                                             GIT_BUILDER.pushToOctopus(
                                                 "${{ steps.get_octopus_artifact.outputs.artifact }}"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
-                                        .add(GIT_BUILDER.createOctopusRelease(accessor))
+                                        .add(GIT_BUILDER.createOctopusRelease(accessor, "${{ steps.get_octopus_artifact.version }}"))
                                         .build())
                                 .build())
                         .build())

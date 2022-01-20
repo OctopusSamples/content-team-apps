@@ -139,7 +139,11 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                 accessor.getRepoName().getOrElse("application")
                                                     + ".${{ steps.determine_version.outputs.fullSemVer }}.zip"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
-                                        .add(GIT_BUILDER.createOctopusRelease(accessor))
+                                        .add(GIT_BUILDER.createOctopusRelease(
+                                            accessor,
+                                            accessor.getRepoName().getOrElse("application")
+                                                + ":"
+                                                + "${{ steps.determine_version.outputs.fullSemVer }}"))
                                         .build())
                                 .build())
                         .build())

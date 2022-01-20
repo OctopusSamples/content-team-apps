@@ -148,6 +148,22 @@ public class GitBuilder {
   }
 
   /** Build the step to create an Octopus release. */
+  public Step createOctopusRelease(@NonNull final RepoClient accessor, @NonNull final String packages) {
+    return UsesWith.builder()
+        .name("Create Octopus Release")
+        .uses("OctopusDeploy/create-release-action@v1.1.1")
+        .with(
+            new ImmutableMap.Builder<String, String>()
+                .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
+                .put("project", accessor.getRepoName().getOrElse("application"))
+                .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
+                .put("deploy_to", "Development")
+                .put("packages", packages)
+                .build())
+        .build();
+  }
+
+  /** Build the step to create an Octopus release. */
   public Step createOctopusRelease(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Create Octopus Release")
