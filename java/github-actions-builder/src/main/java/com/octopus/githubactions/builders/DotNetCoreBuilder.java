@@ -174,7 +174,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     .put("files",
                                                         "${{ steps.package.outputs.artifacts_new_line }}")
                                                     .put("tag_name",
-                                                        "${{ steps.determine_version.outputs.major }}.${{ steps.determine_version.outputs.minor }}.${{ steps.determine_version.outputs.patch }}-run${{ github.run_number }}-attempt${{ github.run_attempt }}")
+                                                        "${{ steps.determine_version.outputs.majorMinorPatch }}-run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                                                     .put("draft", "false")
                                                     .put("prerelease", "false")
                                                     .build())
