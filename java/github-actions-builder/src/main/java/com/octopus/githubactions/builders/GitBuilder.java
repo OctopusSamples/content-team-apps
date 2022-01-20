@@ -101,7 +101,7 @@ public class GitBuilder {
         .build();
   }
 
-  /** Tag the repo with the release */
+  /** Tag the repo with the release. */
   public Step tagRepo() {
     return UsesWith.builder()
         .name("Tag Release")
