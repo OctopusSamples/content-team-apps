@@ -109,7 +109,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                         .add(RunStep.builder()
                                             .name("Publish")
                                             .run(
-                                                "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.semVer }}")
+                                                "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.fullSemVer }}")
                                             .build())
                                         .add(RunStep.builder()
                                             .name("Package")
