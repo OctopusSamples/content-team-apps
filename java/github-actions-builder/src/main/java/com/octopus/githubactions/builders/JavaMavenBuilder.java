@@ -64,7 +64,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     mavenExecutable()
-                                                        + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.majorMinorPatch }}")
+                                                        + " --batch-mode versions:set -DnewVersion=${{ steps.determine_version.outputs.semVer }}")
                                                 .build())
                                         .add(
                                             RunStep.builder()
@@ -141,7 +141,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                         + accessor
                                                         .getRepoName()
                                                         .getOrElse("application")
-                                                        + ".${{ steps.determine_version.outputs.majorMinorPatch }}.${extension}\"\n"
+                                                        + ".${{ steps.determine_version.outputs.semVer }}.${extension}\"\n"
                                                         + "cp ${file} ${octofile}\n"
                                                         + "echo \"::set-output name=artifact::${octofile}\"\n"
                                                         + "# The version used when creating a release is the package id, colon, and version\n"
@@ -149,7 +149,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                         + accessor
                                                         .getRepoName()
                                                         .getOrElse("application")
-                                                        + ":${{ steps.determine_version.outputs.majorMinorPatch }}\"\n"
+                                                        + ":${{ steps.determine_version.outputs.semVer }}\"\n"
                                                         + "echo \"::set-output name=octoversion::${octoversion}\"\n"
                                                         + "ls -la")
                                                 .build())

@@ -139,11 +139,11 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     + "  octo pack \\\n"
                                                     + "  --basePath ${path} \\\n"
                                                     + "  --id ${projectname} \\\n"
-                                                    + "  --version ${{ steps.determine_version.outputs.majorMinorPatch }} \\\n"
+                                                    + "  --version ${{ steps.determine_version.outputs.semVer }} \\\n"
                                                     + "  --format zip \\\n"
                                                     + "  --overwrite\n"
-                                                    + "  packages=(${packages[@]} \"${projectname}.${{ steps.determine_version.outputs.majorMinorPatch }}.zip\")\n"
-                                                    + "  versions=(${versions[@]} \"${projectname}:${{ steps.determine_version.outputs.majorMinorPatch }}\")\n"
+                                                    + "  packages=(${packages[@]} \"${projectname}.${{ steps.determine_version.outputs.semVer }}.zip\")\n"
+                                                    + "  versions=(${versions[@]} \"${projectname}:${{ steps.determine_version.outputs.semVer }}\")\n"
                                                     + "done\n"
                                                     + "# Join the array with commas\n"
                                                     + "printf -v joined \"%s,\" \"${packages[@]}\"\n"
@@ -175,7 +175,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     .put("files",
                                                         "${{ steps.package.outputs.artifacts_new_line }}")
                                                     .put("tag_name",
-                                                        "${{ steps.determine_version.outputs.majorMinorPatch }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
+                                                        "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                                                     .put("draft", "false")
                                                     .put("prerelease", "false")
                                                     .build())
