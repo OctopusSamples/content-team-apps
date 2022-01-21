@@ -7,6 +7,8 @@ import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
 import io.vavr.control.Try;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -15,6 +17,23 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class GithubRepoClientTest {
 
   private static final HttpClient HTTP_CLIENT = new StringHttpClient();
+
+  @ParameterizedTest
+  @CsvSource({
+      "https://github.com/VScode/vscode.github.io,VScode,vscode.github.io,true",
+      "https://github.com/VScode/vscode,VScode,vscode,true",
+      "https://github.com/a/b.git,a,b,true",
+      "https://github.com/a/b.git.a,a,b.git.a,true",
+      "https://github.com/VScode,,,false"
+  })
+  public void regexTests(final String url, final String username, final String repo, final boolean matches) {
+    final Matcher matcher = Pattern.compile(GithubRepoClient.GITHUB_REGEX).matcher(url);
+    assertEquals(matcher.matches(), matches);
+    if (matcher.matches()) {
+      assertEquals(username, matcher.group("username"));
+      assertEquals(repo, matcher.group("repo"));
+    }
+  }
 
   @Test
   public void testRepoScanning() {

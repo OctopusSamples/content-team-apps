@@ -24,8 +24,8 @@ import org.jboss.logging.Logger;
 @Builder
 public class GithubRepoClient implements RepoClient {
 
+  public static final String GITHUB_REGEX = "https://github.com/(?<username>.*?)/(?<repo>.*?)(/|\\.git$|$).*";
   private static final Logger LOG = Logger.getLogger(GithubRepoClient.class.toString());
-  private static final String GITHUB_REGEX = "https://github.com/(?<username>.*?)/(?<repo>.*?)(/|\\.git|$).*";
   private static final PatternMatcher ANT_PATH_MATCHER = new AntPathMatcher();
   private static final Pattern GITHUB_PATTERN = Pattern.compile(GITHUB_REGEX);
   private static final String GITHUB_CLIENT_ID_ENV_VAR = "GITHUB_CLIENT_ID";
