@@ -4,6 +4,7 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
@@ -11,6 +12,7 @@ import com.octopus.githubactions.builders.dsl.On;
 import com.octopus.githubactions.builders.dsl.Push;
 import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.Step;
+import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
@@ -52,6 +54,10 @@ public class NodeJsBuilder implements PipelineBuilder {
                                 .steps(
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
+                                        .add(UsesWith.builder()
+                                            .uses("actions/setup-node@v2")
+                                            .with(new ImmutableMap.Builder<String, String>().put("node-version", "lts/*").build())
+                                            .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
                                         .add(GIT_BUILDER.installOctopusCli())
@@ -59,7 +65,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Install Dependencies")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " install")
+                                                .run(getPackageManager() + " ci")
                                                 .build())
                                         .add(
                                             RunStep.builder()
