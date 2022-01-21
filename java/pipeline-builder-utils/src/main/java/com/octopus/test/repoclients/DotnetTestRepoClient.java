@@ -2,6 +2,7 @@ package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 import java.util.List;
+import lombok.NonNull;
 
 /**
  * A mock repo client for testing pipeline builders.
@@ -38,13 +39,23 @@ public class DotnetTestRepoClient extends TestRepoClient {
   }
 
   @Override
-  public Try<List<String>> getWildcardFiles(final String path) {
+  public Try<List<String>> getWildcardFiles(final String path, final int limit) {
     if (path.equals("**/*.csproj")) {
       return Try.of(() -> List.of("myproj.csproj"));
     } else if (path.equals("*.sln")) {
       return Try.of(() -> List.of("myproj.sln"));
     }
     return Try.of(List::of);
+  }
+
+  @Override
+  public Try<Boolean> wildCardFileExist(@NonNull final String path) {
+    if (path.equals("**/*.csproj")) {
+      return Try.of(() -> true);
+    } else if (path.equals("*.sln")) {
+      return Try.of(() -> true);
+    }
+    return Try.of(() -> false);
   }
 
   @Override

@@ -118,7 +118,7 @@ public class PhpComposerBuilder implements PipelineBuilder {
 
   private Element createTestStep(@NonNull final RepoClient accessor) {
 
-    final Try<List<String>> testFiles = accessor.getWildcardFiles("*Test.php");
+    final Try<List<String>> testFiles = accessor.getWildcardFiles("*Test.php", 1);
     final String directory = testFiles.isSuccess() && !testFiles.get().isEmpty()
         ? FilenameUtils.getPath(testFiles.get().get(0))
         : "tests";

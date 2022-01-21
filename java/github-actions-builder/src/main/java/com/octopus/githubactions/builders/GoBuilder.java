@@ -30,7 +30,7 @@ public class GoBuilder implements PipelineBuilder {
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
-    final Try<List<String>> files = accessor.getWildcardFiles("*.go");
+    final Try<List<String>> files = accessor.getWildcardFiles("*.go", 1);
 
     return accessor.testFile("go.mod")
         || (files.isSuccess() && !files.get().isEmpty());

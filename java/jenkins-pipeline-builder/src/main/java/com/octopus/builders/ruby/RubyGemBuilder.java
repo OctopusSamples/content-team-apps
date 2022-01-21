@@ -116,7 +116,7 @@ public class RubyGemBuilder implements PipelineBuilder {
   }
 
   private Element createTestStep(@NonNull final RepoClient accessor) {
-    final Try<List<String>> files = accessor.getWildcardFiles("**/run-test.rb");
+    final Try<List<String>> files = accessor.getWildcardFiles("**/run-test.rb", 1);
     if (files.isSuccess() && !files.get().isEmpty()) {
       return createTestUnitTestStep(files.get().get(0));
     }
@@ -180,7 +180,7 @@ public class RubyGemBuilder implements PipelineBuilder {
   }
 
   private Element createPackageStep(@NonNull final RepoClient accessor) {
-    final Try<List<String>> gemSpecs = accessor.getWildcardFiles("*.gemspec");
+    final Try<List<String>> gemSpecs = accessor.getWildcardFiles("*.gemspec", 1);
 
     if (gemSpecs.isFailure() || gemSpecs.get().isEmpty()) {
       return createZipStep(accessor);

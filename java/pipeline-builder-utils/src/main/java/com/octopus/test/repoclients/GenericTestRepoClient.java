@@ -2,6 +2,7 @@ package com.octopus.test.repoclients;
 
 import io.vavr.control.Try;
 import java.util.List;
+import lombok.NonNull;
 
 /**
  * A mock repo client for testing pipeline builders.
@@ -23,16 +24,6 @@ public class GenericTestRepoClient extends TestRepoClient {
   @Override
   public boolean testFile(String path) {
     return false;
-  }
-
-  @Override
-  public Try<String> getFile(final String path) {
-    return Try.failure(new Exception("Always fails"));
-  }
-
-  @Override
-  public Try<List<String>> getWildcardFiles(final String path) {
-    return Try.failure(new Exception("Always fails"));
   }
 
   @Override

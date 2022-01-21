@@ -2,6 +2,7 @@ package com.octopus.repoclients;
 
 import io.vavr.control.Try;
 import java.util.List;
+import lombok.NonNull;
 
 /**
  * An abstraction for accessing files in a repo.
@@ -30,9 +31,18 @@ public interface RepoClient {
    * Returns the list of files that match a wildcard path.
    *
    * @param path The path to test
+   * @param limit Limit the number of results
    * @return the list of matching files.
    */
-  Try<List<String>> getWildcardFiles(String path);
+  Try<List<String>> getWildcardFiles(String path, int limit);
+
+  /**
+   * Returns true if any files match the supplied path.
+   *
+   * @param path The path to test
+   * @return true if any files match, and false otherwise
+   */
+  Try<Boolean> wildCardFileExist(@NonNull final String path);
 
   /**
    * Returns the path to the repository, suitable for performing a clone operation.

@@ -3,6 +3,7 @@ package com.octopus.test.repoclients;
 import com.octopus.repoclients.RepoClient;
 import io.vavr.control.Try;
 import java.util.List;
+import lombok.NonNull;
 
 /**
  * A base class for mock repo clients.
@@ -60,8 +61,13 @@ public abstract class TestRepoClient implements RepoClient {
   }
 
   @Override
-  public Try<List<String>> getWildcardFiles(String path) {
+  public Try<List<String>> getWildcardFiles(String path, int limit) {
     return Try.of(List::of);
+  }
+
+  @Override
+  public Try<Boolean> wildCardFileExist(@NonNull final String path) {
+    return Try.failure(new Exception("not implemented"));
   }
 
   @Override

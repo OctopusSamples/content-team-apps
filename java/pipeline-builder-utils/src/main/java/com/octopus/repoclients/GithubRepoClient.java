@@ -74,7 +74,7 @@ public class GithubRepoClient implements RepoClient {
   }
 
   @Override
-  public Try<List<String>> getWildcardFiles(@NonNull final String path) {
+  public Try<List<String>> getWildcardFiles(@NonNull final String path, int limit) {
     LOG.debug("GithubRepoClient.getWildcardFiles(String)");
 
     return getDetails()
@@ -96,7 +96,33 @@ public class GithubRepoClient implements RepoClient {
             .stream()
             .map(u -> u.get("path").toString())
             .filter(p -> ANT_PATH_MATCHER.matches(path, p))
+            .limit(limit)
             .collect(Collectors.toList()));
+  }
+
+  @Override
+  public Try<Boolean> wildCardFileExist(@NonNull final String path) {
+    LOG.debug("GithubRepoClient.getWildcardFiles(String)");
+
+    return getDetails()
+        // Get the repository tree list
+        .flatMap(d -> getDefaultBranches()
+            .stream()
+            .map(b -> httpClient.get(
+                "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
+                    + "/git/trees/" + b + "?recursive=1"))
+            .filter(Try::isSuccess)
+            .findFirst()
+            .orElse(Try.failure(new Exception("Could not contact any of the branches"))))
+        // Convert the resulting JSON into a map
+        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
+        // files are contained in the tree array
+        .mapTry(d -> (List<Map<Object, Object>>) d.get("tree"))
+        // each member of the tree array is an object containing a path
+        .mapTry(t -> t
+            .stream()
+            .map(u -> u.get("path").toString())
+            .anyMatch(p -> ANT_PATH_MATCHER.matches(path, p)));
   }
 
   @Override

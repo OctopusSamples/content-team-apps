@@ -41,7 +41,7 @@ public class GithubRepoClientTest {
         .httpClient(HTTP_CLIENT)
         .repo("https://github.com/OctopusSamples/RandomQuotes")
         .build()
-        .getWildcardFiles("*.sln");
+        .getWildcardFiles("*.sln", 1);
 
     assertTrue(files.isSuccess());
     assertTrue(files.get().contains("RandomQuotes.sln"));
