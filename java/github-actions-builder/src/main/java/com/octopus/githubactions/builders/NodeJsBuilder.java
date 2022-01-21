@@ -28,11 +28,13 @@ public class NodeJsBuilder implements PipelineBuilder {
   private static final Logger LOG = Logger.getLogger(NodeJsBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
   private boolean useYarn = false;
+  private boolean packageLock = false;
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "NodeJsBuilder.canBuild(RepoClient)");
     useYarn = accessor.testFile("yarn.lock");
+    packageLock = accessor.testFile("package-lock.json");
     return accessor.testFile("package.json");
   }
 
@@ -65,7 +67,8 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Install Dependencies")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " ci")
+                                                // npm ci can be used when the package-lock.json file exists
+                                                .run(getPackageManager() + (packageLock ? " ci" : " install"))
                                                 .build())
                                         .add(
                                             RunStep.builder()
