@@ -200,7 +200,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   }
 
   private boolean hasDotNetCoreProjectFiles(@NonNull final RepoClient accessor) {
-    final List<String> projectFiles = accessor.getWildcardFiles("**/*.csproj", 5).getOrElse(List.of());
+    final List<String> projectFiles = accessor.getWildcardFiles("**/*.csproj", 1).getOrElse(List.of());
     LOG.log(DEBUG, "Found " + projectFiles.size() + " project files");
     projectFiles.forEach(s -> LOG.log(DEBUG, "  " + s));
 
