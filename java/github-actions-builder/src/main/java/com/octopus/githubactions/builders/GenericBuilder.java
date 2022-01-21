@@ -12,6 +12,9 @@ import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
 
+/**
+ * A generic low priority builder that simply packages up all the files and pushes them to Octopus.
+ */
 public class GenericBuilder implements PipelineBuilder {
 
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
