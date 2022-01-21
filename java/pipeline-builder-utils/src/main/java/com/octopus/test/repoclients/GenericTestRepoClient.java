@@ -1,0 +1,42 @@
+package com.octopus.test.repoclients;
+
+import io.vavr.control.Try;
+import java.util.List;
+
+/**
+ * A mock repo client for testing pipeline builders.
+ */
+public class GenericTestRepoClient extends TestRepoClient {
+
+  static int count = 0;
+
+  /**
+   * A mock repo accessor that pretends to find (or not find) project files and wrapper scripts.
+   *
+   * @param repo The git repo
+   */
+  public GenericTestRepoClient(final String repo) {
+    super(repo, false);
+    ++count;
+  }
+
+  @Override
+  public boolean testFile(String path) {
+    return false;
+  }
+
+  @Override
+  public Try<String> getFile(final String path) {
+    return Try.failure(new Exception("Always fails"));
+  }
+
+  @Override
+  public Try<List<String>> getWildcardFiles(final String path) {
+    return Try.failure(new Exception("Always fails"));
+  }
+
+  @Override
+  public Try<String> getRepoName() {
+    return Try.of(() -> "generic" + count + "application");
+  }
+}

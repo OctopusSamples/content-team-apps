@@ -21,4 +21,13 @@ public interface PipelineBuilder {
    * @return The Jenkins pipeline generated from the repo
    */
   String generate(RepoClient accessor);
+
+  /**
+   * The builder priority. Higher number means this builder will be tested first.
+   *
+   * @return The builder priority
+   */
+  default Integer getPriority() {
+    return 0;
+  }
 }
