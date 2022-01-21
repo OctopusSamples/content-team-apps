@@ -28,7 +28,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   private static final Logger LOG = Logger.getLogger(DotNetCoreBuilder.class.toString());
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
   private static final Pattern DOT_NET_CORE_REGEX = Pattern.compile(
-      "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk\"");
+      "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk");
 
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
