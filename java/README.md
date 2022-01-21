@@ -14,3 +14,4 @@ The following sites have nice lists of public git repos to test:
 * https://github.com/trending/javascript
 * https://github.com/trending/ruby
 * https://github.com/trending/go
+* https://github.com/trending/python
