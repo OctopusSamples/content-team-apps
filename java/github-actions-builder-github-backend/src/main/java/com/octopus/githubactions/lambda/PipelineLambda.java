@@ -82,7 +82,12 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
         .filter(b -> b.canBuild(accessor))
         .findFirst()
         .map(b -> b.generate(accessor))
-        .orElse("No suitable builders were found.");
+        .orElse("""
+                      No suitable builders were found.
+                      This can happen if no recognised project files were found in the root directory.
+                      You may still be able to use one of the sample projects from the main page, and customize it to suit your project.
+                      Click the heading in the top left corner to return to the main page.
+                      """);
 
     LOG.log(DEBUG, "pipeline: \n" + pipeline);
 
