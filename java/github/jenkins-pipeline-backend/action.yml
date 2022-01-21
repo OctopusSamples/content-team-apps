@@ -158,6 +158,16 @@ runs:
         --space "Content Team"
       shell: bash
 
+    - name: Trigger deployment to security environment
+      run: >
+        octo create-release
+        --project "Jenkins Pipeline Generator"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+
     # https://github.com.cnpmjs.org/AppThreat/dep-scan
     - name: Generate vulnerability report
       run: find . -type f -name 'bom.xml' -exec docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom /app/{} --type bom \; || true
