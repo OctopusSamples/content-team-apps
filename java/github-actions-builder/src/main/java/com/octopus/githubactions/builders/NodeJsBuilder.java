@@ -68,7 +68,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .name("Install Dependencies")
                                                 .shell("bash")
                                                 // npm ci can be used when the package-lock.json file exists
-                                                .run(getPackageManager() + (packageLock ? " ci" : " install"))
+                                                .run(getPackageManager() + (packageLock && !useYarn ? " ci" : " install"))
                                                 .build())
                                         .add(
                                             RunStep.builder()
