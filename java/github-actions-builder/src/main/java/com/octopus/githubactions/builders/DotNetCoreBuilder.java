@@ -60,7 +60,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             .uses("actions/setup-dotnet@v1")
                                             .with(
                                                 new ImmutableMap.Builder<String, String>()
-                                                    .put("dotnet-version", "3.1.402")
+                                                    .put("dotnet-version", "3.1.x\n5.0.x\n6.0.x")
                                                     .build())
                                             .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
