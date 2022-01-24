@@ -112,7 +112,7 @@ step "Get Stack Outputs" {
     }
 }
 
-step "Deploy OAuth Proxy" {
+step "Deploy OAuth Proxy Login" {
 
     action {
         action_type = "Octopus.AwsRunCloudFormation"
