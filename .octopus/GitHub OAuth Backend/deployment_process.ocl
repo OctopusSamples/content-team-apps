@@ -513,7 +513,7 @@ step "Check for vulnerabilities" {
         properties = {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
-                cd github-actions-builder-github-backend-lambda-sbom
+                cd github-oauth-backend-lambda-sbom
                 SUCCESS=0
                 for x in **/bom.xml; do 
                 	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom 2>&1
@@ -531,10 +531,10 @@ step "Check for vulnerabilities" {
         }
         worker_pool_variable = "WorkerPool"
 
-        packages "github-actions-builder-github-backend-lambda-sbom" {
+        packages "github-oauth-backend-lambda-sbom" {
             acquisition_location = "Server"
             feed = "Octopus Server (built-in)"
-            package_id = "github-actions-builder-github-backend-lambda-sbom"
+            package_id = "github-oauth-backend-lambda-sbom"
             properties = {
                 Extract = "True"
                 Purpose = ""
