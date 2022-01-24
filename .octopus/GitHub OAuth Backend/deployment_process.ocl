@@ -326,7 +326,7 @@ step "Deploy OAuth Proxy" {
                                 },
                                 ":lambda:path/2015-03-31/functions/",
                                {
-                		         "Ref": "LambdaVersion#{DeploymentId}"
+                		         "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 	           },
                                 "/invocations"
                               ]
