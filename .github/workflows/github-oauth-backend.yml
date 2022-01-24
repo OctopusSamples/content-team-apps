@@ -1,14 +1,12 @@
-name: jenkins-pipeline-backend
+name: github-actions-backend
 
 on:
   push:
     paths:
-    - '.github/workflows/jenkins-backend.yml'
+    - '.github/workflows/github-oauth-backend.yml'
     - 'java/pom.xml'
-    - 'java/jenkins-pipeline-backend/**'
+    - 'java/github-oauth-backend/**'
     - 'java/pipeline-builder-utils/**'
-    - 'java/jenkins-pipeline-builder-github-backend/**'
-    - 'java/jenkins-pipeline-builder/**'
   workflow_dispatch:
 
 jobs:
@@ -24,7 +22,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./java/github/jenkins-pipeline-backend
+        uses: ./java/github/github-oauth-backend
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
           dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}
