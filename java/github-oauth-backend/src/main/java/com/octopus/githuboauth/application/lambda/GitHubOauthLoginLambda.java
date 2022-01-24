@@ -23,8 +23,8 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
   @ConfigProperty(name = "github.client.id")
   String clientId;
 
-  @ConfigProperty(name = "github.server.redirect")
-  String serverRedirect;
+  @ConfigProperty(name = "github.login.redirect")
+  String loginRedirect;
 
   @Override
   public ProxyResponse handleRequest(@Nonnull final Map<String, Object> stringObjectMap, @Nonnull final Context context) {
@@ -36,7 +36,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
         new ImmutableMap.Builder<String, String>()
             .put("Location", GitHubAuthURL
                 + "?client_id=" + clientId
-                + "&redirect_uri=" + serverRedirect
+                + "&redirect_uri=" + loginRedirect
                 + "&state=" + state
                 + "&allow_signup=false")
             .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + state)
