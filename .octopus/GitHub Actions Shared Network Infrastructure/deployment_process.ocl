@@ -125,13 +125,13 @@ step "Create API Gateway" {
                 				"Ref": "Web"
                 			}
                 		},
-                		"#{PipelineEndpointVariableName}": {
+                		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
                 			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
                 			"Value": {
                 				"Ref": "ApiPipelineGitHubGenerate"
                 			}
                 		},
-                		"#{OAuthGithubEndpointVariableName}": {
+                		"#{CloudFormation.Output.OAuthGithubEndpointVariableName}": {
                 			"Description": "ID of the resource exposing the GitHub OAuth proxy",
                 			"Value": {
                 				"Ref": "ApiPipelineOAuthGitHub"
