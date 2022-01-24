@@ -37,7 +37,7 @@ public class AesCryptoUtils implements CryptoUtils {
     try {
       final byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
       final Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
-      final SecretKey secretKey = getAESKeyFromPassword(
+      final SecretKey secretKey = getAesKeyFromPassword(
           password.toCharArray(),
           salt.getBytes(StandardCharsets.UTF_8));
       cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
@@ -61,7 +61,7 @@ public class AesCryptoUtils implements CryptoUtils {
       bb.get(iv);
       final byte[] cipherText = new byte[bb.remaining()];
       bb.get(cipherText);
-      final SecretKey secretKey = getAESKeyFromPassword(
+      final SecretKey secretKey = getAesKeyFromPassword(
           password.toCharArray(),
           salt.getBytes(StandardCharsets.UTF_8));
       final Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
@@ -72,7 +72,7 @@ public class AesCryptoUtils implements CryptoUtils {
     }
   }
 
-  private SecretKey getAESKeyFromPassword(final char[] password, final byte[] salt)
+  private SecretKey getAesKeyFromPassword(final char[] password, final byte[] salt)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
     final KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);

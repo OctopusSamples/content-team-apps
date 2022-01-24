@@ -1,5 +1,8 @@
 package com.octopus.encryption;
 
+/**
+ * An interface exposing string encryption and decryption methods.
+ */
 public interface CryptoUtils {
 
   /**
