@@ -80,13 +80,13 @@ step "Get Stack Outputs" {
                 aws cloudformation \
                 	describe-stacks \
                     --stack-name #{CloudFormationName.ApiGateway} \
-                    --query "Stacks[0].Outputs[?OutputKey=='#{PipelineEndpointVariableName}'].OutputValue" \
+                    --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.PipelineEndpointVariableName}'].OutputValue" \
                     --output text
                 
                 PIPELINE_RESOURCE_ID=$(aws cloudformation \
                 	describe-stacks \
                     --stack-name #{CloudFormationName.ApiGateway} \
-                    --query "Stacks[0].Outputs[?OutputKey=='#{PipelineEndpointVariableName}'].OutputValue" \
+                    --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.PipelineEndpointVariableName}'].OutputValue" \
                     --output text)
                     
                 set_octopusvariable "ApiPipelineJenkinsGenerate" ${PIPELINE_RESOURCE_ID}
