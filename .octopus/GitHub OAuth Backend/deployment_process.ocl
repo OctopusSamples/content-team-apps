@@ -531,10 +531,10 @@ step "Check for vulnerabilities" {
         }
         worker_pool_variable = "WorkerPool"
 
-        packages "github-actions-builder-github-backend-lambda-sbom" {
+        packages "github-oauth-backend-lambda-sbom" {
             acquisition_location = "Server"
             feed = "Octopus Server (built-in)"
-            package_id = "github-actions-builder-github-backend-lambda-sbom"
+            package_id = "github-oauth-backend-lambda-sbom"
             properties = {
                 Extract = "True"
                 Purpose = ""
