@@ -98,10 +98,6 @@ step "Get Stack Outputs" {
                     --output text)
                     
                 set_octopusvariable "RestApi" ${REST_API}
-                
-                TIMESTAMP=$(date '+%Y%m%d%H%M%S')
-                
-                set_octopusvariable "DeploymentId" ${TIMESTAMP}
             EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "Bash"
