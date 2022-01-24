@@ -119,7 +119,7 @@ step "Deploy Pipeline Backend" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.Backend}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.Backend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Parameters" : {
