@@ -247,7 +247,7 @@ step "Deploy Pipeline Backend Manual" {
                       "Type": "AWS::Lambda::Permission",
                       "Properties": {
                         "FunctionName": {
-                		  "Ref": "LambdaVersion#{DeploymentId}"
+                		  "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 	    },
                         "Action": "lambda:InvokeFunction",
                         "Principal": "apigateway.amazonaws.com",
@@ -298,7 +298,7 @@ step "Deploy Pipeline Backend Manual" {
                                 },
                                 ":lambda:path/2015-03-31/functions/",
                                {
-                		         "Ref": "LambdaVersion#{DeploymentId}"
+                		         "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 	           },
                                 "/invocations"
                               ]
