@@ -249,7 +249,7 @@ step "Deploy OAuth Proxy" {
                         "Timeout": 30
                       }
                     },
-                    "LambdaVersion#{DeploymentId}": {
+                    "LambdaVersion#{Octopus.Deployment.Id | Replace -}": {
                      	"Type": "AWS::Lambda::Version",
                       	"Properties": {
                           "FunctionName": {"Ref": "OauthProxyLambda"},
@@ -263,7 +263,7 @@ step "Deploy OAuth Proxy" {
                       "Type": "AWS::Lambda::Permission",
                       "Properties": {
                         "FunctionName": {
-                		  "Ref": "LambdaVersion#{DeploymentId}"
+                		  "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 	    },
                         "Action": "lambda:InvokeFunction",
                         "Principal": "apigateway.amazonaws.com",
