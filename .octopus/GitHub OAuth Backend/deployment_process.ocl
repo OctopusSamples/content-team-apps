@@ -49,7 +49,7 @@ step "Upload Lambda" {
             Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Octopus Server (built-in)"
-            Octopus.Action.Package.PackageId = "github-actions-builder-github-backend-lambda"
+            Octopus.Action.Package.PackageId = "github-oauth-backend-lambda"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
@@ -57,7 +57,7 @@ step "Upload Lambda" {
         packages {
             acquisition_location = "Server"
             feed = "Octopus Server (built-in)"
-            package_id = "github-actions-builder-github-backend-lambda"
+            package_id = "github-oauth-backend-lambda"
             properties = {
                 SelectionMode = "immediate"
             }
