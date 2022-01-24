@@ -20,6 +20,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Use AES to encrypt and decrypt strings. https://mkyong.com/java/java-aes-encryption-and-decryption/
@@ -30,11 +31,20 @@ public class AesCryptoUtils implements CryptoUtils {
   private static final int TAG_LENGTH_BIT = 128;
   private static final int IV_LENGTH_BYTE = 12;
   private static final String ALGORITHM = "AES";
+  private static final int MIN_PASSWORD_LENGTH = 32;
 
   /** {@inheritDoc} */
   public String encrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
+      if (StringUtils.isBlank(password) || StringUtils.isBlank(salt)) {
+        throw new IllegalArgumentException("Password or salt can not be blank");
+      }
+
+      if (password.length() < MIN_PASSWORD_LENGTH  || salt.length() < MIN_PASSWORD_LENGTH) {
+        throw new IllegalArgumentException("Password or salt must be at least " + MIN_PASSWORD_LENGTH + "characters");
+      }
+
       final byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
       final Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
       final SecretKey secretKey = getAesKeyFromPassword(
