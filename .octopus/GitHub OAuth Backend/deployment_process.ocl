@@ -123,7 +123,7 @@ step "Deploy OAuth Proxy" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.BackendStack}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.BackendLoginStack}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Parameters" : {
@@ -531,10 +531,10 @@ step "Check for vulnerabilities" {
         }
         worker_pool_variable = "WorkerPool"
 
-        packages "github-oauth-backend-lambda-sbom" {
+        packages "github-actions-builder-github-backend-lambda-sbom" {
             acquisition_location = "Server"
             feed = "Octopus Server (built-in)"
-            package_id = "github-oauth-backend-lambda-sbom"
+            package_id = "github-actions-builder-github-backend-lambda-sbom"
             properties = {
                 Extract = "True"
                 Purpose = ""
