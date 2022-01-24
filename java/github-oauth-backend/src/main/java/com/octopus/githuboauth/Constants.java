@@ -1,7 +1,7 @@
 package com.octopus.githuboauth;
 
 /**
- * Constant values used by the project
+ * Constant values used by the project.
  */
 public class Constants {
 
