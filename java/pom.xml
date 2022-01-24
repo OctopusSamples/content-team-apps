@@ -145,6 +145,7 @@
     <module>pipeline-builder-utils</module>
     <module>jenkins-pipeline-builder</module>
     <module>github-actions-builder</module>
+    <module>github-oauth-backend</module>
   </modules>
 
   <name>jenkins-pipeline-builder-backend</name>
