@@ -7,7 +7,7 @@
   <version>0.0.1</version>
 
   <build>
-    <finalName>github-actions-builder-github-backend</finalName>
+    <finalName>github-oauth-backend</finalName>
     <plugins>
       <plugin>
         <artifactId>quarkus-maven-plugin</artifactId>

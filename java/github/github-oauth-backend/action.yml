@@ -106,7 +106,7 @@ runs:
     - name: Rename zip
       run: >
         mv github-oauth-backend/target/function.zip
-        github-oauth-backend-lambda.0.1.0.${{ inputs.run_number }}.zip
+        github-oauth-backend-lambda.0.1.${{ inputs.run_number }}.zip
       shell: bash
       working-directory: java
 
