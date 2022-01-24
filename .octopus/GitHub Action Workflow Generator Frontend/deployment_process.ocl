@@ -366,7 +366,7 @@ step "Proxy with API Gateway" {
                         "RestApiId": {"Ref": "RestApi"}
                       }
                     },
-                    "Deployment#{DeploymentId}": {
+                    "Deployment#{Octopus.Deployment.Id | Replace -}": {
                       "Type": "AWS::ApiGateway::Deployment",
                       "Properties": {
                         "RestApiId": {"Ref": "RestApi"}
@@ -380,7 +380,7 @@ step "Proxy with API Gateway" {
                   "Outputs" : {
                     "DeploymentId" : {
                       "Description" : "The deployment id",
-                      "Value" : {"Ref": "Deployment#{DeploymentId}"}
+                      "Value" : {"Ref": "Deployment#{Octopus.Deployment.Id | Replace -}"}
                     }
                   }
                 }
