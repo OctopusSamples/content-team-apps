@@ -3,12 +3,11 @@ package com.octopus.githuboauth.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.githuboauth.domain.entities.OauthState;
-import com.octopus.githuboauth.infrastructure.repositories.OauthStateRepository;
+import com.octopus.githuboauth.Constants;
 import com.octopus.lambda.ProxyResponse;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import javax.inject.Named;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -21,9 +20,6 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
 
   private static final String GitHubAuthURL = "https://github.com/login/oauth/authorize";
 
-  @Inject
-  OauthStateRepository oauthStateRepository;
-
   @ConfigProperty(name = "github.client.id")
   String clientId;
 
@@ -32,8 +28,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
 
   @Override
   public ProxyResponse handleRequest(@Nonnull final Map<String, Object> stringObjectMap, @Nonnull final Context context) {
-    // Persist a random state field in the database
-    final OauthState state = oauthStateRepository.save(new OauthState());
+    final String state = UUID.randomUUID().toString();
     // Redirect to the GitHub login
     return new ProxyResponse(
         "307",
@@ -42,8 +37,9 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
             .put("Location", GitHubAuthURL
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + serverRedirect
-                + "&state=" + state.getState()
+                + "&state=" + state
                 + "&allow_signup=false")
+            .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + state)
             .build());
   }
 }

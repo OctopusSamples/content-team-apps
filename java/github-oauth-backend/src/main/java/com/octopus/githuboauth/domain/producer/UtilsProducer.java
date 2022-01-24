@@ -2,8 +2,8 @@ package com.octopus.githuboauth.domain.producer;
 
 import com.octopus.encryption.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.lambda.CaseInsensitiveQueryParamExtractor;
-import com.octopus.lambda.QueryParamExtractor;
+import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
@@ -20,8 +20,8 @@ public class UtilsProducer {
    */
   @ApplicationScoped
   @Produces
-  public QueryParamExtractor getQueryParamExtractor() {
-    return new CaseInsensitiveQueryParamExtractor();
+  public LambdaHttpValueExtractor getQueryParamExtractor() {
+    return new CaseInsensitiveLambdaHttpValueExtractor();
   }
 
   /**

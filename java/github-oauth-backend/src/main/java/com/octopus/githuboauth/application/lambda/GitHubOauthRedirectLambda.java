@@ -5,12 +5,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.githuboauth.Constants;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
-import com.octopus.githuboauth.infrastructure.repositories.OauthStateRepository;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
-import com.octopus.lambda.QueryParamExtractor;
-import io.vavr.control.Try;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.NonNull;
@@ -24,12 +24,6 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @Named("accessToken")
 public class GitHubOauthRedirectLambda implements
     RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
-
-  private static final String CODE_QUERY_PARAM = "code";
-  private static final String STATE_QUERY_PARAM = "state";
-
-  @Inject
-  OauthStateRepository oauthStateRepository;
 
   @ConfigProperty(name = "github.client.redirect")
   String clientRedirect;
@@ -47,7 +41,7 @@ public class GitHubOauthRedirectLambda implements
   String githubSalt;
 
   @Inject
-  QueryParamExtractor queryParamExtractor;
+  LambdaHttpValueExtractor lambdaHttpValueExtractor;
 
   @RestClient
   GitHubOauth gitHubOauth;
@@ -58,40 +52,42 @@ public class GitHubOauthRedirectLambda implements
   @Override
   public ProxyResponse handleRequest(@NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final Context context) {
-    final String state = queryParamExtractor.getAllQueryParams(
+    final String state = lambdaHttpValueExtractor.getAllQueryParams(
         input.getMultiValueQueryStringParameters(),
         input.getQueryStringParameters(),
-        STATE_QUERY_PARAM).get(0);
+        Constants.STATE_QUERY_PARAM).get(0);
 
-    if (oauthStateRepository.findOne(state) == null) {
+    final List<String> savedState = lambdaHttpValueExtractor.getAllQueryParams(
+        input.getMultiValueHeaders(),
+        input.getHeaders(),
+        Constants.STATE_COOKIE);
+
+    if (!savedState.contains(state)) {
       return new ProxyResponse("400", "Invalid state parameter");
     }
 
-    try {
-      final String code = queryParamExtractor.getAllQueryParams(
-          input.getMultiValueQueryStringParameters(),
-          input.getQueryStringParameters(),
-          CODE_QUERY_PARAM).get(0);
+    final String code = lambdaHttpValueExtractor.getAllQueryParams(
+        input.getMultiValueQueryStringParameters(),
+        input.getQueryStringParameters(),
+        Constants.CODE_QUERY_PARAM).get(0);
 
-      final OauthResponse response = gitHubOauth.accessToken(
-          clientId,
-          clientSecret,
-          code,
-          clientRedirect);
+    final OauthResponse response = gitHubOauth.accessToken(
+        clientId,
+        clientSecret,
+        code,
+        clientRedirect);
 
-      return new ProxyResponse(
-          "307",
-          null,
-          new ImmutableMap.Builder<String, String>()
-              .put("Location", clientRedirect)
-              .put("Set-Cookie", "GithubToken=" + cryptoUtils.encrypt(
-                  response.getAccessToken(),
-                  githubEncryption,
-                  githubSalt))
-              .build());
-    } finally {
-      // Clean up the state, and ignore any errors
-      Try.run(() -> oauthStateRepository.delete(state));
-    }
+    return new ProxyResponse(
+        "307",
+        null,
+        new ImmutableMap.Builder<String, String>()
+            .put("Location", clientRedirect)
+            .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + cryptoUtils.encrypt(
+                response.getAccessToken(),
+                githubEncryption,
+                githubSalt))
+            .put("Set-Cookie", Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+            .build());
+
   }
 }

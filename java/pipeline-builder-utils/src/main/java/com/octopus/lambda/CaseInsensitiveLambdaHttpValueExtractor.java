@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 
 /**
- * An implementation of QueryParamExtractor that ignores query param case.
+ * An implementation of LambdaHttpValueExtractor that ignores value name case.
  */
-public class CaseInsensitiveQueryParamExtractor implements QueryParamExtractor {
+public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueExtractor {
 
   /** {@inheritDoc} */
   public List<String> getAllQueryParams(
