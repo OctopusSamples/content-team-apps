@@ -382,7 +382,7 @@ step "Deploy OAuth Proxy Token Exchange" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.BackendLoginStack}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.BackendCodeExchangeStack}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Parameters" : {
