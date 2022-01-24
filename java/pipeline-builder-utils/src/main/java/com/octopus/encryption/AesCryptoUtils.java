@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -31,7 +32,7 @@ public class AesCryptoUtils implements CryptoUtils {
   private static final String ALGORITHM = "AES";
 
   /** {@inheritDoc} */
-  public byte[] encrypt(@NonNull final String value, @NonNull final String password,
+  public String encrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
       final byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
@@ -40,17 +41,22 @@ public class AesCryptoUtils implements CryptoUtils {
           password.toCharArray(),
           salt.getBytes(StandardCharsets.UTF_8));
       cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-      return cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
+      final byte[] cipherText = cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
+      final byte[] encryptedWithIv = ByteBuffer.allocate(iv.length + cipherText.length)
+          .put(iv)
+          .put(cipherText)
+          .array();
+      return Base64.getEncoder().encodeToString(encryptedWithIv);
     } catch (final NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
       throw new EncryptionException(e);
     }
   }
 
   /** {@inheritDoc} */
-  public byte[] decrypt(@NonNull final String value, @NonNull final String password,
+  public String decrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
-      final ByteBuffer bb = ByteBuffer.wrap(value.getBytes(StandardCharsets.UTF_8));
+      final ByteBuffer bb = ByteBuffer.wrap(Base64.getDecoder().decode(value));
       final byte[] iv = new byte[IV_LENGTH_BYTE];
       bb.get(iv);
       final byte[] cipherText = new byte[bb.remaining()];
@@ -60,7 +66,7 @@ public class AesCryptoUtils implements CryptoUtils {
           salt.getBytes(StandardCharsets.UTF_8));
       final Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
       cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-      return cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
+      return new String(cipher.doFinal(cipherText), StandardCharsets.UTF_8);
     } catch (final NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
       throw new EncryptionException(e);
     }

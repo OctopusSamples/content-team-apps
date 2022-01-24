@@ -10,7 +10,7 @@ public interface CryptoUtils {
    * @param salt     The encryption salt.
    * @return The encrypted value.
    */
-  byte[] encrypt(String value, String password, String salt);
+  String encrypt(String value, String password, String salt);
 
   /**
    * Decrypt a value.
@@ -20,5 +20,5 @@ public interface CryptoUtils {
    * @param salt     The encryption salt.
    * @return The decrypted value.
    */
-  byte[] decrypt(String value, String password, String salt);
+  String decrypt(String value, String password, String salt);
 }
