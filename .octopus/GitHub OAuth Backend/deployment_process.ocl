@@ -80,13 +80,13 @@ step "Get Stack Outputs" {
                 aws cloudformation \
                 	describe-stacks \
                     --stack-name #{CloudFormationName.ApiGateway} \
-                    --query "Stacks[0].Outputs[?OutputKey=='#{OAuthGithubEndpointVariableName}'].OutputValue" \
+                    --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
                     --output text
                 
                 PIPELINE_RESOURCE_ID=$(aws cloudformation \
                 	describe-stacks \
                     --stack-name #{CloudFormationName.ApiGateway} \
-                    --query "Stacks[0].Outputs[?OutputKey=='#{OAuthGithubEndpointVariableName}'].OutputValue" \
+                    --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
                     --output text)
                     
                 set_octopusvariable "ApiPipelineResource" ${PIPELINE_RESOURCE_ID}
