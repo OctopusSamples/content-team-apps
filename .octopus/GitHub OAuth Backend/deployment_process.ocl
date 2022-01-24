@@ -343,7 +343,7 @@ step "Deploy OAuth Proxy" {
                         "RestApiId": {"Ref": "RestApi"}
                       }
                     },
-                    "Deployment#{DeploymentId}": {
+                    "Deployment#{Octopus.Deployment.Id | Replace -}": {
                       "Type": "AWS::ApiGateway::Deployment",
                       "Properties": {
                         "RestApiId": {"Ref": "RestApi"}
