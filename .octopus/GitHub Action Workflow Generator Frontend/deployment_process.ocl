@@ -5,7 +5,7 @@ step "Create S3 bucket" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.S3Bucket}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.S3Bucket}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
                 Parameters:
@@ -169,7 +169,7 @@ step "Proxy with API Gateway" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.Frontend}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.Frontend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Parameters" : {
