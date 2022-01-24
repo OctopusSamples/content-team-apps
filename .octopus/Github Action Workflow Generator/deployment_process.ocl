@@ -237,7 +237,7 @@ step "Deploy Pipeline Backend Manual" {
                         "Timeout": 30
                       }
                     },
-                    "LambdaVersion#{DeploymentId}": {
+                    "LambdaVersion#{Octopus.Deployment.Id | Replace -}": {
                      	"Type": "AWS::Lambda::Version",
                       	"Properties": {
                          	 "FunctionName": {"Ref": "LambdaOne"},
@@ -328,7 +328,7 @@ step "Deploy Pipeline Backend Manual" {
                   "Outputs" : {
                     "DeploymentId" : {
                       "Description" : "The deployment id",
-                      "Value" : {"Ref": "Deployment#{DeploymentId}"}
+                      "Value" : {"Ref": "Deployment#{Octopus.Deployment.Id | Replace -}"}
                     }
                   }
                 }
