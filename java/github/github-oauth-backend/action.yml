@@ -120,7 +120,7 @@ runs:
       working-directory: java
 
     - name: Generate SBOM
-      run: mvn cyclonedx:makeAggregateBom -DskipTests
+      run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress
       shell: bash
       working-directory: java
 
