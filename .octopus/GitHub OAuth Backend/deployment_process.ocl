@@ -116,7 +116,7 @@ step "Get Stack Outputs" {
     }
 }
 
-step "Deploy Pipeline Backend Manual" {
+step "Deploy OAuth Proxy" {
 
     action {
         action_type = "Octopus.AwsRunCloudFormation"
@@ -161,7 +161,7 @@ step "Deploy Pipeline Backend Manual" {
                     "GithubSalt" : {
                       "Type" : "String"
                     },
-                    "LambdaName": {
+                    "LambdaHandler": {
                       "Type": "String"
                     },
                     "LambdaDescription": {
@@ -221,7 +221,7 @@ step "Deploy Pipeline Backend Manual" {
                         "RoleName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-role" }
                       }
                     },
-                    "LambdaOne": {
+                    "OauthProxyLambda": {
                       "Type": "AWS::Lambda::Function",
                       "Properties": {
                         "Description": {"Ref": "LambdaDescription"},
@@ -232,7 +232,11 @@ step "Deploy Pipeline Backend Manual" {
                         "Environment": {
                           "Variables": {
                           	"GITHUB_CLIENT_ID": {"Ref": "GithubClientId"},
-                            "GITHUB_CLIENT_SECRET": {"Ref": "GithubClientSecret"}
+                            "GITHUB_CLIENT_SECRET": {"Ref": "GithubClientSecret"},
+                            "LAMBDA_HANDLER": {"Ref": "LambdaHandler"},
+                            "GITHUB_REDIRECT": {"Ref": "GithubClientRedirect"},
+                            "GITHUB_ENCRYPTION": {"Ref": "GithubEncryption"},
+                            "GITHUB_SALT": {"Ref": "GithubSalt"}
                           }
                         },
                         "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}" },
@@ -252,14 +256,14 @@ step "Deploy Pipeline Backend Manual" {
                     "LambdaVersion#{DeploymentId}": {
                      	"Type": "AWS::Lambda::Version",
                       	"Properties": {
-                         	 "FunctionName": {"Ref": "LambdaOne"},
-                          	"Description": {"Ref": "LambdaDescription"},
+                          "FunctionName": {"Ref": "OauthProxyLambda"},
+                          "Description": {"Ref": "LambdaDescription"},
                           "ProvisionedConcurrencyConfig": {
-                            "ProvisionedConcurrentExecutions": 20
-                          }
+                          "ProvisionedConcurrentExecutions": 20
                         }
+                      }
                     },
-                    "LambdaOnePermissions": {
+                    "OauthProxyLambdaPermissions": {
                       "Type": "AWS::Lambda::Permission",
                       "Properties": {
                         "FunctionName": {
@@ -291,7 +295,19 @@ step "Deploy Pipeline Backend Manual" {
                         }
                       }
                     },
-                    "LambdaOneMethodOne": {
+                    "ApiPipelineOAuthGitHubLogin": {
+                      "Type": "AWS::ApiGateway::Resource",
+                      "Properties": {
+                        "RestApiId": {
+                          "Ref": "RestApi"
+                        },
+                        "ParentId": {
+                          "Ref": "ResourceId"
+                        },
+                        "PathPart": "login"
+                      }
+                	},
+                    "OauthProxyMethod": {
                       "Type": "AWS::ApiGateway::Method",
                       "Properties": {      
                         "AuthorizationType": "NONE",  
@@ -322,7 +338,7 @@ step "Deploy Pipeline Backend Manual" {
                           }
                         },        
                         "ResourceId": {
-                          "Ref": "ResourceId"
+                          "Ref": "ApiPipelineOAuthGitHubLogin"
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
@@ -333,7 +349,7 @@ step "Deploy Pipeline Backend Manual" {
                         "RestApiId": {"Ref": "RestApi"}
                       },
                       "DependsOn": [
-                        "LambdaOneMethodOne"
+                        "OauthProxyMethod"
                       ]
                     }
                   },
@@ -345,8 +361,8 @@ step "Deploy Pipeline Backend Manual" {
                   }
                 }
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineResource}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GithubClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GithubClientSecret}\"},{\"ParameterKey\":\"GithubClientRedirect\",\"ParameterValue\":\"#{Client.LoginRedirect}\"},{\"ParameterKey\":\"QuarkusLambdaHandler\",\"ParameterValue\":\"login\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineResource}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GithubClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GithubClientSecret}\"},{\"ParameterKey\":\"GithubClientRedirect\",\"ParameterValue\":\"#{Client.LoginRedirect}\"},{\"ParameterKey\":\"QuarkusLambdaHandler\",\"ParameterValue\":\"login\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineResource}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GithubClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GithubClientSecret}\"},{\"ParameterKey\":\"GithubClientRedirect\",\"ParameterValue\":\"#{Client.LoginRedirect}\"},{\"ParameterKey\":\"QuarkusLambdaHandler\",\"ParameterValue\":\"login\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaHandler\",\"ParameterValue\":\"\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineResource}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GithubClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GithubClientSecret}\"},{\"ParameterKey\":\"GithubClientRedirect\",\"ParameterValue\":\"#{Client.LoginRedirect}\"},{\"ParameterKey\":\"QuarkusLambdaHandler\",\"ParameterValue\":\"login\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaHandler\",\"ParameterValue\":null},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
             Octopus.Action.Aws.IamCapabilities = "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
