@@ -4,9 +4,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.githuboauth.domain.oauth.OAuthResponse;
-import com.octopus.githuboauth.infrastructure.client.GitHubOAuth;
-import com.octopus.githuboauth.infrastructure.repositories.OAuthStateRepository;
+import com.octopus.githuboauth.domain.oauth.OauthResponse;
+import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
+import com.octopus.githuboauth.infrastructure.repositories.OauthStateRepository;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.lambda.QueryParamExtractor;
 import io.vavr.control.Try;
@@ -18,18 +18,17 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 
 /**
- * This lambda handles the conversion of a code to an access token.
- * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
+ * This lambda handles the conversion of a code to an access token. https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
  */
 @Named("accessToken")
-public class GitHubOAuthRedirectLambda implements
+public class GitHubOauthRedirectLambda implements
     RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
   private static final String CODE_QUERY_PARAM = "code";
   private static final String STATE_QUERY_PARAM = "state";
 
   @Inject
-  OAuthStateRepository oAuthStateRepository;
+  OauthStateRepository oauthStateRepository;
 
   @ConfigProperty(name = "github.client.redirect")
   String clientRedirect;
@@ -47,7 +46,7 @@ public class GitHubOAuthRedirectLambda implements
   QueryParamExtractor queryParamExtractor;
 
   @RestClient
-  GitHubOAuth gitHubOAuth;
+  GitHubOauth gitHubOauth;
 
   @Override
   public ProxyResponse handleRequest(@NonNull final APIGatewayProxyRequestEvent input,
@@ -57,7 +56,7 @@ public class GitHubOAuthRedirectLambda implements
         input.getQueryStringParameters(),
         STATE_QUERY_PARAM).get(0);
 
-    if (oAuthStateRepository.findOne(state) == null) {
+    if (oauthStateRepository.findOne(state) == null) {
       return new ProxyResponse("400", "Invalid state parameter");
     }
 
@@ -67,8 +66,11 @@ public class GitHubOAuthRedirectLambda implements
           input.getQueryStringParameters(),
           CODE_QUERY_PARAM).get(0);
 
-      final OAuthResponse response = gitHubOAuth.accessToken(clientId, clientSecret, code,
-          clientRedirect, state);
+      final OauthResponse response = gitHubOauth.accessToken(
+          clientId,
+          clientSecret,
+          code,
+          clientRedirect);
 
       return new ProxyResponse(
           "307",
@@ -78,7 +80,7 @@ public class GitHubOAuthRedirectLambda implements
               .build());
     } finally {
       // Clean up the state, and ignore any errors
-      Try.run(() -> oAuthStateRepository.delete(state));
+      Try.run(() -> oauthStateRepository.delete(state));
     }
   }
 }

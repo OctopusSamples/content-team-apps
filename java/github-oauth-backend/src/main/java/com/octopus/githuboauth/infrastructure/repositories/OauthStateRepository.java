@@ -1,6 +1,6 @@
 package com.octopus.githuboauth.infrastructure.repositories;
 
-import com.octopus.githuboauth.domain.entities.OAuthState;
+import com.octopus.githuboauth.domain.entities.OauthState;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -12,7 +12,7 @@ import lombok.NonNull;
  * automatically track database changes.
  */
 @ApplicationScoped
-public class OAuthStateRepository {
+public class OauthStateRepository {
 
   @Inject EntityManager em;
 
@@ -22,8 +22,8 @@ public class OAuthStateRepository {
    * @param id The ID of the entity to return.
    * @return The entity.
    */
-  public OAuthState findOne(final String id) {
-    final OAuthState state = em.find(OAuthState.class, id);
+  public OauthState findOne(final String id) {
+    final OauthState state = em.find(OauthState.class, id);
     /*
      We don't expect any local code to modify the entity returned here. Any changes will be done by
      returning the entity to a client, the client makes the appropriate updates, and the updated
@@ -43,7 +43,7 @@ public class OAuthStateRepository {
    * @param id The id of the state entity to delete.
    */
   public void delete(final String id) {
-    em.createQuery("delete from OAuthState a where a.id=:id").setParameter("id", id).executeUpdate();
+    em.createQuery("delete from OauthState a where a.id=:id").setParameter("id", id).executeUpdate();
   }
 
   /**
@@ -52,7 +52,7 @@ public class OAuthStateRepository {
    * @param state The state to save.
    * @return The newly created entity.
    */
-  public OAuthState save(@NonNull final OAuthState state) {
+  public OauthState save(@NonNull final OauthState state) {
     em.persist(state);
     em.flush();
     return state;

@@ -5,6 +5,9 @@ import com.octopus.lambda.QueryParamExtractor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+/**
+ * Creates common utility objects for composition into other services.
+ */
 @ApplicationScoped
 public class UtilsProducer {
 
