@@ -235,7 +235,8 @@ step "Deploy OAuth Proxy" {
                             "LAMBDA_HANDLER": {"Ref": "LambdaHandler"},
                             "GITHUB_REDIRECT": {"Ref": "GithubClientRedirect"},
                             "GITHUB_ENCRYPTION": {"Ref": "GithubEncryption"},
-                            "GITHUB_SALT": {"Ref": "GithubSalt"}
+                            "GITHUB_SALT": {"Ref": "GithubSalt"},
+                            "GITHUB_LOGIN_REDIRECT": {"Ref": "GithubLoginRedirect"}
                           }
                         },
                         "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}" },
