@@ -1,4 +1,4 @@
-name: github-actions-backend
+name: github-oauth-backend
 
 on:
   push:
