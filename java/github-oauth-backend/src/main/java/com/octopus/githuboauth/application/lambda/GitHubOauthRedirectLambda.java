@@ -16,6 +16,7 @@ import javax.inject.Named;
 import lombok.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import io.quarkus.logging.Log;
 
 
 /**
@@ -52,42 +53,47 @@ public class GitHubOauthRedirectLambda implements
   @Override
   public ProxyResponse handleRequest(@NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final Context context) {
-    final String state = lambdaHttpValueExtractor.getAllQueryParams(
-        input.getMultiValueQueryStringParameters(),
-        input.getQueryStringParameters(),
-        Constants.STATE_QUERY_PARAM).get(0);
+    try {
+      final String state = lambdaHttpValueExtractor.getAllQueryParams(
+          input.getMultiValueQueryStringParameters(),
+          input.getQueryStringParameters(),
+          Constants.STATE_QUERY_PARAM).get(0);
 
-    final List<String> savedState = lambdaHttpValueExtractor.getAllQueryParams(
-        input.getMultiValueHeaders(),
-        input.getHeaders(),
-        Constants.STATE_COOKIE);
+      final List<String> savedState = lambdaHttpValueExtractor.getAllQueryParams(
+          input.getMultiValueHeaders(),
+          input.getHeaders(),
+          Constants.STATE_COOKIE);
 
-    if (!savedState.contains(state)) {
-      return new ProxyResponse("400", "Invalid state parameter");
+      if (!savedState.contains(state)) {
+        return new ProxyResponse("400", "Invalid state parameter");
+      }
+
+      final String code = lambdaHttpValueExtractor.getAllQueryParams(
+          input.getMultiValueQueryStringParameters(),
+          input.getQueryStringParameters(),
+          Constants.CODE_QUERY_PARAM).get(0);
+
+      final OauthResponse response = gitHubOauth.accessToken(
+          clientId,
+          clientSecret,
+          code,
+          clientRedirect);
+
+      return new ProxyResponse(
+          "307",
+          null,
+          new ImmutableMap.Builder<String, String>()
+              .put("Location", clientRedirect)
+              .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + cryptoUtils.encrypt(
+                  response.getAccessToken(),
+                  githubEncryption,
+                  githubSalt))
+              .put("Set-Cookie",
+                  Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+              .build());
+    } catch (final Exception ex) {
+      Log.error(ex.toString());
+      return new ProxyResponse("500", "An internal error was detected.");
     }
-
-    final String code = lambdaHttpValueExtractor.getAllQueryParams(
-        input.getMultiValueQueryStringParameters(),
-        input.getQueryStringParameters(),
-        Constants.CODE_QUERY_PARAM).get(0);
-
-    final OauthResponse response = gitHubOauth.accessToken(
-        clientId,
-        clientSecret,
-        code,
-        clientRedirect);
-
-    return new ProxyResponse(
-        "307",
-        null,
-        new ImmutableMap.Builder<String, String>()
-            .put("Location", clientRedirect)
-            .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + cryptoUtils.encrypt(
-                response.getAccessToken(),
-                githubEncryption,
-                githubSalt))
-            .put("Set-Cookie", Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
-            .build());
-
   }
 }
