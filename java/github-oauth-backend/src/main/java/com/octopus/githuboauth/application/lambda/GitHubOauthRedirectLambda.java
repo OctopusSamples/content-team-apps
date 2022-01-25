@@ -85,8 +85,7 @@ public class GitHubOauthRedirectLambda implements
           clientId,
           clientSecret,
           code,
-          clientRedirect,
-          MediaType.APPLICATION_JSON);
+          clientRedirect);
 
       return new ProxyResponse(
           "307",

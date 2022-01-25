@@ -32,6 +32,5 @@ public interface GitHubOauth {
       @QueryParam("client_id") final String clientId,
       @QueryParam("client_secret") final String clientSecret,
       @QueryParam("code") final String code,
-      @QueryParam("redirect_uri") final String redirectUri,
-      @HeaderParam("accept") final String accept);
+      @QueryParam("redirect_uri") final String redirectUri);
 }

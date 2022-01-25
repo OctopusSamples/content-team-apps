@@ -9,16 +9,17 @@ import lombok.Data;
  */
 public class OauthResponse {
 
+  @JsonProperty("access_token")
   private String accessToken;
   private String scope;
+  @JsonProperty("token_type")
   private String tokenType;
+  private String error;
 
-  @JsonProperty("access_token")
   public String getAccessToken() {
     return accessToken;
   }
 
-  @JsonProperty("access_token")
   public void setAccessToken(final String accessToken) {
     this.accessToken = accessToken;
   }
@@ -31,13 +32,19 @@ public class OauthResponse {
     this.scope = scope;
   }
 
-  @JsonProperty("token_type")
   public String getTokenType() {
     return tokenType;
   }
 
-  @JsonProperty("token_type")
   public void setTokenType(final String tokenType) {
     this.tokenType = tokenType;
+  }
+
+  public String getError() {
+    return error;
+  }
+
+  public void setError(final String error) {
+    this.error = error;
   }
 }
