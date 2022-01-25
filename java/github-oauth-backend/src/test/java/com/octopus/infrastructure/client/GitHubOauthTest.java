@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import io.quarkus.test.junit.QuarkusTest;
-import javax.ws.rs.core.MediaType;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Disabled;
@@ -31,5 +30,6 @@ public class GitHubOauthTest {
         "abadcode",
         "https://development.githubactionworkflows.com/");
     assertTrue(response.getError().length() != 0);
+    assertTrue(response.getErrorDescription().length() != 0);
   }
 }

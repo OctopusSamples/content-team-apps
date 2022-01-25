@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.MediaType;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -86,6 +87,10 @@ public class GitHubOauthRedirectLambda implements
           clientSecret,
           code,
           clientRedirect);
+
+      if (!StringUtils.isAllBlank(response.getError())) {
+        throw new Exception(response.getError() + "\n" + response.getErrorDescription());
+      }
 
       return new ProxyResponse(
           "307",

@@ -15,6 +15,8 @@ public class OauthResponse {
   @JsonProperty("token_type")
   private String tokenType;
   private String error;
+  @JsonProperty("error_description")
+  private String errorDescription;
 
   public String getAccessToken() {
     return accessToken;
@@ -46,5 +48,13 @@ public class OauthResponse {
 
   public void setError(final String error) {
     this.error = error;
+  }
+
+  public String getErrorDescription() {
+    return errorDescription;
+  }
+
+  public void setErrorDescription(final String errorDescription) {
+    this.errorDescription = errorDescription;
   }
 }
