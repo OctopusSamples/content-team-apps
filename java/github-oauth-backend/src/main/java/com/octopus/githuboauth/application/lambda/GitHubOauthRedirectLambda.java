@@ -15,6 +15,7 @@ import io.quarkus.logging.Log;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.MediaType;
 import lombok.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -84,7 +85,8 @@ public class GitHubOauthRedirectLambda implements
           clientId,
           clientSecret,
           code,
-          clientRedirect);
+          clientRedirect,
+          MediaType.APPLICATION_JSON);
 
       return new ProxyResponse(
           "307",
