@@ -10,7 +10,9 @@ import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.NonNull;
@@ -59,10 +61,17 @@ public class GitHubOauthRedirectLambda implements
           input.getQueryStringParameters(),
           Constants.STATE_QUERY_PARAM).get(0);
 
+      // Extract the cookie header looking for the state cookie
       final List<String> savedState = lambdaHttpValueExtractor.getAllQueryParams(
           input.getMultiValueHeaders(),
           input.getHeaders(),
-          Constants.STATE_COOKIE);
+          "Cookie")
+          .stream()
+          .flatMap(h -> Stream.of(h.split(";")))
+          .map(String::trim)
+          .filter(c -> c.startsWith(Constants.STATE_COOKIE + "="))
+          .map(c -> c.replaceFirst(Constants.STATE_COOKIE + "=", ""))
+          .toList();
 
       if (!savedState.contains(state)) {
         return new ProxyResponse("400", "Invalid state parameter");
