@@ -74,10 +74,9 @@ public class GitHubOauthRedirectLambda implements
       );
 
       if (!savedState.contains(state)) {
-        final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
-        apiGatewayProxyResponseEvent.setStatusCode(400);
-        apiGatewayProxyResponseEvent.setBody("Invalid state parameter");
-        return apiGatewayProxyResponseEvent;
+        return new APIGatewayProxyResponseEvent()
+            .withStatusCode(400)
+            .withBody("Invalid state parameter");
       }
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
@@ -95,30 +94,29 @@ public class GitHubOauthRedirectLambda implements
         throw new Exception(response.getError() + "\n" + response.getErrorDescription());
       }
 
-      final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
-      apiGatewayProxyResponseEvent.setStatusCode(307);
-      apiGatewayProxyResponseEvent.setHeaders(new ImmutableMap.Builder<String, String>()
-          .put("Location", clientRedirect)
-          .build());
-      apiGatewayProxyResponseEvent.setMultiValueHeaders(
-          new ImmutableMap.Builder<String, List<String>>()
-              .put("Set-Cookie", new ImmutableList.Builder<String>()
-                  .add(Constants.SESSION_COOKIE + "="
-                      + cryptoUtils.encrypt(
-                      response.getAccessToken(),
-                      githubEncryption,
-                      githubSalt))
-                  .add(Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
-                  .build())
-              .build());
-      return apiGatewayProxyResponseEvent;
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(307)
+          .withHeaders(new ImmutableMap.Builder<String, String>()
+              .put("Location", clientRedirect)
+              .build())
+          .withMultiValueHeaders(
+              new ImmutableMap.Builder<String, List<String>>()
+                  .put("Set-Cookie", new ImmutableList.Builder<String>()
+                      .add(Constants.SESSION_COOKIE + "="
+                          + cryptoUtils.encrypt(
+                          response.getAccessToken(),
+                          githubEncryption,
+                          githubSalt))
+                      .add(Constants.STATE_COOKIE
+                          + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+                      .build())
+                  .build());
 
     } catch (final Exception ex) {
       Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);
-      final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
-      apiGatewayProxyResponseEvent.setStatusCode(500);
-      apiGatewayProxyResponseEvent.setBody("An internal error was detected");
-      return apiGatewayProxyResponseEvent;
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(500)
+          .withBody("An internal error was detected");
     }
   }
 }
