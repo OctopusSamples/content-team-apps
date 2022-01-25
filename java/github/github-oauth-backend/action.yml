@@ -158,7 +158,7 @@ runs:
     - name: Trigger deployment
       run: >
         octo create-release
-        --project "GitHub OAuth Proxy"
+        --project "GitHub OAuth Backend"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
@@ -169,7 +169,7 @@ runs:
     - name: Trigger deployment to security environment
       run: >
         octo deploy-release
-        --project "GitHub OAuth Proxy"
+        --project "GitHub OAuth Backend"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
