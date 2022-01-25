@@ -3,6 +3,8 @@ package com.octopus.githuboauth.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.githuboauth.Constants;
@@ -15,7 +17,6 @@ import io.quarkus.logging.Log;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.core.MediaType;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -23,12 +24,11 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 
 /**
- * This lambda handles the conversion of a code to an access token.
- * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
+ * This lambda handles the conversion of a code to an access token. https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
  */
 @Named("accessToken")
 public class GitHubOauthRedirectLambda implements
-    RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
+    RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
   @ConfigProperty(name = "github.client.redirect")
   String clientRedirect;
@@ -58,7 +58,8 @@ public class GitHubOauthRedirectLambda implements
   CryptoUtils cryptoUtils;
 
   @Override
-  public ProxyResponse handleRequest(@NonNull final APIGatewayProxyRequestEvent input,
+  public APIGatewayProxyResponseEvent handleRequest(
+      @NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final Context context) {
     try {
       final String state = lambdaHttpValueExtractor.getAllQueryParams(
@@ -74,7 +75,9 @@ public class GitHubOauthRedirectLambda implements
       );
 
       if (!savedState.contains(state)) {
-        return new ProxyResponse("400", "Invalid state parameter");
+        final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
+        apiGatewayProxyResponseEvent.setStatusCode(400);
+        apiGatewayProxyResponseEvent.setBody("Invalid state parameter");
       }
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
@@ -92,22 +95,31 @@ public class GitHubOauthRedirectLambda implements
         throw new Exception(response.getError() + "\n" + response.getErrorDescription());
       }
 
-      return new ProxyResponse(
-          "307",
-          null,
-          new ImmutableMap.Builder<String, String>()
-              .put("Location", clientRedirect)
-              .put("Set-Cookie", Constants.SESSION_COOKIE + "="
-                  + cryptoUtils.encrypt(
-                  response.getAccessToken(),
-                  githubEncryption,
-                  githubSalt)
-                  + ";" + Constants.STATE_COOKIE
-                  + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+      final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
+      apiGatewayProxyResponseEvent.setStatusCode(307);
+      apiGatewayProxyResponseEvent.setHeaders(new ImmutableMap.Builder<String, String>()
+          .put("Location", clientRedirect)
+          .build());
+      apiGatewayProxyResponseEvent.setMultiValueHeaders(
+          new ImmutableMap.Builder<String, List<String>>()
+              .put("Set-Cookie", new ImmutableList.Builder<String>()
+                  .add(Constants.SESSION_COOKIE + "="
+                      + cryptoUtils.encrypt(
+                      response.getAccessToken(),
+                      githubEncryption,
+                      githubSalt))
+                  .add(Constants.STATE_COOKIE
+                      + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+                  .build())
               .build());
+      return apiGatewayProxyResponseEvent;
+
     } catch (final Exception ex) {
       Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);
-      return new ProxyResponse("500", "An internal error was detected.");
+      final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
+      apiGatewayProxyResponseEvent.setStatusCode(500);
+      apiGatewayProxyResponseEvent.setBody("An internal error was detected");
+      return apiGatewayProxyResponseEvent;
     }
   }
 }
