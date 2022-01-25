@@ -12,10 +12,6 @@ inputs:
     required: true
   run_number:  
     required: true
-  oauth_client_id:
-    required: true
-  oauth_client_secret:
-    required: true
 runs:
   using: "composite"
   steps:
@@ -77,14 +73,6 @@ runs:
 
     - name: Test Backend
       run: mvn --batch-mode test
-      env:
-        LAMBDA_HANDLER: login
-        GITHUB_REDIRECT: https://development.githubactionworkflows.com/oauth/github/code
-        GITHUB_CLIENT_ID: ${{ inputs.oauth_client_id }}
-        GITHUB_CLIENT_SECRET: ${{ inputs.oauth_client_secret }}
-        GITHUB_ENCRYPTION: 1234567890123456789012345678901234567890
-        GITHUB_SALT: 1234567890123456789012345678901234567890
-        GITHUB_LOGIN_REDIRECT: https://development.githubactionworkflows.com/
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
