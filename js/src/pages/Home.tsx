@@ -54,6 +54,8 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
     props.setCopyText("");
 
     const history = useHistory();
+    const classes = useStyles();
+    const context = useContext(AppContext);
 
     if (!localStorage.getItem("url")) {
         localStorage.setItem("url", "https://github.com/OctopusSamples/RandomQuotes-Java");
@@ -63,9 +65,21 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
         localStorage.getItem("url")
     );
 
+    const [error, setError] = useState("");
+
     function handleUrlUpdate(url: string) {
         localStorage.setItem("url", url);
         setUrl(url);
+    }
+
+    /*
+        If we are returning for being logged in, jump straight to the template generation page.
+        It is the oauth proxy that sets the action query parameter.
+     */
+    const search = window.location.search;
+    const params = new URLSearchParams(search);
+    if (params.get('action') === "loggedin") {
+        handleClick();
     }
 
     function handleClick() {
@@ -81,11 +95,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
         history.push("/template", {url});
     }
 
-    const classes = useStyles();
 
-    const [error, setError] = useState("");
-
-    const context = useContext(AppContext);
 
     return (
         <>
