@@ -99,7 +99,7 @@ public class GitHubOauthRedirectLambda implements
                   Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
               .build());
     } catch (final Exception ex) {
-      Log.error(ex.toString());
+      Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);
       return new ProxyResponse("500", "An internal error was detected.");
     }
   }

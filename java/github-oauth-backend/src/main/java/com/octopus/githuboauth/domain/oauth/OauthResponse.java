@@ -7,11 +7,35 @@ import lombok.Data;
  * Represents the response from the GitHub OAuth service when exchanging a code for a token.
  * https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps#response
  */
-@Data
 public class OauthResponse {
-  @JsonProperty("access_token")
+
   private String accessToken;
   private String scope;
-  @JsonProperty("token_type")
   private String tokenType;
+
+  @JsonProperty("access_token")
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(final String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public String getScope() {
+    return scope;
+  }
+
+  public void setScope(final String scope) {
+    this.scope = scope;
+  }
+
+  @JsonProperty("token_type")
+  public String getTokenType() {
+    return tokenType;
+  }
+
+  public void setTokenType(final String tokenType) {
+    this.tokenType = tokenType;
+  }
 }
