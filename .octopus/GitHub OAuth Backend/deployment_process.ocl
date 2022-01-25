@@ -5,7 +5,7 @@ step "Create Bucket" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.S3Bucket}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.S3Bucket}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Resources": {
