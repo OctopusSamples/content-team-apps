@@ -97,12 +97,13 @@ public class GitHubOauthRedirectLambda implements
           null,
           new ImmutableMap.Builder<String, String>()
               .put("Location", clientRedirect)
-              .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + cryptoUtils.encrypt(
+              .put("Set-Cookie", Constants.SESSION_COOKIE + "="
+                  + cryptoUtils.encrypt(
                   response.getAccessToken(),
                   githubEncryption,
-                  githubSalt))
-              .put("Set-Cookie",
-                  Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+                  githubSalt)
+                  + ";" + Constants.STATE_COOKIE
+                  + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
               .build());
     } catch (final Exception ex) {
       Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);
