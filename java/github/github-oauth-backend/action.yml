@@ -1,4 +1,4 @@
-name: 'GitHub OAuth Proxy'
+name: 'GitHub OAuth Backend'
 inputs:
   dockerhub_username:
     required: true
