@@ -10,9 +10,16 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.githuboauth.Constants;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
+import com.octopus.http.CookieDateUtils;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import io.quarkus.logging.Log;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,6 +56,9 @@ public class GitHubOauthRedirectLambda implements
 
   @Inject
   LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
+
+  @Inject
+  CookieDateUtils cookieDateUtils;
 
   @RestClient
   GitHubOauth gitHubOauth;
@@ -106,7 +116,8 @@ public class GitHubOauthRedirectLambda implements
                           + cryptoUtils.encrypt(
                           response.getAccessToken(),
                           githubEncryption,
-                          githubSalt))
+                          githubSalt)
+                          + "; expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS))
                       .add(Constants.STATE_COOKIE
                           + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
                       .build())

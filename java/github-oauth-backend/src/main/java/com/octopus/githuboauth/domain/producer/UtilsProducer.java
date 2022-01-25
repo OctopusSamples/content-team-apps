@@ -2,6 +2,8 @@ package com.octopus.githuboauth.domain.producer;
 
 import com.octopus.encryption.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.http.CookieDateUtils;
+import com.octopus.http.CookieDateUtilsImpl;
 import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
@@ -46,5 +48,16 @@ public class UtilsProducer {
   @Produces
   public CryptoUtils getCryptoUtils() {
     return new AesCryptoUtils();
+  }
+
+  /**
+   * Produces the cookie date utils instance.
+   *
+   * @return An implementation of CookieDateUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public CookieDateUtils getCookieDateUtils() {
+    return new CookieDateUtilsImpl();
   }
 }
