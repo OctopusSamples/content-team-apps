@@ -6,6 +6,9 @@
     "editorFormat": "",
     "google": {
       "tag": ""
+    },
+    "github": {
+      "enableLogin": false
     }
   }
 }

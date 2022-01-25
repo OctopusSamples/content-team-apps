@@ -55,8 +55,21 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
 
     const history = useHistory();
 
+    if (!localStorage.getItem("url")) {
+        localStorage.setItem("url", "https://github.com/OctopusSamples/RandomQuotes-Java");
+    }
+
+    const [url, setUrl] = useState(
+        localStorage.getItem("url")
+    );
+
+    function handleUrlUpdate(url: string) {
+        localStorage.setItem("url", url);
+        setUrl(url);
+    }
+
     function handleClick() {
-        if (!url.trim().startsWith("https://github.com")) {
+        if (!url || !url.trim().startsWith("https://github.com")) {
             setError("URL must point to a GitHub repo!");
         } else {
             setError("");
@@ -69,9 +82,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
     }
 
     const classes = useStyles();
-    const [url, setUrl] = useState(
-        "https://github.com/OctopusSamples/RandomQuotes-Java"
-    );
+
     const [error, setError] = useState("");
 
     const context = useContext(AppContext);
@@ -105,7 +116,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
                         </Grid>
                         <Grid item xs={8}>
                             <TextField id={"url"} fullWidth={true} value={url}
-                                       onChange={event => setUrl(event.target.value)}
+                                       onChange={event => handleUrlUpdate(event.target.value)}
                                        variant={"outlined"}/>
                         </Grid>
                         <Grid item xs={2}>
