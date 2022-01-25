@@ -76,9 +76,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
         If we are returning for being logged in, jump straight to the template generation page.
         It is the oauth proxy that sets the action query parameter.
      */
-    const search = window.location.search;
-    const params = new URLSearchParams(search);
-    if (params.get('action') === "loggedin") {
+    if (new URLSearchParams(window.location.search).get('action') === "loggedin") {
         handleClick();
     }
 
