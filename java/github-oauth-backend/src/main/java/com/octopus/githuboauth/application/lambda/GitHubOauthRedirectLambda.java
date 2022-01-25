@@ -8,6 +8,7 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.githuboauth.Constants;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import java.util.Arrays;
@@ -46,6 +47,9 @@ public class GitHubOauthRedirectLambda implements
   @Inject
   LambdaHttpValueExtractor lambdaHttpValueExtractor;
 
+  @Inject
+  LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
+
   @RestClient
   GitHubOauth gitHubOauth;
 
@@ -62,16 +66,11 @@ public class GitHubOauthRedirectLambda implements
           Constants.STATE_QUERY_PARAM).get(0);
 
       // Extract the cookie header looking for the state cookie
-      final List<String> savedState = lambdaHttpValueExtractor.getAllQueryParams(
+      final List<String> savedState = lambdaHttpCookieExtractor.getAllQueryParams(
           input.getMultiValueHeaders(),
           input.getHeaders(),
-          "Cookie")
-          .stream()
-          .flatMap(h -> Stream.of(h.split(";")))
-          .map(String::trim)
-          .filter(c -> c.startsWith(Constants.STATE_COOKIE + "="))
-          .map(c -> c.replaceFirst(Constants.STATE_COOKIE + "=", ""))
-          .toList();
+          Constants.STATE_COOKIE
+      );
 
       if (!savedState.contains(state)) {
         return new ProxyResponse("400", "Invalid state parameter");
