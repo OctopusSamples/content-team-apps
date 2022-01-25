@@ -18,6 +18,7 @@ public class OauthResponse {
     return accessToken;
   }
 
+  @JsonProperty("access_token")
   public void setAccessToken(final String accessToken) {
     this.accessToken = accessToken;
   }
@@ -35,6 +36,7 @@ public class OauthResponse {
     return tokenType;
   }
 
+  @JsonProperty("token_type")
   public void setTokenType(final String tokenType) {
     this.tokenType = tokenType;
   }
