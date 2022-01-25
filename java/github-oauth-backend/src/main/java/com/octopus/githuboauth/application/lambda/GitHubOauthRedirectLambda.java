@@ -12,7 +12,6 @@ import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
-import com.octopus.lambda.ProxyResponse;
 import io.quarkus.logging.Log;
 import java.util.List;
 import javax.inject.Inject;
@@ -78,6 +77,7 @@ public class GitHubOauthRedirectLambda implements
         final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
         apiGatewayProxyResponseEvent.setStatusCode(400);
         apiGatewayProxyResponseEvent.setBody("Invalid state parameter");
+        return apiGatewayProxyResponseEvent;
       }
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
@@ -108,8 +108,7 @@ public class GitHubOauthRedirectLambda implements
                       response.getAccessToken(),
                       githubEncryption,
                       githubSalt))
-                  .add(Constants.STATE_COOKIE
-                      + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+                  .add(Constants.STATE_COOKIE + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
                   .build())
               .build());
       return apiGatewayProxyResponseEvent;
