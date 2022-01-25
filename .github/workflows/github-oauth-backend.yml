@@ -30,6 +30,6 @@ jobs:
           octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
           octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
           run_number: ${{ github.run_number }}
-          oauth_client_id: ${{ secrets.OAUTH_CILENT_ID }}
+          oauth_client_id: ${{ secrets.OAUTH_CLIENT_ID }}
           oauth_client_secret: ${{ secrets.OAUTH_CLIENT_SECRET }}
             
