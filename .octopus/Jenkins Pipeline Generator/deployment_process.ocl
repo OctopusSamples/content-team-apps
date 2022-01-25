@@ -236,7 +236,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                         "Timeout": 30
                       }
                     },
-                    "LambdaVersion#{DeploymentId}": {
+                    "LambdaVersion#{Octopus.Deployment.Id | Replace -}": {
                      	"Type": "AWS::Lambda::Version",
                       	"Properties": {
                          	 "FunctionName": {"Ref": "LambdaOne"},
@@ -250,7 +250,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                       "Type": "AWS::Lambda::Permission",
                       "Properties": {
                         "FunctionName": {
-                		  "Ref": "LambdaVersion#{DeploymentId}"
+                		  "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 	    },
                         "Action": "lambda:InvokeFunction",
                         "Principal": "apigateway.amazonaws.com",
@@ -301,7 +301,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                                 },
                                 ":lambda:path/2015-03-31/functions/",
                                 {
-                				  "Ref": "LambdaVersion#{DeploymentId}"
+                				  "Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                 			   },
                                 "/invocations"
                               ]
@@ -314,7 +314,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                         "RestApiId": {"Ref": "RestApi"}
                       }
                     },
-                    "Deployment#{DeploymentId}": {
+                    "Deployment#{Octopus.Deployment.Id | Replace -}": {
                       "Type": "AWS::ApiGateway::Deployment",
                       "Properties": {
                         "RestApiId": {"Ref": "RestApi"}
@@ -327,7 +327,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                   "Outputs" : {
                     "DeploymentId" : {
                       "Description" : "The deployment id",
-                      "Value" : {"Ref": "Deployment#{DeploymentId}"}
+                      "Value" : {"Ref": "Deployment#{Octopus.Deployment.Id | Replace -}"}
                     }
                   }
                 }
