@@ -29,7 +29,11 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
   @Override
   public ProxyResponse handleRequest(@Nonnull final Map<String, Object> stringObjectMap, @Nonnull final Context context) {
     final String state = UUID.randomUUID().toString();
-    // Redirect to the GitHub login
+    /*
+      Redirect to the GitHub login.
+      Saving state values as cookies was inspired by the CodeAuthenticationMechanism class
+      https://github.com/quarkusio/quarkus/blob/main/extensions/oidc/runtime/src/main/java/io/quarkus/oidc/runtime/CodeAuthenticationMechanism.java#L253
+     */
     return new ProxyResponse(
         "307",
         null,

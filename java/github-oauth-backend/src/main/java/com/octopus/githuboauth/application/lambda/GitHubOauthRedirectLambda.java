@@ -11,19 +11,18 @@ import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
-import java.util.Arrays;
+import io.quarkus.logging.Log;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import io.quarkus.logging.Log;
 
 
 /**
- * This lambda handles the conversion of a code to an access token. https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
+ * This lambda handles the conversion of a code to an access token.
+ * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
  */
 @Named("accessToken")
 public class GitHubOauthRedirectLambda implements

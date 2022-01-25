@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 
 /**
- * An implementation of LambdaHttpValueExtractor that extracts cookies from headers.
+ * An implementation of LambdaHttpCookieExtractor that extracts cookies from headers.
  */
 public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor {
 

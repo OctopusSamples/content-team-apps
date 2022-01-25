@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An interface used to extract values from a Lambda request.
+ * An interface used to extract cookies from a Lambda request.
  */
 public interface LambdaHttpCookieExtractor {
 
