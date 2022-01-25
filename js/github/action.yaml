@@ -6,6 +6,8 @@ inputs:
     required: true
   run_number:  
     required: true
+  github_token:  
+    required: true
 on:
   push:
   workflow_dispatch:
