@@ -163,6 +163,7 @@ runs:
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
+        --gitRef "master"
         --waitForDeployment
       shell: bash
 
