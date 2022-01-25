@@ -10,4 +10,4 @@ So the lambdas implemented in this proxy do the following:
 * Create a random state code, and persist it to a database.
 * Redirect the user to log in via GitHub.
 * Handle the redirect from GitHub, check the state, and exchange the code for an access token.
-* Encrypt the token and send it back in a cookie with a redirect to the SPA.
+* Encrypt the token and send it back in a cookie with a redirect to the SPA. 
