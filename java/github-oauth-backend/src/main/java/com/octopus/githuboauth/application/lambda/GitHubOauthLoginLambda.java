@@ -39,7 +39,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
                 + "&redirect_uri=" + loginRedirect
                 + "&state=" + state
                 + "&allow_signup=false")
-            .put("Set-Cookie", Constants.SESSION_COOKIE + "=" + state)
+            .put("Set-Cookie", Constants.STATE_COOKIE + "=" + state)
             .build());
   }
 }
