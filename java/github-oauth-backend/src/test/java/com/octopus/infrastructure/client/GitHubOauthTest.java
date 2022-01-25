@@ -21,8 +21,11 @@ public class GitHubOauthTest {
   @ConfigProperty(name = "github.client.secret")
   String clientSecret;
 
+  /**
+   * This test verifies that the rest client can parse the response correctly. The response
+   * will be an error, but that is expected given the bad code being sent.
+   */
   @Test
-  @Disabled
   public void testOauth() {
     final OauthResponse response = gitHubOauth.accessToken(
         clientId,
