@@ -151,6 +151,7 @@ runs:
     - name: Trigger deployment
       run: >
         octo create-release
+        --gitRef "main"
         --project "Jenkins Pipeline Generator"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
