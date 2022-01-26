@@ -38,7 +38,8 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch(context.settings.basename + '/' + context.settings.generateApiPath + '?repo=' + state.url)
+                await fetch(context.settings.basename + '/' + context.settings.generateApiPath + '?repo=' + state.url,
+                    {redirect: "manual"})
                     .then(response => response.text())
                     .catch(error => "There was a problem with your request.")
 
@@ -46,7 +47,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
         }
 
         getTemplate();
-    })
+    }, [props, context.settings.basename, context.settings.generateApiPath, state.url])
 
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
     const mode = context?.settings?.editorFormat || 'javascript';
