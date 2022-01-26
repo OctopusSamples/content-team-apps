@@ -22,8 +22,7 @@ import org.joda.time.Interval;
     RunStep.class,
     UsesWith.class,
     Workflow.class,
-    WorkflowDispatch.class,
-    Interval.class})
+    WorkflowDispatch.class})
 public class ReflectionConfig {
 
 }
