@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "basename": "",
+    "title": "Pipeline Builder",
+    "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
+    "editorFormat": "yaml",
+    "google": {
+      "tag": ""
+    },
+    "github": {
+      "enableLogin": false
+    }
+  }
+}

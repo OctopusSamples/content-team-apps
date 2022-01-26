@@ -35,11 +35,6 @@ runs:
       shell: bash
       working-directory: js
 
-    - name: Copy config file
-      run: cp config.json build
-      shell: bash
-      working-directory: js
-
     - name: Install CycloneDX
       run: npm install -g @cyclonedx/bom
       shell: bash
