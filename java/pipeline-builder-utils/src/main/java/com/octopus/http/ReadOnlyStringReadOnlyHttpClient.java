@@ -23,7 +23,10 @@ import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
 
 /**
- * A readonly HTTP client.
+ * A readonly HTTP client. This is important, because GitHub does not offer a readonly
+ * scope when accessing repos: https://github.com/github/feedback/discussions/7891.
+ * So by ensuring we use a client that can only make GET or HEAD calls, we can be sure we
+ * don't make any unwanted modifications.
  */
 public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
 
