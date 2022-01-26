@@ -110,9 +110,10 @@ public class GitHubOauthRedirectLambda implements
                           response.getAccessToken(),
                           githubEncryption,
                           githubSalt)
-                          + "; expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS))
+                          + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
+                          + ";path=/")
                       .add(OauthBackendConstants.STATE_COOKIE
-                          + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+                          + "=deleted;expires=Thu, 01 Jan 1970 00:00:00 GMT")
                       .build())
                   .build());
 
