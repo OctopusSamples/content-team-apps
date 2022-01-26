@@ -163,11 +163,12 @@ runs:
 
     - name: Trigger deployment to security environment
       run: >
-        octo deploy-release
+        octo promote-release
         --project "Github Action Workflow Generator"
+        --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
-        --version=latest
+        ---latestSuccessful
       shell: bash
