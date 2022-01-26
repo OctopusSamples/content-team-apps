@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.octopus.builders.dotnet.DotnetCoreBuilder;
-import com.octopus.http.StringHttpClient;
+import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class DotnetCoreBuilderTest {
   public void verifyBuilderSupport() {
     assertTrue(DOTNET_CORE_BUILDER.canBuild(GithubRepoClient
         .builder()
-        .httpClient(new StringHttpClient())
+        .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
         .repo("https://github.com/OctopusSamples/RandomQuotes")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))
@@ -24,7 +24,7 @@ public class DotnetCoreBuilderTest {
 
     assertFalse(DOTNET_CORE_BUILDER.canBuild(GithubRepoClient
         .builder()
-        .httpClient(new StringHttpClient())
+        .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
         .repo("https://github.com/mcasperson/SampleGradleProject-SpringBoot")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))

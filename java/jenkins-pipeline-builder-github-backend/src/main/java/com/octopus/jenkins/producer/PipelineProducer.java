@@ -9,8 +9,8 @@ import com.octopus.builders.nodejs.NodejsBuilder;
 import com.octopus.builders.php.PhpComposerBuilder;
 import com.octopus.builders.python.PythonBuilder;
 import com.octopus.builders.ruby.RubyGemBuilder;
-import com.octopus.http.HttpClient;
-import com.octopus.http.StringHttpClient;
+import com.octopus.http.ReadOnlyHttpClient;
+import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
 import java.util.Optional;
@@ -38,8 +38,8 @@ public class PipelineProducer {
    */
   @ApplicationScoped
   @Produces
-  public HttpClient getHttpClient() {
-    return new StringHttpClient();
+  public ReadOnlyHttpClient getHttpClient() {
+    return new ReadOnlyStringReadOnlyHttpClient();
   }
 
   /**
@@ -48,9 +48,9 @@ public class PipelineProducer {
    * @return An implementation of RepoAccessor.
    */
   @Produces
-  public RepoClient getRepoAccessor(final HttpClient httpClient) {
+  public RepoClient getRepoAccessor(final ReadOnlyHttpClient readOnlyHttpClient) {
     return GithubRepoClient.builder()
-        .httpClient(httpClient)
+        .readOnlyHttpClient(readOnlyHttpClient)
         .username(clientId.orElse(""))
         .password(clientSecret.orElse(""))
         .build();

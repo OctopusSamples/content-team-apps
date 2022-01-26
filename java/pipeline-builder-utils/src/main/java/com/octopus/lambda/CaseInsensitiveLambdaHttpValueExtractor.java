@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 
@@ -11,6 +12,15 @@ import lombok.NonNull;
  * An implementation of LambdaHttpValueExtractor that ignores value name case.
  */
 public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueExtractor {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Optional<String> getQueryParam(APIGatewayProxyRequestEvent input, String name) {
+    return getAllQueryParams(input.getMultiValueHeaders(), input.getHeaders(), name)
+        .stream().findFirst();
+  }
 
   /**
    * {@inheritDoc}

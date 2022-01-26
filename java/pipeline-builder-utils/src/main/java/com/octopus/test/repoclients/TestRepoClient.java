@@ -4,6 +4,7 @@ import com.octopus.repoclients.RepoClient;
 import io.vavr.control.Try;
 import java.util.List;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A base class for mock repo clients.
@@ -13,6 +14,7 @@ public abstract class TestRepoClient implements RepoClient {
   private final String branch;
   protected boolean findWrapper;
   private String repo;
+  private String accessToken;
 
   /**
    * A mock repo accessor that pretends to find (or not find) project files and wrapper scripts.
@@ -44,6 +46,17 @@ public abstract class TestRepoClient implements RepoClient {
   public void setRepo(final String repo) {
     this.repo = repo;
   }
+
+  @Override
+  public String getRepo() {return repo;}
+
+  @Override
+  public void setAccessToken(final String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  @Override
+  public boolean hasAccessToken() {return StringUtils.isNoneBlank(accessToken);}
 
   @Override
   public Try<String> getFile(String path) {

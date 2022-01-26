@@ -4,9 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.githuboauth.Constants;
+import com.octopus.githuboauth.OAuthBackendConstants;
 import com.octopus.lambda.ProxyResponse;
-import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.inject.Named;
@@ -42,9 +41,14 @@ public class GitHubOauthLoginLambda implements RequestHandler<APIGatewayProxyReq
             .put("Location", GitHubAuthURL
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + loginRedirect
+                /*
+                  Yikes! There is no such thing as read only repo access:
+                  https://github.com/github/feedback/discussions/7891
+                 */
+                + "&scope=user:email%20repo"
                 + "&state=" + state
                 + "&allow_signup=false")
-            .put("Set-Cookie", Constants.STATE_COOKIE + "=" + state)
+            .put("Set-Cookie", OAuthBackendConstants.STATE_COOKIE + "=" + state)
             .build());
   }
 }

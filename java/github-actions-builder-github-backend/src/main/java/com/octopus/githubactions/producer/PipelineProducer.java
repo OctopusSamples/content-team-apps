@@ -1,6 +1,8 @@
 package com.octopus.githubactions.producer;
 
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.encryption.AesCryptoUtils;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.githubactions.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.builders.GenericBuilder;
 import com.octopus.githubactions.builders.GoBuilder;
@@ -10,9 +12,11 @@ import com.octopus.githubactions.builders.NodeJsBuilder;
 import com.octopus.githubactions.builders.PhpComposerBuilder;
 import com.octopus.githubactions.builders.PythonBuilder;
 import com.octopus.githubactions.builders.RubyBuilder;
-import com.octopus.http.HttpClient;
-import com.octopus.http.StringHttpClient;
+import com.octopus.http.ReadOnlyHttpClient;
+import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
@@ -41,8 +45,8 @@ public class PipelineProducer {
    */
   @ApplicationScoped
   @Produces
-  public HttpClient getHttpClient() {
-    return new StringHttpClient();
+  public ReadOnlyHttpClient getHttpClient() {
+    return new ReadOnlyStringReadOnlyHttpClient();
   }
 
   /**
@@ -51,12 +55,23 @@ public class PipelineProducer {
    * @return An implementation of RepoAccessor.
    */
   @Produces
-  public RepoClient getRepoAccessor(final HttpClient httpClient) {
+  public RepoClient getRepoAccessor(final ReadOnlyHttpClient readOnlyHttpClient) {
     return GithubRepoClient.builder()
-        .httpClient(httpClient)
+        .readOnlyHttpClient(readOnlyHttpClient)
         .username(clientId.orElse(""))
         .password(clientSecret.orElse(""))
         .build();
+  }
+
+  /**
+   * Produces the crypto utils instance.
+   *
+   * @return An implementation of CryptoUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public CryptoUtils getCryptoUtils() {
+    return new AesCryptoUtils();
   }
 
   /**
@@ -68,6 +83,17 @@ public class PipelineProducer {
   @Produces
   public LambdaHttpValueExtractor getQueryParamExtractor() {
     return new CaseInsensitiveLambdaHttpValueExtractor();
+  }
+
+  /**
+   * Produces the Lambda cookie extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpCookieExtractor getCookieExtractor() {
+    return new CaseInsensitiveCookieExtractor();
   }
 
   /**

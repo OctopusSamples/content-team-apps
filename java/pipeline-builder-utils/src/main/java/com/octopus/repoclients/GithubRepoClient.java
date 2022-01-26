@@ -3,7 +3,7 @@ package com.octopus.repoclients;
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.octopus.http.HttpClient;
+import com.octopus.http.ReadOnlyHttpClient;
 import io.vavr.control.Try;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.AntPathMatcher;
 import org.apache.shiro.util.PatternMatcher;
 import org.jboss.logging.Logger;
@@ -37,7 +38,7 @@ public class GithubRepoClient implements RepoClient {
 
   @Getter
   @Setter
-  private HttpClient httpClient;
+  private ReadOnlyHttpClient readOnlyHttpClient;
 
   @Getter
   @Setter
@@ -47,12 +48,21 @@ public class GithubRepoClient implements RepoClient {
   @Setter
   private String password;
 
+  @Getter
+  @Setter
+  private String accessToken;
+
+  @Override
+  public boolean hasAccessToken() {
+    return StringUtils.isNotBlank(accessToken);
+  }
+
   @Override
   public Try<String> getFile(@NonNull final String path) {
     LOG.debug("GithubRepoClient.getFile(String)");
 
     return getDetails()
-        .flatMap(d -> getDefaultBranches().stream().map(b -> httpClient.get(
+        .flatMap(d -> getDefaultBranches().stream().map(b -> readOnlyHttpClient.get(
                 "https://raw.githubusercontent.com/" + d.getUsername() + "/" + d.getRepository() + "/"
                     + b + "/" + path))
             .filter(Try::isSuccess)
@@ -67,7 +77,7 @@ public class GithubRepoClient implements RepoClient {
     return getDetails()
         .map(d -> getDefaultBranches()
             .stream()
-            .anyMatch(b -> httpClient.head(
+            .anyMatch(b -> readOnlyHttpClient.head(
                 "https://raw.githubusercontent.com/" + d.getUsername() + "/" + d.getRepository()
                     + "/" + b + "/" + path)))
         .get();
@@ -81,7 +91,7 @@ public class GithubRepoClient implements RepoClient {
         // Get the repository tree list
         .flatMap(d -> getDefaultBranches()
             .stream()
-            .map(b -> httpClient.get(
+            .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
                     + "/git/trees/" + b + "?recursive=1"))
             .filter(Try::isSuccess)
@@ -108,7 +118,7 @@ public class GithubRepoClient implements RepoClient {
         // Get the repository tree list
         .flatMap(d -> getDefaultBranches()
             .stream()
-            .map(b -> httpClient.get(
+            .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
                     + "/git/trees/" + b + "?recursive=1"))
             .filter(Try::isSuccess)
@@ -145,10 +155,11 @@ public class GithubRepoClient implements RepoClient {
 
     return getDetails()
         // Get the repository details: https://docs.github.com/en/rest/reference/repos#get-a-repository
-        .flatMap(d -> httpClient.get(
+        .flatMap(d -> readOnlyHttpClient.get(
             "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository(),
             username,
-            password))
+            password,
+            accessToken))
         // Convert the resulting JSON into a map
         .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
         // get the default branch key
@@ -168,7 +179,7 @@ public class GithubRepoClient implements RepoClient {
   @Override
   public boolean testRepo() {
     return getDetails()
-        .flatMap(d -> httpClient.get(
+        .flatMap(d -> readOnlyHttpClient.get(
             "https://github.com/" + d.getUsername() + "/" + d.getRepository() + "/"))
         .isSuccess();
   }

@@ -6,19 +6,15 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.octopus.PipelineConstants;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.githuboauth.Constants;
+import com.octopus.githuboauth.OAuthBackendConstants;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import com.octopus.http.CookieDateUtils;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import io.quarkus.logging.Log;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.inject.Inject;
@@ -73,12 +69,12 @@ public class GitHubOauthRedirectLambda implements
     try {
       final String state = lambdaHttpValueExtractor.getAllQueryParams(
           input,
-          Constants.STATE_QUERY_PARAM).get(0);
+          OAuthBackendConstants.STATE_QUERY_PARAM).get(0);
 
       // Extract the cookie header looking for the state cookie
       final List<String> savedState = lambdaHttpCookieExtractor.getAllQueryParams(
           input,
-          Constants.STATE_COOKIE
+          OAuthBackendConstants.STATE_COOKIE
       );
 
       if (!savedState.contains(state)) {
@@ -89,7 +85,7 @@ public class GitHubOauthRedirectLambda implements
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
           input,
-          Constants.CODE_QUERY_PARAM).get(0);
+          OAuthBackendConstants.CODE_QUERY_PARAM).get(0);
 
       final OauthResponse response = gitHubOauth.accessToken(
           clientId,
@@ -109,13 +105,13 @@ public class GitHubOauthRedirectLambda implements
           .withMultiValueHeaders(
               new ImmutableMap.Builder<String, List<String>>()
                   .put("Set-Cookie", new ImmutableList.Builder<String>()
-                      .add(Constants.SESSION_COOKIE + "="
+                      .add(PipelineConstants.SESSION_COOKIE + "="
                           + cryptoUtils.encrypt(
                           response.getAccessToken(),
                           githubEncryption,
                           githubSalt)
                           + "; expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS))
-                      .add(Constants.STATE_COOKIE
+                      .add(OAuthBackendConstants.STATE_COOKIE
                           + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
                       .build())
                   .build());

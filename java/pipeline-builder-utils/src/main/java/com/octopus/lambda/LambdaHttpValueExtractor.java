@@ -3,11 +3,21 @@ package com.octopus.lambda;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An interface used to extract values from a Lambda request.
  */
 public interface LambdaHttpValueExtractor {
+
+  /**
+   * Get a single value from both the multi and single collections.
+   *
+   * @param input The Lambda request inputs.
+   * @param name The name of the value.
+   * @return All the values that match the name.
+   */
+  Optional<String> getQueryParam(APIGatewayProxyRequestEvent input, String name);
 
   /**
    * Get all values from both the multi and single collections.

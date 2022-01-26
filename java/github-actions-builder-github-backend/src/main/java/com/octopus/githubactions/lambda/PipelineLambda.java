@@ -9,14 +9,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
+import com.octopus.PipelineConstants;
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.encryption.CryptoUtils;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
+import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
@@ -27,6 +32,15 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   private static final Logger LOG = Logger.getLogger(PipelineLambda.class.toString());
 
+  @ConfigProperty(name = "github.login.page")
+  String loginPage;
+
+  @ConfigProperty(name = "github.encryption")
+  String githubEncryption;
+
+  @ConfigProperty(name = "github.salt")
+  String githubSalt;
+
   @Inject
   RepoClient accessor;
 
@@ -35,6 +49,12 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   @Inject
   LambdaHttpValueExtractor lambdaHttpValueExtractor;
+
+  @Inject
+  LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
+
+  @Inject
+  CryptoUtils cryptoUtils;
 
   /**
    * The Lambda entry point.
@@ -47,11 +67,11 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
   @Override
   public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input,
       final Context context) {
-    LOG.log(DEBUG, "PipelineLambda.handleRequest(Map<String,Object>, Context)");
+    LOG.log(DEBUG, "PipelineLambda.handleRequest(APIGatewayProxyRequestEvent, Context)");
     LOG.log(DEBUG, "input: " + convertObjectToJson(input));
     LOG.log(DEBUG, "context: " + convertObjectToJson(context));
 
-    if (lambdaHttpValueExtractor.getAllQueryParams(input, "action").equals("health")) {
+    if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
       return new ProxyResponse(
           "201",
           "OK",
@@ -61,29 +81,27 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
     }
 
     return generatePipeline(
-        lambdaHttpValueExtractor.getAllQueryParams(input, "repo")
-            .stream()
-            .findFirst()
-            .orElse(""));
+        lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""), input);
   }
 
-  private ProxyResponse generatePipeline(final String repo) {
+  private ProxyResponse generatePipeline(final String repo, final APIGatewayProxyRequestEvent input) {
     LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
     }
 
+    final Optional<String> auth = lambdaHttpCookieExtractor.getQueryParam(input,
+        PipelineConstants.SESSION_COOKIE);
+
     accessor.setRepo(repo);
+    auth.ifPresent(s -> accessor.setAccessToken(
+        cryptoUtils.decrypt(s, githubEncryption, githubSalt)));
 
-    if (!accessor.testRepo()) {
-      return new ProxyResponse(
-          "200",
-          repo + " does not appear to be a public GitHub repository. Please try again.",
-          new ImmutableMap.Builder<String, String>()
-              .put("Content-Type", "text/plain")
-              .build());
-    }
+    return checkForPublicRepo()
+        .orElse(buildPipeline());
+  }
 
+  private ProxyResponse buildPipeline() {
     final String pipeline = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .parallel()
@@ -107,8 +125,35 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
             .build());
   }
 
+  /**
+   * If the repo is in accessible it is either because it does not exist, or is a private repo that
+   * requires authentication. We make the decision here based on the presence of the session cookie.
+   */
+  private Optional<ProxyResponse> checkForPublicRepo() {
+    if (!accessor.testRepo()) {
+      if (accessor.hasAccessToken()) {
+        return Optional.of(new ProxyResponse(
+            "200",
+            accessor.getRepo() + " does not appear to be an accessible GitHub repository. Please try a different URL.",
+            new ImmutableMap.Builder<String, String>()
+                .put("Content-Type", "text/plain")
+                .build()));
+      } else {
+        return Optional.of(new ProxyResponse(
+            "307",
+            accessor.getRepo() + " does not appear to be a public GitHub repository. You must login to GitHub.",
+            new ImmutableMap.Builder<String, String>()
+                .put("Content-Type", "text/plain")
+                .put("Location", loginPage)
+                .build()));
+      }
+    }
+
+    return Optional.empty();
+  }
+
   private String convertObjectToJson(final Object attributes) {
-    ObjectMapper objectMapper = new ObjectMapper();
+    final ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     try {
       return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(attributes);

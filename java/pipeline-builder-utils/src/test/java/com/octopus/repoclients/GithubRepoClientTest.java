@@ -3,8 +3,8 @@ package com.octopus.repoclients;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.http.HttpClient;
-import com.octopus.http.StringHttpClient;
+import com.octopus.http.ReadOnlyHttpClient;
+import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import io.vavr.control.Try;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class GithubRepoClientTest {
 
-  private static final HttpClient HTTP_CLIENT = new StringHttpClient();
+  private static final ReadOnlyHttpClient HTTP_CLIENT = new ReadOnlyStringReadOnlyHttpClient();
 
   @ParameterizedTest
   @CsvSource({
@@ -38,7 +38,7 @@ public class GithubRepoClientTest {
   @Test
   public void testRepoScanning() {
     final Try<List<String>> files = GithubRepoClient.builder()
-        .httpClient(HTTP_CLIENT)
+        .readOnlyHttpClient(HTTP_CLIENT)
         .repo("https://github.com/OctopusSamples/RandomQuotes")
         .build()
         .getWildcardFiles("*.sln", 1);
@@ -64,7 +64,7 @@ public class GithubRepoClientTest {
   })
   public void testUrlMatching(final String url, final String username, final String repo) {
     final Try<GithubRepoDetails> details = GithubRepoClient.builder()
-        .httpClient(HTTP_CLIENT)
+        .readOnlyHttpClient(HTTP_CLIENT)
         .repo(url)
         .build()
         .getDetails();
