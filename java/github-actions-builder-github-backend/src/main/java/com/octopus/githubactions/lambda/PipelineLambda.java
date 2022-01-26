@@ -32,9 +32,6 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   private static final Logger LOG = Logger.getLogger(PipelineLambda.class.toString());
 
-  @ConfigProperty(name = "github.login.page")
-  String loginPage;
-
   @ConfigProperty(name = "github.encryption")
   String githubEncryption;
 

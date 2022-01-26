@@ -6,6 +6,7 @@ export interface DynamicConfig {
     settings: {
         basename: string,
         generateApiPath: string,
+        loginPath: string,
         title: string,
         editorFormat: string
         google: {

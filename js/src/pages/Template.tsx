@@ -38,9 +38,13 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch(context.settings.generateApiPath + '?repo=' + state.url,
-                    {redirect: "manual"})
-                    .then(response => response.text())
+                await fetch(context.settings.generateApiPath + '?repo=' + state.url)
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = context.settings.loginPath;
+                        }
+                        return response.text();
+                    })
                     .catch(error => "There was a problem with your request.")
 
             props.setCopyText(template);
