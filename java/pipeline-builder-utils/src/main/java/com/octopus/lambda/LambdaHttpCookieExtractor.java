@@ -17,7 +17,7 @@ public interface LambdaHttpCookieExtractor {
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  Optional<String> getQueryParam(APIGatewayProxyRequestEvent input, String name);
+  Optional<String> getCookieValue(APIGatewayProxyRequestEvent input, String name);
 
   /**
    * Get all values from both the multi and single collections.
@@ -26,7 +26,7 @@ public interface LambdaHttpCookieExtractor {
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  List<String> getAllQueryParams(APIGatewayProxyRequestEvent input, String name);
+  List<String> getAllCookieValues(APIGatewayProxyRequestEvent input, String name);
 
   /**
    * Get all values from both the multi and single collections.
@@ -36,7 +36,7 @@ public interface LambdaHttpCookieExtractor {
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  List<String> getAllQueryParams(Map<String, List<String>> multiQuery, Map<String, String> query, String name);
+  List<String> getAllCookieValues(Map<String, List<String>> multiQuery, Map<String, String> query, String name);
 
   /**
    * Get all the values from the multi query collection.

@@ -19,8 +19,9 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
    * {@inheritDoc}
    */
   @Override
-  public Optional<String> getQueryParam(APIGatewayProxyRequestEvent input, String name) {
-    return getAllQueryParams(input.getMultiValueHeaders(), input.getHeaders(), name)
+  public Optional<String> getCookieValue(@NonNull final APIGatewayProxyRequestEvent input,
+      @NonNull final String name) {
+    return getAllCookieValues(input.getMultiValueHeaders(), input.getHeaders(), name)
         .stream().findFirst();
   }
 
@@ -28,16 +29,16 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
    * {@inheritDoc}
    */
   @Override
-  public List<String> getAllQueryParams(@NonNull final APIGatewayProxyRequestEvent input,
+  public List<String> getAllCookieValues(@NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final String name) {
-    return getAllQueryParams(input.getMultiValueHeaders(), input.getHeaders(), name);
+    return getAllCookieValues(input.getMultiValueHeaders(), input.getHeaders(), name);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<String> getAllQueryParams(
+  public List<String> getAllCookieValues(
       final Map<String, List<String>> multiQuery,
       final Map<String, String> query,
       @NonNull final String name) {

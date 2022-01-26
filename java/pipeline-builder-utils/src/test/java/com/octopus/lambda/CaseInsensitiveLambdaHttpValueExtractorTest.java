@@ -33,6 +33,23 @@ public class CaseInsensitiveLambdaHttpValueExtractorTest {
 
   @ParameterizedTest
   @CsvSource({"query,value", "query,value2", "QUERY,value", "QUERY,value2"})
+  public void TestCookieExtractionNullSingleCollection(final String name, final String value) {
+    final List<String> values = CASE_INSENSITIVE_LAMBDA_HTTP_VALUE_EXTRACTOR.getAllQueryParams(
+        new ImmutableMap.Builder<String, List<String>>().put(
+            "query",
+            new ImmutableList.Builder<String>()
+                .add("value")
+                .add("value2")
+                .build()
+        ).build(),
+        null,
+        name);
+
+    assertTrue(values.contains(value));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"query,value", "query,value2", "QUERY,value", "QUERY,value2"})
   public void TestCookieExtractionMultiValueAwsEvent(final String name, final String value) {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent()
         .withMultiValueQueryStringParameters(new ImmutableMap.Builder<String, List<String>>().put(
@@ -54,6 +71,17 @@ public class CaseInsensitiveLambdaHttpValueExtractorTest {
   public void TestCookieExtractionSingleValue(final String name, final String value) {
     final List<String> values = CASE_INSENSITIVE_LAMBDA_HTTP_VALUE_EXTRACTOR.getAllQueryParams(
         new ImmutableMap.Builder<String, List<String>>().build(),
+        new ImmutableMap.Builder<String, String>().put("query", "value").build(),
+        name);
+
+    assertTrue(values.contains(value));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"query,value", "QUERY,value"})
+  public void TestCookieExtractionNullMultiCollection(final String name, final String value) {
+    final List<String> values = CASE_INSENSITIVE_LAMBDA_HTTP_VALUE_EXTRACTOR.getAllQueryParams(
+        null,
         new ImmutableMap.Builder<String, String>().put("query", "value").build(),
         name);
 

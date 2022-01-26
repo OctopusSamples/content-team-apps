@@ -72,7 +72,7 @@ public class GitHubOauthRedirectLambda implements
           OauthBackendConstants.STATE_QUERY_PARAM).get(0);
 
       // Extract the cookie header looking for the state cookie
-      final List<String> savedState = lambdaHttpCookieExtractor.getAllQueryParams(
+      final List<String> savedState = lambdaHttpCookieExtractor.getAllCookieValues(
           input,
           OauthBackendConstants.STATE_COOKIE
       );

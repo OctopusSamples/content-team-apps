@@ -90,7 +90,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
       throw new IllegalArgumentException("repo can not be blank");
     }
 
-    final Optional<String> auth = lambdaHttpCookieExtractor.getQueryParam(input,
+    final Optional<String> auth = lambdaHttpCookieExtractor.getCookieValue(input,
         PipelineConstants.SESSION_COOKIE);
 
     accessor.setRepo(repo);
