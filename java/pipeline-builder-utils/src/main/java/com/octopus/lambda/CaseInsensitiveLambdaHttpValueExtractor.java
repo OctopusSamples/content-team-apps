@@ -18,7 +18,8 @@ public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueE
    */
   @Override
   public Optional<String> getQueryParam(APIGatewayProxyRequestEvent input, String name) {
-    return getAllQueryParams(input.getMultiValueHeaders(), input.getHeaders(), name)
+    return getAllQueryParams(input.getMultiValueQueryStringParameters(),
+        input.getQueryStringParameters(), name)
         .stream().findFirst();
   }
 
