@@ -158,6 +158,7 @@ runs:
         --apiKey ${{ inputs.octopus_api_token }}
         --waitForDeployment 
         --space "Content Team"
+        --deploymentTimeout 00:30:00
       shell: bash
 
     - name: Trigger deployment to security environment
