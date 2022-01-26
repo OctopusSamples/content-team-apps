@@ -9,6 +9,7 @@ import com.octopus.githubactions.builders.dsl.RunStep;
 import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
+import org.joda.time.Interval;
 
 /**
  * An empty class used to list classes that we need to expose for reflection.
@@ -21,7 +22,8 @@ import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
     RunStep.class,
     UsesWith.class,
     Workflow.class,
-    WorkflowDispatch.class})
+    WorkflowDispatch.class,
+    Interval.class})
 public class ReflectionConfig {
 
 }
