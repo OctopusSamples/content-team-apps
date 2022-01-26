@@ -57,7 +57,7 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
       return List.of();
     }
 
-    return getCookieValue(name,
+    return extractCookieValue(name,
         query.entrySet().stream()
             .filter(e -> "Cookie".equalsIgnoreCase(e.getKey()))
             .flatMap(e -> e.getValue().stream()))
@@ -73,14 +73,14 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
       return List.of();
     }
 
-    return getCookieValue(name,
+    return extractCookieValue(name,
         query.entrySet().stream()
             .filter(e -> "Cookie".equalsIgnoreCase(e.getKey()))
             .map(Entry::getValue))
         .collect(Collectors.toList());
   }
 
-  private Stream<String> getCookieValue(final String name, final Stream<String> stream) {
+  private Stream<String> extractCookieValue(final String name, final Stream<String> stream) {
     return stream
         .flatMap(h -> Stream.of(h.split(";")))
         .map(String::trim)
