@@ -12,6 +12,8 @@ import com.octopus.githubactions.builders.PythonBuilder;
 import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.http.HttpClient;
 import com.octopus.http.StringHttpClient;
+import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
 import java.util.Optional;
@@ -55,6 +57,17 @@ public class PipelineProducer {
         .username(clientId.orElse(""))
         .password(clientSecret.orElse(""))
         .build();
+  }
+
+  /**
+   * Produces the Lambda query param extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpValueExtractor getQueryParamExtractor() {
+    return new CaseInsensitiveLambdaHttpValueExtractor();
   }
 
   /**

@@ -1,5 +1,6 @@
 package com.octopus.lambda;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,21 @@ import lombok.NonNull;
  */
 public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueExtractor {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getAllQueryParams(@NonNull final APIGatewayProxyRequestEvent input,
+      @NonNull final String name) {
+    return getAllQueryParams(
+        input.getMultiValueQueryStringParameters(),
+        input.getQueryStringParameters(),
+        name);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public List<String> getAllQueryParams(
       final Map<String, List<String>> multiQuery,
       final Map<String, String> query,
@@ -21,7 +36,9 @@ public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueE
     return values;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   public List<String> getMultiQuery(
       final Map<String, List<String>> query, @NonNull final String name) {
     if (query == null) {
@@ -34,7 +51,9 @@ public class CaseInsensitiveLambdaHttpValueExtractor implements LambdaHttpValueE
         .collect(Collectors.toList());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   public List<String> getQuery(final Map<String, String> query, @NonNull final String name) {
     if (query == null) {
       return List.of();

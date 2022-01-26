@@ -1,5 +1,6 @@
 package com.octopus.lambda;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,15 @@ import lombok.NonNull;
  * An implementation of LambdaHttpCookieExtractor that extracts cookies from headers.
  */
 public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getAllQueryParams(@NonNull final APIGatewayProxyRequestEvent input,
+      @NonNull final String name) {
+    return getAllQueryParams(input.getMultiValueHeaders(), input.getHeaders(), name);
+  }
 
   /**
    * {@inheritDoc}

@@ -4,15 +4,15 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
-import java.util.Map;
-import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,7 +23,7 @@ import org.jboss.logging.Logger;
  * The AWS Lambda server.
  */
 @Named("generate")
-public class PipelineLambda implements RequestHandler<Map<String, Object>, ProxyResponse> {
+public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
   private static final Logger LOG = Logger.getLogger(PipelineLambda.class.toString());
 
@@ -32,6 +32,9 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
 
   @Inject
   Instance<PipelineBuilder> builders;
+
+  @Inject
+  LambdaHttpValueExtractor lambdaHttpValueExtractor;
 
   /**
    * The Lambda entry point.
@@ -42,12 +45,13 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
    * @return The Lambda proxy integration response.
    */
   @Override
-  public ProxyResponse handleRequest(final Map<String, Object> input, final Context context) {
+  public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input,
+      final Context context) {
     LOG.log(DEBUG, "PipelineLambda.handleRequest(Map<String,Object>, Context)");
     LOG.log(DEBUG, "input: " + convertObjectToJson(input));
     LOG.log(DEBUG, "context: " + convertObjectToJson(context));
 
-    if (getQueryString(input, "action").equals("health")) {
+    if (lambdaHttpValueExtractor.getAllQueryParams(input, "action").equals("health")) {
       return new ProxyResponse(
           "201",
           "OK",
@@ -56,7 +60,11 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
               .build());
     }
 
-    return generatePipeline(getQueryString(input, "repo"));
+    return generatePipeline(
+        lambdaHttpValueExtractor.getAllQueryParams(input, "repo")
+            .stream()
+            .findFirst()
+            .orElse(""));
   }
 
   private ProxyResponse generatePipeline(final String repo) {
@@ -83,11 +91,11 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
         .findFirst()
         .map(b -> b.generate(accessor))
         .orElse("""
-                      No suitable builders were found.
-                      This can happen if no recognised project files were found in the root directory.
-                      You may still be able to use one of the sample projects from the main page, and customize it to suit your project.
-                      Click the heading in the top left corner to return to the main page.
-                      """);
+            No suitable builders were found.
+            This can happen if no recognised project files were found in the root directory.
+            You may still be able to use one of the sample projects from the main page, and customize it to suit your project.
+            Click the heading in the top left corner to return to the main page.
+            """);
 
     LOG.log(DEBUG, "pipeline: \n" + pipeline);
 
@@ -97,15 +105,6 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
         new ImmutableMap.Builder<String, String>()
             .put("Content-Type", "text/plain")
             .build());
-  }
-
-  private String getQueryString(final Map<String, Object> input, final String query) {
-    return Optional
-        .ofNullable(input.getOrDefault("queryStringParameters", null))
-        .map(Map.class::cast)
-        .map(m -> m.getOrDefault(query, null))
-        .map(Object::toString)
-        .orElse("");
   }
 
   private String convertObjectToJson(final Object attributes) {

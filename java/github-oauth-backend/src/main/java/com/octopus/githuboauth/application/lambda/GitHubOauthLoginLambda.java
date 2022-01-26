@@ -2,6 +2,7 @@ package com.octopus.githuboauth.application.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.githuboauth.Constants;
 import com.octopus.lambda.ProxyResponse;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#1-request-a-users-github-identity
  */
 @Named("login")
-public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object>, ProxyResponse> {
+public class GitHubOauthLoginLambda implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
   private static final String GitHubAuthURL = "https://github.com/login/oauth/authorize";
 
@@ -27,7 +28,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<Map<String, Object
   String loginRedirect;
 
   @Override
-  public ProxyResponse handleRequest(@Nonnull final Map<String, Object> stringObjectMap, @Nonnull final Context context) {
+  public ProxyResponse handleRequest(@Nonnull final APIGatewayProxyRequestEvent input, @Nonnull final Context context) {
     final String state = UUID.randomUUID().toString();
     /*
       Redirect to the GitHub login.

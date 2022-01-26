@@ -1,13 +1,13 @@
 This project creates Lambda that implement the GitHub OAuth flow documented [here](https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps).
 
-GitHub applications require special handling because they do not support OpenID, and do not support the client credential flow (2-legged OAuth). This means we are unable
-to use the traditional Quarkus authentication framework, and must provide a server side service to handle the token exchanging.
+GitHub applications do not support the client credential flow (2-legged OAuth). This means we must handle the OAuth flow with a server side service, where the client
+secret can be kept safe.
 
 Because the applications are Lambdas, there is no session cache in which to save things like access tokens. The solution is to send the access token back to the client
-in an encrypted cookie, inspired by the form-based authentication documented [here](https://quarkus.io/guides/security-built-in-authentication#form-auth).
+in an encrypted "session" cookie, inspired by the form-based authentication documented [here](https://quarkus.io/guides/security-built-in-authentication#form-auth).
 
 So the lambdas implemented in this proxy do the following:
-* Create a random state code, and persist it to a database.
+* Create a random state code, and save it as a cookie (see the Quarkus [CodeAuthenticationMechanism](https://github.com/quarkusio/quarkus/blob/main/extensions/oidc/runtime/src/main/java/io/quarkus/oidc/runtime/CodeAuthenticationMechanism.java#L253) class for an example of this).
 * Redirect the user to log in via GitHub.
 * Handle the redirect from GitHub, check the state, and exchange the code for an access token.
 * Encrypt the token and send it back in a cookie with a redirect to the SPA. 

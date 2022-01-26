@@ -72,14 +72,12 @@ public class GitHubOauthRedirectLambda implements
       @NonNull final Context context) {
     try {
       final String state = lambdaHttpValueExtractor.getAllQueryParams(
-          input.getMultiValueQueryStringParameters(),
-          input.getQueryStringParameters(),
+          input,
           Constants.STATE_QUERY_PARAM).get(0);
 
       // Extract the cookie header looking for the state cookie
       final List<String> savedState = lambdaHttpCookieExtractor.getAllQueryParams(
-          input.getMultiValueHeaders(),
-          input.getHeaders(),
+          input,
           Constants.STATE_COOKIE
       );
 
@@ -90,8 +88,7 @@ public class GitHubOauthRedirectLambda implements
       }
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
-          input.getMultiValueQueryStringParameters(),
-          input.getQueryStringParameters(),
+          input,
           Constants.CODE_QUERY_PARAM).get(0);
 
       final OauthResponse response = gitHubOauth.accessToken(
