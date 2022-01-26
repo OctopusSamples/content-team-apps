@@ -3,7 +3,7 @@ package com.octopus.githuboauth;
 /**
  * Constant values used by the project.
  */
-public final class OAuthBackendConstants {
+public final class OauthBackendConstants {
 
   /**
    * The query param holding the OAuth code value.

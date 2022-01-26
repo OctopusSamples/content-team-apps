@@ -1,7 +1,7 @@
 package com.octopus;
 
 /**
- * Constants used by all the pipeline apps
+ * Constants used by all the pipeline apps.
  */
 public final class PipelineConstants {
   /**

@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.githuboauth.OAuthBackendConstants;
+import com.octopus.githuboauth.OauthBackendConstants;
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
 import com.octopus.githuboauth.infrastructure.client.GitHubOauth;
 import com.octopus.http.CookieDateUtils;
@@ -69,12 +69,12 @@ public class GitHubOauthRedirectLambda implements
     try {
       final String state = lambdaHttpValueExtractor.getAllQueryParams(
           input,
-          OAuthBackendConstants.STATE_QUERY_PARAM).get(0);
+          OauthBackendConstants.STATE_QUERY_PARAM).get(0);
 
       // Extract the cookie header looking for the state cookie
       final List<String> savedState = lambdaHttpCookieExtractor.getAllQueryParams(
           input,
-          OAuthBackendConstants.STATE_COOKIE
+          OauthBackendConstants.STATE_COOKIE
       );
 
       if (!savedState.contains(state)) {
@@ -85,7 +85,7 @@ public class GitHubOauthRedirectLambda implements
 
       final String code = lambdaHttpValueExtractor.getAllQueryParams(
           input,
-          OAuthBackendConstants.CODE_QUERY_PARAM).get(0);
+          OauthBackendConstants.CODE_QUERY_PARAM).get(0);
 
       final OauthResponse response = gitHubOauth.accessToken(
           clientId,
@@ -111,7 +111,7 @@ public class GitHubOauthRedirectLambda implements
                           githubEncryption,
                           githubSalt)
                           + "; expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS))
-                      .add(OAuthBackendConstants.STATE_COOKIE
+                      .add(OauthBackendConstants.STATE_COOKIE
                           + "=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
                       .build())
                   .build());

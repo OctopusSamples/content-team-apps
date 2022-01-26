@@ -48,7 +48,9 @@ public abstract class TestRepoClient implements RepoClient {
   }
 
   @Override
-  public String getRepo() {return repo;}
+  public String getRepo() {
+    return repo;
+  }
 
   @Override
   public void setAccessToken(final String accessToken) {
@@ -56,7 +58,9 @@ public abstract class TestRepoClient implements RepoClient {
   }
 
   @Override
-  public boolean hasAccessToken() {return StringUtils.isNoneBlank(accessToken);}
+  public boolean hasAccessToken() {
+    return StringUtils.isNoneBlank(accessToken);
+  }
 
   @Override
   public Try<String> getFile(String path) {

@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.githuboauth.OAuthBackendConstants;
+import com.octopus.githuboauth.OauthBackendConstants;
 import com.octopus.lambda.ProxyResponse;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -48,7 +48,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<APIGatewayProxyReq
                 + "&scope=user:email%20repo"
                 + "&state=" + state
                 + "&allow_signup=false")
-            .put("Set-Cookie", OAuthBackendConstants.STATE_COOKIE + "=" + state)
+            .put("Set-Cookie", OauthBackendConstants.STATE_COOKIE + "=" + state)
             .build());
   }
 }
