@@ -11,6 +11,9 @@ export interface DynamicConfig {
         editorFormat: string
         google: {
             tag: string
+        },
+        github: {
+            enableLogin: boolean
         }
     },
     useDefaultTheme?: boolean

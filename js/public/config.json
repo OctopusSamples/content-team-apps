@@ -9,7 +9,7 @@
       "tag": ""
     },
     "github": {
-      "enableLogin": false
+      "enableLogin": true
     }
   }
 }

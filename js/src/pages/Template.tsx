@@ -38,10 +38,15 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch(context.settings.generateApiPath + '?repo=' + state.url)
+                await fetch(context.settings.generateApiPath + '?repo=' + state.url, {redirect: "error"})
                     .then(response => {
-                        if (response.status === 401) {
+                        /*
+                            The /generate endpoint will return unauthorized if it detects that it can not read the repo.
+                            We then redirect to the login page to give the user a chance to login.
+                        */
+                        if (response.status === 401 && context.settings.github.enableLogin) {
                             window.location.href = context.settings.loginPath;
+                            return "Redirecting to login page";
                         }
                         return response.text();
                     })
@@ -51,7 +56,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
         }
 
         getTemplate();
-    }, [props, context.settings.basename, context.settings.generateApiPath, state.url])
+    }, [props, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.loginPath, state.url])
 
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
     const mode = context?.settings?.editorFormat || 'javascript';
@@ -84,14 +89,14 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                 </Grid>
             </Grid>
             {!props.copyText &&
-            <img alt="loading" id="spinner" src={context.useDefaultTheme ? lightSpinner : lightDark} style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                marginTop: "-64px",
-                marginLeft: "-64px",
-                zIndex: 1000
-            }}/>
+                <img alt="loading" id="spinner" src={context.useDefaultTheme ? lightSpinner : lightDark} style={{
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    marginTop: "-64px",
+                    marginLeft: "-64px",
+                    zIndex: 1000
+                }}/>
             }
         </>
     );

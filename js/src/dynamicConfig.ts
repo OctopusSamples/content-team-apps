@@ -16,6 +16,7 @@ export async function loadConfig(): Promise<DynamicConfig> {
     config.settings.basename = baseUrl;
     config.settings.title = config.settings.title || "Pipeline Builder";
     config.settings.generateApiPath = config.settings.generateApiPath || "/api/pipeline/jenkins/generate";
+    config.github = config.github || {enableLogin: false};
     return config;
 }
 
