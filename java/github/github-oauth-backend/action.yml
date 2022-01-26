@@ -178,9 +178,3 @@ runs:
         --space "Content Team"
         --version=latest
       shell: bash
-
-    # https://github.com.cnpmjs.org/AppThreat/dep-scan
-    - name: Generate vulnerability report
-      run: find . -type f -name 'bom.xml' -exec docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom /app/{} --type bom \; || true
-      shell: bash
-      working-directory: java
