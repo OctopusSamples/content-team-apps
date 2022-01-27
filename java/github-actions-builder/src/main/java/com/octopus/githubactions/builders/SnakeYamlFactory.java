@@ -58,8 +58,7 @@ public final class SnakeYamlFactory {
 
     final TypeDescription runDesc = new TypeDescription(RunStep.class);
     runDesc.substituteProperty("working-directory", String.class, "getWorkingDirectory", "setWorkingDirectory");
-    runDesc.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
-    runDesc.setExcludes("workingDirectory", "ifProperty");
+    runDesc.setExcludes("workingDirectory");
     representer.addTypeDescription(runDesc);
 
     final TypeDescription usesWith = new TypeDescription(UsesWith.class);
