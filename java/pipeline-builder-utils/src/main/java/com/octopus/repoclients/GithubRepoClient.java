@@ -105,7 +105,7 @@ public class GithubRepoClient implements RepoClient {
             .stream()
             .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
-                    + "/git/trees/" + b + "?recursive=1",
+                    + "/git/trees/" + b + "?recursive=0",
                 username,
                 password,
                 accessToken))
@@ -135,7 +135,7 @@ public class GithubRepoClient implements RepoClient {
             .stream()
             .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
-                    + "/git/trees/" + b + "?recursive=1",
+                    + "/git/trees/" + b + "?recursive=0",
                 username,
                 password,
                 accessToken))
