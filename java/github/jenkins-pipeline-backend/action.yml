@@ -111,13 +111,13 @@ runs:
     - name: Rename zip
       run: >
         mv jenkins-pipeline-builder-github-backend/target/function.zip
-        jenkins-pipeline-builder-github-backend-lambda.0.1.0.${{ inputs.run_number }}.zip
+        jenkins-pipeline-builder-github-backend-lambda.0.1.${{ inputs.run_number }}.zip
       shell: bash
       working-directory: java
 
     - name: Push Package
       run: >
-        octo push --package jenkins-pipeline-builder-github-backend-lambda.0.1.0.${{ inputs.run_number }}.zip
+        octo push --package jenkins-pipeline-builder-github-backend-lambda.0.1.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -141,7 +141,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package jenkins-pipeline-builder-github-backend-lambda-sbom.0.1.0.${{ inputs.run_number }}.zip
+        octo push --package jenkins-pipeline-builder-github-backend-lambda-sbom.0.1.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
