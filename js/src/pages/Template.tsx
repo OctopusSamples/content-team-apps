@@ -67,7 +67,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
         }
 
         getTemplate();
-    }, [props, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.loginPath, state.url])
+    }, [props, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.github.loginPath, state.url])
 
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
     const mode = context?.settings?.editorFormat || 'javascript';
