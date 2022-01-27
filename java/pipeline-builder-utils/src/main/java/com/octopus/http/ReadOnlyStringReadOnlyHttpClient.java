@@ -142,7 +142,7 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
             httpClient,
             url,
             headers)
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(this::checkSuccess)
             .get())
         .isSuccess();
   }
