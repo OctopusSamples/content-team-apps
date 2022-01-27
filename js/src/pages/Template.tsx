@@ -55,7 +55,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                             window.localStorage.setItem("loginForRepo", state.url)
 
                             window.location.href = context.settings.loginPath;
-                            return "Redirecting to login page";
+                            return "Redirecting to login page to access private Github repo.";
                         }
 
                         window.localStorage.setItem("loginForRepo", "");
