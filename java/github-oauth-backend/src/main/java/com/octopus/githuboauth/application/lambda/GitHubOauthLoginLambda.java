@@ -48,7 +48,7 @@ public class GitHubOauthLoginLambda implements RequestHandler<APIGatewayProxyReq
                 + "&scope=user:email%20repo"
                 + "&state=" + state
                 + "&allow_signup=false")
-            .put("Set-Cookie", OauthBackendConstants.STATE_COOKIE + "=" + state)
+            .put("Set-Cookie", OauthBackendConstants.STATE_COOKIE + "=" + state + ";HttpOnly;path=/")
             .build());
   }
 }

@@ -45,9 +45,20 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                             We then redirect to the login page to give the user a chance to login.
                         */
                         if (response.status === 401 && context.settings.github.enableLogin) {
+                            /*
+                                Catch infinite loops where we continually try to login. The template generator
+                                "should" only respond once with a 401, but be defensive here just in case.
+                             */
+                            if (localStorage.get("loginForRepo") === state.url) {
+                                return "Unable to access the repo " + state.url;
+                            }
+                            localStorage.set("loginForRepo", state.url)
+
                             window.location.href = context.settings.loginPath;
                             return "Redirecting to login page";
                         }
+
+                        localStorage.set("loginForRepo", "");
                         return response.text();
                     })
                     .catch(error => "There was a problem with your request.")
