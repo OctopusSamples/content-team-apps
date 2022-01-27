@@ -114,7 +114,7 @@ step "Get Stack Outputs" {
 
 step "Deploy OAuth Proxy Login" {
 
-    action "Deploy OAuth Proxy Login" {
+    action {
         action_type = "Octopus.AwsRunCloudFormation"
         environments = ["Development", "Production"]
         properties = {
@@ -373,8 +373,12 @@ step "Deploy OAuth Proxy Login" {
         }
         worker_pool_variable = "WorkerPool"
     }
+}
 
-    action "Deploy OAuth Proxy Token Exchange" {
+step "Deploy OAuth Proxy Token Exchange" {
+    start_trigger = "StartWithPrevious"
+
+    action {
         action_type = "Octopus.AwsRunCloudFormation"
         environments = ["Development", "Production"]
         properties = {
