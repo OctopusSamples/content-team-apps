@@ -120,7 +120,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
                         <Grid item xs={2}
                               justify="flex-end"
                               container={true}>
-                            <FormLabel className={classes.leftFormLabel}>{"Public GitHub URL"}</FormLabel>
+                            <FormLabel className={classes.leftFormLabel}>{"GitHub URL"}</FormLabel>
                         </Grid>
                         <Grid item xs={8}>
                             <TextField id={"url"} fullWidth={true} value={url}
