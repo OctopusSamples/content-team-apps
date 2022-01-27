@@ -81,6 +81,7 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
     }
 
     function handleClick() {
+        // Manually clicking the "Go" button restarts the login cycle, so clear the last url from local storage.
         window.localStorage.setItem("loginForRepo", "");
         openRepo();
     }
