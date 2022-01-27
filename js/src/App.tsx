@@ -18,7 +18,9 @@ import {DynamicConfig} from "./config/dynamicConfig";
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
     settings: {basename: "", title: "", generateApiPath: "", editorFormat: "", google: {tag: ""}, github: {enableLogin: false, loginPath: ""}},
-    useDefaultTheme: true
+    useDefaultTheme: true,
+    setCopyText: () => {},
+    copyText: ""
 });
 
 // default component
@@ -37,16 +39,14 @@ function App(config: DynamicConfig) {
     let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
     theme = responsiveFontSizes(theme);
 
-    //
     const [copyText, setCopyText] = useState("");
-
 
     return (
         <>
             <Helmet>
                 <title>{config.settings.title}</title>
             </Helmet>
-            <AppContext.Provider value={{...config, useDefaultTheme}}>
+            <AppContext.Provider value={{...config, useDefaultTheme, copyText, setCopyText}}>
                 <ThemeProvider theme={theme}>
                     <Router basename={config.settings.basename}>
                         <Switch>
@@ -58,7 +58,7 @@ function App(config: DynamicConfig) {
                                             <Route
                                                 key={`${item.key}`}
                                                 path={`${item.path}`}
-                                                component={(item.component && item.component({setCopyText, copyText})) || DefaultComponent}
+                                                component={(item.component && item.component()) || DefaultComponent}
                                                 exact
                                             />
                                         ))
@@ -66,7 +66,7 @@ function App(config: DynamicConfig) {
                                         <Route
                                             key={`${route.key}`}
                                             path={`${route.path}`}
-                                            component={(route.component && route.component({setCopyText, copyText})) || DefaultComponent}
+                                            component={(route.component && route.component()) || DefaultComponent}
                                             exact
                                         />
                                     )

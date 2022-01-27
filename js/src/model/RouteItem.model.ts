@@ -1,8 +1,7 @@
 import {ComponentType, FC} from "react";
 
 export interface CommonProps {
-    setCopyText: (text: string) => void;
-    copyText?: string;
+
 }
 
 // RouteItem is an interface for defining the application routes and navigation menu items
@@ -11,7 +10,7 @@ interface RouteItem {
     title: string;
     tooltip?: string;
     path?: string;
-    component?: (props: CommonProps) => FC<CommonProps>;
+    component?: () => FC;
     enabled: boolean;
     icon?: ComponentType;
     subRoutes?: Array<RouteItem>;

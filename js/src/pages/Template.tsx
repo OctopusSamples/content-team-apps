@@ -63,11 +63,11 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                     })
                     .catch(error => "There was a problem with your request.")
 
-            props.setCopyText(template);
+            context.setCopyText(template);
         }
 
         getTemplate();
-    }, [props, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.github.loginPath, state.url])
+    }, [context, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.github.loginPath, state.url])
 
     const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
     const mode = context?.settings?.editorFormat || 'javascript';
@@ -88,7 +88,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
             >
                 <Grid item xs={12} className={classes.flexGrowColumn}>
                     <CodeMirror
-                        value={props.copyText}
+                        value={context.copyText}
                         className={classes.flexGrowColumn}
                         options={{
                             mode: mode,
@@ -99,7 +99,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                     />
                 </Grid>
             </Grid>
-            {!props.copyText &&
+            {!context.copyText &&
                 <img alt="loading" id="spinner" src={context.useDefaultTheme ? lightSpinner : lightDark} style={{
                     position: "fixed",
                     top: "50%",

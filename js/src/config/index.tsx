@@ -5,7 +5,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import Home from '../pages/Home';
 
 // interface
-import RouteItem, {CommonProps} from '../model/RouteItem.model';
+import RouteItem from '../model/RouteItem.model';
 import Template from "../pages/Template";
 
 // define app routes
@@ -16,7 +16,7 @@ export const routes: Array<RouteItem> = [
         tooltip: "Home",
         path: "/",
         enabled: true,
-        component: (props: CommonProps) => () => <Home {...props}/>,
+        component: () => () => <Home/>,
         icon: HomeIcon,
         appendDivider: true
     },
@@ -26,7 +26,7 @@ export const routes: Array<RouteItem> = [
         tooltip: "Home",
         path: "/index.html",
         enabled: true,
-        component: (props: CommonProps) => () => <Home {...props}/>,
+        component: () => () => <Home/>,
         icon: HomeIcon,
         appendDivider: true
     },
@@ -36,7 +36,7 @@ export const routes: Array<RouteItem> = [
         tooltip: "Template",
         path: "/template",
         enabled: true,
-        component: (props: CommonProps) => () => <Template {...props}/>,
+        component: () => () => <Template/>,
         icon: HomeIcon,
         appendDivider: true
     }

@@ -51,11 +51,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
-    props.setCopyText("");
-
     const history = useHistory();
     const classes = useStyles();
     const context = useContext(AppContext);
+    context.setCopyText("");
 
     if (!localStorage.getItem("url")) {
         localStorage.setItem("url", "https://github.com/OctopusSamples/RandomQuotes-Java");

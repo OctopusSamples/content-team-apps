@@ -16,5 +16,7 @@ export interface DynamicConfig {
             loginPath: string
         }
     },
-    useDefaultTheme?: boolean
+    useDefaultTheme?: boolean,
+    setCopyText: (text: string) => void,
+    copyText?: string
 }
