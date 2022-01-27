@@ -77,10 +77,15 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
         It is the oauth proxy that sets the action query parameter.
      */
     if (new URLSearchParams(window.location.search).get('action') === "loggedin") {
-        handleClick();
+        openRepo();
     }
 
     function handleClick() {
+        window.localStorage.setItem("loginForRepo", "");
+        openRepo();
+    }
+
+    function openRepo() {
         if (!url || !url.trim().startsWith("https://github.com")) {
             setError("URL must point to a GitHub repo!");
         } else {
@@ -90,10 +95,9 @@ const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
     }
 
     function handleExampleClick(url: string) {
+        window.localStorage.setItem("loginForRepo", "");
         history.push("/template", {url});
     }
-
-
 
     return (
         <>
