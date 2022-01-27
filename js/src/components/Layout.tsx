@@ -1,10 +1,11 @@
-import {FC, ReactNode} from "react";
+import {FC, ReactNode, useContext} from "react";
 import clsx from "clsx";
 import {createStyles, CssBaseline, makeStyles, Theme,} from "@material-ui/core";
 
 // components
 import Header from "./Header";
 import Footer from "./Footer";
+import {AppContext} from "../App";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,25 +30,22 @@ const useStyles = makeStyles((theme: Theme) =>
 // define interface to represent component props
 interface LayoutProps {
     toggleTheme: () => void;
-    useDefaultTheme: boolean;
     children: ReactNode;
-    copyText?: string;
 }
 
 // functional component
 const Layout: FC<LayoutProps> = ({
                                      toggleTheme,
-                                     useDefaultTheme,
                                      children,
-                                     copyText
                                  }: LayoutProps) => {
     const classes = useStyles();
+    const {copyText, useDefaultTheme} = useContext(AppContext);
     return (
         <div className={classes.root}>
             <CssBaseline/>
             <Header
                 toggleTheme={toggleTheme}
-                useDefaultTheme={useDefaultTheme}
+                useDefaultTheme={useDefaultTheme === undefined ? true : useDefaultTheme}
                 copyText={copyText}
             />
             <main

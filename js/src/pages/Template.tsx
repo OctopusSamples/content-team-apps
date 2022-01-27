@@ -38,6 +38,18 @@ const Template: FC<{}> = (): ReactElement => {
      */
     const {setCopyText, copyText, settings, useDefaultTheme} = useContext(AppContext);
 
+    /*
+        This needs to be rethought.
+
+        The main issue here is that we want to propagate the template text out to parents and siblings, mostly
+        to allow other elements to provide features like copying to clipboard. So we find ourselves in a situation
+        where this element generates the text that it, and other elements, display. This in turn means this element
+        triggers its own rerendering, which causes useEffect to be called twice.
+
+        Checking for the presence of the template text before making the network call solves the double calls to
+        the API, but this logic to call the API is likely better moved "up the chain" to a point where updating the
+        template text doesn't render the element generating the text.
+     */
     useEffect(() => {
         async function getTemplate() {
             const template =
@@ -69,8 +81,10 @@ const Template: FC<{}> = (): ReactElement => {
             setCopyText(template);
         }
 
-        getTemplate();
-    }, [setCopyText, settings.generateApiPath, settings.github.enableLogin, settings.github.loginPath, state.url])
+        if (!copyText) {
+            getTemplate();
+        }
+    }, [copyText, setCopyText, settings.generateApiPath, settings.github.enableLogin, settings.github.loginPath, state.url])
 
     const theme = !useDefaultTheme ? 'rubyblue' : 'neo';
     const mode = settings?.editorFormat || 'javascript';
