@@ -62,7 +62,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         tag_name: pipeline-backend.0.1.${{ inputs.run_number }}
-        release_name: Pipeline Backend Release 0.1.${{ inputs.run_number }}
+        release_name: Pipeline Frontend 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
