@@ -198,7 +198,7 @@ public class GithubRepoClient implements RepoClient {
   public boolean testRepo() {
     return getDetails()
         .flatMap(d -> readOnlyHttpClient.get(
-            "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository() + "/",
+            "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository(),
             username,
             password,
             accessToken))
