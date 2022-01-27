@@ -3,13 +3,13 @@
     "basename": "",
     "title": "Pipeline Builder",
     "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
-    "loginPath": "https://development.githubactionworkflows.com/oauth/github/login",
     "editorFormat": "yaml",
     "google": {
       "tag": ""
     },
     "github": {
-      "enableLogin": true
+      "enableLogin": true,
+      "loginPath": "https://development.githubactionworkflows.com/oauth/github/login"
     }
   }
 }

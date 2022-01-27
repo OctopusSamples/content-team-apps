@@ -17,7 +17,7 @@ import {DynamicConfig} from "./config/dynamicConfig";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
-    settings: {basename: "", title: "", generateApiPath: "", loginPath: "", editorFormat: "", google: {tag: ""}, github: {enableLogin: false}},
+    settings: {basename: "", title: "", generateApiPath: "", editorFormat: "", google: {tag: ""}, github: {enableLogin: false, loginPath: ""}},
     useDefaultTheme: true
 });
 

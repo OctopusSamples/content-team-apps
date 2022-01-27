@@ -6,14 +6,14 @@ export interface DynamicConfig {
     settings: {
         basename: string,
         generateApiPath: string,
-        loginPath: string,
         title: string,
         editorFormat: string
         google: {
             tag: string
         },
         github: {
-            enableLogin: boolean
+            enableLogin: boolean,
+            loginPath: string
         }
     },
     useDefaultTheme?: boolean
