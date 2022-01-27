@@ -31,8 +31,9 @@ public class DotNetCoreBuilder implements PipelineBuilder {
       "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk");
 
   /**
-   * This builder is very permissive, finding any solution files anywhere in the repo.
-   * If there are more specific builders at the top level, use those first.
+   * This builder is very permissive, finding any solution files anywhere in the repo. If there are
+   * more specific builders at the top level, use those first.
+   *
    * @return A lower priority than the more specific builders.
    */
   @Override
@@ -195,7 +196,8 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             GIT_BUILDER.pushToOctopus(
                                                 "${{ steps.package.outputs.artifacts }}"))
                                         .add(GIT_BUILDER.uploadOctopusBuildInfo(accessor))
-                                        .add(GIT_BUILDER.createOctopusRelease(accessor, "${{ steps.package.outputs.versions_new_line }}"))
+                                        .add(GIT_BUILDER.createOctopusRelease(accessor,
+                                            "${{ steps.package.outputs.versions_new_line }}"))
                                         .build())
                                 .build())
                         .build())
@@ -210,7 +212,8 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   }
 
   private boolean hasDotNetCoreProjectFiles(@NonNull final RepoClient accessor) {
-    final List<String> projectFiles = accessor.getWildcardFiles("**/*.csproj", 1).getOrElse(List.of());
+    final List<String> projectFiles = accessor.getWildcardFiles("**/*.csproj", 1)
+        .getOrElse(List.of());
     LOG.log(DEBUG, "Found " + projectFiles.size() + " project files");
     projectFiles.forEach(s -> LOG.log(DEBUG, "  " + s));
 
