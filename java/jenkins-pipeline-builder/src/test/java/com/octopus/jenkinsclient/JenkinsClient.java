@@ -3,9 +3,16 @@ package com.octopus.jenkinsclient;
 import io.vavr.control.Try;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import lombok.NonNull;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -78,11 +85,15 @@ public class JenkinsClient {
   }
 
   public boolean isSuccess(final Document doc) {
-    final String result = doc.getDocumentElement()
+    return Try.of(() -> doc.getDocumentElement()
         .getElementsByTagName("result")
         .item(0)
-        .getTextContent();
-    return result.equals("SUCCESS") || result.equals("UNSTABLE");
+        .getTextContent())
+        .map(r -> r.equals("SUCCESS") || r.equals("UNSTABLE"))
+        // Dump the xml if we didn't find the expected elements
+        .onFailure(e -> System.out.println(Try.of(() -> serializeXML(doc))
+            .getOrElseGet(e2 ->"Failed to serialize XML")))
+        .getOrElseGet(e -> false);
   }
 
   private Document parseXML(final String xml)
@@ -90,6 +101,15 @@ public class JenkinsClient {
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     return dBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+  }
+
+  private String serializeXML(final Document doc) throws TransformerException {
+    final TransformerFactory tf = TransformerFactory.newInstance();
+    final Transformer transformer = tf.newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    final StringWriter writer = new StringWriter();
+    transformer.transform(new DOMSource(doc), new StreamResult(writer));
+    return writer.getBuffer().toString().replaceAll("\n|\r", "");
   }
 
   public Try<String> startJob(final JenkinsDetails jenkinsDetails, final String name) {
