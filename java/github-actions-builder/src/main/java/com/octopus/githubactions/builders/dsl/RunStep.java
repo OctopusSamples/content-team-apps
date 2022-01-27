@@ -12,4 +12,5 @@ public class RunStep implements Step {
   private String id;
   private String run;
   private String shell;
+  private String workingDirectory;
 }

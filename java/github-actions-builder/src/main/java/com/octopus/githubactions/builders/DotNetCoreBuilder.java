@@ -15,6 +15,8 @@ import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.repoclients.RepoClient;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.NonNull;
@@ -29,6 +31,8 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
   private static final Pattern DOT_NET_CORE_REGEX = Pattern.compile(
       "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk");
+
+  private String workingDirectory = null;
 
   /**
    * This builder is very permissive, finding any solution files anywhere in the repo. If there are
@@ -45,7 +49,14 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "DotnetCoreBuilder.canBuild(RepoClient)");
 
-    return hasSolutionFiles(accessor) && hasDotNetCoreProjectFiles(accessor);
+    final List<String> solutionFiles = hasSolutionFiles(accessor);
+
+    if (!solutionFiles.isEmpty()) {
+      setWorkingDir(solutionFiles);
+      return hasDotNetCoreProjectFiles(accessor);
+    }
+
+    return false;
   }
 
   @Override
@@ -82,12 +93,14 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .name("Install Dependencies")
                                                 .shell("bash")
                                                 .run("dotnet restore")
+                                                .workingDirectory(workingDirectory)
                                                 .build())
                                         .add(
                                             RunStep.builder()
                                                 .name("List Dependencies")
                                                 .shell("bash")
                                                 .run("dotnet list package > dependencies.txt")
+                                                .workingDirectory(workingDirectory)
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencies())
                                         .add(
@@ -96,6 +109,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "dotnet list package --outdated > dependencyUpdates.txt")
+                                                .workingDirectory(workingDirectory)
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
@@ -104,6 +118,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     "dotnet test -l:trx || true")
+                                                .workingDirectory(workingDirectory)
                                                 .build())
                                         .add(UsesWith.builder()
                                             .name("Report")
@@ -121,6 +136,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                             .name("Publish")
                                             .run(
                                                 "dotnet publish --configuration Release /p:AssemblyVersion=${{ steps.determine_version.outputs.assemblySemVer }}")
+                                            .workingDirectory(workingDirectory)
                                             .build())
                                         .add(RunStep.builder()
                                             .name("Package")
@@ -204,11 +220,11 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                 .build());
   }
 
-  private boolean hasSolutionFiles(@NonNull final RepoClient accessor) {
+  private List<String> hasSolutionFiles(@NonNull final RepoClient accessor) {
     final List<String> files = accessor.getWildcardFiles("**/*.sln", 1).getOrElse(List.of());
     LOG.log(DEBUG, "Found " + files.size() + " solution files");
     files.forEach(s -> LOG.log(DEBUG, "  " + s));
-    return !files.isEmpty();
+    return files;
   }
 
   private boolean hasDotNetCoreProjectFiles(@NonNull final RepoClient accessor) {
@@ -224,5 +240,13 @@ public class DotNetCoreBuilder implements PipelineBuilder {
     return projectFiles
         .stream()
         .anyMatch(f -> DOT_NET_CORE_REGEX.matcher(accessor.getFile(f).getOrElse("")).find());
+  }
+
+  private void setWorkingDir(final List<String> solutionFiles) {
+    final List<String> split = new ArrayList<>(Arrays.asList(solutionFiles.get(0).split("/")));
+    if (split.size() > 1) {
+      split.remove(split.size() - 1);
+      workingDirectory = String.join("/", split);
+    }
   }
 }

@@ -41,9 +41,9 @@ public class DotnetTestRepoClient extends TestRepoClient {
   @Override
   public Try<List<String>> getWildcardFiles(final String path, final int limit) {
     if (path.equals("**/*.csproj")) {
-      return Try.of(() -> List.of("myproj.csproj"));
-    } else if (path.equals("*.sln")) {
-      return Try.of(() -> List.of("myproj.sln"));
+      return Try.of(() -> List.of("subdir/myproj.csproj"));
+    } else if (path.equals("**/*.sln")) {
+      return Try.of(() -> List.of("subdir/proj/myproj.sln"));
     }
     return Try.of(List::of);
   }
