@@ -57,7 +57,7 @@ runs:
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion}.${{ github.run_number }}
+      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
