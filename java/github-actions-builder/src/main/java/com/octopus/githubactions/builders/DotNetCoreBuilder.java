@@ -30,6 +30,16 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   private static final Pattern DOT_NET_CORE_REGEX = Pattern.compile(
       "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk");
 
+  /**
+   * This builder is very permissive, finding any solution files anywhere in the repo.
+   * If there are more specific builders at the top level, use those first.
+   * @return A lower priority than the more specific builders.
+   */
+  @Override
+  public Integer getPriority() {
+    return -10;
+  }
+
   @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "DotnetCoreBuilder.canBuild(RepoClient)");
@@ -193,7 +203,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   }
 
   private boolean hasSolutionFiles(@NonNull final RepoClient accessor) {
-    final List<String> files = accessor.getWildcardFiles("*.sln", 1).getOrElse(List.of());
+    final List<String> files = accessor.getWildcardFiles("**/*.sln", 1).getOrElse(List.of());
     LOG.log(DEBUG, "Found " + files.size() + " solution files");
     files.forEach(s -> LOG.log(DEBUG, "  " + s));
     return !files.isEmpty();
