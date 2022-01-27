@@ -102,7 +102,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .run("dotnet list package > dependencies.txt")
                                                 .workingDirectory(workingDirectory)
                                                 .build())
-                                        .add(GIT_BUILDER.collectDependencies())
+                                        .add(GIT_BUILDER.collectDependencies(workingDirectory))
                                         .add(
                                             RunStep.builder()
                                                 .name("List Dependency Updates")
@@ -111,7 +111,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                     "dotnet list package --outdated > dependencyUpdates.txt")
                                                 .workingDirectory(workingDirectory)
                                                 .build())
-                                        .add(GIT_BUILDER.collectDependencyUpdates())
+                                        .add(GIT_BUILDER.collectDependencyUpdates(workingDirectory))
                                         .add(
                                             RunStep.builder()
                                                 .name("Test")

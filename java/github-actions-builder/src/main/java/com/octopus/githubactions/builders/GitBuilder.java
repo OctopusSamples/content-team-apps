@@ -5,6 +5,7 @@ import com.octopus.githubactions.builders.dsl.Step;
 import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 /** Contains a number of common steps shared between builders. */
 public class GitBuilder {
@@ -182,28 +183,40 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the dependency collection step. */
   public Step collectDependencies() {
+    return collectDependencies(null);
+  }
+
+  /** Build the dependency collection step. */
+  public Step collectDependencies(final String workingDirectory) {
+    final String directory = StringUtils.isBlank(workingDirectory)
+        ? "" : workingDirectory + "/";
     return UsesWith.builder()
         .name("Collect Dependencies")
         .uses("actions/upload-artifact@v2")
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("name", "Dependencies")
-                .put("path", "dependencies.txt")
+                .put("path", directory + "dependencies.txt")
                 .build())
         .build();
   }
 
-  /** Build the dependency updates collection step. */
   public Step collectDependencyUpdates() {
+    return collectDependencyUpdates(null);
+  }
+
+  /** Build the dependency updates collection step. */
+  public Step collectDependencyUpdates(final String workingDirectory) {
+    final String directory = StringUtils.isBlank(workingDirectory)
+        ? "" : workingDirectory + "/";
     return UsesWith.builder()
         .name("Collect Dependency Updates")
         .uses("actions/upload-artifact@v2")
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("name", "Dependencies Updates")
-                .put("path", "dependencyUpdates.txt")
+                .put("path", directory + "dependencyUpdates.txt")
                 .build())
         .build();
   }
