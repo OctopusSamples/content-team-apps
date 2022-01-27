@@ -170,5 +170,5 @@ runs:
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
-        ---latestSuccessful
+        --latestSuccessful
       shell: bash
