@@ -130,7 +130,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
     if (!accessor.testRepo()) {
       if (accessor.hasAccessToken()) {
         return Optional.of(new ProxyResponse(
-            "500",
+            "404",
             accessor.getRepo() + " does not appear to be an accessible GitHub repository. Please try a different URL.",
             new ImmutableMap.Builder<String, String>()
                 .put("Content-Type", "text/plain")
