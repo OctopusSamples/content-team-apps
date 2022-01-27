@@ -33,18 +33,22 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
     const classes = useStyles();
     const {state} = useLocation<{ url: string }>();
 
-    const context = useContext(AppContext);
+    /*
+        Need to destructure this to consume the values in useEffect:
+        https://github.com/facebook/react/issues/16265
+     */
+    const {setCopyText, copyText, settings, useDefaultTheme} = useContext(AppContext);
 
     useEffect(() => {
         async function getTemplate() {
             const template =
-                await fetch(context.settings.generateApiPath + '?repo=' + state.url, {redirect: "error"})
+                await fetch(settings.generateApiPath + '?repo=' + state.url, {redirect: "error"})
                     .then(response => {
                         /*
                             The /generate endpoint will return unauthorized if it detects that it can not read the repo.
                             We then redirect to the login page to give the user a chance to login.
                         */
-                        if (response.status === 401 && context.settings.github.enableLogin) {
+                        if (response.status === 401 && settings.github.enableLogin) {
                             /*
                                 Catch infinite loops where we continually try to login. The template generator
                                 "should" only respond once with a 401, but be defensive here just in case.
@@ -54,7 +58,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                             }
                             window.localStorage.setItem("loginForRepo", state.url)
 
-                            window.location.href = context.settings.github.loginPath;
+                            window.location.href = settings.github.loginPath;
                             return "Redirecting to login page to access private Github repo.";
                         }
 
@@ -63,20 +67,20 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                     })
                     .catch(error => "There was a problem with your request.")
 
-            context.setCopyText(template);
+            setCopyText(template);
         }
 
         getTemplate();
-    }, [context, context.settings.basename, context.settings.generateApiPath, context.settings.github.enableLogin, context.settings.github.loginPath, state.url])
+    }, [setCopyText, settings.generateApiPath, settings.github.enableLogin, settings.github.loginPath, state.url])
 
-    const theme = context && !context.useDefaultTheme ? 'rubyblue' : 'neo';
-    const mode = context?.settings?.editorFormat || 'javascript';
+    const theme = !useDefaultTheme ? 'rubyblue' : 'neo';
+    const mode = settings?.editorFormat || 'javascript';
 
     return (
         <>
             <Helmet>
                 <title>
-                    {context.settings.title}
+                    {settings.title}
                 </title>
             </Helmet>
             <Grid
@@ -88,7 +92,7 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
             >
                 <Grid item xs={12} className={classes.flexGrowColumn}>
                     <CodeMirror
-                        value={context.copyText}
+                        value={copyText}
                         className={classes.flexGrowColumn}
                         options={{
                             mode: mode,
@@ -99,8 +103,8 @@ const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
                     />
                 </Grid>
             </Grid>
-            {!context.copyText &&
-                <img alt="loading" id="spinner" src={context.useDefaultTheme ? lightSpinner : lightDark} style={{
+            {!copyText &&
+                <img alt="loading" id="spinner" src={useDefaultTheme ? lightSpinner : lightDark} style={{
                     position: "fixed",
                     top: "50%",
                     left: "50%",
