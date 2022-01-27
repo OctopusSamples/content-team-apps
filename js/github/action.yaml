@@ -46,12 +46,12 @@ runs:
       working-directory: js
 
     - name: Create zip
-      run: cd build; zip -r ../pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip .
+      run: cd build; zip -r ../pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}.zip .
       shell: bash
       working-directory: js
 
     - name: Create zip
-      run: zip pipeline-builder-github-frontend-sbom.0.1.0.${{ inputs.run_number }}.zip bom.xml
+      run: zip pipeline-builder-github-frontend-sbom.0.1.${{ inputs.run_number }}.zip bom.xml
       shell: bash
       working-directory: js
 
@@ -73,13 +73,13 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: js/pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
-        asset_name: pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        asset_path: js/pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}.zip
+        asset_name: pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}.zip
         asset_content_type: application/zip
 
     - name: Push Package
       run: >
-        octo push --package pipeline-builder-github-frontend.0.1.0.${{ inputs.run_number }}.zip
+        octo push --package pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -88,7 +88,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package pipeline-builder-github-frontend-sbom.0.1.0.${{ inputs.run_number }}.zip
+        octo push --package pipeline-builder-github-frontend-sbom.0.1.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
