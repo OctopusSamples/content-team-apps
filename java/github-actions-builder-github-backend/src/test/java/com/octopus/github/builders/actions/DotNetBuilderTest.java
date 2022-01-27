@@ -18,7 +18,7 @@ public class DotNetBuilderTest {
     assertFalse(DOT_NET_CORE_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
-        .repo("https://github.com/OctopusSamples/RandomQuotes")
+        .repo("https://github.com/OctopusSamples/RandomQuotes-Java")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))
         .build()));
