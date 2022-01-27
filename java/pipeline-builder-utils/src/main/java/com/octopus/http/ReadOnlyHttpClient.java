@@ -18,6 +18,8 @@ public interface ReadOnlyHttpClient {
 
   boolean head(String url);
 
+  boolean head(String url, String username, String password, String accessToken);
+
   boolean head(String url, String username, String password);
 
   boolean head(String url, List<Header> headers);

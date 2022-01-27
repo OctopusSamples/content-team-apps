@@ -125,6 +125,29 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
   }
 
   @Override
+  public boolean head(String url, String username, String password, String accessToken) {
+    LOG.log(DEBUG, "StringHttpClient.head(String, String, String)");
+    LOG.log(DEBUG, "url: " + url);
+    LOG.log(DEBUG, "username: " + username);
+    LOG.log(DEBUG, "password present: " + !StringUtils.isBlank(password));
+    LOG.log(DEBUG, "accessToken present: " + !StringUtils.isBlank(accessToken));
+
+
+    final List<Header> headers = StringUtils.isNotBlank(accessToken)
+        ? List.of(new BasicHeader("Authorization", "token " + accessToken))
+        : buildHeaders(username, password);
+
+    return getClient()
+        .of(httpClient -> headResponse(
+            httpClient,
+            url,
+            headers)
+            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .get())
+        .isSuccess();
+  }
+
+  @Override
   public boolean head(
       @NonNull final String url,
       final String username,

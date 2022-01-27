@@ -5,6 +5,7 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octopus.http.ReadOnlyHttpClient;
 import io.vavr.control.Try;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ import org.jboss.logging.Logger;
 @Builder
 public class GithubRepoClient implements RepoClient {
 
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String GITHUB_REGEX = "https://github.com/(?<username>.*?)/(?<repo>.*?)(/|\\.git$|$).*";
   private static final Logger LOG = Logger.getLogger(GithubRepoClient.class.toString());
   private static final PatternMatcher ANT_PATH_MATCHER = new AntPathMatcher();
@@ -63,8 +65,13 @@ public class GithubRepoClient implements RepoClient {
 
     return getDetails()
         .flatMap(d -> getDefaultBranches().stream().map(b -> readOnlyHttpClient.get(
-                "https://raw.githubusercontent.com/" + d.getUsername() + "/" + d.getRepository() + "/"
-                    + b + "/" + path))
+                "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
+                    + "/contents/" + path + "?ref=" + b,
+                username,
+                password,
+                accessToken)
+                .mapTry(r -> OBJECT_MAPPER.readValue(r, HashMap.class))
+                .mapTry(m -> m.get("content").toString()))
             .filter(Try::isSuccess)
             .findFirst()
             .orElse(Try.failure(new Exception("All attempts to find a file failed."))));
@@ -78,8 +85,11 @@ public class GithubRepoClient implements RepoClient {
         .map(d -> getDefaultBranches()
             .stream()
             .anyMatch(b -> readOnlyHttpClient.head(
-                "https://raw.githubusercontent.com/" + d.getUsername() + "/" + d.getRepository()
-                    + "/" + b + "/" + path)))
+                "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
+                    + "/contents/" + path + "?ref=" + b,
+                username,
+                password,
+                accessToken)))
         .get();
   }
 
@@ -93,7 +103,10 @@ public class GithubRepoClient implements RepoClient {
             .stream()
             .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
-                    + "/git/trees/" + b + "?recursive=1"))
+                    + "/git/trees/" + b + "?recursive=1",
+                username,
+                password,
+                accessToken))
             .filter(Try::isSuccess)
             .findFirst()
             .orElse(Try.failure(new Exception("Could not contact any of the branches"))))
@@ -120,7 +133,10 @@ public class GithubRepoClient implements RepoClient {
             .stream()
             .map(b -> readOnlyHttpClient.get(
                 "https://api.github.com/repos/" + d.getUsername() + "/" + d.getRepository()
-                    + "/git/trees/" + b + "?recursive=1"))
+                    + "/git/trees/" + b + "?recursive=1",
+                username,
+                password,
+                accessToken))
             .filter(Try::isSuccess)
             .findFirst()
             .orElse(Try.failure(new Exception("Could not contact any of the branches"))))
