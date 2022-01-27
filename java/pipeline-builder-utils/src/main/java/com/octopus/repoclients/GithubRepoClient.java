@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.AntPathMatcher;
 import org.apache.shiro.util.PatternMatcher;
@@ -71,7 +72,8 @@ public class GithubRepoClient implements RepoClient {
                 password,
                 accessToken)
                 .mapTry(r -> OBJECT_MAPPER.readValue(r, HashMap.class))
-                .mapTry(m -> m.get("content").toString()))
+                .mapTry(m -> m.get("content").toString())
+                .mapTry(c -> new String(new Base64().decode(c))))
             .filter(Try::isSuccess)
             .findFirst()
             .orElse(Try.failure(new Exception("All attempts to find a file failed."))));
@@ -177,7 +179,7 @@ public class GithubRepoClient implements RepoClient {
             password,
             accessToken))
         // Convert the resulting JSON into a map
-        .mapTry(j -> new ObjectMapper().readValue(j, Map.class))
+        .mapTry(j -> OBJECT_MAPPER.readValue(j, Map.class))
         // get the default branch key
         .map(r -> r.get("default_branch"))
         // convert to a string
