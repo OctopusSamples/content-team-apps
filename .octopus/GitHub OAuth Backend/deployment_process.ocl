@@ -376,6 +376,7 @@ step "Deploy OAuth Proxy Login" {
 }
 
 step "Deploy OAuth Proxy Token Exchange" {
+    start_trigger = "StartWithPrevious"
 
     action {
         action_type = "Octopus.AwsRunCloudFormation"
