@@ -247,6 +247,8 @@ public class DotNetCoreBuilder implements PipelineBuilder {
     if (split.size() > 1) {
       split.remove(split.size() - 1);
       workingDirectory = String.join("/", split);
+    } else {
+      workingDirectory = null;
     }
   }
 }
