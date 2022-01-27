@@ -233,7 +233,7 @@ step "Deploy Pipeline Backend" {
                         },
                         "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}" },
                         "Handler": "not.used.in.provided.runtime",
-                        "MemorySize": 128,
+                        "MemorySize": 256,
                         "PackageType": "Zip",
                         "Role": {
                           "Fn::GetAtt": [
