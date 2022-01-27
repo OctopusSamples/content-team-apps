@@ -17,6 +17,7 @@ export interface DynamicConfig {
         }
     },
     useDefaultTheme?: boolean,
-    setCopyText: (text: string) => void,
+    generateTemplate: (url: string) => void,
+    setCopyText: (copyText: string) => void,
     copyText?: string
 }

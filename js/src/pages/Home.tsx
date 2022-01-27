@@ -53,6 +53,7 @@ const Home: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const classes = useStyles();
     const context = useContext(AppContext);
+
     context.setCopyText("");
 
     if (!localStorage.getItem("url")) {
@@ -90,13 +91,15 @@ const Home: FC<{}> = (): ReactElement => {
             setError("URL must point to a GitHub repo!");
         } else {
             setError("");
-            history.push("/template", {url});
+            history.push("/template");
+            context.generateTemplate(url);
         }
     }
 
     function handleExampleClick(url: string) {
         window.localStorage.setItem("loginForRepo", "");
-        history.push("/template", {url});
+        history.push("/template");
+        context.generateTemplate(url);
     }
 
     return (

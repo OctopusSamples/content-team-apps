@@ -19,6 +19,7 @@ import {DynamicConfig} from "./config/dynamicConfig";
 export const AppContext = React.createContext<DynamicConfig>({
     settings: {basename: "", title: "", generateApiPath: "", editorFormat: "", google: {tag: ""}, github: {enableLogin: false, loginPath: ""}},
     useDefaultTheme: true,
+    generateTemplate: () => {},
     setCopyText: () => {},
     copyText: ""
 });
@@ -41,12 +42,47 @@ function App(config: DynamicConfig) {
 
     const [copyText, setCopyText] = useState("");
 
+    // Generates the template and stores the result in the copyText state variable
+    const generateTemplate = (url: string) => {
+        async function getTemplate() {
+            const template =
+                await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error"})
+                    .then(response => {
+                        /*
+                            The /generate endpoint will return unauthorized if it detects that it can not read the repo.
+                            We then redirect to the login page to give the user a chance to login.
+                        */
+                        if (response.status === 401 && config.settings.github.enableLogin) {
+                            /*
+                                Catch infinite loops where we continually try to login. The template generator
+                                "should" only respond once with a 401, but be defensive here just in case.
+                             */
+                            if (window.localStorage.getItem("loginForRepo") === url) {
+                                return "Unable to access the repo " + url;
+                            }
+                            window.localStorage.setItem("loginForRepo", url)
+
+                            window.location.href = config.settings.github.loginPath;
+                            return "Redirecting to login page to access private Github repo.";
+                        }
+
+                        window.localStorage.setItem("loginForRepo", "");
+                        return response.text();
+                    })
+                    .catch(error => "There was a problem with your request.")
+
+            setCopyText(template);
+        }
+
+        getTemplate();
+    }
+
     return (
         <>
             <Helmet>
                 <title>{config.settings.title}</title>
             </Helmet>
-            <AppContext.Provider value={{...config, useDefaultTheme, copyText, setCopyText}}>
+            <AppContext.Provider value={{...config, generateTemplate, useDefaultTheme, setCopyText, copyText}}>
                 <ThemeProvider theme={theme}>
                     <Router basename={config.settings.basename}>
                         <Switch>
