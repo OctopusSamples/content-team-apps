@@ -133,7 +133,7 @@ runs:
       run: >
         octo pack
         --id github-actions-builder-github-backend-lambda-sbom
-        --version 0.1.0.${{ inputs.run_number }}
+        --version 0.1.${{ inputs.run_number }}
         --format zip
         --include **/bom.xml
       shell: bash
