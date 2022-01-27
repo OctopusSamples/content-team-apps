@@ -56,13 +56,16 @@ public final class SnakeYamlFactory {
     buildDesc.setExcludes("runsOn");
     representer.addTypeDescription(buildDesc);
 
+    final TypeDescription runDesc = new TypeDescription(RunStep.class);
+    runDesc.substituteProperty("working-directory", String.class, "getWorkingDirectory", "setWorkingDirectory");
+    runDesc.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
+    runDesc.setExcludes("workingDirectory", "ifProperty");
+    representer.addTypeDescription(runDesc);
 
-    final TypeDescription withDesc = new TypeDescription(RunStep.class);
-    withDesc.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
-    withDesc.setExcludes("ifProperty");
-    withDesc.substituteProperty("working-directory", String.class, "getWorkingDirectory", "setWorkingDirectory");
-    withDesc.setExcludes("workingDirectory");
-    representer.addTypeDescription(withDesc);
+    final TypeDescription usesWith = new TypeDescription(UsesWith.class);
+    usesWith.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
+    usesWith.setExcludes("ifProperty");
+    representer.addTypeDescription(usesWith);
 
     final DumperOptions options = new DumperOptions();
     options.setDefaultFlowStyle(FlowStyle.BLOCK);
