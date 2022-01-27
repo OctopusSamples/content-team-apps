@@ -14,7 +14,6 @@ import dotnetcore from './logos/dotnetcore.png';
 // constants
 import {useHistory} from "react-router-dom";
 import {AppContext} from "../App";
-import {CommonProps} from "../model/RouteItem.model";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const Home: FC<CommonProps> = (props: CommonProps): ReactElement => {
+const Home: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const classes = useStyles();
     const context = useContext(AppContext);

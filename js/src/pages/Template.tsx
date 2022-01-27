@@ -11,7 +11,6 @@ import lightDark from './images/spinnerDark.gif'
 
 import {useLocation} from "react-router-dom";
 import {AppContext} from "../App";
-import {CommonProps} from "../model/RouteItem.model";
 
 require('codemirror/mode/groovy/groovy');
 require('codemirror/mode/yaml/yaml');
@@ -29,7 +28,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const Template: FC<CommonProps> = (props: CommonProps): ReactElement => {
+const Template: FC<{}> = (): ReactElement => {
     const classes = useStyles();
     const {state} = useLocation<{ url: string }>();
 
