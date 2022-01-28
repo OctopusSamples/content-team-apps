@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -263,15 +264,20 @@ public class JenkinsBuilderTest {
 
     System.out.println("Testing " + accessor.getClass().getName());
 
-    final String template = Arrays.stream(PIPELINE_BUILDERS)
+    final Optional<String> template = Arrays.stream(PIPELINE_BUILDERS)
         .filter(p -> p.canBuild(accessor))
         .map(p -> p.generate(accessor))
-        .findFirst().get();
+        .findFirst();
 
-    System.out.println(template);
+    if (template.isEmpty()) {
+      System.out.println("Failed to find a builder for " + accessor.getClass().getName());
+      return;
+    }
+
+    System.out.println(template.get());
 
     // Add the job to the docker image
-    addJobToJenkins(getScriptJob(template), name);
+    addJobToJenkins(getScriptJob(template.get()), name);
 
     final JenkinsDetails jenkinsDetails = new JenkinsDetails(
         jenkins.getHost(),
