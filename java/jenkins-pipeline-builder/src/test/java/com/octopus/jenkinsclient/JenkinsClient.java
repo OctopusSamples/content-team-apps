@@ -89,7 +89,7 @@ public class JenkinsClient {
         .getElementsByTagName("result")
         .item(0)
         .getTextContent())
-        .map(r -> r.equals("SUCCESS") || r.equals("UNSTABLE"))
+        .mapTry(r -> r.equals("SUCCESS") || r.equals("UNSTABLE"))
         // Dump the xml if we didn't find the expected elements
         .onFailure(e -> System.out.println(Try.of(() -> serializeXML(doc))
             .getOrElseGet(e2 ->"Failed to serialize XML")))
