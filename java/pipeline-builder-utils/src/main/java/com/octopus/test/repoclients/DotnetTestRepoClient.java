@@ -33,7 +33,7 @@ public class DotnetTestRepoClient extends TestRepoClient {
   @Override
   public Try<String> getFile(final String path) {
     // just enough to fake a dotnet core project
-    return path.equals("myproj.csproj")
+    return path.endsWith(".csproj")
         ? Try.of(() -> "Sdk=\"Microsoft.NET.Sdk\"")
         : Try.failure(new Exception("file not found"));
   }
