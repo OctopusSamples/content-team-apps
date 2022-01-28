@@ -44,6 +44,8 @@ public class DotnetTestRepoClient extends TestRepoClient {
       return Try.of(() -> List.of("subdir/myproj.csproj"));
     } else if (path.equals("**/*.sln")) {
       return Try.of(() -> List.of("subdir/proj/myproj.sln"));
+    } else if (path.equals("*.sln")) {
+      return Try.of(() -> List.of("myproj.sln"));
     }
     return Try.of(List::of);
   }
