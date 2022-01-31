@@ -155,6 +155,18 @@ runs:
       shell: bash
       working-directory: java
 
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ inputs.octopus_api_toke }}
+        octopus_project: GitHub OAuth Backend
+        octopus_server: ${{ inputs.octopus_server_url }}
+        octopus_space: Content Team
+        push_version: 0.1.${{ inputs.run_number }}
+        push_package_ids: github-oauth-backend-lambda
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+
     - name: Trigger deployment
       run: >
         octo create-release
