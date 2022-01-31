@@ -158,7 +158,7 @@ runs:
     - name: Generate Octopus Deploy build information
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
-        octopus_api_key: ${{ inputs.octopus_api_toke }}
+        octopus_api_key: ${{ inputs.octopus_api_token }}
         octopus_project: GitHub OAuth Backend
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
