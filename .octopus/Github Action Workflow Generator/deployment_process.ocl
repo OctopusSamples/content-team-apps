@@ -496,10 +496,16 @@ step "Check for vulnerabilities" {
                 cd github-actions-builder-github-backend-lambda-sbom
                 SUCCESS=0
                 for x in **/bom.xml; do 
-                	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom 2>&1
+                    OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+                    # Report file is not generated if no threats found
+                    # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
+                    if [[ -f "$PWD/depscan-bom.json" ]]; then
+                      new_octopusartifact "$PWD/depscan-bom.json"
+                    fi
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
                     fi
+                    echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
                 done
                 
                 set_octopusvariable "VerificationResult" $SUCCESS
