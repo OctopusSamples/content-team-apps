@@ -496,7 +496,6 @@ step "Check for vulnerabilities" {
             Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
-                cd github-actions-builder-github-backend-lambda-sbom
                 TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
                 for x in **/bom.xml; do
