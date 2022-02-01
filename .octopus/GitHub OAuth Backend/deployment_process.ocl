@@ -783,7 +783,9 @@ step "Check for vulnerabilities" {
                 for x in **/bom.xml; do 
                 	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom --report_file /app/depscan.json 2>&1
                     ls -la
-                    new_octopusartifact "$PWD/depscan.json"
+                    if [[ -f "$PWD/depscan.json" ]]; then
+                    	new_octopusartifact "$PWD/depscan.json"
+                    fi
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
                     fi
