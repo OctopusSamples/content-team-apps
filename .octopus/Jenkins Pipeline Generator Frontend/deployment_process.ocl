@@ -5,6 +5,7 @@ step "Create S3 bucket" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.S3Bucket}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
@@ -169,6 +170,7 @@ step "Proxy with API Gateway" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.Frontend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
@@ -405,6 +407,7 @@ step "Update Stage" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGatewayStage}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
