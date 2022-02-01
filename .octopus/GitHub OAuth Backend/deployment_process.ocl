@@ -779,17 +779,30 @@ step "Check for vulnerabilities" {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 cd github-oauth-backend-lambda-sbom
+                TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
                 for x in **/bom.xml; do 
                     OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+                    
                     # Report file is not generated if no threats found
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan-bom.json" ]]; then
                       new_octopusartifact "$PWD/depscan-bom.json"
+                      COUNT=$(wc -l < "$PWD/depscan-bom.json") 
+                    else
+                      COUNT=0
                     fi
+                    
+                    aws timestream-write write-records \
+                        --database-name octopusMetrics \
+                        --table-name vulnerabilities \
+                        --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
+                        --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]" > /dev/null
+                    
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
                     fi
+                    
                     echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
                 done
                 
