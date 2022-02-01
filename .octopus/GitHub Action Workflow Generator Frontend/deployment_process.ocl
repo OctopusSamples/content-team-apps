@@ -403,7 +403,7 @@ step "Update Stage" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Action Workflow Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team (Shared Resource)\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGatewayStage}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
