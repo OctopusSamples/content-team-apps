@@ -529,7 +529,7 @@ step "Check for vulnerabilities" {
             Octopus.Action.Script.Syntax = "Bash"
             OctopusUseBundledTooling = "False"
         }
-        worker_pool_variable = ""
+        worker_pool = "AWS"
 
         packages "jenkins-pipeline-builder-github-backend-lambda-sbom" {
             acquisition_location = "Server"
