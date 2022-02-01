@@ -512,7 +512,7 @@ step "Check for vulnerabilities" {
                     fi
                     
                     aws timestream-write write-records \
-                        --database-name #{TimeStream.Name} \
+                        --database-name octopusMetrics \
                         --table-name vulnerabilities \
                         --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"Github Action Workflow Generator\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
                         --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]"
