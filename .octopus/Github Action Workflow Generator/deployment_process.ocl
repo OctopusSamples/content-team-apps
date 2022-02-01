@@ -501,6 +501,11 @@ step "Check for vulnerabilities" {
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan-bom.json" ]]; then
                       new_octopusartifact "$PWD/depscan-bom.json"
+                      aws timestream-write write-records \
+                        --database-name #{TimeStream.Name} \
+                        --table-name dora \
+                        --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
+                        --records "[{\"MeasureName\":\"deployment_frequency\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${DEPLOYMENT_FREQUENCY}\"}]"
                     fi
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
