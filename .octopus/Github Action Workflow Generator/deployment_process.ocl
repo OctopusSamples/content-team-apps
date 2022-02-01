@@ -557,7 +557,7 @@ step "Check for vulnerabilities" {
     }
 }
 
-step "Slack - Send Simple Notification - Bash" {
+step "Vulnerability Notification" {
     condition = "Variable"
     properties = {
         Octopus.Step.ConditionVariableExpression = "#{if Octopus.Action[Check for vulnerabilities].Output.VerificationResult != \"0\"}True#{/if}"
