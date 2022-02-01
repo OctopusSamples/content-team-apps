@@ -494,6 +494,7 @@ step "Check for vulnerabilities" {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 cd github-actions-builder-github-backend-lambda-sbom
+                TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
                 for x in **/bom.xml; do 
                     OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
@@ -501,11 +502,12 @@ step "Check for vulnerabilities" {
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan-bom.json" ]]; then
                       new_octopusartifact "$PWD/depscan-bom.json"
+                      COUNT=#(wc -l < "$PWD/depscan-bom.json")
                       aws timestream-write write-records \
                         --database-name #{TimeStream.Name} \
-                        --table-name dora \
-                        --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
-                        --records "[{\"MeasureName\":\"deployment_frequency\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${DEPLOYMENT_FREQUENCY}\"}]"
+                        --table-name vulnerabilities \
+                        --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"Github Action Workflow Generator\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
+                        --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]"
                     fi
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
