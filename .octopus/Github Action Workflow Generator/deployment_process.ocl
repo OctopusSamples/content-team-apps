@@ -502,6 +502,10 @@ step "Check for vulnerabilities" {
                 for x in **/bom.xml; do 
                     OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
                     
+                    if [[ $? -ne 0 ]]; then
+                    	SUCCESS=1
+                    fi
+                    
                     # Report file is not generated if no threats found
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan-bom.json" ]]; then
@@ -515,11 +519,7 @@ step "Check for vulnerabilities" {
                         --database-name octopusMetrics \
                         --table-name vulnerabilities \
                         --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
-                        --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]" > /dev/null
-                    
-                    if [[ $? -ne 0 ]]; then
-                    	SUCCESS=1
-                    fi
+                        --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]" > /dev/null   
                     
                     echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
                 done
