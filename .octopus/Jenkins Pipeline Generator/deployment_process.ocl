@@ -495,7 +495,8 @@ step "Check for vulnerabilities" {
                 cd jenkins-pipeline-builder-github-backend-lambda-sbom
                 SUCCESS=0
                 for x in **/bom.xml; do 
-                	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom --report_file /app/depscan.json 2>&1
+                	OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+                    echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
                     # Report file is not generated if no threats found
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan.json" ]]; then
