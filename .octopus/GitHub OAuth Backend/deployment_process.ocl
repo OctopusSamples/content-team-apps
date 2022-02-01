@@ -781,7 +781,8 @@ step "Check for vulnerabilities" {
                 cd github-oauth-backend-lambda-sbom
                 SUCCESS=0
                 for x in **/bom.xml; do 
-                	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom 2>&1
+                	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom --report_file /app/depscan.json 2>&1
+                    new_octopusartifact depscan.json
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
                     fi
