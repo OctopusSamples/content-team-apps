@@ -505,7 +505,7 @@ step "Check for vulnerabilities" {
                     # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
                     if [[ -f "$PWD/depscan-bom.json" ]]; then
                       new_octopusartifact "$PWD/depscan-bom.json"
-                      COUNT=#(wc -l < "$PWD/depscan-bom.json")
+                      COUNT=$(wc -l < "$PWD/depscan-bom.json")
                       aws timestream-write write-records \
                         --database-name #{TimeStream.Name} \
                         --table-name vulnerabilities \
