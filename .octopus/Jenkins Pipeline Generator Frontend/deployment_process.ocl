@@ -5,6 +5,7 @@ step "Create S3 bucket" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.S3Bucket}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
@@ -169,6 +170,7 @@ step "Proxy with API Gateway" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.Frontend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
@@ -194,9 +196,48 @@ step "Proxy with API Gateway" {
                     },
                     "BucketName": {
                       "Type": "String"
+                    },
+                    "SubPath": {
+                      "Type": "String"
+                    }
+                  },
+                  "Conditions": {
+                  	"IsFeatureBranch":  {
+                      "Fn::Not": [
+                        {
+                          "Fn::Equals": [
+                            {
+                              "Ref": "SubPath"
+                            },
+                            ""
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Resources": {
+                    "BranchResource": {
+                      "Type": "AWS::ApiGateway::Resource",
+                      "Condition": "IsFeatureBranch",
+                      "Properties": {
+                        "RestApiId": {
+                          "Ref": "RestApi"
+                        },
+                        "ParentId": {"Ref": "RootResourceId"},
+                        "PathPart": {"Ref": "SubPath"}
+                      }
+                	},
+                    "BranchResourceProxy": {
+                      "Type": "AWS::ApiGateway::Resource",
+                      "Condition": "IsFeatureBranch",
+                      "Properties": {
+                        "RestApiId": {
+                          "Ref": "RestApi"
+                        },
+                        "ParentId": {"Ref": "BranchResource"},
+                        "PathPart": "{proxy+}"
+                      }
+                	},
                     "FrontendMethodOne": {
                       "Type": "AWS::ApiGateway::Method",
                       "Properties": {      
@@ -264,8 +305,12 @@ step "Proxy with API Gateway" {
                             	"method.response.header.Strict-Transport-Security": true 
                             }
                         }],
-                        "ResourceId": {
-                          "Ref": "RootResourceId"
+                        "ResourceId": {         
+                          "Fn::If": [
+                            "IsFeatureBranch",
+                            {"Ref": "BranchResource"},
+                            {"Ref": "RootResourceId"}
+                          ] 
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
@@ -360,8 +405,12 @@ step "Proxy with API Gateway" {
                             	"method.response.header.Location": true
                             }
                         }],
-                        "ResourceId": {
-                          "Ref": "ResourceId"
+                        "ResourceId": {         
+                          "Fn::If": [
+                            "IsFeatureBranch",
+                            {"Ref": "BranchResourceProxy"},
+                            {"Ref": "ResourceId"}
+                          ] 
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
@@ -385,8 +434,8 @@ step "Proxy with API Gateway" {
                   }
                 }
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{Frontend.SubPath}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{Frontend.SubPath}\"}]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
@@ -405,6 +454,7 @@ step "Update Stage" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGatewayStage}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
@@ -527,21 +577,52 @@ step "HTTP - Test URL" {
 }
 
 step "Check for vulnerabilities" {
-    condition = "Always"
 
     action {
-        action_type = "Octopus.Script"
+        action_type = "Octopus.AwsRunScript"
         environments = ["Development (Security)", "Production (Security)"]
         properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
-                cd pipeline-builder-github-frontend-sbom
+                TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
-                for x in **/bom.xml; do 
-                	docker run --rm -v "$PWD:/app" appthreat/dep-scan scan --bom "/app/$x" --type bom 2>&1
+                for x in **/bom.xml; do
+                	# Delete any existing report file
+                	if [[ -f "$PWD/depscan-bom.json" ]]; then
+                      rm "$PWD/depscan-bom.json"
+                    fi
+                
+                    # Generate the report, capturing the output, and ensuring $? is set to the exit code
+                    OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+                    
+                    # Success is set to 1 if the exit code is not zero
                     if [[ $? -ne 0 ]]; then
                     	SUCCESS=1
                     fi
+                    
+                    # Report file is not generated if no threats found
+                    # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
+                    if [[ -f "$PWD/depscan-bom.json" ]]; then
+                      new_octopusartifact "$PWD/depscan-bom.json"
+                      # The number of lines in the report file equals the number of vulnerabilities found
+                      COUNT=$(wc -l < "$PWD/depscan-bom.json") 
+                    else
+                      COUNT=0
+                    fi
+                    
+                    # Push the result to the database
+                    aws timestream-write write-records \
+                        --database-name octopusMetrics \
+                        --table-name vulnerabilities \
+                        --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
+                        --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"${COUNT}\"}]" > /dev/null   
+                    
+                    # Print the output stripped of ANSI colour codes
+                    echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
                 done
                 
                 set_octopusvariable "VerificationResult" $SUCCESS
@@ -550,6 +631,7 @@ step "Check for vulnerabilities" {
             EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
         }
         worker_pool_variable = "WorkerPool"
 
