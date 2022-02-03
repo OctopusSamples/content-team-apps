@@ -170,7 +170,7 @@ step "Proxy with API Gateway" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{Frontend.SubPath}\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.Frontend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
