@@ -192,9 +192,48 @@ step "Proxy with API Gateway" {
                     },
                     "BucketName": {
                       "Type": "String"
+                    },
+                    "SubPath": {
+                      "Type": "String"
+                    }
+                  },
+                  "Conditions": {
+                  	"IsFeatureBranch":  {
+                      "Fn::Not": [
+                        {
+                          "Fn::Equals": [
+                            {
+                              "Ref": "SubPath"
+                            },
+                            ""
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Resources": {
+                  "BranchResource": {
+                      "Type": "AWS::ApiGateway::Resource",
+                      "Condition": "IsFeatureBranch",
+                      "Properties": {
+                        "RestApiId": {
+                          "Ref": "RestApi"
+                        },
+                        "ParentId": {"Ref": "RootResourceId"},
+                        "PathPart": {"Ref": "SubPath"}
+                      }
+                	},
+                    "BranchResourceProxy": {
+                      "Type": "AWS::ApiGateway::Resource",
+                      "Condition": "IsFeatureBranch",
+                      "Properties": {
+                        "RestApiId": {
+                          "Ref": "RestApi"
+                        },
+                        "ParentId": {"Ref": "BranchResource"},
+                        "PathPart": "{proxy+}"
+                      }
+                	},
                     "FrontendMethodOne": {
                       "Type": "AWS::ApiGateway::Method",
                       "Properties": {      
@@ -262,8 +301,12 @@ step "Proxy with API Gateway" {
                             	"method.response.header.Strict-Transport-Security": true 
                             }
                         }],
-                        "ResourceId": {
-                          "Ref": "RootResourceId"
+                        "ResourceId": {         
+                          "Fn::If": [
+                            "IsFeatureBranch",
+                            {"Ref": "BranchResource"},
+                            {"Ref": "RootResourceId"}
+                          ] 
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
@@ -358,8 +401,12 @@ step "Proxy with API Gateway" {
                             	"method.response.header.Location": true
                             }
                         }],
-                        "ResourceId": {
-                          "Ref": "ResourceId"
+                        "ResourceId": {         
+                          "Fn::If": [
+                            "IsFeatureBranch",
+                            {"Ref": "BranchResourceProxy"},
+                            {"Ref": "ResourceId"}
+                          ] 
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
@@ -383,8 +430,8 @@ step "Proxy with API Gateway" {
                   }
                 }
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{Frontend.SubPath}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{Frontend.SubPath}\"}]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
