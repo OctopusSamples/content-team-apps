@@ -536,7 +536,7 @@ step "Check for vulnerabilities" {
         environments = ["Development (Security)", "Production (Security)"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.Region = "us-west-2"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
