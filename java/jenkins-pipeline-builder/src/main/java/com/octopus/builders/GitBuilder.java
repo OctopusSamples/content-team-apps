@@ -39,7 +39,7 @@ public class GitBuilder {
                     + "* Git: https://plugins.jenkins.io/git/\n"
                     + "* Workflow Aggregator: https://plugins.jenkins.io/workflow-aggregator/\n"
                     + "* Octopus Deploy: https://plugins.jenkins.io/octopusdeploy/."
-                    )
+            )
             .build())
         .build();
   }
@@ -197,6 +197,10 @@ public class GitBuilder {
   public Element createParameters(@NonNull final RepoClient accessor) {
     return FunctionTrailingLambda.builder().name("parameters")
         .children(new ImmutableList.Builder<Element>()
+            .add(Comment.builder()
+                .content(
+                    "Parameters are only available after the first run. See https://issues.jenkins.io/browse/JENKINS-41929 for more details.")
+                .build())
             .add(FunctionManyArgs.builder()
                 .name("string")
                 .args(new ImmutableList.Builder<Argument>()
