@@ -1,6 +1,6 @@
 import React, {useEffect, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {HashRouter, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
 // app routes
 import {routes} from "./config";
@@ -109,7 +109,7 @@ function App(config: DynamicConfig) {
                 <ThemeProvider theme={theme}>
                     {requireLogin && <Login/>}
                     {!requireLogin &&
-                        <Router basename={config.settings.basename}>
+                        <HashRouter basename={config.settings.basename}>
                             <Switch>
                                 <Layout toggleTheme={toggle}>
                                     {/* for each route config, a react route is created */}
@@ -134,7 +134,7 @@ function App(config: DynamicConfig) {
                                     )}
                                 </Layout>
                             </Switch>
-                        </Router>
+                        </HashRouter>
                     }
                 </ThemeProvider>
             </AppContext.Provider>
