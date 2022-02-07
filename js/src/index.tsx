@@ -56,7 +56,6 @@ if (handleCognitoLogin()) {
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-
 function setupGoogleAnalytics(tag: string) {
     if (!tag) return;
 

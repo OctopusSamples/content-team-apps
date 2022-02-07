@@ -15,7 +15,7 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
-import {DEFAULT_BRANCH, getBranch, getGitHubLoginBranch, setGitHubLoginBranch} from "./utils/path";
+import {DEFAULT_BRANCH, getBranch, setGitHubLoginBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 
