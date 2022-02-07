@@ -1,4 +1,4 @@
-import {FC, ReactElement, useContext, useState} from "react";
+import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Helmet} from "react-helmet";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {Button, FormLabel, Grid, Link, TextField, Theme} from "@material-ui/core";
@@ -52,9 +52,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const Home: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const classes = useStyles();
-    const context = useContext(AppContext);
+    const {setCopyText, generateTemplate, settings} = useContext(AppContext);
 
-    context.setCopyText("");
+    setCopyText("");
 
     if (!localStorage.getItem("url")) {
         localStorage.setItem("url", "https://github.com/OctopusSamples/RandomQuotes-Java");
@@ -66,47 +66,54 @@ const Home: FC<{}> = (): ReactElement => {
 
     const [error, setError] = useState("");
 
+    const returningFromLogin = new URLSearchParams(window.location.search).get('action') === "loggedin";
+
+    useEffect(() => {
+        /*
+            If we are returning for being logged in, jump straight to the template generation page.
+            It is the oauth proxy that sets the action query parameter.
+         */
+        if (returningFromLogin) {
+            if (!url || !url.trim().startsWith("https://github.com")) {
+                setError("URL must point to a GitHub repo!");
+            } else {
+                setError("");
+                history.push("/template");
+                generateTemplate(url);
+            }
+        }
+    }, [returningFromLogin, setError, url, generateTemplate, history])
+
     function handleUrlUpdate(url: string) {
         localStorage.setItem("url", url);
         setUrl(url);
-    }
-
-    /*
-        If we are returning for being logged in, jump straight to the template generation page.
-        It is the oauth proxy that sets the action query parameter.
-     */
-    if (new URLSearchParams(window.location.search).get('action') === "loggedin") {
-        openRepo();
     }
 
     function handleClick() {
         // Manually clicking the "Go" button restarts the login cycle, so clear the last url from local storage.
         window.localStorage.setItem("loginForRepo", "");
         localStorage.setItem("url", url || "");
-        openRepo();
-    }
 
-    function openRepo() {
         if (!url || !url.trim().startsWith("https://github.com")) {
             setError("URL must point to a GitHub repo!");
         } else {
             setError("");
             history.push("/template");
-            context.generateTemplate(url);
+            generateTemplate(url);
         }
     }
 
     function handleExampleClick(url: string) {
         window.localStorage.setItem("loginForRepo", "");
         history.push("/template");
-        context.generateTemplate(url);
+        generateTemplate(url);
     }
 
     return (
         <>
             <Helmet>
                 <title>
-                    {context.settings.title}
+                    {settings.title}
                 </title>
             </Helmet>
             <Grid
