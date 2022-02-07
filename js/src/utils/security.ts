@@ -125,7 +125,7 @@ export function handleLogin() {
             setAccessToken(accessToken);
             setIdToken(idToken);
             setTokenExpiry(expiry);
-            window.location.href = getBranchPath(loginBranch);
+            window.location.href = getBranchPath(loginBranch + window.location.search);
             return false;
         }
 
