@@ -91,8 +91,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         PipelineConstants.SESSION_COOKIE);
 
     accessor.setRepo(repo);
-    auth.ifPresent(s -> accessor.setAccessToken(
-        cryptoUtils.decrypt(s, githubEncryption, githubSalt)));
+    accessor.setAccessToken(
+        auth.map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse(""));
 
     return checkForPublicRepo()
         .orElse(buildPipeline());

@@ -63,7 +63,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
    * @return The Lambda proxy integration response.
    */
   @Override
-  public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
+  public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input,
+      final Context context) {
     LOG.log(DEBUG, "PipelineLambda.handleRequest(Map<String,Object>, Context)");
     LOG.log(DEBUG, "input: " + convertObjectToJson(input));
     LOG.log(DEBUG, "context: " + convertObjectToJson(context));
@@ -81,7 +82,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""), input);
   }
 
-  private ProxyResponse generatePipeline(final String repo, final APIGatewayProxyRequestEvent input) {
+  private ProxyResponse generatePipeline(final String repo,
+      final APIGatewayProxyRequestEvent input) {
     LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
@@ -91,8 +93,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         PipelineConstants.SESSION_COOKIE);
 
     accessor.setRepo(repo);
-    auth.ifPresent(s -> accessor.setAccessToken(
-        cryptoUtils.decrypt(s, githubEncryption, githubSalt)));
+    accessor.setAccessToken(
+        auth.map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse(""));
 
     return checkForPublicRepo()
         .orElse(buildPipeline());
@@ -124,21 +126,24 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   /**
    * If the repo is in accessible it is either because it does not exist, or is a private repo that
-   * requires authentication. We make the decision here based on the presence of the session cookie.
+   * requires authentication. We make the decision here based on the presence of the session
+   * cookie.
    */
   private Optional<ProxyResponse> checkForPublicRepo() {
     if (!accessor.testRepo()) {
       if (accessor.hasAccessToken()) {
         return Optional.of(new ProxyResponse(
             "404",
-            accessor.getRepo() + " does not appear to be an accessible GitHub repository. Please try a different URL.",
+            accessor.getRepo()
+                + " does not appear to be an accessible GitHub repository. Please try a different URL.",
             new ImmutableMap.Builder<String, String>()
                 .put("Content-Type", "text/plain")
                 .build()));
       } else {
         return Optional.of(new ProxyResponse(
             "401",
-            accessor.getRepo() + " does not appear to be a public GitHub repository. You must login to GitHub.",
+            accessor.getRepo()
+                + " does not appear to be a public GitHub repository. You must login to GitHub.",
             new ImmutableMap.Builder<String, String>()
                 .put("Content-Type", "text/plain")
                 .build()));
