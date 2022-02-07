@@ -114,6 +114,8 @@ runs:
         --space "Content Team"
         --gitRef "main"
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --ignoreExisting
         --channel "${{ env.CHANNEL }}"
       shell: bash
 
@@ -140,6 +142,8 @@ runs:
         --space "Content Team"
         --gitRef "main"
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --ignoreExisting
         --channel "${{ env.CHANNEL }}"
       shell: bash
 
