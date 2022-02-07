@@ -90,6 +90,18 @@ export function clearLoginBranch() {
     return window.localStorage.setItem("loginbranch", "");
 }
 
+export function setGitHubLoginBranch() {
+    window.localStorage.setItem("githubloginbranch", getBranch());
+}
+
+export function getGitHubLoginBranch() {
+    return window.localStorage.getItem("githubloginbranch");
+}
+
+export function clearGitHubLoginBranch() {
+    return window.localStorage.setItem("githubloginbranch", "");
+}
+
 export function removeHash () {
     window.history.pushState(
         "",

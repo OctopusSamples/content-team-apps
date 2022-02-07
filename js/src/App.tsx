@@ -15,7 +15,7 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
-import {DEFAULT_BRANCH, getBranch} from "./utils/path";
+import {DEFAULT_BRANCH, getBranch, getGitHubLoginBranch, setGitHubLoginBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 
@@ -83,6 +83,7 @@ function App(config: DynamicConfig) {
                             if (window.localStorage.getItem("loginForRepo") === url) {
                                 return "Unable to access the repo " + url;
                             }
+                            setGitHubLoginBranch();
                             window.localStorage.setItem("loginForRepo", url)
 
                             window.location.href = config.settings.github.loginPath;
