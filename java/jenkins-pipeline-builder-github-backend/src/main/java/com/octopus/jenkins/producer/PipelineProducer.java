@@ -9,8 +9,14 @@ import com.octopus.builders.nodejs.NodejsBuilder;
 import com.octopus.builders.php.PhpComposerBuilder;
 import com.octopus.builders.python.PythonBuilder;
 import com.octopus.builders.ruby.RubyGemBuilder;
+import com.octopus.encryption.AesCryptoUtils;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.lambda.CaseInsensitiveCookieExtractor;
+import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.repoclients.GithubRepoClient;
 import com.octopus.repoclients.RepoClient;
 import java.util.Optional;
@@ -55,6 +61,39 @@ public class PipelineProducer {
         .username(clientId.orElse(""))
         .password(clientSecret.orElse(""))
         .build();
+  }
+
+  /**
+   * Produces the crypto utils instance.
+   *
+   * @return An implementation of CryptoUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public CryptoUtils getCryptoUtils() {
+    return new AesCryptoUtils();
+  }
+
+  /**
+   * Produces the Lambda query param extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpValueExtractor getQueryParamExtractor() {
+    return new CaseInsensitiveLambdaHttpValueExtractor();
+  }
+
+  /**
+   * Produces the Lambda cookie extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpCookieExtractor getCookieExtractor() {
+    return new CaseInsensitiveCookieExtractor();
   }
 
   /**
