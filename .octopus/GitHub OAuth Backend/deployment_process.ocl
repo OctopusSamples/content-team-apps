@@ -752,25 +752,6 @@ step "Get Stage URL" {
     }
 }
 
-step "HTTP - Test URL" {
-
-    action {
-        environments = ["Development", "Production"]
-        properties = {
-            ExpectedCode = "201"
-            ExpectedResponse = "OK"
-            Octopus.Action.RunOnServer = "true"
-            Octopus.Action.Template.Id = "ActionTemplates-1681"
-            Octopus.Action.Template.Version = "18"
-            SecurityProtocol = "Tls12"
-            TimeoutSeconds = "60"
-            Uri = "#{Octopus.Action[Get Stage URL].Output.StageURL}/api/pipeline/github/generate?action=health"
-            UseWindowsAuth = "False"
-        }
-        worker_pool_variable = "WorkerPool"
-    }
-}
-
 step "Check for vulnerabilities" {
 
     action {
