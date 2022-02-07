@@ -71,7 +71,9 @@ const Home: FC<{}> = (): ReactElement => {
     useEffect(() => {
         /*
             If we are returning for being logged in, jump straight to the template generation page.
-            It is the oauth proxy that sets the action query parameter.
+            It is the github oauth proxy
+            (https://github.com/OctopusSamples/content-team-apps/tree/main/java/github-oauth-backend) that sets the
+            action query parameter.
          */
         if (returningFromLogin) {
             if (!url || !url.trim().startsWith("https://github.com")) {
