@@ -129,7 +129,7 @@ step "Create API Gateway" {
                 		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
                 			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
                 			"Value": {
-                				"Ref": "ApiPipelineGitHubGenerate"
+                				"Ref": "ApiPipelineJenkinsGenerate"
                 			}
                 		},
                 		"#{CloudFormation.Output.OAuthGithubEndpointVariableName}": {
