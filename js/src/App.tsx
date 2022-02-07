@@ -1,9 +1,10 @@
-import React, {useReducer, useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
 // app routes
 import {routes} from "./config";
+import jwt_decode from 'jwt-decode';
 
 // components
 import Layout from "./components/Layout";
@@ -14,6 +15,9 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
+import {DEFAULT_BRANCH, getBranch} from "./utils/path";
+import {getIdToken} from "./utils/security";
+import Login from "./pages/Login";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
@@ -41,6 +45,25 @@ function App(config: DynamicConfig) {
     theme = responsiveFontSizes(theme);
 
     const [copyText, setCopyText] = useState("");
+    const [requireLogin, setRequireLogin] = useState<boolean>(false);
+
+    const keys = config.settings.aws?.jwk?.keys;
+    const developerGroup = config.settings.aws?.cognitoDeveloperGroup;
+    const branch = getBranch();
+    const idToken = getIdToken(keys);
+
+    useEffect(() => {
+        if (branch !== DEFAULT_BRANCH) {
+            if (idToken) {
+                const decoded: any = jwt_decode(idToken);
+                setRequireLogin(decoded["cognito:groups"].indexOf(developerGroup) === -1);
+            } else {
+                setRequireLogin(true)
+            }
+        } else {
+            setRequireLogin(false);
+        }
+    }, [developerGroup, branch, idToken]);
 
     // Generates the template and stores the result in the copyText state variable
     const generateTemplate = (url: string) => {
@@ -84,32 +107,35 @@ function App(config: DynamicConfig) {
             </Helmet>
             <AppContext.Provider value={{...config, generateTemplate, useDefaultTheme, setCopyText, copyText}}>
                 <ThemeProvider theme={theme}>
-                    <Router basename={config.settings.basename}>
-                        <Switch>
-                            <Layout toggleTheme={toggle}>
-                                {/* for each route config, a react route is created */}
-                                {routes.map((route: RouteItem) =>
-                                    route.subRoutes ? (
-                                        route.subRoutes.map((item: RouteItem) => (
+                    {requireLogin && <Login/>}
+                    {!requireLogin &&
+                        <Router basename={config.settings.basename}>
+                            <Switch>
+                                <Layout toggleTheme={toggle}>
+                                    {/* for each route config, a react route is created */}
+                                    {routes.map((route: RouteItem) =>
+                                        route.subRoutes ? (
+                                            route.subRoutes.map((item: RouteItem) => (
+                                                <Route
+                                                    key={`${item.key}`}
+                                                    path={`${item.path}`}
+                                                    component={(item.component && item.component()) || DefaultComponent}
+                                                    exact
+                                                />
+                                            ))
+                                        ) : (
                                             <Route
-                                                key={`${item.key}`}
-                                                path={`${item.path}`}
-                                                component={(item.component && item.component()) || DefaultComponent}
+                                                key={`${route.key}`}
+                                                path={`${route.path}`}
+                                                component={(route.component && route.component()) || DefaultComponent}
                                                 exact
                                             />
-                                        ))
-                                    ) : (
-                                        <Route
-                                            key={`${route.key}`}
-                                            path={`${route.path}`}
-                                            component={(route.component && route.component()) || DefaultComponent}
-                                            exact
-                                        />
-                                    )
-                                )}
-                            </Layout>
-                        </Switch>
-                    </Router>
+                                        )
+                                    )}
+                                </Layout>
+                            </Switch>
+                        </Router>
+                    }
                 </ThemeProvider>
             </AppContext.Provider>
         </>
