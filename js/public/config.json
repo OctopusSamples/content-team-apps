@@ -12,6 +12,7 @@
       "loginPath": "https://development.githubactionworkflows.com/oauth/github/login"
     },
     "aws": {
+      "cognitoDeveloperGroup": "Developers",
       "cognitoLogin": "",
       "jwk": {
         "keys": [

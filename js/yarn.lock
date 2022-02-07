@@ -1943,6 +1943,18 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/jsonwebtoken@^8.5.8":
+  version "8.5.8"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.5.8.tgz#01b39711eb844777b7af1d1f2b4cf22fda1c0c44"
+  integrity sha512-zm6xBQpFDIDM6o9r6HSgDeIcLy82TKWctCXEPbJJcXb5AKmi5BNNdLXneixK4lplX3PqIVcwLBCGE/kAGnlD4A==
+  dependencies:
+    "@types/node" "*"
+
+"@types/jwk-to-pem@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/jwk-to-pem/-/jwk-to-pem-2.0.1.tgz#ba6949f447e02cb7bebf101551e3a4dea5f4fde4"
+  integrity sha512-QXmRPhR/LPzvXBHTPfG2BBfMTkNLUD7NyRcPft8m5xFCeANa1BZyLgT0Gw+OxdWx6i1WCpT27EqyggP4UUHMrA==
+
 "@types/material-ui@^0.21.9":
   version "0.21.9"
   resolved "https://registry.yarnpkg.com/@types/material-ui/-/material-ui-0.21.9.tgz#156a7e78274b8d0c55e19a6b5483b105aa53c0f3"

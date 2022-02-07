@@ -6,17 +6,20 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {loadConfig} from "./dynamicConfig";
+import {handleLogin} from "./utils/security";
 
-loadConfig().then((config) => {
-    setupGoogleAnalytics(config.settings?.google?.tag);
+if (handleLogin()) {
+    loadConfig().then((config) => {
+        setupGoogleAnalytics(config.settings?.google?.tag);
 
-    ReactDOM.render(
-        <React.StrictMode>
-            <App settings={config.settings}/>
-        </React.StrictMode>,
-        document.getElementById('root')
-    );
-})
+        ReactDOM.render(
+            <React.StrictMode>
+                <App settings={config.settings}/>
+            </React.StrictMode>,
+            document.getElementById('root')
+        );
+    })
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
