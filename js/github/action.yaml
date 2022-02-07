@@ -29,6 +29,8 @@ runs:
       run: |
         PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
         echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+        CHANNEL="${{ env.BRANCH_NAME != 'main' && 'Feature Branch' || 'Default' }}"
+        echo CHANNEL=${CHANNEL} >> $GITHUB_ENV
       shell: bash
 
     - name: Packages
@@ -112,6 +114,7 @@ runs:
         --space "Content Team"
         --gitRef "main"
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --channel ${{ env.CHANNEL }}
       shell: bash
 
     - name: Trigger deployment Jenkins Pipelines Security env
