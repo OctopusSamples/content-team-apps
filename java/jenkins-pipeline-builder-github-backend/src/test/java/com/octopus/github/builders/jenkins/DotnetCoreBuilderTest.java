@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.octopus.builders.dotnet.DotnetCoreBuilder;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
+import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 public class DotnetCoreBuilderTest {
@@ -14,6 +15,7 @@ public class DotnetCoreBuilderTest {
 
   @Test
   public void verifyBuilderSupport() {
+    Try.run(() -> Thread.sleep(3000));
     assertTrue(DOTNET_CORE_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
@@ -22,6 +24,7 @@ public class DotnetCoreBuilderTest {
         .password(System.getenv("APP_GITHUB_SECRET"))
         .build()));
 
+    Try.run(() -> Thread.sleep(3000));
     assertFalse(DOTNET_CORE_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())

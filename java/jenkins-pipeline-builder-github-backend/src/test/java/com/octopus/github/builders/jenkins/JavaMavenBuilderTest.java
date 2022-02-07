@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.octopus.builders.java.JavaMavenBuilder;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.repoclients.GithubRepoClient;
+import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 public class JavaMavenBuilderTest {
@@ -14,6 +15,7 @@ public class JavaMavenBuilderTest {
 
   @Test
   public void verifyBuilderSupport() {
+    Try.run(() -> Thread.sleep(3000));
     assertFalse(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
@@ -22,6 +24,7 @@ public class JavaMavenBuilderTest {
         .password(System.getenv("APP_GITHUB_SECRET"))
         .build()));
 
+    Try.run(() -> Thread.sleep(3000));
     assertTrue(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
