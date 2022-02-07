@@ -243,7 +243,8 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
       return response;
     }
 
-    LOG.log(DEBUG, "Response code " + code + " did not indicate success");
-    throw new Exception("Response did not indicate success");
+    LOG.log(ERROR, "Response code " + code + " did not indicate success");
+    LOG.log(ERROR, EntityUtils.toString(response.getEntity()));
+    throw new Exception("Response code " + code + " did not indicate success");
   }
 }
