@@ -5,7 +5,9 @@ import static org.jboss.logging.Logger.Level.ERROR;
 
 import io.vavr.control.Try;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -23,14 +25,19 @@ import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
 
 /**
- * A readonly HTTP client. This is important, because GitHub does not offer a readonly
- * scope when accessing repos: https://github.com/github/feedback/discussions/7891.
- * So by ensuring we use a client that can only make GET or HEAD calls, we can be sure we
- * don't make any unwanted modifications.
+ * A readonly HTTP client. This is important, because GitHub does not offer a readonly scope when
+ * accessing repos: https://github.com/github/feedback/discussions/7891. So by ensuring we use a
+ * client that can only make GET or HEAD calls, we can be sure we don't make any unwanted
+ * modifications.
+ *
+ * All GET and HEAD requests are cached to help prevent GitHub API rate limit issues.
  */
 public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
 
-  private static final Logger LOG = Logger.getLogger(ReadOnlyStringReadOnlyHttpClient.class.toString());
+  private static final Logger LOG = Logger.getLogger(
+      ReadOnlyStringReadOnlyHttpClient.class.toString());
+  private static final Map<String, Boolean> CACHED_BOOLEAN_RESULTS = new ConcurrentHashMap<>();
+  private static final Map<String, Try<String>> CACHED_STRING_RESULTS = new ConcurrentHashMap<>();
 
   /**
    * Performs a HTTP GET request.
@@ -42,12 +49,15 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "StringHttpClient.get(String)");
     LOG.log(DEBUG, "url: " + url);
 
-    return getClient()
-        .of(httpClient -> getResponse(httpClient, url, List.of())
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
-            .get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
-        .onFailure(e -> LOG.log(DEBUG, "Exception message: " + e.toString()));
+    return CACHED_STRING_RESULTS.computeIfAbsent(
+        generateCacheKey("GET", url, null),
+        s ->
+            getClient()
+                .of(httpClient -> getResponse(httpClient, url, List.of())
+                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
+                .onFailure(e -> LOG.log(DEBUG, "Exception message: " + e.toString())));
   }
 
   @Override
@@ -78,15 +88,18 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
         ? List.of(new BasicHeader("Authorization", "token " + accessToken))
         : buildHeaders(username, password);
 
-    return getClient()
-        .of(httpClient -> getResponse(
-            httpClient,
-            url,
-            headers)
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
-            .get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
-        .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
+    return CACHED_STRING_RESULTS.computeIfAbsent(
+        generateCacheKey("GET", url, headers),
+        s ->
+            getClient()
+                .of(httpClient -> getResponse(
+                    httpClient,
+                    url,
+                    headers)
+                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
+                .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString())));
   }
 
   @Override
@@ -97,14 +110,17 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "url: " + url);
     LOG.log(DEBUG, "headers: " + headers);
 
-    return getClient()
-        .of(httpClient -> getResponse(
-            httpClient, url,
-            headers)
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
-            .get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
-        .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
+    return CACHED_STRING_RESULTS.computeIfAbsent(
+        generateCacheKey("GET", url, headers),
+        s ->
+            getClient()
+                .of(httpClient -> getResponse(
+                    httpClient, url,
+                    headers)
+                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
+                .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString())));
   }
 
   /**
@@ -117,11 +133,15 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "StringHttpClient.head(String)");
     LOG.log(DEBUG, "url: " + url);
 
-    return getClient()
-        .of(httpClient -> headResponse(httpClient, url, List.of()).of(this::checkSuccess).get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
-        .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
-        .isSuccess();
+    return CACHED_BOOLEAN_RESULTS.computeIfAbsent(
+        generateCacheKey("HEAD", url, null),
+        s ->
+            getClient()
+                .of(httpClient -> headResponse(httpClient, url, List.of()).of(this::checkSuccess)
+                    .get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
+                .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
+                .isSuccess());
   }
 
   @Override
@@ -132,19 +152,22 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "password present: " + !StringUtils.isBlank(password));
     LOG.log(DEBUG, "accessToken present: " + !StringUtils.isBlank(accessToken));
 
-
     final List<Header> headers = StringUtils.isNotBlank(accessToken)
         ? List.of(new BasicHeader("Authorization", "token " + accessToken))
         : buildHeaders(username, password);
 
-    return getClient()
-        .of(httpClient -> headResponse(
-            httpClient,
-            url,
-            headers)
-            .of(this::checkSuccess)
-            .get())
-        .isSuccess();
+    return CACHED_BOOLEAN_RESULTS.computeIfAbsent(
+        generateCacheKey("HEAD", url, headers),
+        s ->
+            getClient()
+                .of(httpClient -> headResponse(
+                    httpClient,
+                    url,
+                    headers)
+                    .of(this::checkSuccess)
+                    .get())
+                .isSuccess()
+    );
   }
 
   @Override
@@ -156,14 +179,17 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "url: " + url);
     LOG.log(DEBUG, "username: " + username);
 
-    return getClient()
-        .of(httpClient -> headResponse(
-            httpClient, url,
-            buildHeaders(username, password))
-            .of(this::checkSuccess).get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
-        .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
-        .isSuccess();
+    return CACHED_BOOLEAN_RESULTS.computeIfAbsent(
+        generateCacheKey("HEAD", url, null),
+        s ->
+            getClient()
+                .of(httpClient -> headResponse(
+                    httpClient, url,
+                    buildHeaders(username, password))
+                    .of(this::checkSuccess).get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
+                .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
+                .isSuccess());
   }
 
   @Override
@@ -172,14 +198,17 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     LOG.log(DEBUG, "url: " + url);
     LOG.log(DEBUG, "headers: " + headers);
 
-    return getClient()
-        .of(httpClient -> headResponse(
-            httpClient, url,
-            headers)
-            .of(this::checkSuccess).get())
-        .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
-        .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
-        .isSuccess();
+    return CACHED_BOOLEAN_RESULTS.computeIfAbsent(
+        generateCacheKey("HEAD", url, headers),
+        s ->
+            getClient()
+                .of(httpClient -> headResponse(
+                    httpClient, url,
+                    headers)
+                    .of(this::checkSuccess).get())
+                .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
+                .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
+                .isSuccess());
   }
 
   protected List<Header> buildHeaders(final String username, final String password) {
@@ -231,6 +260,17 @@ public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
     final HttpRequestBase request = new HttpGet(path);
     headers.forEach(request::addHeader);
     return request;
+  }
+
+  private String generateCacheKey(@NonNull final String method, @NonNull final String url,
+      final List<Header> headers) {
+    final StringBuilder sb = new StringBuilder(method + "\n" + url);
+    if (headers != null) {
+      sb.append("\n");
+      sb.append(headers.stream().map(h -> h.getName() + ":" + h.getValue())
+          .collect(Collectors.joining("\n")));
+    }
+    return sb.toString();
   }
 
   protected CloseableHttpResponse checkSuccess(@NonNull final CloseableHttpResponse response)

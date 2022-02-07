@@ -3,11 +3,14 @@ package com.octopus.repoclients;
 import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.octopus.http.ReadOnlyHttpClient;
 import io.vavr.control.Try;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
