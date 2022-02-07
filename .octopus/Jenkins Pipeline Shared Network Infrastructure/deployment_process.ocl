@@ -126,12 +126,6 @@ step "Create API Gateway" {
                 				"Ref": "Web"
                 			}
                 		},
-                		"#{PipelineEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline generate function",
-                			"Value": {
-                				"Ref": "ApiPipelineJenkinsGenerate"
-                			}
-                		},
                 		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
                 			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
                 			"Value": {
