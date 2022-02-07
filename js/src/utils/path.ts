@@ -89,3 +89,10 @@ export function getLoginBranch() {
 export function clearLoginBranch() {
     return window.localStorage.setItem("loginbranch", "");
 }
+
+export function removeHash () {
+    window.history.pushState(
+        "",
+        document.title,
+        window.location.pathname + window.location.search);
+}

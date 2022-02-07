@@ -7,8 +7,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {loadConfig} from "./dynamicConfig";
 import {handleLogin} from "./utils/security";
+import {removeHash} from "./utils/path";
 
 if (handleLogin()) {
+    /*
+        This app does not support bookmarking nested routes. Every time the page is loaded,
+        users are expected to visit the front page.
+     */
+    removeHash();
     loadConfig().then((config) => {
         setupGoogleAnalytics(config.settings?.google?.tag);
 
