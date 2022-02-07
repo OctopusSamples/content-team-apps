@@ -109,7 +109,7 @@ function App(config: DynamicConfig) {
                 <ThemeProvider theme={theme}>
                     {requireLogin && <Login/>}
                     {!requireLogin &&
-                        <HashRouter basename={config.settings.basename}>
+                        <HashRouter>
                             <Switch>
                                 <Layout toggleTheme={toggle}>
                                     {/* for each route config, a react route is created */}
