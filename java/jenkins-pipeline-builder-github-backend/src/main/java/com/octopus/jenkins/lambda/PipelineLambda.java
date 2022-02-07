@@ -76,7 +76,7 @@ public class PipelineLambda implements RequestHandler<Map<String, Object>, Proxy
     }
 
     final String pipeline = builders.stream()
-        .parallel()
+        .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .filter(b -> b.canBuild(accessor))
         .findFirst()
         .map(b -> b.generate(accessor))
