@@ -81,6 +81,30 @@ step "Create API Gateway" {
                 				},
                 				"PathPart": "generate"
                 			}
+                		},
+                		"ApiPipelineOAuth": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                				},
+                				"PathPart": "oauth"
+                			}
+                		},
+                		"ApiPipelineOAuthGitHub": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Ref": "ApiPipelineOAuth"
+                				},
+                				"PathPart": "github"
+                			}
                 		}
                 	},
                 	"Outputs": {
@@ -102,10 +126,16 @@ step "Create API Gateway" {
                 				"Ref": "Web"
                 			}
                 		},
-                		"#{PipelineEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline generate function",
+                		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
+                			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
                 			"Value": {
                 				"Ref": "ApiPipelineJenkinsGenerate"
+                			}
+                		},
+                		"#{CloudFormation.Output.OAuthGithubEndpointVariableName}": {
+                			"Description": "ID of the resource exposing the GitHub OAuth proxy",
+                			"Value": {
+                				"Ref": "ApiPipelineOAuthGitHub"
                 			}
                 		}
                 	}
