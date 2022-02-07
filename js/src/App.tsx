@@ -1,6 +1,6 @@
 import React, {useEffect, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {HashRouter, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
 // app routes
 import {routes} from "./config";
@@ -15,7 +15,7 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
-import {DEFAULT_BRANCH, getBranch} from "./utils/path";
+import {DEFAULT_BRANCH, getBranch, setGitHubLoginBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 
@@ -83,6 +83,7 @@ function App(config: DynamicConfig) {
                             if (window.localStorage.getItem("loginForRepo") === url) {
                                 return "Unable to access the repo " + url;
                             }
+                            setGitHubLoginBranch();
                             window.localStorage.setItem("loginForRepo", url)
 
                             window.location.href = config.settings.github.loginPath;
@@ -109,7 +110,7 @@ function App(config: DynamicConfig) {
                 <ThemeProvider theme={theme}>
                     {requireLogin && <Login/>}
                     {!requireLogin &&
-                        <Router basename={config.settings.basename}>
+                        <HashRouter>
                             <Switch>
                                 <Layout toggleTheme={toggle}>
                                     {/* for each route config, a react route is created */}
@@ -134,7 +135,7 @@ function App(config: DynamicConfig) {
                                     )}
                                 </Layout>
                             </Switch>
-                        </Router>
+                        </HashRouter>
                     }
                 </ThemeProvider>
             </AppContext.Provider>

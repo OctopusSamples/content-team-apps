@@ -1,4 +1,13 @@
-import {clearLoginBranch, getBranch, getBranchPath, getHashField, getLoginBranch, setLoginBranch} from "./path";
+import {
+    clearGitHubLoginBranch,
+    clearLoginBranch,
+    getBranch,
+    getBranchPath,
+    getGitHubLoginBranch,
+    getHashField,
+    getLoginBranch,
+    setLoginBranch
+} from "./path";
 import jwt from 'jsonwebtoken';
 import jwkToPem, {JWK} from 'jwk-to-pem';
 
@@ -88,11 +97,32 @@ function isTokenExpired() {
 }
 
 /**
+ * Deal with a redirection from GitHub, handing a second redirect to the original feature branch
+ * that initiated the login.
+ * @return true if the app should continue loading normally, false if we're redirecting away from this page
+ */
+export function handleGitHubLogin() {
+    try {
+        const loginBranch = getGitHubLoginBranch();
+        const loginRedirect = new URLSearchParams(window.location.search).get('action') === "loggedin";
+
+        if (loginBranch && loginRedirect) {
+            window.location.href = getBranchPath(loginBranch + window.location.search);
+            return false;
+        }
+
+        return true;
+    } finally {
+        clearGitHubLoginBranch();
+    }
+}
+
+/**
  * Deal with a redirection from Cognito, handing a second redirect to the original feature branch
  * that initiated the login.
  * @return true if the app should continue loading normally, false if we're redirecting away from this page
  */
-export function handleLogin() {
+export function handleCognitoLogin() {
     try {
         /*
          In the event of a login error, clear the hash and open the main page.

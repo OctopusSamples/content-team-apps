@@ -46,6 +46,13 @@ export function getBranch() {
         return DEFAULT_BRANCH;
     }
 
+    const pathElements = baseUrl.split("/");
+
+    if (pathElements.length > 1) {
+        console.log("The branch detection logic assumes the app is using hash based routing rather than paths.")
+        console.log("It looks like you have nested paths in the URL, which likely won't provide the correct result.")
+    }
+
     return baseUrl.split("/").pop() || "";
 }
 
@@ -81,4 +88,23 @@ export function getLoginBranch() {
  */
 export function clearLoginBranch() {
     return window.localStorage.setItem("loginbranch", "");
+}
+
+export function setGitHubLoginBranch() {
+    window.localStorage.setItem("githubloginbranch", getBranch());
+}
+
+export function getGitHubLoginBranch() {
+    return window.localStorage.getItem("githubloginbranch");
+}
+
+export function clearGitHubLoginBranch() {
+    return window.localStorage.setItem("githubloginbranch", "");
+}
+
+export function removeHash () {
+    window.history.pushState(
+        "",
+        document.title,
+        window.location.pathname + window.location.search);
 }
