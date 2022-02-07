@@ -107,7 +107,7 @@ export function handleGitHubLogin() {
         const loginRedirect = new URLSearchParams(window.location.search).get('action') === "loggedin";
 
         if (loginBranch && loginRedirect) {
-            window.location.href = getBranchPath(loginBranch + "/" + window.location.search);
+            window.location.href = getBranchPath(loginBranch) + window.location.search;
             return false;
         }
 
@@ -155,7 +155,7 @@ export function handleCognitoLogin() {
             setAccessToken(accessToken);
             setIdToken(idToken);
             setTokenExpiry(expiry);
-            window.location.href = getBranchPath(loginBranch + window.location.search);
+            window.location.href = getBranchPath(loginBranch) + window.location.search;
             return false;
         }
 
