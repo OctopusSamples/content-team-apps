@@ -45,7 +45,7 @@ const GitHubLogin: FC<{}> = (): ReactElement => {
                 <Grid item md={2} sm={false} xs={false}/>
                 <Grid item md={2} sm={false} xs={false}/>
                 <Grid item xs={10}>
-                    <Button variant={"outlined"} onClick={login}>Login</Button>
+                    <Button variant={"contained"} onClick={login}>Login</Button>
                 </Grid>
             </Grid>
 
