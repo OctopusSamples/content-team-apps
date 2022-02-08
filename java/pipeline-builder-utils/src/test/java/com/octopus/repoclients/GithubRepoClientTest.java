@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.repoclients.impl.GithubRepoClient;
+import com.octopus.repoclients.impl.GithubRepoDetails;
 import io.vavr.control.Try;
 import java.util.List;
 import java.util.regex.Matcher;

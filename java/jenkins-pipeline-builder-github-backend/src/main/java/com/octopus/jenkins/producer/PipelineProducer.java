@@ -17,8 +17,8 @@ import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
-import com.octopus.repoclients.GithubRepoClient;
-import com.octopus.repoclients.RepoClient;
+import com.octopus.repoclients.RepoClientFactory;
+import com.octopus.repoclients.impl.GitHubRepoClientFactory;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -49,14 +49,13 @@ public class PipelineProducer {
   }
 
   /**
-   * Produces the repository accessor.
+   * Produces the repository accessor factory.
    *
    * @return An implementation of RepoAccessor.
    */
-  @ApplicationScoped
   @Produces
-  public RepoClient getRepoAccessor(final ReadOnlyHttpClient readOnlyHttpClient) {
-    return GithubRepoClient.builder()
+  public RepoClientFactory getRepoClientFactory(final ReadOnlyHttpClient readOnlyHttpClient) {
+    return GitHubRepoClientFactory.builder()
         .readOnlyHttpClient(readOnlyHttpClient)
         .username(clientId.orElse(""))
         .password(clientSecret.orElse(""))

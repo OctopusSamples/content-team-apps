@@ -43,18 +43,8 @@ public abstract class TestRepoClient implements RepoClient {
   }
 
   @Override
-  public void setRepo(final String repo) {
-    this.repo = repo;
-  }
-
-  @Override
   public String getRepo() {
     return repo;
-  }
-
-  @Override
-  public void setAccessToken(final String accessToken) {
-    this.accessToken = accessToken;
   }
 
   @Override

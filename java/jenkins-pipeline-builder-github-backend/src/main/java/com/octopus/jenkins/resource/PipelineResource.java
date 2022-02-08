@@ -4,6 +4,7 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.repoclients.RepoClient;
+import com.octopus.repoclients.RepoClientFactory;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -23,7 +24,7 @@ public class PipelineResource {
   private static final Logger LOG = Logger.getLogger(PipelineResource.class.toString());
 
   @Inject
-  RepoClient accessor;
+  RepoClientFactory repoClientFactory;
 
   @Inject
   Instance<PipelineBuilder> builders;
@@ -44,7 +45,7 @@ public class PipelineResource {
       throw new IllegalArgumentException("repo can not be blank");
     }
 
-    accessor.setRepo(repo);
+    final RepoClient accessor = repoClientFactory.buildRepoClient(repo, null);
 
     return builders.stream()
         .filter(b -> b.canBuild(accessor))

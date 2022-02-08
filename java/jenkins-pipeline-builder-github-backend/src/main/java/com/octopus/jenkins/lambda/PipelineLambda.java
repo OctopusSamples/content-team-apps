@@ -16,11 +16,13 @@ import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
+import com.octopus.repoclients.RepoClientFactory;
 import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -40,7 +42,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
   String githubSalt;
 
   @Inject
-  RepoClient accessor;
+  RepoClientFactory repoClientFactory;
 
   @Inject
   Instance<PipelineBuilder> builders;
@@ -92,15 +94,15 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
     final Optional<String> auth = lambdaHttpCookieExtractor.getCookieValue(input,
         PipelineConstants.SESSION_COOKIE);
 
-    accessor.setRepo(repo);
-    accessor.setAccessToken(
+    final RepoClient accessor = repoClientFactory.buildRepoClient(
+        repo,
         auth.map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse(""));
 
-    return checkForPublicRepo()
-        .orElse(buildPipeline());
+    return checkForPublicRepo(accessor)
+        .orElse(buildPipeline(accessor));
   }
 
-  private ProxyResponse buildPipeline() {
+  private ProxyResponse buildPipeline(@NonNull final RepoClient accessor) {
     final String pipeline = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .parallel()
@@ -129,7 +131,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
    * requires authentication. We make the decision here based on the presence of the session
    * cookie.
    */
-  private Optional<ProxyResponse> checkForPublicRepo() {
+  private Optional<ProxyResponse> checkForPublicRepo(@NonNull final RepoClient accessor) {
     if (!accessor.testRepo()) {
       if (accessor.hasAccessToken()) {
         return Optional.of(new ProxyResponse(

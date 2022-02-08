@@ -10,25 +10,11 @@ import lombok.NonNull;
 public interface RepoClient {
 
   /**
-   * Set the Repo URL.
-   *
-   * @param repo The repo URL.
-   */
-  void setRepo(String repo);
-
-  /**
    * Gets the Repo URL.
    *
    * @returns repo The repo URL.
    */
   String getRepo();
-
-  /**
-   * Set the access token.
-   *
-   * @param accessToken The access token.
-   */
-  void setAccessToken(String accessToken);
 
   /**
    * Determine if the access token is set.
