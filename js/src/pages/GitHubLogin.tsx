@@ -39,7 +39,7 @@ const GitHubLogin: FC<{}> = (): ReactElement => {
                 <Grid item md={8} sm={12} xs={12}>
                     <h2>You must log into GitHub to continue.</h2>
                     <h4>Logging into GitHub provides access to private repositories and increases rate limits.</h4>
-                    <h4>By logging in, you agree that your GitHub email address may be used for marketing purposes.</h4>
+                    <h4>By logging in, you agree that your GitHub email address may be collected for marketing or advertising purposes.</h4>
                     <h4>View the <a target={"_blank"} rel={"noreferrer"} href={"https://octopus.com/legal/privacy"}>Octopus privacy policy</a> for more information.</h4>
                 </Grid>
                 <Grid item md={2} sm={false} xs={false}/>

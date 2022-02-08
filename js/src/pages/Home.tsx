@@ -96,7 +96,6 @@ const Home: FC<{}> = (): ReactElement => {
     function handleClick() {
         // Manually clicking the "Go" button restarts the login cycle, so clear the last url from local storage.
         window.localStorage.setItem("loginForRepo", "");
-        localStorage.setItem("url", url || "");
 
         if (!url || !url.trim().startsWith("https://github.com")) {
             setError("URL must point to a GitHub repo!");
@@ -108,8 +107,9 @@ const Home: FC<{}> = (): ReactElement => {
     }
 
     function handleExampleClick(url: string) {
-        handleUrlUpdate(url);
+        // Manually clicking a sample repo button restarts the login cycle, so clear the last url from local storage.
         window.localStorage.setItem("loginForRepo", "");
+        handleUrlUpdate(url);
         setError("");
         history.push("/template");
         generateTemplate(url, history);
