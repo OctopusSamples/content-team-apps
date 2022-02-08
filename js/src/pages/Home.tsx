@@ -108,8 +108,11 @@ const Home: FC<{}> = (): ReactElement => {
     }
 
     function handleExampleClick(url: string) {
-        setUrl(url);
-        handleClick();
+        handleUrlUpdate(url);
+        window.localStorage.setItem("loginForRepo", "");
+        setError("");
+        history.push("/template");
+        generateTemplate(url, history);
     }
 
     return (
