@@ -7,6 +7,7 @@ import Home from '../pages/Home';
 // interface
 import RouteItem from '../model/RouteItem.model';
 import Template from "../pages/Template";
+import GitHubLogin from "../pages/GitHubLogin";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -37,6 +38,16 @@ export const routes: Array<RouteItem> = [
         path: "/template",
         enabled: true,
         component: () => () => <Template/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-githublogin",
+        title: "GitHub Login",
+        tooltip: "GitHub Login",
+        path: "/githublogin",
+        enabled: true,
+        component: () => () => <GitHubLogin/>,
         icon: HomeIcon,
         appendDivider: true
     }

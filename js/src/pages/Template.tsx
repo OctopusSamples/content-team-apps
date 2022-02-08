@@ -50,7 +50,7 @@ const Template: FC<{}> = (): ReactElement => {
                 className={classes.flexGrowColumn}
                 spacing={2}
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
             >
                 <Grid item xs={12} className={classes.flexGrowColumn}>
                     <CodeMirror

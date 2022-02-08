@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Home: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const classes = useStyles();
-    const {setCopyText, generateTemplate, settings} = useContext(AppContext);
+    const {setCopyText, settings, generateTemplate} = useContext(AppContext);
 
     setCopyText("");
 
@@ -68,6 +68,7 @@ const Home: FC<{}> = (): ReactElement => {
 
     const returningFromLogin = new URLSearchParams(window.location.search).get('action') === "loggedin";
 
+
     useEffect(() => {
         /*
             If we are returning for being logged in, jump straight to the template generation page.
@@ -81,10 +82,11 @@ const Home: FC<{}> = (): ReactElement => {
             } else {
                 setError("");
                 history.push("/template");
-                generateTemplate(url);
+                generateTemplate(url, history);
             }
         }
     }, [returningFromLogin, setError, url, generateTemplate, history])
+
 
     function handleUrlUpdate(url: string) {
         localStorage.setItem("url", url);
@@ -101,14 +103,13 @@ const Home: FC<{}> = (): ReactElement => {
         } else {
             setError("");
             history.push("/template");
-            generateTemplate(url);
+            generateTemplate(url, history);
         }
     }
 
     function handleExampleClick(url: string) {
-        window.localStorage.setItem("loginForRepo", "");
-        history.push("/template");
-        generateTemplate(url);
+        setUrl(url);
+        handleClick();
     }
 
     return (
@@ -126,15 +127,15 @@ const Home: FC<{}> = (): ReactElement => {
                 <Grid
                     container={true}
                     alignItems="center"
-                    justify="center"
+                    justifyContent="center"
                 >
                     <Grid
                         container={true}
                         alignItems="center"
-                        justify="center"
+                        justifyContent="center"
                     >
                         <Grid item xs={2}
-                              justify="flex-end"
+                              justifyContent="flex-end"
                               container={true}>
                             <FormLabel className={classes.leftFormLabel}>{"GitHub URL"}</FormLabel>
                         </Grid>
@@ -148,17 +149,15 @@ const Home: FC<{}> = (): ReactElement => {
                                     onClick={handleClick}>{"Go"}</Button>
                         </Grid>
                         {error !== "" &&
-                        <Grid item xs={12} container={true} justify="center">
+                        <Grid item xs={12} container={true} justifyContent="center">
                             <FormLabel className={classes.error}>{error}</FormLabel>
                         </Grid>}
                     </Grid>
                 </Grid>
                 <Grid
                     container={true}
-                    justify="center"
+                    justifyContent="center"
                     alignContent={"flex-start"}
-                    justifyContent={"center"}
-                    xs={12}
                 >
                     <Grid item xs={12} className={classes.sampleLabelContainer}>
                         <FormLabel className={classes.sampleLabel}>Sample Projects</FormLabel>
