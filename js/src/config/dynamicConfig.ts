@@ -1,4 +1,5 @@
 import {JWK} from "jwk-to-pem";
+import * as H from "history";
 
 /**
  * Represents the configuration in the config.json file, which is processed by Octopus for each deployment
@@ -26,7 +27,7 @@ export interface DynamicConfig {
         }
     },
     useDefaultTheme?: boolean,
-    generateTemplate: (url: string) => void,
+    generateTemplate: (url: string, history: H.History) => void,
     setCopyText: (copyText: string) => void,
     copyText?: string
 }

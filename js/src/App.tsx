@@ -15,9 +15,10 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 // interfaces
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
-import {DEFAULT_BRANCH, getBranch, setGitHubLoginBranch} from "./utils/path";
+import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/Login";
+import * as H from "history";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
@@ -66,7 +67,7 @@ function App(config: DynamicConfig) {
     }, [developerGroup, branch, idToken]);
 
     // Generates the template and stores the result in the copyText state variable
-    const generateTemplate = (url: string) => {
+    const generateTemplate = (url: string, history: H.History) => {
         async function getTemplate() {
             const template =
                 await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error"})
@@ -76,24 +77,17 @@ function App(config: DynamicConfig) {
                             We then redirect to the login page to give the user a chance to login.
                         */
                         if (response.status === 401 && config.settings.github.enableLogin) {
-                            /*
-                                Catch infinite loops where we continually try to login. The template generator
-                                "should" only respond once with a 401, but be defensive here just in case.
-                             */
-                            if (window.localStorage.getItem("loginForRepo") === url) {
-                                return "Unable to access the repo " + url;
-                            }
-                            setGitHubLoginBranch();
-                            window.localStorage.setItem("loginForRepo", url)
-
-                            window.location.href = config.settings.github.loginPath;
-                            return "Redirecting to login page to access private Github repo.";
+                            history.push("/githublogin");
+                            return "";
                         }
 
                         window.localStorage.setItem("loginForRepo", "");
                         return response.text();
                     })
-                    .catch(error => "There was a problem with your request.")
+                    .catch(error => {
+                        console.log(error);
+                        return "There was a problem with your request.";
+                    })
 
             setCopyText(template);
         }
