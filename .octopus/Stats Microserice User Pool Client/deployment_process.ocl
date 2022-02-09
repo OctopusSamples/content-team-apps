@@ -49,7 +49,10 @@ step "Deploy User Pool Client" {
                         - !Ref CallbackUrl
                       AllowedOAuthFlows:
                         - client_credentials
-                      AllowedOAuthScopes: []
+                      AllowedOAuthScopes:
+                        - profile
+                        - email
+                        - openid
                       SupportedIdentityProviders:
                         - COGNITO
                       GenerateSecret: true
