@@ -1,0 +1,29 @@
+name: Audit Service
+
+on:
+  push:
+      paths:
+      - 'java/audit-service/**'
+      - 'java/pom.xml'
+      - 'java/pipeline-builder-utils/**'
+      - '!java/audit-service/k8s/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build
+      uses: ./java/github/audit-service
+      with:
+        run_number: ${{ github.run_number }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_user: ${{ github.actor }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
+        dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}
+        octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
+        octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
