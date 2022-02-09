@@ -18,7 +18,9 @@ import javax.crypto.NoSuchPaddingException;
 import org.apache.commons.lang3.NotImplementedException;
 
 /**
- * A service that can decrypt values with asymmetric key pairs. https://mkyong.com/java/java-asymmetric-cryptography-example/
+ * A service that can decrypt values with asymmetric key pairs.
+ * https://mkyong.com/java/java-asymmetric-cryptography-example/
+ * https://gist.github.com/mcasperson/92e8b9c38793cc830bbbbcf094ce63f6
  */
 public class RsaCryptoUtilsDecryptor implements CryptoUtils {
 
