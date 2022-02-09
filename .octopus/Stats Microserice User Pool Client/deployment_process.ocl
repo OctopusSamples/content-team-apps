@@ -48,14 +48,15 @@ step "Deploy User Pool Client" {
                   ScopeName:
                     Type: String
                 Resources:
-                  Type: AWS::Cognito::UserPoolResourceServer
-                  Properties: 
-                    Identifier: !Ref ResourceServerIdentifier
-                    Name: !Ref ResourceServerName
-                    Scopes: 
-                      - ScopeDescription: !Ref ScopeDescription
-                        ScopeName: !Ref ScopeName
-                    UserPoolId: !Ref CognitoPoolId
+                  ResourceServer:
+                    Type: AWS::Cognito::UserPoolResourceServer
+                    Properties: 
+                      Identifier: !Ref ResourceServerIdentifier
+                      Name: !Ref ResourceServerName
+                      Scopes: 
+                        - ScopeDescription: !Ref ScopeDescription
+                          ScopeName: !Ref ScopeName
+                      UserPoolId: !Ref CognitoPoolId
                   UserPoolClient:
                     Type: AWS::Cognito::UserPoolClient
                     Properties:
