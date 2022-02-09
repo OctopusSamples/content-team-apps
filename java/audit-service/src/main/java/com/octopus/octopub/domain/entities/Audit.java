@@ -36,7 +36,7 @@ public class Audit {
   public String dataPartition;
 
   /**
-   * The time the event took place
+   * The time the event took place.
    */
   @NotNull
   public Timestamp time;
