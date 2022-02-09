@@ -30,7 +30,7 @@ step "Deploy User Pool Client" {
         action_type = "Octopus.AwsRunCloudFormation"
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Stats Microserice User Pool Client\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Audit Microservice User Pool Client\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "audit-microservice-cognito-client"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 AWSTemplateFormatVersion: "2010-09-09"
