@@ -1,0 +1,79 @@
+step "Get Stack Outputs" {
+
+    action {
+        action_type = "Octopus.AwsRunScript"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                COGNITO_POOL_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.Cognito} \
+                    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+                    --output text)
+                echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
+                set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "AWS"
+    }
+}
+
+step "Deploy User Pool Client" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Workflow Cognito User Pool Client\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "github-workflow-cognito-client"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                AWSTemplateFormatVersion: "2010-09-09"
+                Parameters:
+                  CognitoPoolId:
+                    Type: String
+                  CallbackUrl:
+                    Type: String
+                  CognitoDomain:
+                    Type: String
+                Resources:
+                  UserPoolClient:
+                    Type: AWS::Cognito::UserPoolClient
+                    Properties:
+                      UserPoolId: !Ref CognitoPoolId
+                      AllowedOAuthFlowsUserPoolClient: true
+                      CallbackURLs:
+                        - !Ref CallbackUrl
+                      AllowedOAuthFlows:
+                        - implicit
+                      AllowedOAuthScopes:
+                        - email
+                        - openid
+                        - profile
+                      SupportedIdentityProviders:
+                        - COGNITO
+                        - Google 
+                Outputs:
+                  CognitoAppClientID:
+                    Value: !Ref UserPoolClient
+                    Description: The app client
+                  HostedUIURL:
+                    Value: !Sub https://${CognitoDomain}.auth.us-west-2.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=${CallbackUrl}
+                    Description: The hosted UI URL
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://#{Octopus.Environment.Name | ToLower}.githubactionworkflows.com/\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://#{Octopus.Environment.Name | ToLower}.githubactionworkflows.com/\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"}]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool = "AWS"
+    }
+}
