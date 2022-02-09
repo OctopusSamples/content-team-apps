@@ -67,8 +67,7 @@ step "Deploy User Pool Client" {
                       AllowedOAuthFlows:
                         - client_credentials
                       AllowedOAuthScopes:
-                        - !Sub 
-                          - ${ResourceServerIdentifier}/${ScopeName}
+                        - !Sub ${ResourceServerIdentifier}/${ScopeName}
                       SupportedIdentityProviders:
                         - COGNITO
                       GenerateSecret: true
