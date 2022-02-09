@@ -1,0 +1,89 @@
+step "Deploy Cognito " {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Cognito\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.Cognito}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                AWSTemplateFormatVersion: "2010-09-09"
+                
+                Parameters:
+                  CognitoDomain:
+                    Type: String
+                    MinLength: 3
+                    MaxLength: 63
+                    AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+                    Description: Enter a string. Must be alpha numeric 3-63 in length.
+                
+                  GoogleClientId:
+                    Type: String
+                    
+                  GoogleClientSecret:
+                    Type: String
+                
+                Resources:
+                  UserPool:
+                    Type: AWS::Cognito::UserPool
+                    Properties:
+                      UsernameConfiguration: 
+                        CaseSensitive: false
+                      AutoVerifiedAttributes:
+                        - email
+                      UserPoolName: !Sub ${CognitoDomain}-user-pool
+                      Schema:        
+                        - Name: email
+                          AttributeDataType: String
+                          Mutable: true # Email must be mutable: https://stackoverflow.com/questions/50365699/saml-attribute-mapping-for-aws-cognito-signup-or-signin-works-but-not-both
+                          Required: true
+                        - Name: name
+                          AttributeDataType: String
+                          Mutable: true
+                          Required: true
+                
+                  UserPoolDomain:
+                    Type: AWS::Cognito::UserPoolDomain
+                    Properties:
+                      Domain: !Ref CognitoDomain
+                      UserPoolId: !Ref UserPool
+                      
+                  CognitoUserPoolIdentityProvider:
+                    Type: AWS::Cognito::UserPoolIdentityProvider
+                    Properties: 
+                      ProviderName: Google
+                      AttributeMapping:
+                        email: email
+                        name: name
+                      ProviderDetails:
+                        client_id: !Sub ${GoogleClientId}.apps.googleusercontent.com
+                        client_secret: !Ref GoogleClientSecret
+                        authorize_scopes: email openid profile
+                      ProviderType: Google
+                      UserPoolId: 
+                        Ref: UserPool     
+                  
+                  DeveloperGroup:
+                    Type: AWS::Cognito::UserPoolGroup
+                    Properties: 
+                      Description: Represents developers of the application
+                      GroupName: Developers
+                      UserPoolId: !Ref UserPool
+                      
+                
+                Outputs:
+                  CognitoUserPoolID:
+                    Value: !Ref UserPool
+                    Description: The UserPool ID
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"},{\"ParameterKey\":\"GoogleClientId\",\"ParameterValue\":\"#{Google.ClientId}\"},{\"ParameterKey\":\"GoogleClientSecret\",\"ParameterValue\":\"#{Google.ClientSecret}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"},{\"ParameterKey\":\"GoogleClientId\",\"ParameterValue\":\"#{Google.ClientId}\"},{\"ParameterKey\":\"GoogleClientSecret\",\"ParameterValue\":\"#{Google.ClientSecret}\"}]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool = "AWS"
+    }
+}
