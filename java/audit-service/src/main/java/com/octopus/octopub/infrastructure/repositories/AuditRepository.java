@@ -19,6 +19,7 @@ import javax.persistence.criteria.Predicate;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import lombok.NonNull;
+import org.apache.commons.codec.binary.Base64;
 import org.h2.util.StringUtils;
 
 /**
@@ -121,6 +122,20 @@ public class AuditRepository {
     final Set<ConstraintViolation<Audit>> violations = validator.validate(audit);
     if (violations.isEmpty()) {
       return;
+    }
+
+    /*
+      A sanity check to ensure that any audit record that indicates it has encrypted values
+      has encoded those values as Base64. Note that this doesn't verify that the values are actually
+      encrypted, but simply serves as a safeguard to ensure clients creating encrypted entries
+      haven't forgotten to process the (supposedly) encrypted values.
+     */
+    if (audit.encryptedSubject && !Base64.isBase64(audit.subject)) {
+      throw new InvalidInput("Encrypted values must be encoded as Base64");
+    }
+
+    if (audit.encryptedObject && !Base64.isBase64(audit.object)) {
+      throw new InvalidInput("Encrypted values must be encoded as Base64");
     }
 
     throw new InvalidInput(

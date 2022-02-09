@@ -21,6 +21,12 @@
       <column name="action" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
+      <column name="encryptedSubject" type="boolean">
+        <constraints nullable="false"/>
+      </column>
+      <column name="encryptedObject" type="boolean">
+        <constraints nullable="false"/>
+      </column>
     </createTable>
   </changeSet>
 </databaseChangeLog>
