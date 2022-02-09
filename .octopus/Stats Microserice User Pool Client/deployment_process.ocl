@@ -50,7 +50,6 @@ step "Deploy User Pool Client" {
                       AllowedOAuthFlows:
                         - client_credentials
                       AllowedOAuthScopes:
-                        - profile
                         - email
                         - openid
                       SupportedIdentityProviders:
