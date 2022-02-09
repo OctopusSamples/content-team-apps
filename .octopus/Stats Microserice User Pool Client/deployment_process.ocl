@@ -39,7 +39,23 @@ step "Deploy User Pool Client" {
                     Type: String
                   CallbackUrl:
                     Type: String
+                  ResourceServerIdentifier:
+                    Type: String
+                  ResourceServerName:
+                    Type: String
+                  ScopeDescription:
+                    Type: String
+                  ScopeName:
+                    Type: String
                 Resources:
+                  Type: AWS::Cognito::UserPoolResourceServer
+                  Properties: 
+                    Identifier: !Ref ResourceServerIdentifier
+                    Name: !Ref ResourceServerName
+                    Scopes: 
+                      - ScopeDescription: !Ref ScopeDescription
+                        ScopeName: !Ref ScopeName
+                    UserPoolId: !Ref CognitoPoolId
                   UserPoolClient:
                     Type: AWS::Cognito::UserPoolClient
                     Properties:
@@ -50,7 +66,7 @@ step "Deploy User Pool Client" {
                       AllowedOAuthFlows:
                         - client_credentials
                       AllowedOAuthScopes:
-                        - openid
+                        - !Sub ${ResourceServerIdentifier}/${ScopeName}
                       SupportedIdentityProviders:
                         - COGNITO
                       GenerateSecret: true
@@ -59,8 +75,8 @@ step "Deploy User Pool Client" {
                     Value: !Ref UserPoolClient
                     Description: The app client
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"},{\"ParameterKey\":\"ResourceServerIdentifier\",\"ParameterValue\":\"stats.content-team\"},{\"ParameterKey\":\"ResourceServerName\",\"ParameterValue\":\"Stats Microservice\"},{\"ParameterKey\":\"ScopeDescription\",\"ParameterValue\":\"Service administrator\"},{\"ParameterKey\":\"ScopeName\",\"ParameterValue\":\"admin\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"},{\"ParameterKey\":\"ResourceServerIdentifier\",\"ParameterValue\":\"stats.content-team\"},{\"ParameterKey\":\"ResourceServerName\",\"ParameterValue\":\"Stats Microservice\"},{\"ParameterKey\":\"ScopeDescription\",\"ParameterValue\":\"Service administrator\"},{\"ParameterKey\":\"ScopeName\",\"ParameterValue\":\"admin\"}]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
