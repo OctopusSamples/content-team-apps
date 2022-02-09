@@ -1,0 +1,219 @@
+name: 'GitHub Actions Backend'
+inputs:
+  run_number:
+    required: true
+  github_token:
+    required: true
+  github_user:
+    required: true
+  dockerhub_username:
+    required: true
+  dockerhub_password:
+    required: true
+  octopus_server_url:
+    required: true
+  octopus_api_token:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Set up JDK 1.17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+
+    - uses: DeLaGuardo/setup-graalvm@4.0
+      with:
+        graalvm: '22.0.0.2'
+        java: 'java17'
+        arch: 'amd64'
+
+    - name: Creating a prerelease from the branch
+      run: |
+        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+      shell: bash
+
+    - name: Install native-image component
+      run: gu install native-image
+      shell: bash
+
+    - id: setup-pack
+      uses: buildpacks/github-actions/setup-pack@v4.4.0
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_password }}
+
+    - name: Checkstyle
+      run: ./mvnw --batch-mode checkstyle:check
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Install modules
+      run: ./mvnw --batch-mode install
+      shell: bash
+      working-directory: java/audits-service
+      env:
+        COGNITO_DISABLE_AUTH: "true"
+
+    - name: Update version
+      run: ./mvnw --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: List Dependencies
+      run: ./mvnw --batch-mode dependency:tree --no-transfer-progress > dependencies.txt
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: java/audits-service/dependencies.txt
+
+    - name: List Dependency Updates
+      run: ./mvnw --batch-mode versions:display-dependency-updates > dependencyUpdates.txt
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: java/audits-service/dependencyUpdates.txt
+
+    - name: Build with Maven
+      run: ./mvnw --batch-mode package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Rename zip
+      run: >
+        mv target/function.zip
+        audits-service.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+      shell: bash
+      working-directory: java/audits-service
+
+    - run: >
+        ./mvnw deploy:deploy-file
+        -Dfile=audits-service.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        -DgroupId=com.octopus.octopub
+        -DartifactId=audits-service
+        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        -Dpackaging=zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Generate SBOM
+      run: mvn cyclonedx:makeAggregateBom -DskipTests
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Build SBOM package
+      run: >
+        octo pack
+        --id audits-service-sbom
+        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --format zip
+        --include **/bom.xml
+      shell: bash
+      working-directory: java/audits-service
+
+    - run: >
+        ./mvnw deploy:deploy-file
+        -Dfile=audits-service-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus.octopub
+        -DartifactId=audits-service-sbom
+        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        -Dpackaging=zip
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Build K8s package
+      run: >
+        octo pack
+        --id audits-service-k8s
+        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --format zip
+        --include k8s/**
+      shell: bash
+      working-directory: java/audits-service
+
+    - run: >
+        ./mvnw deploy:deploy-file
+        -Dfile=audits-service-k8s.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus.octopub
+        -DartifactId=audits-service-k8s
+        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        -Dpackaging=zip
+      shell: bash
+      working-directory: java/audits-service
+
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ inputs.octopus_api_token }}
+        octopus_project: Audit Service
+        octopus_server: ${{ inputs.octopus_server_url }}
+        push_version: 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        push_package_ids: com.octopus.octopub:audits-service
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+        octopus_space: "Content Team"
+        octopus_environment: "Development"
+
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Audit Service"
+        --deployTo "Development"
+        --waitForDeployment
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --gitRef main
+      shell: bash
+
+    - name: Trigger deployment to security
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo deploy-release
+        --project "Audit Service"
+        --deployTo "Development (Security)"
+        --waitForDeployment
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --version=latest
+      shell: bash
+
+    - name: Trigger branch deployment
+      if: ${{ env.BRANCH_NAME != 'main' }}
+      run: >
+        octo create-release
+        --project "Audit Service Branch"
+        --deployTo "Development"
+        --waitForDeployment
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --gitRef main
+      shell: bash
