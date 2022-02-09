@@ -1,5 +1,6 @@
 package com.octopus.octopub.domain.framework.config;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.octopub.domain.entities.Audit;
@@ -12,5 +13,5 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * reflection.
  */
 @RegisterForReflection(
-    targets = {StringIdHandler.class, Audit.class, Health.class, Audit.class, IntegerIdHandler.class})
+    targets = {StringIdHandler.class, Audit.class, Health.class, Audit.class, IntegerIdHandler.class, SerializationFeature.class})
 public class MyReflectionConfiguration {}
