@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.octopub.domain.entities.Audit;
 import com.octopus.octopub.domain.handlers.AuditsHandler;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.List;
 import javax.annotation.Nonnull;
 import lombok.NonNull;
@@ -20,6 +21,7 @@ public class BaseTest {
     audit.setSubject(subject);
     audit.setObject("object");
     audit.setAction("action");
+    audit.setTime(new Timestamp(System.currentTimeMillis()));
     audit.setDataPartition(partition);
     return audit;
   }

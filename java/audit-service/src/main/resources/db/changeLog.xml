@@ -27,6 +27,9 @@
       <column name="encryptedObject" type="boolean">
         <constraints nullable="false"/>
       </column>
+      <column name="time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
     </createTable>
   </changeSet>
 </databaseChangeLog>

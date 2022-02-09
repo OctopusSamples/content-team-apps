@@ -1,6 +1,6 @@
 package com.octopus.githuboauth.domain.producer;
 
-import com.octopus.encryption.AesCryptoUtils;
+import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.CookieDateUtils;
 import com.octopus.http.CookieDateUtilsImpl;

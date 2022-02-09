@@ -2,6 +2,7 @@ package com.octopus.octopub.domain.entities;
 
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.annotations.Type;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,12 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
- * Represents an audit JSONAPI resource and database entity. Audit records are based on the idea
- * of an RDF semantic triple, except instead of a generic predicate (Bob knows John) we assume
- * all auditable events involve actions (Bod created Document 1).
+ * Represents an audit JSONAPI resource and database entity. Audit records are based on the idea of
+ * an RDF semantic triple, except instead of a generic predicate (Bob knows John) we assume all
+ * auditable events involve actions (Bod created Document 1). Audit records may capture personally
+ * identifiable information in the subject or object, in which case these values should be
+ * encrypted, ideally with asymmetric encryption.
  */
 @Entity
 @Data
@@ -28,22 +32,32 @@ public class Audit {
   @Column(name = "id")
   public Integer id;
 
-  @NotBlank public String dataPartition;
+  @NotBlank
+  public String dataPartition;
+
+  /**
+   * The time the event took place
+   */
+  @NotNull
+  public Timestamp time;
 
   /**
    * The subject that initiated the action.
    */
-  @NotBlank public String subject;
+  @NotBlank
+  public String subject;
 
   /**
    * The action that was taken.
    */
-  @NotBlank public String action;
+  @NotBlank
+  public String action;
 
   /**
    * The object that the action was taken against.
    */
-  @NotBlank public String object;
+  @NotBlank
+  public String object;
 
   /**
    * Indicates (but does not verify) that the subject in this record is encrypted.

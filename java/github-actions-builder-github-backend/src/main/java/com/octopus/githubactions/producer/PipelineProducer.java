@@ -1,7 +1,7 @@
 package com.octopus.githubactions.producer;
 
 import com.octopus.builders.PipelineBuilder;
-import com.octopus.encryption.AesCryptoUtils;
+import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.githubactions.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.builders.GenericBuilder;

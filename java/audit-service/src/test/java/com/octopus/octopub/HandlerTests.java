@@ -70,11 +70,7 @@ public class HandlerTests extends BaseTest {
   @Test
   @Transactional
   public void getAudit() throws DocumentSerializationException {
-    final Audit audit = new Audit();
-    audit.setObject("object");
-    audit.setSubject("subject");
-    audit.setAction("action");
-    audit.setDataPartition("main");
+    final Audit audit = createAudit("subject");
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
@@ -105,10 +101,7 @@ public class HandlerTests extends BaseTest {
   @Transactional
   @ValueSource(strings = {"testing2", "", " ", "main", " main ", " testing2 "})
   public void failGetAudit(final String partition) throws DocumentSerializationException {
-    final Audit audit = new Audit();
-    audit.setObject("object");
-    audit.setSubject("subject");
-    audit.setAction("action");
+    final Audit audit = createAudit("subject");
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
@@ -132,11 +125,7 @@ public class HandlerTests extends BaseTest {
   @Test
   @Transactional
   public void getAllAudit() throws DocumentSerializationException {
-    final Audit audit = new Audit();
-    audit.setObject("object");
-    audit.setSubject("subject");
-    audit.setAction("action");
-    audit.setDataPartition("main");
+    final Audit audit = createAudit("subject");
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
@@ -167,10 +156,7 @@ public class HandlerTests extends BaseTest {
   @Transactional
   @ValueSource(strings = {"testing2", "", " ", "main", " main ", " testing2 "})
   public void failGetAudits(final String partition) throws DocumentSerializationException {
-    final Audit audit = new Audit();
-    audit.setObject("object");
-    audit.setSubject("subject");
-    audit.setAction("action");
+    final Audit audit = createAudit("subject");
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
