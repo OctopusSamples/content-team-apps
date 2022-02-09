@@ -33,15 +33,15 @@ public class RsaCryptoUtilsDecryptor implements CryptoUtils {
 
   /** {@inheritDoc} */
   @Override
-  public String encrypt(final String value, final String publicKey, final String salt) {
+  public String encrypt(final String value, final String publicKeyBase64, final String salt) {
     throw new NotImplementedException();
   }
 
   /** {@inheritDoc} */
   @Override
-  public String decrypt(final String value, final String privateKeyPath, final String salt) {
+  public String decrypt(final String value, final String privateKeyBase64, final String salt) {
     try {
-      this.cipher.init(Cipher.DECRYPT_MODE, getPrivate(privateKeyPath));
+      this.cipher.init(Cipher.DECRYPT_MODE, getPrivate(privateKeyBase64));
       return new String(this.cipher.doFinal(Base64.getDecoder().decode(value)));
     } catch (Exception e) {
       throw new EncryptionException(e);
@@ -50,7 +50,7 @@ public class RsaCryptoUtilsDecryptor implements CryptoUtils {
 
   // https://docs.oracle.com/javase/8/docs/api/java/security/spec/X509EncodedKeySpec.html
   private PrivateKey getPrivate(final String key) throws Exception {
-    final byte[] keyBytes = Resources.toByteArray(Resources.getResource(key));
+    final byte[] keyBytes = Base64.getDecoder().decode(key);
     final PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
     final KeyFactory kf = KeyFactory.getInstance("RSA");
     return kf.generatePrivate(spec);

@@ -28,9 +28,9 @@ public class RsaCryptoUtilsEncryptor implements CryptoUtils {
 
   /** {@inheritDoc} */
   @Override
-  public String encrypt(final String value, final String publicKeyPath, final String salt) {
+  public String encrypt(final String value, final String publicKeyBase64, final String salt) {
     try {
-      this.cipher.init(Cipher.ENCRYPT_MODE, getPublic(publicKeyPath));
+      this.cipher.init(Cipher.ENCRYPT_MODE, getPublic(publicKeyBase64));
       return Base64.getEncoder().encodeToString(this.cipher.doFinal(value.getBytes()));
     } catch (Exception e) {
       throw new EncryptionException(e);
@@ -39,13 +39,13 @@ public class RsaCryptoUtilsEncryptor implements CryptoUtils {
 
   /** {@inheritDoc} */
   @Override
-  public String decrypt(final String value, final String privateKey, final String salt) {
+  public String decrypt(final String value, final String privateKeyBase64, final String salt) {
     throw new NotImplementedException();
   }
 
   // https://docs.oracle.com/javase/8/docs/api/java/security/spec/X509EncodedKeySpec.html
   private PublicKey getPublic(final String key) throws Exception {
-    byte[] keyBytes = Resources.toByteArray(Resources.getResource(key));
+    byte[] keyBytes = Base64.getDecoder().decode(key);
     final X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
     final KeyFactory kf = KeyFactory.getInstance("RSA");
     return kf.generatePublic(spec);
