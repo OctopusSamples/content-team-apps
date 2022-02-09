@@ -23,10 +23,12 @@ public class RsaCryptoUtilsEncryptor implements CryptoUtils {
 
   public RsaCryptoUtilsEncryptor()
       throws NoSuchPaddingException, NoSuchAlgorithmException {
-      this.cipher = Cipher.getInstance("RSA");
+    this.cipher = Cipher.getInstance("RSA");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String encrypt(final String value, final String publicKeyBase64, final String salt) {
     try {
@@ -37,7 +39,9 @@ public class RsaCryptoUtilsEncryptor implements CryptoUtils {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String decrypt(final String value, final String privateKeyBase64, final String salt) {
     throw new NotImplementedException();
