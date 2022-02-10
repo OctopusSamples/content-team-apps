@@ -1,4 +1,4 @@
-name: Audit Service
+name: audit-service
 
 on:
   push:
