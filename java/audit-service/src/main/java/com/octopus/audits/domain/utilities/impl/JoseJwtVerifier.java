@@ -94,9 +94,9 @@ public class JoseJwtVerifier implements JwtVerifier {
 
   public boolean jwtIsValid(final String jwt, final String jwk)
       throws ParseException, IOException, JOSEException {
-    final String jwkDecoded = new String(Base64.getDecoder().decode(jwt));
-    final JWSObject jwsObject = JWSObject.parse(jwkDecoded);
-    final JWKSet publicKeys = JWKSet.load(IOUtils.toInputStream(jwk, Charset.defaultCharset()));
+    final JWSObject jwsObject = JWSObject.parse(jwt);
+    final String jwkDecoded = new String(Base64.getDecoder().decode(jwk));
+    final JWKSet publicKeys = JWKSet.load(IOUtils.toInputStream(jwkDecoded, Charset.defaultCharset()));
     final JWSVerifier verifier = new RSASSAVerifier(publicKeys.getKeyByKeyId(jwsObject.getHeader().getKeyID()).toRSAKey());
     if (jwsObject.verify(verifier)) {
       final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
