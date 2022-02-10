@@ -4,6 +4,7 @@ on:
   push:
       paths:
       - 'java/audit-service/**'
+      - 'java/github/audit-service/**'
       - 'java/pom.xml'
       - 'java/pipeline-builder-utils/**'
       - '!java/audit-service/k8s/**'
