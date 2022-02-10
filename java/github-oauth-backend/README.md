@@ -1,6 +1,6 @@
 This project creates Lambda that implement the GitHub OAuth flow documented [here](https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps).
 
-GitHub applications do not support the client credential flow (2-legged OAuth). This means we must handle the OAuth flow with a server side service, where the client
+GitHub applications do not support the Implicit Flow. This means we must handle the OAuth flow with a server side service, where the client
 secret can be kept safe.
 
 Because the applications are Lambdas, there is no session cache in which to save things like access tokens. The solution is to send the access token back to the client
