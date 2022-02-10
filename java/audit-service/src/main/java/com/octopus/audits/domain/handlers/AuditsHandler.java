@@ -51,15 +51,17 @@ public class AuditsHandler {
    * Returns all matching resources.
    *
    * @param acceptHeaders The "accept" headers.
-   * @param filterParam The filter query param.
+   * @param filterParam   The filter query param.
    * @return All matching resources
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
+   *                                        resource.
    */
   public String getAll(@NonNull final List<String> acceptHeaders,
       final String filterParam,
-      final String authorizationHeader)
+      final String authorizationHeader,
+      final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    if (!isAuthorized(authorizationHeader)) {
+    if (!isAuthorized(serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -75,18 +77,20 @@ public class AuditsHandler {
   /**
    * Creates a new resource.
    *
-   * @param document The JSONAPI resource to create.
+   * @param document      The JSONAPI resource to create.
    * @param acceptHeaders The "accept" headers.
    * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
+   *                                        resource.
    */
   public String create(
       @NonNull final String document,
       @NonNull final List<String> acceptHeaders,
-      final String authorizationHeader)
+      final String authorizationHeader,
+      final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
 
-    if (!isAuthorized(authorizationHeader)) {
+    if (!isAuthorized(serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -102,16 +106,18 @@ public class AuditsHandler {
   /**
    * Returns the one resource that matches the supplied ID.
    *
-   * @param id The ID of the resource to return.
+   * @param id            The ID of the resource to return.
    * @param acceptHeaders The "accept" headers.
    * @return The matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
+   *                                        resource.
    */
   public String getOne(@NonNull final String id,
       @NonNull final List<String> acceptHeaders,
-      final String authorizationHeader)
+      final String authorizationHeader,
+      final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    if (!isAuthorized(authorizationHeader)) {
+    if (!isAuthorized(serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -119,9 +125,9 @@ public class AuditsHandler {
       final Audit audit = auditRepository.findOne(Integer.parseInt(id));
       if (audit != null
           && (Constants.DEFAULT_PARTITION.equals(audit.getDataPartition())
-              || partitionIdentifier
-                  .getPartition(acceptHeaders)
-                  .equals(audit.getDataPartition()))) {
+          || partitionIdentifier
+          .getPartition(acceptHeaders)
+          .equals(audit.getDataPartition()))) {
         return respondWithResource(audit);
       }
     } catch (final NumberFormatException ex) {
@@ -135,7 +141,7 @@ public class AuditsHandler {
         resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Audit.class);
     final Audit audit = resourceDocument.get();
     /*
-     The ID of a audit is determined by the URL, while the partition comes froms
+     The ID of an audit is determined by the URL, while the partition comes froms
      the headers. If either of these values was sent by the client, strip them out.
     */
     audit.id = null;
@@ -149,6 +155,12 @@ public class AuditsHandler {
     return new String(resourceConverter.writeDocument(document));
   }
 
+  /**
+   * Determines if the supplied token grants the required scopes to execute the operation.
+   *
+   * @param authorizationHeader The ServiceAuthorization header.
+   * @return true if the request is authorized, and false otherwise.
+   */
   private boolean isAuthorized(final String authorizationHeader) {
     return cognitoDisableAuth || jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
         .map(jwt -> jwtVerifier.jwtContainsClaim(jwt, cognitoAdminClaim))

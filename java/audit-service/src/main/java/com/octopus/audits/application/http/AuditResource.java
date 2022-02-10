@@ -48,13 +48,15 @@ public class AuditResource {
   public Response getAll(
       @HeaderParam(Constants.ACCEPT_HEADER) final List<String> acceptHeader,
       @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader,
       @QueryParam(Constants.FILTER_QUERY_PARAM) final String filter)
       throws DocumentSerializationException {
     checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.getAll(
             acceptHeader,
             filter,
-            authorizationHeader.stream().findFirst().orElse(null)))
+            authorizationHeader.stream().findFirst().orElse(null),
+            serviceAuthorizationHeader.stream().findFirst().orElse(null)))
         .build();
   }
 
@@ -74,13 +76,15 @@ public class AuditResource {
   public Response create(
       @NonNull final String document,
       @HeaderParam(Constants.ACCEPT_HEADER) final List<String> acceptHeader,
-      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader)
+      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
     checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.create(
             document,
             acceptHeader,
-            authorizationHeader.stream().findFirst().orElse(null)))
+            authorizationHeader.stream().findFirst().orElse(null),
+            serviceAuthorizationHeader.stream().findFirst().orElse(null)))
         .build();
   }
 
@@ -99,10 +103,14 @@ public class AuditResource {
   @Transactional
   public Response getOne(
       @PathParam("id") final String id,
-      @HeaderParam(Constants.ACCEPT_HEADER) final List<String> acceptHeader)
+      @HeaderParam(Constants.ACCEPT_HEADER) final List<String> acceptHeader,
+      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
     checkAcceptHeader(acceptHeader);
-    return Optional.ofNullable(auditsHandler.getOne(id, acceptHeader, null))
+    return Optional.ofNullable(auditsHandler.getOne(id, acceptHeader,
+            authorizationHeader.stream().findFirst().orElse(null),
+            serviceAuthorizationHeader.stream().findFirst().orElse(null)))
         .map(d -> Response.ok(d).build())
         .orElse(Response.status(Status.NOT_FOUND).build());
   }

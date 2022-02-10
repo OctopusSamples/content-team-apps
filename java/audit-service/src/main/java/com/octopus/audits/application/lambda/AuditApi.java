@@ -140,6 +140,11 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                         input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
                         .stream()
                         .findFirst()
+                        .orElse(null),
+                    getAllHeaders(
+                        input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
+                        .stream()
+                        .findFirst()
                         .orElse(null))));
       }
     } catch (final Unauthorized e) {
@@ -171,7 +176,17 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
               auditsHandler.getOne(
                   id.get(),
                   getAllHeaders(
-                      input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER), null);
+                      input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER),
+                  getAllHeaders(
+                      input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
+                      .stream()
+                      .findFirst()
+                      .orElse(null),
+                  getAllHeaders(
+                      input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
+                      .stream()
+                      .findFirst()
+                      .orElse(null));
 
           return Optional.of(new ProxyResponse("200", entity));
         }
@@ -204,9 +219,12 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     getAllHeaders(
                         input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER),
                     getAllHeaders(
-                            input.getMultiValueHeaders(),
-                            input.getHeaders(),
-                            Constants.AUTHORIZATION_HEADER)
+                        input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
+                        .stream()
+                        .findFirst()
+                        .orElse(null),
+                    getAllHeaders(
+                        input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
                         .stream()
                         .findFirst()
                         .orElse(null))));
