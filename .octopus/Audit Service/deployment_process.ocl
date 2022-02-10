@@ -5,8 +5,8 @@ step "Create Bucket" {
         environments = ["Development", "Production"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Products Service\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.ProductsBucket}"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Products Service\"},{\"key\":\"Team\",\"value\":\"Audit Service\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.AuditsBucket}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Resources": {
@@ -49,16 +49,16 @@ step "Upload Lambda" {
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS.Account"
             Octopus.Action.Package.DownloadOnTentacle = "False"
-            Octopus.Action.Package.FeedId = "Octopub"
-            Octopus.Action.Package.PackageId = "com.octopus.octopub:products-service"
+            Octopus.Action.Package.FeedId = "Content Team Apps"
+            Octopus.Action.Package.PackageId = "com.octopus:audits-service"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
         packages {
             acquisition_location = "Server"
-            feed = "Octopub"
-            package_id = "com.octopus.octopub:products-service"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:audits-service"
             properties = {
                 SelectionMode = "immediate"
             }
@@ -161,8 +161,8 @@ step "Deploy Lambda" {
         environments = ["Production", "Development"]
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Products Service\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.ProductService}"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Audit Service\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.AuditsService}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                   "Parameters" : {
@@ -1137,7 +1137,7 @@ step "Database Migration" {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 aws lambda invoke \
-                	--function-name #{Octopus.Environment.Name}-#{Lambda.ProductService}-InitDB \
+                	--function-name #{Octopus.Environment.Name}-#{Lambda.AuditService}-InitDB \
                     --payload '{}' \
                     response.json
             EOT
@@ -1287,7 +1287,7 @@ step "Check for vulnerabilities" {
         properties = {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
-                cd products-service-sbom
+                cd audits-service-sbom
                 SUCCESS=0
                 for x in **/bom.xml; do 
                 	OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/$x\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
@@ -1306,10 +1306,10 @@ step "Check for vulnerabilities" {
         }
         worker_pool_variable = "WorkerPool"
 
-        packages "products-service-sbom" {
+        packages "audits-service-sbom" {
             acquisition_location = "Server"
-            feed = "Octopub"
-            package_id = "com.octopus.octopub:products-service-sbom"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:audits-service-sbom"
             properties = {
                 Extract = "True"
                 Purpose = ""
