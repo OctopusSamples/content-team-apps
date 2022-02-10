@@ -4,7 +4,7 @@ step "Create API Gateway" {
         action_type = "Octopus.AwsRunCloudFormation"
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
-            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Actions Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGateway}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
@@ -13,7 +13,7 @@ step "Create API Gateway" {
                 			"Type": "AWS::ApiGateway::RestApi",
                 			"Properties": {
                 				"Description": "My API Gateway",
-                				"Name": "GitHub Actions API",
+                				"Name": "Content Team API",
                                 "BinaryMediaTypes": ["*/*"],
                 				"EndpointConfiguration": {
                 					"Types": [
