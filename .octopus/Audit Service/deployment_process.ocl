@@ -29,7 +29,6 @@ step "Create Bucket" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -51,7 +50,6 @@ step "Upload Lambda" {
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Content Team Apps"
             Octopus.Action.Package.PackageId = "com.octopus:audits-service"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
@@ -82,7 +80,6 @@ step "Upload Lambda Proxy" {
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Content Team Apps"
             Octopus.Action.Package.PackageId = "com.octopus:reverse-proxy"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
@@ -107,7 +104,6 @@ step "Get Stack Outputs" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 PIPELINE_RESOURCE_ID=$(aws cloudformation \
                 	describe-stacks \
@@ -215,6 +211,9 @@ step "Deploy Lambda" {
                       "Type": "String"
                     },
                     "CognitoPool": {
+                      "Type": "String"
+                    },
+                    "CognitoJwk": {
                       "Type": "String"
                     },
                     "CognitoAdminClaim": {
@@ -494,6 +493,7 @@ step "Deploy Lambda" {
                             "DATABASE_PORT": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Port" ]},
                             "COGNITO_REGION": {"Ref": "CognitoRegion"},
                             "COGNITO_POOL": {"Ref": "CognitoPool"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwt"},
                             "COGNITO_ADMIN_CLAIM": {"Ref": "CognitoAdminClaim"}
                           }
                         },
@@ -646,6 +646,7 @@ step "Deploy Lambda" {
                           	"DEFAULT_LAMBDA": {"Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"},
                             "COGNITO_REGION": {"Ref": "CognitoRegion"},
                             "COGNITO_POOL": {"Ref": "CognitoPool"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwt"},
                             "COGNITO_REQUIRED_GROUP": {"Ref": "CognitoRequiredGroup"}
                           }
                         },
@@ -1031,15 +1032,14 @@ step "Deploy Lambda" {
                   }
                 }
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
             Octopus.Action.Aws.IamCapabilities = "[\"CAPABILITY_NAMED_IAM\"]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -1055,7 +1055,6 @@ step "Database Migration" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 aws lambda invoke \
                 	--function-name #{Octopus.Environment.Name}-#{Lambda.AuditService}-InitDB \
@@ -1141,7 +1140,6 @@ step "Update Stage" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -1174,7 +1172,6 @@ step "Get Stage URL" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 STARGE_URL=$(aws cloudformation \
                 	describe-stacks \
@@ -1206,7 +1203,6 @@ step "Check for vulnerabilities" {
         action_type = "Octopus.Script"
         environments = ["Development (Security)", "Production (Security)"]
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 cd audits-service-sbom
                 SUCCESS=0
