@@ -50,7 +50,7 @@ func VerifyJwt(tokenString string, jwkUrl string) (*jwt.Token, error) {
 		return nil, err
 	}
 
-	return jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if token.Method.Alg() != jwa.RS256.String() {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
