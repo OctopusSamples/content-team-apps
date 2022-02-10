@@ -1,0 +1,89 @@
+step "Get Stack Outputs" {
+
+    action {
+        action_type = "Octopus.AwsRunScript"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                COGNITO_POOL_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.Cognito} \
+                    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+                    --output text)
+                echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
+                set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "AWS"
+    }
+}
+
+step "Deploy User Pool Client" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Audit Microservice User Pool Client\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "audit-microservice-cognito-client"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                AWSTemplateFormatVersion: "2010-09-09"
+                Parameters:
+                  CognitoPoolId:
+                    Type: String
+                  CallbackUrl:
+                    Type: String
+                  ResourceServerIdentifier:
+                    Type: String
+                  ResourceServerName:
+                    Type: String
+                  ScopeDescription:
+                    Type: String
+                  ScopeName:
+                    Type: String
+                Resources:
+                  ResourceServer:
+                    Type: AWS::Cognito::UserPoolResourceServer
+                    Properties: 
+                      Identifier: !Ref ResourceServerIdentifier
+                      Name: !Ref ResourceServerName
+                      Scopes: 
+                        - ScopeDescription: !Ref ScopeDescription
+                          ScopeName: !Ref ScopeName
+                      UserPoolId: !Ref CognitoPoolId
+                  UserPoolClient:
+                    Type: AWS::Cognito::UserPoolClient
+                    Properties:
+                      UserPoolId: !Ref CognitoPoolId
+                      AllowedOAuthFlowsUserPoolClient: true
+                      CallbackURLs:
+                        - !Ref CallbackUrl
+                      AllowedOAuthFlows:
+                        - client_credentials
+                      AllowedOAuthScopes:
+                        - !Sub ${ResourceServerIdentifier}/${ScopeName}
+                      SupportedIdentityProviders:
+                        - COGNITO
+                      GenerateSecret: true
+                Outputs:
+                  CognitoAppClientID:
+                    Value: !Ref UserPoolClient
+                    Description: The app client
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"},{\"ParameterKey\":\"ResourceServerIdentifier\",\"ParameterValue\":\"audit.content-team\"},{\"ParameterKey\":\"ResourceServerName\",\"ParameterValue\":\"Audit Microservice\"},{\"ParameterKey\":\"ScopeDescription\",\"ParameterValue\":\"Audit administrator\"},{\"ParameterKey\":\"ScopeName\",\"ParameterValue\":\"admin\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://example.org\"},{\"ParameterKey\":\"ResourceServerIdentifier\",\"ParameterValue\":\"audit.content-team\"},{\"ParameterKey\":\"ResourceServerName\",\"ParameterValue\":\"Audit Microservice\"},{\"ParameterKey\":\"ScopeDescription\",\"ParameterValue\":\"Audit administrator\"},{\"ParameterKey\":\"ScopeName\",\"ParameterValue\":\"admin\"}]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool = "AWS"
+    }
+}
