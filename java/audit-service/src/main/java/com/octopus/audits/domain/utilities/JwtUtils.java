@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 /** A utility class for extracting JWTs from headers. */
 @ApplicationScoped
 public class JwtUtils {
-  private static final String BEARER = "Bearer";
+  private static final String BEARER = "bearer";
 
   /**
    * Extract the JWT from the Authorization header.
@@ -20,10 +20,10 @@ public class JwtUtils {
       return Optional.empty();
     }
 
-    if (!authorizationHeader.trim().startsWith(BEARER + ":")) {
+    if (!authorizationHeader.toLowerCase().trim().startsWith(BEARER + ":")) {
       return Optional.empty();
     }
 
-    return Optional.of(authorizationHeader.trim().replaceFirst(BEARER + ":", ""));
+    return Optional.of(authorizationHeader.trim().replaceFirst("(?i)" + BEARER + ":", "").trim());
   }
 }
