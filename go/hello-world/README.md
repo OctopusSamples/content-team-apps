@@ -1,0 +1,1 @@
+A simple Go Lambda that is used for integration testing the reverse proxy project.

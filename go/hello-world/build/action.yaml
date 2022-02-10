@@ -1,0 +1,74 @@
+name: 'Build'
+description: 'Build Go App'
+inputs:
+  github_token:
+    description: The github token
+    required: true
+  github_user:
+    description: The github username
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - run: go install honnef.co/go/tools/cmd/staticcheck@latest
+      shell: bash
+
+    # https://github.com/CycloneDX/cyclonedx-gomod
+    - run: go install github.com/CycloneDX/cyclonedx-gomod@v1.0.0
+      shell: bash
+
+    - run: staticcheck ./...
+      shell: bash
+      working-directory: go/hello-world
+
+    - run: go get ./...
+      shell: bash
+      working-directory: go/hello-world
+
+    - run: cyclonedx-gomod app -output cyclonedx.bom.xml
+      shell: bash
+      working-directory: go/hello-world
+      env:
+        GOOS: linux
+        GOARCH: arm64
+
+    - run: zip function-sbom.zip cyclonedx.bom.xml
+      shell: bash
+      working-directory: go/hello-world  
+
+    - run: go build main.go
+      shell: bash
+      working-directory: go/hello-world
+      env:
+        GOOS: linux
+        GOARCH: amd64
+
+    - run: zip function-amd64.zip main
+      shell: bash
+      working-directory: go/hello-world
+
+    - run: >
+        mvn deploy:deploy-file
+        -DrepositoryId=github
+        -Dfile=function-amd64.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus.octopub
+        -DartifactId=hello-world
+        -Dversion=0.0.1.${{ github.run_number }}
+      shell: bash
+      working-directory: go/hello-world
+
+    - run: >
+        mvn deploy:deploy-file
+        -DrepositoryId=github
+        -Dfile=function-sbom.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus.octopub
+        -DartifactId=hello-world-sbom
+        -Dversion=0.0.1.${{ github.run_number }}
+      shell: bash
+      working-directory: go/hello-world
