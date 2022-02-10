@@ -102,8 +102,8 @@ public class JoseJwtVerifier implements JwtVerifier {
 
   private boolean configIsValid() {
     return cognitoDisableAuth
-        || cognitoJwk.isEmpty()
-        || StringUtils.isEmpty(cognitoJwk.get());
+        || (cognitoJwk.isPresent()
+        && StringUtils.isNotEmpty(cognitoJwk.get()));
   }
 
   /**
@@ -127,7 +127,7 @@ public class JoseJwtVerifier implements JwtVerifier {
     if (jwsObject.verify(verifier)) {
       final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
       if (payload.containsKey("exp")) {
-        return (Long) payload.get("exp") > new Date().getTime();
+        return ((Long) payload.get("exp") * 1000) > new Date().getTime();
       }
     }
 
