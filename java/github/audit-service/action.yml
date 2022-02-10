@@ -138,7 +138,7 @@ runs:
         ./mvnw deploy:deploy-file
         -Dfile=audits-service-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
         -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
-        -DgroupId=com.octopus.octopub
+        -DgroupId=com.octopus
         -DartifactId=audits-service-sbom
         -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         -Dpackaging=zip
@@ -159,7 +159,7 @@ runs:
         ./mvnw deploy:deploy-file
         -Dfile=audits-service-k8s.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
         -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
-        -DgroupId=com.octopus.octopub
+        -DgroupId=com.octopus
         -DartifactId=audits-service-k8s
         -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         -Dpackaging=zip
@@ -173,7 +173,7 @@ runs:
         octopus_project: Audit Service
         octopus_server: ${{ inputs.octopus_server_url }}
         push_version: 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        push_package_ids: com.octopus.octopub:audits-service
+        push_package_ids: com.octopus:audits-service
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
         octopus_space: "Content Team"
