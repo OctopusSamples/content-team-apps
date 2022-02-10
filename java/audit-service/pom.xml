@@ -155,10 +155,6 @@
       <groupId>io.quarkus</groupId>
     </dependency>
     <dependency>
-      <artifactId>quarkus-hibernate-envers</artifactId>
-      <groupId>io.quarkus</groupId>
-    </dependency>
-    <dependency>
       <artifactId>quarkus-amazon-lambda</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
