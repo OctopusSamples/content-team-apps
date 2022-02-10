@@ -1,0 +1,89 @@
+step "Create API Gateway" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.ApiGateway}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                {
+                	"Resources": {
+                		"RestApi": {
+                			"Type": "AWS::ApiGateway::RestApi",
+                			"Properties": {
+                				"Description": "My API Gateway",
+                				"Name": "Content Team API",
+                                "BinaryMediaTypes": ["*/*"],
+                				"EndpointConfiguration": {
+                					"Types": [
+                						"REGIONAL"
+                					]
+                				}
+                			}
+                		},
+                		"Health": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                				},
+                				"PathPart": "health"
+                			}
+                		},
+                		"Api": {
+                			"Type": "AWS::ApiGateway::Resource",
+                			"Properties": {
+                				"RestApiId": {
+                					"Ref": "RestApi"
+                				},
+                				"ParentId": {
+                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                				},
+                				"PathPart": "api"
+                			}
+                		}
+                	},
+                	"Outputs": {
+                		"RestApi": {
+                			"Description": "The REST API",
+                			"Value": {
+                				"Ref": "RestApi"
+                			}
+                		},
+                		"RootResourceId": {
+                			"Description": "ID of the resource exposing the root resource id",
+                			"Value": {
+                				"Fn::GetAtt": ["RestApi", "RootResourceId"]
+                			}
+                		},
+                		"Health": {
+                			"Description": "ID of the resource exposing the health endpoints",
+                			"Value": {
+                				"Ref": "Health"
+                			}
+                		},
+                		"Api": {
+                			"Description": "ID of the resource exposing the api endpoint",
+                			"Value": {
+                				"Ref": "Api"
+                			}
+                		}
+                	}
+                }
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.RunOnServer = "true"
+        }
+        worker_pool_variable = "WorkerPool"
+    }
+}

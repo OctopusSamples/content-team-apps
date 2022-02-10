@@ -161,6 +161,7 @@ runs:
         output_path: octopus
 
     - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
         --gitRef "main"
@@ -174,6 +175,7 @@ runs:
       shell: bash
 
     - name: Trigger deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
         --project "Github Action Workflow Generator"

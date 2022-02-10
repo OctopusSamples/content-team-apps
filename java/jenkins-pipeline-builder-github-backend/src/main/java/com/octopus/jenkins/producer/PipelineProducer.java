@@ -9,7 +9,7 @@ import com.octopus.builders.nodejs.NodejsBuilder;
 import com.octopus.builders.php.PhpComposerBuilder;
 import com.octopus.builders.python.PythonBuilder;
 import com.octopus.builders.ruby.RubyGemBuilder;
-import com.octopus.encryption.AesCryptoUtils;
+import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;

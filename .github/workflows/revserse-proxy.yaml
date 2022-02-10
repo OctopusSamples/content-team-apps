@@ -1,0 +1,23 @@
+name: Reverse Proxy
+
+on:
+  push:
+      paths:
+      - 'go/reverse-proxy/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build
+      uses: ./go/reverse-proxy/build
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_user: ${{ github.actor }}
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}

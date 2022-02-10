@@ -1,12 +1,1237 @@
-step "Run a Script" {
+step "Create Bucket" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Products Service\"},{\"key\":\"Team\",\"value\":\"Audit Service\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.AuditsBucket}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                {
+                  "Resources": {
+                    "LambdaS3Bucket": {
+                      "Type": "AWS::S3::Bucket"
+                    }
+                  },
+                  "Outputs" : {
+                    "LambdaS3Bucket" : {
+                      "Description" : "The S3 Bucket",
+                      "Value" : {"Ref": "LambdaS3Bucket"}
+                    }
+                  }
+                }
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool_variable = "WorkerPool"
+    }
+}
+
+step "Upload Lambda" {
+
+    action {
+        action_type = "Octopus.AwsUploadS3"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.S3.BucketName = "#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+            Octopus.Action.Aws.S3.PackageOptions = "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+            Octopus.Action.Aws.S3.TargetMode = "EntirePackage"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "Content Team Apps"
+            Octopus.Action.Package.PackageId = "com.octopus:audits-service"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        packages {
+            acquisition_location = "Server"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:audits-service"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "Upload Lambda Proxy" {
+
+    action {
+        action_type = "Octopus.AwsUploadS3"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.S3.BucketName = "#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+            Octopus.Action.Aws.S3.PackageOptions = "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+            Octopus.Action.Aws.S3.TargetMode = "EntirePackage"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "Content Team Apps"
+            Octopus.Action.Package.PackageId = "com.octopus:reverse-proxy"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        packages {
+            acquisition_location = "Server"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:reverse-proxy"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "Get Stack Outputs" {
+
+    action {
+        action_type = "Octopus.AwsRunScript"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                PIPELINE_RESOURCE_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='Api'].OutputValue" \
+                    --output text)
+                    
+                set_octopusvariable "Api" ${PIPELINE_RESOURCE_ID}
+                
+                PIPELINE_HEALTH_RESOURCE_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='Health'].OutputValue" \
+                    --output text)
+                    
+                set_octopusvariable "Health" ${PIPELINE_HEALTH_RESOURCE_ID}
+                
+                REST_API=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
+                    --output text)
+                    
+                set_octopusvariable "RestApi" ${REST_API}
+                
+                COGNITO_POOL_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.Cognito} \
+                    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+                    --output text)
+                echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
+                set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+                
+                PRERELEASE="#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
+                echo "PRERELEASE: ${PRERELEASE}"
+                if [[ -z ${PRERELEASE} ]]; then
+                	set_octopusvariable "PreReleaseSuffix" ""
+                else
+                	set_octopusvariable "PreReleaseSuffix" "-${PRERELEASE}"	
+                fi
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        container {
+            feed = "Dockerhub"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
+        }
+    }
+}
+
+step "Deploy Lambda" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        environments = ["Production", "Development"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Audit Service\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.AuditsService}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                {
+                  "Parameters" : {
+                    "EnvironmentName" : {
+                      "Type" : "String",
+                      "Default" : "#{Octopus.Environment.Name}"
+                    },
+                    "RestApi" : {
+                      "Type" : "String"
+                    },
+                    "ResourceId" : {
+                      "Type" : "String"
+                    },
+                    "HealthResourceId" : {
+                      "Type" : "String"
+                    },
+                    "LambdaS3Key" : {
+                      "Type" : "String"
+                    },
+                    "ProxyLambdaS3Key" : {
+                      "Type" : "String"
+                    },
+                    "LambdaS3Bucket": {
+                      "Type": "String"
+                    },
+                    "LambdaName": {
+                      "Type": "String"
+                    },
+                    "LambdaDescription": {
+                     	"Type": "String" 
+                    },
+                    "DBUsername": {
+                     	"Type": "String" 
+                    },
+                    "DBPassword": {
+                     	"Type": "String" 
+                    },
+                    "Path": {
+                     	"Type": "String" 
+                    },
+                    "CognitoRegion": {
+                      "Type": "String"
+                    },
+                    "CognitoPool": {
+                      "Type": "String"
+                    },
+                    "CognitoJwk": {
+                      "Type": "String"
+                    },
+                    "CognitoAdminClaim": {
+                      "Type": "String"
+                    },
+                    "CognitoRequiredGroup": {
+                      "Type": "String"
+                    }
+                  },
+                  "Resources": {
+                    "VPC": {
+                    	"Type": "AWS::EC2::VPC",
+                    	"Properties": {
+                    		"CidrBlock": "10.0.0.0/16",
+                    		"EnableDnsSupport": true,
+                    		"EnableDnsHostnames": true,
+                    		"InstanceTenancy": "default",
+                    		"Tags": [{
+                    			"Key": "Name",
+                    			"Value": "Audit Microservice VPC"
+                			}]
+                		}
+                	},
+                	"InternetGateway": {
+                    	"Type": "AWS::EC2::InternetGateway"
+                	},
+                	"VPCGatewayAttachment": {
+                    	"Type": "AWS::EC2::VPCGatewayAttachment",
+                    	"Properties": {
+                    		"VpcId": {"Ref": "VPC"},
+                    		"InternetGatewayId": {"Ref": "InternetGateway"}
+                		}
+                	},
+                	"SubnetA": {
+                    	"Type": "AWS::EC2::Subnet",
+                    	"Properties": {
+                    		"AvailabilityZone": { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                    		"VpcId": {"Ref": "VPC"},
+                    		"CidrBlock": "10.0.3.0/24",
+                    		"MapPublicIpOnLaunch": true
+                		}
+                	},
+                	"SubnetB": {
+                    	"Type": "AWS::EC2::Subnet",
+                    	"Properties": {
+                    		"AvailabilityZone": { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                    		"VpcId": {"Ref": "VPC"},
+                    		"CidrBlock": "10.0.4.0/24",
+                    		"MapPublicIpOnLaunch": true
+                		}
+                	},
+                	"SubnetC": {
+                    	"Type": "AWS::EC2::Subnet",
+                    	"Properties": {
+                    		"AvailabilityZone": { "Fn::Select" : [ "1", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                    		"VpcId": {"Ref": "VPC"},
+                    		"CidrBlock": "10.0.5.0/24",
+                    		"MapPublicIpOnLaunch": true
+                		}
+                	},
+                	"EIP" : {
+                	   "Type" : "AWS::EC2::EIP",
+                	   "Properties" : {
+                		  "Domain" : "vpc"
+                	   }
+                	},
+                	"NAT" : {
+                	   "Type" : "AWS::EC2::NatGateway",
+                	   "Properties" : {
+                		  "AllocationId" : { "Fn::GetAtt" : ["EIP", "AllocationId"]},
+                		  "SubnetId" : { "Ref" : "SubnetA"}
+                		 }
+                	},
+                	"RouteTableInternetGateway": {
+                    	"Type": "AWS::EC2::RouteTable",
+                    	"Properties": {
+                    		"VpcId": {"Ref": "VPC"}
+                    	}
+                    },
+                	"RouteTableNat": {
+                    	"Type": "AWS::EC2::RouteTable",
+                    	"Properties": {
+                    		"VpcId": {"Ref": "VPC"}
+                    	}
+                    },
+                    "InternetRoute": {
+                    	"Type": "AWS::EC2::Route",
+                    	"DependsOn": "InternetGateway",
+                    	"Properties": {
+                    		"DestinationCidrBlock": "0.0.0.0/0",
+                    		"GatewayId": {"Ref": "InternetGateway"},
+                    		"RouteTableId": {"Ref": "RouteTableInternetGateway"}
+                		}
+                	},
+                	"NatRoute": {
+                    	"Type": "AWS::EC2::Route",
+                    	"DependsOn": "InternetGateway",
+                    	"Properties": {
+                    		"DestinationCidrBlock": "0.0.0.0/0",
+                    		"NatGatewayId": {"Ref": "NAT"},
+                    		"RouteTableId": {"Ref": "RouteTableNat"}
+                		}
+                	},
+                	"SubnetARouteTableAssociation": {
+                    	"Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    	"Properties": {
+                    		"RouteTableId": {"Ref": "RouteTableInternetGateway"},
+                    		"SubnetId": {"Ref": "SubnetA"}
+                      }
+                    },
+                	"SubnetBRouteTableAssociation": {
+                    	"Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    	"Properties": {
+                    		"RouteTableId": {"Ref": "RouteTableNat"},
+                    		"SubnetId": {"Ref": "SubnetB"}
+                      }
+                    },
+                	"SubnetCRouteTableAssociation": {
+                    	"Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    	"Properties": {
+                    		"RouteTableId": {"Ref": "RouteTableNat"},
+                    		"SubnetId": {"Ref": "SubnetC"}
+                      }
+                    },
+                    "SubnetGroup": {
+                	  "Type" : "AWS::RDS::DBSubnetGroup",
+                	  "Properties" : {
+                		  "DBSubnetGroupName" : "contentteamauditdbsg",
+                		  "DBSubnetGroupDescription": "Audits Subnet Group",
+                		  "SubnetIds" : [ {"Ref": "SubnetB"}, {"Ref": "SubnetC"} ]
+                		}
+                	},
+                	"InstanceSecurityGroup": {
+                		"Type": "AWS::EC2::SecurityGroup",
+                		"Properties": {
+                			"GroupName": "Octopus Target Group",
+                			"GroupDescription": "RDS traffic",
+                			"VpcId": {"Ref": "VPC"},
+                			"SecurityGroupEgress": [{
+                				"IpProtocol": "-1",
+                				"CidrIp": "0.0.0.0/0"
+                			}]
+                		}
+                	},
+                	"InstanceSecurityGroupIngress": {
+                      "Type": "AWS::EC2::SecurityGroupIngress",
+                      "DependsOn": "InstanceSecurityGroup",
+                      "Properties": {
+                        "GroupId": { "Ref": "InstanceSecurityGroup" },
+                        "IpProtocol": "tcp",
+                        "FromPort": "0",
+                        "ToPort": "65535",
+                        "SourceSecurityGroupId": { "Ref": "InstanceSecurityGroup" }
+                      }
+                    },
+                    "RDSCluster": {
+                      "Type": "AWS::RDS::DBCluster",
+                      "Properties": {
+                      	"DBSubnetGroupName": {"Ref": "SubnetGroup"},
+                        "MasterUsername": {"Ref": "DBUsername"},
+                        "MasterUserPassword": {"Ref": "DBPassword"},
+                        "DatabaseName": "audits",
+                        "Engine": "aurora",
+                        "EngineMode": "serverless",
+                        "VpcSecurityGroupIds" : [{ "Ref": "InstanceSecurityGroup" }],
+                        "ScalingConfiguration": {
+                          "AutoPause": true,
+                          "MaxCapacity": 16,
+                          "MinCapacity": 2,
+                          "SecondsUntilAutoPause": 300
+                        }
+                      }
+                    },
+                    "AppLogGroupOne": {
+                      "Type": "AWS::Logs::LogGroup",
+                      "Properties": {
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" }
+                      }
+                    },
+                    "IamRoleLambdaOneExecution": {
+                      "Type": "AWS::IAM::Role",
+                      "Properties": {
+                        "AssumeRolePolicyDocument": {
+                          "Version": "2012-10-17",
+                          "Statement": [
+                            {
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "lambda.amazonaws.com"
+                                ]
+                              },
+                              "Action": [
+                                "sts:AssumeRole"
+                              ]
+                            }
+                          ]
+                        },
+                        "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"],
+                        "Policies": [
+                          {
+                            "PolicyName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-policy" },
+                            "PolicyDocument": {
+                              "Version": "2012-10-17",
+                              "Statement": [
+                                {
+                                  "Effect": "Allow",
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:CreateLogGroup",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Resource": [
+                                    {
+                                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}*:*"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "Path": "/",
+                        "RoleName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-role" }
+                      }
+                    },
+                    "DBMigrationLambda": {
+                      "Type": "AWS::Lambda::Function",
+                      "Properties": {
+                        "Code": {
+                          "S3Bucket": {"Ref": "LambdaS3Bucket"},
+                          "S3Key": {"Ref": "LambdaS3Key"}       
+                        },
+                        "Environment": {
+                          "Variables": {
+                          	"DATABASE_USERNAME": {"Ref": "DBUsername"},
+                            "DATABASE_PASSWORD": {"Ref": "DBPassword"},
+                            "DATABASE_HOSTNAME": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Address" ]},
+                            "DATABASE_PORT": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Port" ]},
+                            "LAMBDA_NAME": "DatabaseInit"
+                          }
+                        },
+                        "Description" : {"Ref": "LambdaDescription"},
+                        "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-InitDB" },
+                        "Handler": "not.used.in.provided.runtime",
+                        "MemorySize": 256,
+                        "PackageType": "Zip",
+                        "Role": {
+                          "Fn::GetAtt": [
+                            "IamRoleLambdaOneExecution",
+                            "Arn"
+                          ]
+                        },
+                        "Runtime": "provided",
+                        "Timeout": 900,
+                        "VpcConfig": {
+                        	"SecurityGroupIds" : [ {"Ref": "InstanceSecurityGroup"} ],
+                			"SubnetIds" : [ {"Ref": "SubnetB"}, {"Ref": "SubnetC"} ]
+                        }
+                      },
+                      "DependsOn": [
+                        "RDSCluster"
+                      ]
+                    },
+                    "LambdaOne": {
+                      "Type": "AWS::Lambda::Function",
+                      "Properties": {
+                        "Code": {
+                          "S3Bucket": {"Ref": "LambdaS3Bucket"},
+                          "S3Key": {"Ref": "LambdaS3Key"}   
+                        },
+                        "Environment": {
+                          "Variables": {
+                          	"DATABASE_USERNAME": {"Ref": "DBUsername"},
+                            "DATABASE_PASSWORD": {"Ref": "DBPassword"},
+                            "DATABASE_HOSTNAME": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Address" ]},
+                            "DATABASE_PORT": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Port" ]},
+                            "COGNITO_REGION": {"Ref": "CognitoRegion"},
+                            "COGNITO_POOL": {"Ref": "CognitoPool"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwk"},
+                            "COGNITO_ADMIN_CLAIM": {"Ref": "CognitoAdminClaim"}
+                          }
+                        },
+                        "Description" : {"Ref": "LambdaDescription"},
+                        "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}" },
+                        "Handler": "not.used.in.provided.runtime",
+                        "MemorySize": 128,
+                        "PackageType": "Zip",
+                        "Role": {
+                          "Fn::GetAtt": [
+                            "IamRoleLambdaOneExecution",
+                            "Arn"
+                          ]
+                        },
+                        "Runtime": "provided",
+                        "Timeout": 30,
+                        "VpcConfig": {
+                        	"SecurityGroupIds" : [ {"Ref": "InstanceSecurityGroup"} ],
+                			"SubnetIds" : [ {"Ref": "SubnetB"}, {"Ref": "SubnetC"} ]
+                        }
+                      },
+                      "DependsOn": [
+                        "RDSCluster"
+                      ]
+                    },
+                    "LambdaVersion#{Octopus.Deployment.Id | Replace -}": {
+                     	"Type": "AWS::Lambda::Version",
+                      	"Properties": {
+                          "FunctionName": {"Ref": "LambdaOne"},
+                          "Description": {"Ref": "LambdaDescription"},
+                          "ProvisionedConcurrencyConfig": {
+                            "ProvisionedConcurrentExecutions": 20
+                          }
+                        }
+                    },
+                    "AppLogGroupProxyLambda": {
+                      "Type": "AWS::Logs::LogGroup",
+                      "Properties": {
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy" }
+                      }
+                    },
+                    "IamRoleProxyLambdaExecution": {
+                      "Type": "AWS::IAM::Role",
+                      "Properties": {
+                        "AssumeRolePolicyDocument": {
+                          "Version": "2012-10-17",
+                          "Statement": [
+                            {
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "lambda.amazonaws.com"
+                                ]
+                              },
+                              "Action": [
+                                "sts:AssumeRole"
+                              ]
+                            }
+                          ]
+                        },
+                        "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"],
+                        "Policies": [
+                          {
+                            "PolicyName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-Proxy-policy" },
+                            "PolicyDocument": {
+                              "Version": "2012-10-17",
+                              "Statement": [
+                                {
+                                  "Effect": "Allow",
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:CreateLogGroup",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Resource": [
+                                    {
+                                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy*:*"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Effect": "Allow",
+                                  "Action": [
+                                    "lambda:InvokeFunction"
+                                  ],
+                                  "Resource": [
+                                  	{
+                                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*:*"
+                                   }
+                                  ]
+                                },
+                                {
+                                  "Effect": "Allow",
+                                  "Action": [
+                                    "lambda:InvokeFunction"
+                                  ],
+                                  "Resource": [
+                                  	{
+                                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*"
+                                   }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "Path": "/",
+                        "RoleName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-Proxy-role" }
+                      }
+                    },
+                    "ProxyLambdaPermissions": {
+                      "Type": "AWS::Lambda::Permission",
+                      "Properties": {
+                        "FunctionName": {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                        "Action": "lambda:InvokeFunction",
+                        "Principal": "apigateway.amazonaws.com",
+                        "SourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {"Ref": "RestApi"},
+                              "/*/*"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "ProxyLambda": {
+                      "Type": "AWS::Lambda::Function",
+                      "Properties": {
+                        "Code": {
+                          "S3Bucket": {"Ref": "LambdaS3Bucket"},
+                          "S3Key": {"Ref": "ProxyLambdaS3Key"}   
+                        },
+                        "Environment": {
+                          "Variables": {
+                          	"DEFAULT_LAMBDA": {"Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"},
+                            "COGNITO_REGION": {"Ref": "CognitoRegion"},
+                            "COGNITO_POOL": {"Ref": "CognitoPool"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwk"},
+                            "COGNITO_REQUIRED_GROUP": {"Ref": "CognitoRequiredGroup"}
+                          }
+                        },
+                        "Description" : {"Fn::Sub": "${LambdaDescription} Proxy"},
+                        "FunctionName": { "Fn::Sub": "${EnvironmentName}-${LambdaName}-Proxy" },
+                        "Handler": "main",
+                        "MemorySize": 128,
+                        "PackageType": "Zip",
+                        "Role": {
+                          "Fn::GetAtt": [
+                            "IamRoleProxyLambdaExecution",
+                            "Arn"
+                          ]
+                        },
+                        "Runtime": "go1.x",
+                        "Timeout": 30
+                      }
+                    },
+                	"ServiceResource": {
+                		"Type": "AWS::ApiGateway::Resource",
+                		"Properties": {
+                			"RestApiId": {
+                				"Ref": "RestApi"
+                			},
+                			"ParentId": {"Ref": "ResourceId"},
+                			"PathPart": {"Ref": "Path"}
+                		}
+                	},
+                    "ServiceHealthResource": {
+                		"Type": "AWS::ApiGateway::Resource",
+                		"Properties": {
+                			"RestApiId": {
+                				"Ref": "RestApi"
+                			},
+                			"ParentId": {"Ref": "HealthResourceId"},
+                			"PathPart": {"Ref": "Path"}
+                		}
+                	},
+                    "ServiceResourceProxyResource": {
+                		"Type": "AWS::ApiGateway::Resource",
+                		"Properties": {
+                			"RestApiId": {
+                				"Ref": "RestApi"
+                			},
+                			"ParentId": {"Ref": "ServiceResource"},
+                			"PathPart": "{proxy+}"
+                		}
+                	},
+                    "ServiceHealthProxyResource": {
+                		"Type": "AWS::ApiGateway::Resource",
+                		"Properties": {
+                			"RestApiId": {
+                				"Ref": "RestApi"
+                			},
+                			"ParentId": {"Ref": "ServiceHealthResource"},
+                			"PathPart": "{proxy+}"
+                		}
+                	},
+                    "JsonApiCollectionGetMethod": {
+                      "Type": "AWS::ApiGateway::Method",
+                      "Properties": {      
+                        "AuthorizationType": "NONE",  
+                        "HttpMethod": "GET",
+                        "Integration": {          
+                          "IntegrationHttpMethod": "POST",          
+                          "TimeoutInMillis": 20000,
+                          "Type": "AWS_PROXY",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":apigateway:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":lambda:path/2015-03-31/functions/",
+                                {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                                "/invocations"
+                              ]
+                            ]
+                          }
+                        },        
+                        "ResourceId": {
+                          "Ref": "ServiceResource"
+                        },
+                        "RestApiId": {"Ref": "RestApi"}
+                      }
+                    },
+                    "JsonApiCollectionOptionsMethod": {
+                		"Type": "AWS::ApiGateway::Method",
+                		"Properties": {
+                		  "AuthorizationType": "NONE",
+                		  "RestApiId": {
+                			"Ref": "RestApi"
+                		  },
+                		  "ResourceId": {
+                			"Ref": "ServiceResource"
+                		  },
+                		  "HttpMethod": "OPTIONS",
+                		  "Integration": {
+                			"IntegrationResponses": [
+                			  {
+                				"StatusCode": 200,
+                				"ContentHandling": "CONVERT_TO_TEXT",
+                				"ResponseParameters": {
+                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                				  "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                				  "method.response.header.Access-Control-Allow-Origin": "'*'"
+                				},
+                				"ResponseTemplates": {
+                				  "application/json": ""
+                				}
+                			  }
+                			],
+                			"PassthroughBehavior": "WHEN_NO_MATCH",
+                			"RequestTemplates": {
+                			  "application/json": "{\"statusCode\": 200}"
+                			},
+                			"Type": "MOCK",
+                			"ContentHandling": "CONVERT_TO_TEXT"
+                		  },
+                		  "MethodResponses": [
+                			{
+                			  "StatusCode": 200,
+                			  "ResponseModels": {
+                				"application/json": "Empty"
+                			  },
+                			  "ResponseParameters": {
+                				"method.response.header.Access-Control-Allow-Headers": false,
+                				"method.response.header.Access-Control-Allow-Methods": false,
+                				"method.response.header.Access-Control-Allow-Origin": false
+                			  }
+                			}
+                		  ]
+                		}
+                	  },
+                    "JsonApiItemOptionsMethod": {
+                		"Type": "AWS::ApiGateway::Method",
+                		"Properties": {
+                		  "AuthorizationType": "NONE",
+                		  "RestApiId": {
+                			"Ref": "RestApi"
+                		  },
+                		  "ResourceId": {
+                			"Ref": "ServiceResourceProxyResource"
+                		  },
+                		  "HttpMethod": "OPTIONS",
+                		  "Integration": {
+                			"IntegrationResponses": [
+                			  {
+                				"StatusCode": 200,
+                				"ContentHandling": "CONVERT_TO_TEXT",
+                				"ResponseParameters": {
+                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                				  "method.response.header.Access-Control-Allow-Methods": "'GET,DELETE,PATCH,OPTIONS'",
+                				  "method.response.header.Access-Control-Allow-Origin": "'*'"
+                				},
+                				"ResponseTemplates": {
+                				  "application/json": ""
+                				}
+                			  }
+                			],
+                			"PassthroughBehavior": "WHEN_NO_MATCH",
+                			"RequestTemplates": {
+                			  "application/json": "{\"statusCode\": 200}"
+                			},
+                			"Type": "MOCK",
+                			"ContentHandling": "CONVERT_TO_TEXT"
+                		  },
+                		  "MethodResponses": [
+                			{
+                			  "StatusCode": 200,
+                			  "ResponseModels": {
+                				"application/json": "Empty"
+                			  },
+                			  "ResponseParameters": {
+                				"method.response.header.Access-Control-Allow-Headers": false,
+                				"method.response.header.Access-Control-Allow-Methods": false,
+                				"method.response.header.Access-Control-Allow-Origin": false
+                			  }
+                			}
+                		  ]
+                		}
+                	  },
+                    "JsonApiItemGetMethod": {
+                      "Type": "AWS::ApiGateway::Method",
+                      "Properties": {      
+                        "AuthorizationType": "NONE",  
+                        "HttpMethod": "GET",
+                        "Integration": {          
+                          "IntegrationHttpMethod": "POST",          
+                          "TimeoutInMillis": 20000,
+                          "Type": "AWS_PROXY",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":apigateway:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":lambda:path/2015-03-31/functions/",
+                                {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                                "/invocations"
+                              ]
+                            ]
+                          }
+                        },        
+                        "ResourceId": {
+                          "Ref": "ServiceResourceProxyResource"
+                        },
+                        "RestApiId": {"Ref": "RestApi"}
+                      }
+                    },    
+                    "JsonApiItemPostMethod": {
+                      "Type": "AWS::ApiGateway::Method",
+                      "Properties": {    
+                      	"ApiKeyRequired" : false,
+                        "AuthorizationType": "NONE",  
+                        "HttpMethod": "POST",
+                        "Integration": {          
+                          "IntegrationHttpMethod": "POST",          
+                          "TimeoutInMillis": 20000,
+                          "Type": "AWS_PROXY",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":apigateway:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":lambda:path/2015-03-31/functions/",
+                                {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                                "/invocations"
+                              ]
+                            ]
+                          }
+                        },        
+                        "ResourceId": {
+                          "Ref": "ServiceResource"
+                        },
+                        "RestApiId": {"Ref": "RestApi"}
+                      }
+                    },
+                    "ServiceHealthRootMethod": {
+                      "Type": "AWS::ApiGateway::Method",
+                      "Properties": {      
+                        "AuthorizationType": "NONE",  
+                        "HttpMethod": "GET",
+                        "Integration": {          
+                          "IntegrationHttpMethod": "POST",          
+                          "TimeoutInMillis": 20000,
+                          "Type": "AWS_PROXY",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":apigateway:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":lambda:path/2015-03-31/functions/",
+                                {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                                "/invocations"
+                              ]
+                            ]
+                          }
+                        },        
+                        "ResourceId": {
+                          "Ref": "ServiceHealthResource"
+                        },
+                        "RestApiId": {"Ref": "RestApi"}
+                      }
+                    },
+                    "ServiceHealthProxyMethod": {
+                      "Type": "AWS::ApiGateway::Method",
+                      "Properties": {      
+                        "AuthorizationType": "NONE",  
+                        "HttpMethod": "GET",
+                        "Integration": {          
+                          "IntegrationHttpMethod": "POST",          
+                          "TimeoutInMillis": 20000,
+                          "Type": "AWS_PROXY",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":apigateway:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":lambda:path/2015-03-31/functions/",
+                                {"Fn::GetAtt": ["ProxyLambda", "Arn"]},
+                                "/invocations"
+                              ]
+                            ]
+                          }
+                        },        
+                        "ResourceId": {
+                          "Ref": "ServiceHealthProxyResource"
+                        },
+                        "RestApiId": {"Ref": "RestApi"}
+                      }
+                    },
+                    "Deployment#{Octopus.Deployment.Id | Replace -}": {
+                      "Type": "AWS::ApiGateway::Deployment",
+                      "Properties": {
+                        "RestApiId": {"Ref": "RestApi"}
+                      },
+                      "DependsOn": [
+                      	"JsonApiCollectionGetMethod",
+                        "JsonApiCollectionOptionsMethod",
+                        "JsonApiItemOptionsMethod",
+                        "JsonApiItemGetMethod",
+                        "JsonApiItemPostMethod",
+                        "ServiceHealthRootMethod",
+                        "ServiceHealthProxyMethod"
+                      ]
+                    }
+                  },
+                  "Outputs" : {
+                    "DeploymentId" : {
+                      "Description" : "The deployment id",
+                      "Value" : {"Ref": "Deployment#{Octopus.Deployment.Id | Replace -}"}
+                    },
+                    "VpcId" : {
+                      "Description" : "The VPC id",
+                      "Value" : {"Ref": "VPC"}
+                    },
+                    "SubnetAId" : {
+                      "Description" : "The Subnet A id",
+                      "Value" : {"Ref": "SubnetA"}
+                    },
+                    "SubnetBId" : {
+                      "Description" : "The Subnet B id",
+                      "Value" : {"Ref": "SubnetB"}
+                    },
+                	"SubnetCId" : {
+                      "Description" : "The Subnet C id",
+                      "Value" : {"Ref": "SubnetC"}
+                    },
+                    "SecurityGroupId" : {
+                      "Description" : "The security group id",
+                      "Value" : {"Ref": "InstanceSecurityGroup"}
+                    },
+                    "SubnetGroupName" : {
+                      "Description" : "The subnet group name",
+                      "Value" : {"Ref": "SubnetGroup"}
+                    },
+                    "DatbaseAddress" : {
+                      "Description" : "The database hostname",
+                      "Value" : {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Address" ]}
+                    },
+                    "DatbasePort" : {
+                      "Description" : "The database hostname",
+                      "Value" : {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Port" ]}
+                    },    
+                    "InstanceSecurityGroup": {
+                      "Description" : "The security group",
+                      "Value" : {"Ref" : "InstanceSecurityGroup"}
+                    }
+                  }
+                }
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"HealthResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Health}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.AuditService}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}-#{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"DBUsername\",\"ParameterValue\":\"#{Database.ProductUsername}\"},{\"ParameterKey\":\"DBPassword\",\"ParameterValue\":\"#{Database.ProductPassword}\"},{\"ParameterKey\":\"Path\",\"ParameterValue\":\"audits\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoAdminClaim\",\"ParameterValue\":\"audit.content-team/admin\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"}]"
+            Octopus.Action.Aws.IamCapabilities = "[\"CAPABILITY_NAMED_IAM\"]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool_variable = "WorkerPool"
+    }
+}
+
+step "Database Migration" {
+
+    action {
+        action_type = "Octopus.AwsRunScript"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                aws lambda invoke \
+                	--function-name #{Octopus.Environment.Name}-#{Lambda.AuditService}-InitDB \
+                    --payload '{}' \
+                    response.json
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        container {
+            feed = "Dockerhub"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
+        }
+    }
+}
+
+step "Update Stage" {
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Octopub\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.Stage}"
+            Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+                {
+                  "Parameters" : {
+                    "EnvironmentName" : {
+                      "Type" : "String",
+                      "Default" : "#{Octopus.Environment.Name}"
+                    },
+                    "DeploymentId" : {
+                      "Type" : "String",
+                      "Default" : "Deployment#{Octopus.Deployment.Id | Replace -}"
+                    },
+                    "ApiGatewayId" : {
+                      "Type" : "String"
+                    }
+                  },
+                  "Resources": {
+                    "Stage": {
+                      "Type": "AWS::ApiGateway::Stage",
+                      "Properties": {
+                        "DeploymentId": {"Fn::Sub": "${DeploymentId}"},
+                        "RestApiId": {"Fn::Sub": "${ApiGatewayId}"},
+                        "StageName": {"Fn::Sub": "${EnvironmentName}"}
+                      }
+                    }
+                  },
+                  "Outputs": {
+                    "StageURL": {
+                      "Description": "The url of the stage",
+                      "Value": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "https://",
+                            {"Ref": "ApiGatewayId"},
+                            ".execute-api.",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ".amazonaws.com/",
+                            {
+                              "Ref": "Stage"
+                            },
+                            "/"
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                }
+            EOT
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Deploy Lambda].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Deploy Lambda].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.Aws.TemplateSource = "Inline"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+        }
+        worker_pool_variable = "WorkerPool"
+    }
+}
+
+step "Display Variables" {
 
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.Script.ScriptBody = "echo \"hi\""
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                echo "VPC ID: #{Octopus.Action[Deploy Lambda].Output.AwsOutputs[VpcId]}" 
+                echo "Subnet A: #{Octopus.Action[Deploy Lambda].Output.AwsOutputs[SubnetAId]}" 
+                echo "Subnet B: #{Octopus.Action[Deploy Lambda].Output.AwsOutputs[SubnetBId]}" 
+            EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "Bash"
         }
         worker_pool = "AWS"
+    }
+}
+
+step "Get Stage URL" {
+
+    action {
+        action_type = "Octopus.AwsRunScript"
+        environments = ["Development", "Production"]
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.Region = "#{AWS.Region}"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "AWS"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                STARGE_URL=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.Stage} \
+                    --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+                    --output text)
+                    
+                set_octopusvariable "StageURL" ${STARGE_URL}
+                
+                echo "Stage URL: ${STARGE_URL}"
+                
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        container {
+            feed = "Dockerhub"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
+        }
+    }
+}
+
+step "Check for vulnerabilities" {
+
+    action {
+        action_type = "Octopus.Script"
+        environments = ["Development (Security)", "Production (Security)"]
+        properties = {
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                cd audits-service-sbom
+                SUCCESS=0
+                for x in **/bom.xml; do 
+                	OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/$x\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+                    if [[ $? -ne 0 ]]; then
+                    	SUCCESS=1
+                    fi
+                    echo -e "${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+                done
+                
+                set_octopusvariable "VerificationResult" $SUCCESS
+                
+                exit 0
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "Bash"
+        }
+        worker_pool_variable = "WorkerPool"
+
+        packages "audits-service-sbom" {
+            acquisition_location = "Server"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:audits-service-sbom"
+            properties = {
+                Extract = "True"
+                Purpose = ""
+                SelectionMode = "immediate"
+            }
+        }
     }
 }
