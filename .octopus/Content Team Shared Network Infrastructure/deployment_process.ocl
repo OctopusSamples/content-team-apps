@@ -22,7 +22,7 @@ step "Create API Gateway" {
                 				}
                 			}
                 		},
-                		"Web": {
+                		"Health": {
                 			"Type": "AWS::ApiGateway::Resource",
                 			"Properties": {
                 				"RestApiId": {
@@ -31,7 +31,7 @@ step "Create API Gateway" {
                 				"ParentId": {
                 					"Fn::GetAtt": ["RestApi", "RootResourceId"]
                 				},
-                				"PathPart": "{proxy+}"
+                				"PathPart": "health"
                 			}
                 		},
                 		"Api": {
@@ -45,66 +45,6 @@ step "Create API Gateway" {
                 				},
                 				"PathPart": "api"
                 			}
-                		},
-                		"ApiPipeline": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "Api"
-                				},
-                				"PathPart": "pipeline"
-                			}
-                		},
-                		"ApiPipelineGitHub": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipeline"
-                				},
-                				"PathPart": "github"
-                			}
-                		},
-                		"ApiPipelineGitHubGenerate": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipelineGitHub"
-                				},
-                				"PathPart": "generate"
-                			}
-                		},
-                		"ApiPipelineOAuth": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
-                				},
-                				"PathPart": "oauth"
-                			}
-                		},
-                		"ApiPipelineOAuthGitHub": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipelineOAuth"
-                				},
-                				"PathPart": "github"
-                			}
                 		}
                 	},
                 	"Outputs": {
@@ -115,27 +55,21 @@ step "Create API Gateway" {
                 			}
                 		},
                 		"RootResourceId": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
+                			"Description": "ID of the resource exposing the root resource id",
                 			"Value": {
                 				"Fn::GetAtt": ["RestApi", "RootResourceId"]
                 			}
                 		},
-                		"Web": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
+                		"Health": {
+                			"Description": "ID of the resource exposing the health endpoints",
                 			"Value": {
-                				"Ref": "Web"
+                				"Ref": "Health"
                 			}
                 		},
-                		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
+                		"Api": {
+                			"Description": "ID of the resource exposing the api endpoint",
                 			"Value": {
-                				"Ref": "ApiPipelineGitHubGenerate"
-                			}
-                		},
-                		"#{CloudFormation.Output.OAuthGithubEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the GitHub OAuth proxy",
-                			"Value": {
-                				"Ref": "ApiPipelineOAuthGitHub"
+                				"Ref": "Api"
                 			}
                 		}
                 	}
