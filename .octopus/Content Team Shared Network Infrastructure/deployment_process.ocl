@@ -5,7 +5,7 @@ step "Create API Gateway" {
         properties = {
             Octopus.Action.Aws.AssumeRole = "False"
             Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGateway}"
+            Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.ApiGateway}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
                 {
                 	"Resources": {
