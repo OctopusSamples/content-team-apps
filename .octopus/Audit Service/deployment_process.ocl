@@ -47,7 +47,7 @@ step "Upload Lambda" {
             Octopus.Action.Aws.S3.PackageOptions = "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
             Octopus.Action.Aws.S3.TargetMode = "EntirePackage"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Content Team Apps"
             Octopus.Action.Package.PackageId = "com.octopus:audits-service"
@@ -78,7 +78,7 @@ step "Upload Lambda Proxy" {
             Octopus.Action.Aws.S3.PackageOptions = "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
             Octopus.Action.Aws.S3.TargetMode = "EntirePackage"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Content Team Apps"
             Octopus.Action.Package.PackageId = "com.octopus:reverse-proxy"
@@ -106,7 +106,7 @@ step "Get Stack Outputs" {
             Octopus.Action.Aws.AssumeRole = "False"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 PIPELINE_RESOURCE_ID=$(aws cloudformation \
@@ -1030,7 +1030,7 @@ step "Deploy Lambda" {
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
@@ -1046,7 +1046,7 @@ step "Database Migration" {
             Octopus.Action.Aws.AssumeRole = "False"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 aws lambda invoke \
@@ -1132,7 +1132,7 @@ step "Update Stage" {
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
@@ -1165,7 +1165,7 @@ step "Get Stage URL" {
             Octopus.Action.Aws.AssumeRole = "False"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 STARGE_URL=$(aws cloudformation \
