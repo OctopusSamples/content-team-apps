@@ -28,7 +28,7 @@ step "Create Bucket" {
             Octopus.Action.Aws.TemplateSource = "Inline"
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "AWS"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
