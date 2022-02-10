@@ -786,7 +786,7 @@ step "Deploy Lambda" {
                 			"Ref": "RestApi"
                 		  },
                 		  "ResourceId": {
-                			"Ref": "ServiceProxyResource"
+                			"Ref": "ServiceResourceProxyResource"
                 		  },
                 		  "HttpMethod": "OPTIONS",
                 		  "Integration": {
