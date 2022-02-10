@@ -111,7 +111,7 @@ runs:
     - run: >
         ./mvnw deploy:deploy-file
         -Dfile=audits-service.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        -DgroupId=com.octopus.octopub
+        -DgroupId=com.octopus
         -DartifactId=audits-service
         -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         -Dpackaging=zip
