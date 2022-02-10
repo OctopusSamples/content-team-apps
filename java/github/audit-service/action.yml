@@ -145,27 +145,6 @@ runs:
       shell: bash
       working-directory: java/audit-service
 
-    - name: Build K8s package
-      run: >
-        octo pack
-        --id audits-service-k8s
-        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        --format zip
-        --include k8s/**
-      shell: bash
-      working-directory: java/audit-service
-
-    - run: >
-        ./mvnw deploy:deploy-file
-        -Dfile=audits-service-k8s.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
-        -DgroupId=com.octopus
-        -DartifactId=audits-service-k8s
-        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        -Dpackaging=zip
-      shell: bash
-      working-directory: java/audit-service
-
     - name: Generate Octopus Deploy build information
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
