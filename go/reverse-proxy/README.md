@@ -57,7 +57,14 @@ deeply nested microservices will be executed without having to recreate the enti
 * HTTP - `version[ant path:method]=url[http://urlgoeshere]`
 * Lambda - `version[ant path:method]=lambda[lambda name or arn]`
 * SQS - `version[ant path:method]=sqs[queue name]`
-* Reference redirection on another path - `version[antpath]=path[ant path and method whose redirection rules will be used]`
+* Reference redirection on another path - `version[antpath:method]=path[ant path and method whose redirection rules will be used]`
+
+# Security
+
+This project is integrated with Cognito and requires users performing redirection to supply a valid access token
+with the correct group membership in order for routing rules to be applied.
+
+The `COGNITO_AUTHORIZATION_REQUIRED` environment variable can be set to `fasle` to disable any authentication rules.
 
 # Examples
 
