@@ -80,16 +80,16 @@ step "Upload Lambda Proxy" {
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS.Account"
             Octopus.Action.Package.DownloadOnTentacle = "False"
-            Octopus.Action.Package.FeedId = "Octopub"
-            Octopus.Action.Package.PackageId = "com.octopus.octopub:reverse-proxy"
+            Octopus.Action.Package.FeedId = "Content Team Apps"
+            Octopus.Action.Package.PackageId = "com.octopus:reverse-proxy"
             Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
         packages {
             acquisition_location = "Server"
-            feed = "Octopub"
-            package_id = "com.octopus.octopub:reverse-proxy"
+            feed = "Content Team Apps"
+            package_id = "com.octopus:reverse-proxy"
             properties = {
                 SelectionMode = "immediate"
             }
