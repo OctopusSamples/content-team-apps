@@ -149,7 +149,7 @@ step "Get Stack Outputs" {
 
         container {
             feed = "Dockerhub"
-            image = "octopusdeploy/worker-tools:3.2.0-ubuntu.18.04"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
         }
     }
 }
@@ -1149,7 +1149,7 @@ step "Database Migration" {
 
         container {
             feed = "Dockerhub"
-            image = "octopusdeploy/worker-tools:3.2.0-ubuntu.18.04"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
         }
     }
 }
@@ -1274,7 +1274,7 @@ step "Get Stage URL" {
 
         container {
             feed = "Dockerhub"
-            image = "octopusdeploy/worker-tools:3.2.0-ubuntu.18.04"
+            image = "octopusdeploy/worker-tools:3.3.2-ubuntu.18.04"
         }
     }
 }
