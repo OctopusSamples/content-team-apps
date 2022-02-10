@@ -9,13 +9,15 @@ import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.utilities.JwtVerifier;
 import io.quarkus.logging.Log;
 import java.io.IOException;
-import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -26,11 +28,8 @@ public class JoseJwtVerifier implements JwtVerifier {
   private static final String COGNITO_GROUPS = "cognito:groups";
   private static final String SCOPE = "scope";
 
-  @ConfigProperty(name = "cognito.pool")
-  Optional<String> cognitoPool;
-
-  @ConfigProperty(name = "cognito.region")
-  Optional<String> cognitoRegion;
+  @ConfigProperty(name = "cognito.jwk")
+  Optional<String> cognitoJwk;
 
   @ConfigProperty(name = "cognito.disable-auth")
   boolean cognitoDisableAuth;
@@ -43,7 +42,7 @@ public class JoseJwtVerifier implements JwtVerifier {
     }
 
     try {
-      if (jwtIsValid(jwt)) {
+      if (jwtIsValid(jwt, cognitoJwk.get())) {
         final JWSObject jwsObject = JWSObject.parse(jwt);
         final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
         if (payload.containsKey(COGNITO_GROUPS)) {
@@ -67,12 +66,8 @@ public class JoseJwtVerifier implements JwtVerifier {
     }
 
     try {
-      if (jwtIsValid(jwt)) {
-        final JWSObject jwsObject = JWSObject.parse(jwt);
-        final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
-        if (payload.containsKey(SCOPE)) {
-          return ArrayUtils.contains(payload.get(SCOPE).toString().split(" "), claim);
-        }
+      if (jwtIsValid(jwt, cognitoJwk.get())) {
+          return extractClaims(jwt).contains(claim);
       }
     } catch (final IOException | ParseException | JOSEException e) {
       Log.error(GlobalConstants.MICROSERVICE_NAME + "-Jwt-ValidationError", e);
@@ -81,26 +76,33 @@ public class JoseJwtVerifier implements JwtVerifier {
     return false;
   }
 
-  private boolean configIsValid() {
-    return cognitoDisableAuth
-        || cognitoRegion.isEmpty()
-        || cognitoPool.isEmpty()
-        || StringUtils.isEmpty(cognitoPool.get())
-        || StringUtils.isEmpty(cognitoRegion.get());
+  public List<String> extractClaims(final String jwt) throws ParseException {
+      final JWSObject jwsObject = JWSObject.parse(jwt);
+      final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
+      if (payload.containsKey(SCOPE)) {
+        return Arrays.asList(payload.get(SCOPE).toString().split(" "));
+      }
+      return List.of();
   }
 
-  private boolean jwtIsValid(final String jwt)
+  private boolean configIsValid() {
+    return cognitoDisableAuth
+        || cognitoJwk.isEmpty()
+        || StringUtils.isEmpty(cognitoJwk.get());
+  }
+
+  public boolean jwtIsValid(final String jwt, final String jwk)
       throws ParseException, IOException, JOSEException {
     final JWSObject jwsObject = JWSObject.parse(jwt);
-    final JWKSet publicKeys =
-        JWKSet.load(
-            new URL(
-                "https://cognito-idp."
-                    + cognitoRegion.get().trim()
-                    + ".amazonaws.com/"
-                    + cognitoPool.get().trim()
-                    + "/.well-known/jwks.json"));
+    final JWKSet publicKeys = JWKSet.load(IOUtils.toInputStream(jwk, Charset.defaultCharset()));
     final JWSVerifier verifier = new RSASSAVerifier(publicKeys.getKeyByKeyId(jwsObject.getHeader().getKeyID()).toRSAKey());
-    return jwsObject.verify(verifier);
+    if (jwsObject.verify(verifier)) {
+      final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
+      if (payload.containsKey("exp")) {
+        return (Long)payload.get("exp") > new Date().getTime();
+      }
+    }
+
+    return false;
   }
 }
