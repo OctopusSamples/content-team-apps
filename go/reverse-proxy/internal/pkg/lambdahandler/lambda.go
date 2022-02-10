@@ -192,7 +192,7 @@ func authorizeRouting(req events.APIGatewayProxyRequest) bool {
 		return false
 	}
 
-	if strings.TrimSpace(splitHeader[0]) != "Bearer" {
+	if strings.ToLower(strings.TrimSpace(splitHeader[0])) != "bearer" {
 		log.Println("ReverseProxy-Jwt-InvalidHeader No bearer token found in authorization header")
 		return false
 	}
