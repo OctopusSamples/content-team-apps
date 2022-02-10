@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class JoseJwtVerifier implements JwtVerifier {
   private static final String COGNITO_GROUPS = "cognito:groups";
   private static final String SCOPE = "scope";
 
-  @ConfigProperty(name = "cognito.jwk")
+  @ConfigProperty(name = "cognito.jwk-base64")
   Optional<String> cognitoJwk;
 
   @ConfigProperty(name = "cognito.disable-auth")
@@ -93,7 +94,8 @@ public class JoseJwtVerifier implements JwtVerifier {
 
   public boolean jwtIsValid(final String jwt, final String jwk)
       throws ParseException, IOException, JOSEException {
-    final JWSObject jwsObject = JWSObject.parse(jwt);
+    final String jwkDecoded = new String(Base64.getDecoder().decode(jwt));
+    final JWSObject jwsObject = JWSObject.parse(jwkDecoded);
     final JWKSet publicKeys = JWKSet.load(IOUtils.toInputStream(jwk, Charset.defaultCharset()));
     final JWSVerifier verifier = new RSASSAVerifier(publicKeys.getKeyByKeyId(jwsObject.getHeader().getKeyID()).toRSAKey());
     if (jwsObject.verify(verifier)) {
