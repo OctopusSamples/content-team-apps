@@ -493,7 +493,7 @@ step "Deploy Lambda" {
                             "DATABASE_PORT": {"Fn::GetAtt" : [ "RDSCluster", "Endpoint.Port" ]},
                             "COGNITO_REGION": {"Ref": "CognitoRegion"},
                             "COGNITO_POOL": {"Ref": "CognitoPool"},
-                            "COGNITO_JWK": {"Ref": "CognitoJwt"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwk"},
                             "COGNITO_ADMIN_CLAIM": {"Ref": "CognitoAdminClaim"}
                           }
                         },
@@ -646,7 +646,7 @@ step "Deploy Lambda" {
                           	"DEFAULT_LAMBDA": {"Ref": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"},
                             "COGNITO_REGION": {"Ref": "CognitoRegion"},
                             "COGNITO_POOL": {"Ref": "CognitoPool"},
-                            "COGNITO_JWK": {"Ref": "CognitoJwt"},
+                            "COGNITO_JWK": {"Ref": "CognitoJwk"},
                             "COGNITO_REQUIRED_GROUP": {"Ref": "CognitoRequiredGroup"}
                           }
                         },
