@@ -11,14 +11,13 @@ public class JwtUtilsTest {
 
   @Test
   public void tokenExtractionTest() {
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("Bearer: abcdefg").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bearer: abcdefg").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("BEARER: abcdefg").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR: abcdefg").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR:  abcdefg").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR:  abcdefg ").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR:abcdefg ").get());
-    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader(" bEaReR: abcdefg").get());
-    assertTrue( JWT_UTILS.getJwtFromAuthorizationHeader("basic: abcdefg").isEmpty());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("Bearer abcdefg").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bearer abcdefg").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("BEARER abcdefg").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR abcdefg").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR  abcdefg").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR  abcdefg ").get());
+    assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader(" bEaReR abcdefg").get());
+    assertTrue( JWT_UTILS.getJwtFromAuthorizationHeader("basic abcdefg").isEmpty());
   }
 }

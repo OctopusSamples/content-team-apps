@@ -20,10 +20,10 @@ public class JwtUtils {
       return Optional.empty();
     }
 
-    if (!authorizationHeader.toLowerCase().trim().startsWith(BEARER + ":")) {
+    if (!authorizationHeader.toLowerCase().trim().startsWith(BEARER + " ")) {
       return Optional.empty();
     }
 
-    return Optional.of(authorizationHeader.trim().replaceFirst("(?i)" + BEARER + ":", "").trim());
+    return Optional.of(authorizationHeader.trim().replaceFirst("(?i)" + BEARER + " ", "").trim());
   }
 }
