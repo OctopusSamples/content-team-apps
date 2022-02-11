@@ -8,15 +8,27 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.githubactions.GlobalConstants;
+import com.octopus.githubactions.audits.AuditGenerator;
+import com.octopus.githubactions.client.AuditClient;
+import com.octopus.githubactions.client.CognitoClient;
+import com.octopus.githubactions.entities.Audit;
+import com.octopus.githubactions.entities.OAuth;
+import com.octopus.githubactions.jsonapi.JsonApiConverter;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
+import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
+import io.vavr.control.Try;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -53,7 +65,13 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
   LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
 
   @Inject
+  LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
+
+  @Inject
   CryptoUtils cryptoUtils;
+
+  @Inject
+  AuditGenerator auditGenerator;
 
   /**
    * The Lambda entry point.
@@ -83,7 +101,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""), input);
   }
 
-  private ProxyResponse generatePipeline(final String repo, final APIGatewayProxyRequestEvent input) {
+  private ProxyResponse generatePipeline(final String repo,
+      final APIGatewayProxyRequestEvent input) {
     LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
@@ -97,15 +116,39 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         auth.map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse(""));
 
     return checkForPublicRepo(accessor)
-        .orElse(buildPipeline(accessor));
+        .orElse(buildPipeline(
+            accessor,
+            lambdaHttpHeaderExtractor.getAllHeaderParams(
+                input,
+                GlobalConstants.ACCEPT_HEADER),
+            lambdaHttpHeaderExtractor.getAllHeaderParams(
+                input,
+                GlobalConstants.AUTHORIZATION_HEADER)));
   }
 
-  private ProxyResponse buildPipeline(@NonNull final RepoClient accessor) {
-    final String pipeline = builders.stream()
+  private ProxyResponse buildPipeline(
+      @NonNull final RepoClient accessor,
+      @NonNull final List<String> acceptHeaders,
+      @NonNull final List<String> authHeaders) {
+    // Get the builder
+    final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .parallel()
         .filter(b -> b.canBuild(accessor))
-        .findFirst()
+        .findFirst();
+
+    // Write an audit message
+    builder.ifPresent(b ->
+        auditGenerator.createAuditEvent(new Audit(
+                GlobalConstants.MICROSERVICE_NAME,
+                GlobalConstants.CREATED_TEMPLATE_ACTION,
+                b.getClass().getName()),
+            acceptHeaders,
+            authHeaders)
+    );
+
+    // Return the template
+    final String pipeline = builder
         .map(b -> b.generate(accessor))
         .orElse("""
             No suitable builders were found.
@@ -114,9 +157,8 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
             Click the heading in the top left corner to return to the main page.
             """);
 
-    LOG.log(DEBUG, "pipeline: \n" + pipeline);
-
-    return new ProxyResponse(
+    return new
+        ProxyResponse(
         "200",
         pipeline,
         new ImmutableMap.Builder<String, String>()
@@ -126,21 +168,24 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   /**
    * If the repo is in accessible it is either because it does not exist, or is a private repo that
-   * requires authentication. We make the decision here based on the presence of the session cookie.
+   * requires authentication. We make the decision here based on the presence of the session
+   * cookie.
    */
   private Optional<ProxyResponse> checkForPublicRepo(@NonNull final RepoClient accessor) {
     if (!accessor.testRepo()) {
       if (accessor.hasAccessToken()) {
         return Optional.of(new ProxyResponse(
             "404",
-            accessor.getRepo() + " does not appear to be an accessible GitHub repository. Please try a different URL.",
+            accessor.getRepo()
+                + " does not appear to be an accessible GitHub repository. Please try a different URL.",
             new ImmutableMap.Builder<String, String>()
                 .put("Content-Type", "text/plain")
                 .build()));
       } else {
         return Optional.of(new ProxyResponse(
             "401",
-            accessor.getRepo() + " does not appear to be a public GitHub repository. You must login to GitHub.",
+            accessor.getRepo()
+                + " does not appear to be a public GitHub repository. You must login to GitHub.",
             new ImmutableMap.Builder<String, String>()
                 .put("Content-Type", "text/plain")
                 .build()));

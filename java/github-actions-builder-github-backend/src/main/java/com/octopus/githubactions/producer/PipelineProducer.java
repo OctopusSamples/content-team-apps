@@ -15,8 +15,10 @@ import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.lambda.CaseInsensitiveCookieExtractor;
+import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
+import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
@@ -72,6 +74,17 @@ public class PipelineProducer {
   @Produces
   public CryptoUtils getCryptoUtils() {
     return new AesCryptoUtils();
+  }
+
+  /**
+   * Produces the Lambda query param extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpHeaderExtractor getHeaderExtractor() {
+    return new CaseInsensitiveHttpHeaderExtractor();
   }
 
   /**

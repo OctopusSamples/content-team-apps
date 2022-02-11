@@ -71,7 +71,10 @@
       <artifactId>quarkus-smallrye-health</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
-
+    <dependency>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+      <groupId>io.quarkus</groupId>
+    </dependency>
     <dependency>
       <artifactId>quarkus-junit5</artifactId>
       <groupId>io.quarkus</groupId>
@@ -81,6 +84,12 @@
       <artifactId>rest-assured</artifactId>
       <groupId>io.rest-assured</groupId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jasminb</groupId>
+      <artifactId>jsonapi-converter</artifactId>
+      <version>0.11</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <dependencyManagement>
