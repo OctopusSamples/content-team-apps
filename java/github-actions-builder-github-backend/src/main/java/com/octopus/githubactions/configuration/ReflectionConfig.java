@@ -2,6 +2,7 @@ package com.octopus.githubactions.configuration;
 
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
+import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.githubactions.entities.Audit;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.octopus.githubactions.builders.dsl.Build;
@@ -28,7 +29,8 @@ import org.joda.time.Interval;
     WorkflowDispatch.class,
     TimestampDeserializer.class,
     Audit.class,
-    IntegerIdHandler.class})
+    IntegerIdHandler.class,
+    StringIdHandler.class})
 public class ReflectionConfig {
 
 }
