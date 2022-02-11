@@ -41,10 +41,10 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
    */
   public List<String> getAllHeaderParams(
       final Map<String, List<String>> multiHeader,
-      final Map<String, String> Header,
+      final Map<String, String> header,
       @NonNull final String name) {
     final List<String> values = new ArrayList<String>(getMultiHeader(multiHeader, name));
-    values.addAll(getHeader(Header, name));
+    values.addAll(getHeader(header, name));
     return values;
   }
 
@@ -52,12 +52,12 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
    * {@inheritDoc}
    */
   public List<String> getMultiHeader(
-      final Map<String, List<String>> Header, @NonNull final String name) {
-    if (Header == null) {
+      final Map<String, List<String>> header, @NonNull final String name) {
+    if (header == null) {
       return List.of();
     }
 
-    return Header.entrySet().stream()
+    return header.entrySet().stream()
         .filter(e -> name.equalsIgnoreCase(e.getKey()))
         .flatMap(e -> e.getValue().stream())
         .collect(Collectors.toList());
@@ -66,12 +66,12 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
   /**
    * {@inheritDoc}
    */
-  public List<String> getHeader(final Map<String, String> Header, @NonNull final String name) {
-    if (Header == null) {
+  public List<String> getHeader(final Map<String, String> header, @NonNull final String name) {
+    if (header == null) {
       return List.of();
     }
 
-    return Header.entrySet().stream()
+    return header.entrySet().stream()
         .filter(e -> name.equalsIgnoreCase(e.getKey()))
         .map(e -> e.getValue())
         .collect(Collectors.toList());

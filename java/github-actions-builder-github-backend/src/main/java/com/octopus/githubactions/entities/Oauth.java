@@ -3,8 +3,11 @@ package com.octopus.githubactions.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Represents the value returned by Cognito when generating an OAuth token.
+ */
 @Data
-public class OAuth {
+public class Oauth {
   @JsonProperty("access_token")
   private String accessToken;
   @JsonProperty("expires_in")

@@ -32,27 +32,27 @@ public interface LambdaHttpHeaderExtractor {
    * Get all values from both the multi and single collections.
    *
    * @param multiHeader The collection holding multiple values.
-   * @param Header The collection holding single values.
+   * @param header The collection holding single values.
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  List<String> getAllHeaderParams(Map<String, List<String>> multiHeader, Map<String, String> Header, String name);
+  List<String> getAllHeaderParams(Map<String, List<String>> multiHeader, Map<String, String> header, String name);
 
   /**
    * Get all the values from the multi Header collection.
    *
-   * @param Header The collection holding multiple values.
+   * @param header The collection holding multiple values.
    * @param name The name of the value.
    * @return All the values that match the name.
    */
-  List<String> getMultiHeader(Map<String, List<String>> Header, String name);
+  List<String> getMultiHeader(Map<String, List<String>> header, String name);
 
   /**
    * Get the value from the single Header collection.
    *
-   * @param Header The collection holding single values.
+   * @param header The collection holding single values.
    * @param name The name of the value.
    * @return A list with zero or one values that match the name.
    */
-  List<String> getHeader(Map<String, String> Header, String name);
+  List<String> getHeader(Map<String, String> header, String name);
 }

@@ -6,7 +6,7 @@ import com.octopus.githubactions.GlobalConstants;
 import com.octopus.githubactions.client.AuditClient;
 import com.octopus.githubactions.client.CognitoClient;
 import com.octopus.githubactions.entities.Audit;
-import com.octopus.githubactions.entities.OAuth;
+import com.octopus.githubactions.entities.Oauth;
 import com.octopus.githubactions.jsonapi.JsonApiConverter;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
@@ -72,7 +72,7 @@ public class AuditGenerator {
     );
   }
 
-  private Try<OAuth> getAccessToken() {
+  private Try<Oauth> getAccessToken() {
     return
         cognitoClientId.isPresent() && cognitoClientSecret.isPresent()
             ? Try.of(() -> cognitoClient.getToken(

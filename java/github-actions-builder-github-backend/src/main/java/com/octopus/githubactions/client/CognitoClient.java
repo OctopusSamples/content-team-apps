@@ -1,7 +1,7 @@
 package com.octopus.githubactions.client;
 
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.entities.OAuth;
+import com.octopus.githubactions.entities.Oauth;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -18,7 +18,7 @@ public interface CognitoClient {
   @POST
   @Consumes(GlobalConstants.FROM_ENCODED_CONTENT_TYPE)
   @Produces(GlobalConstants.JSON_CONTENT_TYPE)
-  OAuth getToken(
+  Oauth getToken(
       @HeaderParam("Authorization") final String authorization,
       @RestForm("grant_type") final String grantType,
       @RestForm("client_id") final String clientId,
