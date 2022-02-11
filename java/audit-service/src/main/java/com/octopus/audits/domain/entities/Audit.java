@@ -40,7 +40,7 @@ public class Audit {
    * The time the event took place.
    */
   @NotNull
-  @JsonFormat(shape=JsonFormat.Shape.NUMBER, pattern="s")
+  @JsonFormat(shape = JsonFormat.Shape.NUMBER, pattern = "s")
   public Timestamp time;
 
   /**
