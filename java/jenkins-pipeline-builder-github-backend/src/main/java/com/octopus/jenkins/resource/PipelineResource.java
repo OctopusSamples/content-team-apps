@@ -18,7 +18,7 @@ import org.jboss.logging.Logger;
 /**
  * The REST server.
  */
-@Path("/pipeline")
+@Path("/api/pipeline/jenkins/generate")
 public class PipelineResource {
 
   private static final Logger LOG = Logger.getLogger(PipelineResource.class.toString());
