@@ -1,6 +1,7 @@
 package com.octopus.githubactions.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.sql.Timestamp;
@@ -11,7 +12,8 @@ import lombok.Data;
 @Data
 public class Audit {
 
-  @Id private String id;
+  @Id(IntegerIdHandler.class)
+  private Integer id;
   private String subject;
   private String action;
   private String object;
