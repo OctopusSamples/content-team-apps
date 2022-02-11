@@ -18,6 +18,10 @@ public class Audit {
   @JsonFormat(shape = JsonFormat.Shape.NUMBER, pattern = "s")
   private Timestamp time;
 
+  public Audit() {
+
+  }
+
   /**
    * Constructs an Audit record.
    *
