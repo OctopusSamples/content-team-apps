@@ -1,5 +1,6 @@
 package com.octopus.audits.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.sql.Timestamp;
@@ -39,6 +40,7 @@ public class Audit {
    * The time the event took place.
    */
   @NotNull
+  @JsonFormat(shape=JsonFormat.Shape.NUMBER, pattern="s")
   public Timestamp time;
 
   /**
