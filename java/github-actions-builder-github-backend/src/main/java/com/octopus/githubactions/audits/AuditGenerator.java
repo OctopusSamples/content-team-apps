@@ -10,6 +10,7 @@ import com.octopus.githubactions.entities.Oauth;
 import com.octopus.githubactions.jsonapi.JsonApiConverter;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -54,23 +55,19 @@ public class AuditGenerator {
       @NonNull final List<String> acceptHeaders,
       @NonNull final List<String> authHeaders) {
 
-    // JSON API services require this accept header at least once.
-    acceptHeaders.add(GlobalConstants.JSONAPI_CONTENT_TYPE);
-
-    getAccessToken().andThen(auditAccessToken ->
-        Try.of(() -> auditClient.createAudit(
+    getAccessToken().andThenTry(auditAccessToken ->
+            auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
                     new JSONAPIDocument<>(audit))),
-                String.join(",", acceptHeaders),
+                GlobalConstants.JSONAPI_CONTENT_TYPE,
                 String.join(",", authHeaders),
-                auditAccessToken.getAccessToken()))
-            .onFailure(e -> {
-              // Note the failure
-              Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-Failed", e);
-              // As a fallback, write the audit event to the logs
-              Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(audit)));
-            })
-    );
+                "Bearer " + auditAccessToken.getAccessToken()))
+        .onFailure(e -> {
+          // Note the failure
+          Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-Failed", e);
+          // As a fallback, write the audit event to the logs
+          Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(audit)));
+        });
   }
 
   private Try<Oauth> getAccessToken() {

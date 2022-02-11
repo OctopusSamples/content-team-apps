@@ -11,7 +11,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.reactive.RestForm;
 
 /** A REST client to access the audits service. */
-@Path("oauth")
+@Path("oauth2")
 @RegisterRestClient
 public interface CognitoClient {
   @Path("token")

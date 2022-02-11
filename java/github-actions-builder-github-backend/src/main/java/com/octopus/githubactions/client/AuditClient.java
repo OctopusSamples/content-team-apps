@@ -13,7 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface AuditClient {
   @Path("audits")
   @POST
-  @Consumes(GlobalConstants.JSON_CONTENT_TYPE)
+  @Consumes(GlobalConstants.JSONAPI_CONTENT_TYPE)
   String createAudit(
       final String audit,
       @HeaderParam(GlobalConstants.ACCEPT_HEADER) String accept,
