@@ -11,6 +11,8 @@ public final class GlobalConstants {
   public static final String ACCEPT_HEADER = "Accept";
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+  public static final String INVOCATION_TYPE = "X-Amz-Invocation-Type";
+  public static final String ASYNC_INVOCATION_TYPE = "Event";
   public static final String CREATED_TEMPLATE_ACTION = "CreateTemplateUsing";
   public static final String CLIENT_CREDENTIALS = "client_credentials";
   public static final String AUDIT_SCOPE = "audit.content-team/admin";
