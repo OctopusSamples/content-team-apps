@@ -9,6 +9,13 @@ import com.octopus.repoclients.RepoClient;
 public interface PipelineBuilder {
 
   /**
+   * Defines the name of the pipeline builder.
+   *
+   * @return The pipeline builder name.
+   */
+  String getName();
+
+  /**
    * Determine if this builder can build a pipeline for the given repo.
    *
    * @return true if this builder can build a pipeline, and false otherwise

@@ -28,6 +28,11 @@ public class NodejsBuilder implements PipelineBuilder {
   private boolean useYarn = false;
 
   @Override
+  public String getName() {
+    return "Node.js";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     useYarn = accessor.testFile("yarn.lock");
     return accessor.testFile("package.json");

@@ -27,6 +27,11 @@ public class RubyGemBuilder implements PipelineBuilder {
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
+  public String getName() {
+    return "Ruby";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     return accessor.testFile("Gemfile");
   }

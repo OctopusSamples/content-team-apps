@@ -20,6 +20,11 @@ public class GenericBuilder implements PipelineBuilder {
   private static final GitBuilder GIT_BUILDER = new GitBuilder();
 
   @Override
+  public String getName() {
+    return "Generic";
+  }
+
+  @Override
   public Integer getPriority() {
     return -100;
   }

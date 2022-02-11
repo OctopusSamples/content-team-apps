@@ -28,6 +28,11 @@ public class JavaGradleBuilder implements PipelineBuilder {
   private boolean usesWrapper = false;
 
   @Override
+  public String getName() {
+    return "Java Gradle";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "JavaGradleBuilder.canBuild(RepoClient)");
 

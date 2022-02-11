@@ -46,6 +46,11 @@ public class DotNetCoreBuilder implements PipelineBuilder {
   }
 
   @Override
+  public String getName() {
+    return "DotNET Core";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "DotnetCoreBuilder.canBuild(RepoClient)");
 

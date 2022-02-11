@@ -31,6 +31,11 @@ public class NodeJsBuilder implements PipelineBuilder {
   private boolean packageLock = false;
 
   @Override
+  public String getName() {
+    return "Node.js";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "NodeJsBuilder.canBuild(RepoClient)");
     useYarn = accessor.testFile("yarn.lock");

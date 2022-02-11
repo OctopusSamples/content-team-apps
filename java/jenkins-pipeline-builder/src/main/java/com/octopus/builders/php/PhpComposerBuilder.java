@@ -28,6 +28,11 @@ public class PhpComposerBuilder implements PipelineBuilder {
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
+  public String getName() {
+    return "PHP";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     return accessor.testFile("composer.json");
   }

@@ -26,6 +26,11 @@ public class JavaMavenBuilder implements PipelineBuilder {
   private boolean usesWrapper = false;
 
   @Override
+  public String getName() {
+    return "Java Maven";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "JavaMavenBuilder.canBuild(RepoClient)");
     if (accessor.testFile("pom.xml")) {

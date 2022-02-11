@@ -25,6 +25,11 @@ public class PythonBuilder implements PipelineBuilder {
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
+  public String getName() {
+    return "Python";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     return accessor.testFile("requirements.txt");
   }

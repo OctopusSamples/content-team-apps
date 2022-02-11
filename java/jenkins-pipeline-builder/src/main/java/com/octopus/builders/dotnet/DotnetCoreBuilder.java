@@ -30,6 +30,11 @@ public class DotnetCoreBuilder implements PipelineBuilder {
   private static final Pattern DOT_NET_CORE_REGEX = Pattern.compile(
       "Sdk\\s*=\\s*\"Microsoft\\.NET\\.Sdk");
 
+  @Override
+  public String getName() {
+    return "DotNET Core";
+  }
+
   /**
    * This builder is very permissive, finding any solution files anywhere in the repo. If there are
    * more specific builders at the top level, use those first.

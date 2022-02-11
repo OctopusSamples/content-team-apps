@@ -71,7 +71,7 @@ public class PipelineResource {
         auditGenerator.createAuditEvent(new Audit(
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
-                b.getClass().getName()),
+                b.getName()),
             acceptHeaders,
             authHeaders)
     );

@@ -1,5 +1,6 @@
 package com.octopus.githubactions.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ public class Audit {
   private String subject;
   private String action;
   private String object;
+  @JsonFormat(shape = JsonFormat.Shape.NUMBER, pattern = "s")
   private Timestamp time;
 
   /**

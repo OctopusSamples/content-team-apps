@@ -135,7 +135,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         auditGenerator.createAuditEvent(new Audit(
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
-                b.getClass().getName()),
+                b.getName()),
             acceptHeaders,
             authHeaders)
     );

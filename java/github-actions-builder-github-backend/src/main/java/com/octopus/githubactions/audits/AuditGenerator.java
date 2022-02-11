@@ -55,11 +55,12 @@ public class AuditGenerator {
       @NonNull final List<String> acceptHeaders,
       @NonNull final List<String> authHeaders) {
 
-    getAccessToken().andThenTry(auditAccessToken ->
+    getAccessToken()
+        .andThenTry(auditAccessToken ->
             auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
                     new JSONAPIDocument<>(audit))),
-                GlobalConstants.JSONAPI_CONTENT_TYPE,
+                String.join(",", acceptHeaders),
                 String.join(",", authHeaders),
                 "Bearer " + auditAccessToken.getAccessToken()))
         .onFailure(e -> {

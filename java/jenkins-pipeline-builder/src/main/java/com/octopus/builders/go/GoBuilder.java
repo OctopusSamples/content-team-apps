@@ -27,6 +27,11 @@ public class GoBuilder implements PipelineBuilder {
   private static final JavaGitBuilder GIT_BUILDER = new JavaGitBuilder();
 
   @Override
+  public String getName() {
+    return "Go";
+  }
+
+  @Override
   public Boolean canBuild(@NonNull final RepoClient accessor) {
     final Try<List<String>> files = accessor.getWildcardFiles("*.go", 1);
 

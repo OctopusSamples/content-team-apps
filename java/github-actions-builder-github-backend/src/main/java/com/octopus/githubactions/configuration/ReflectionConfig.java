@@ -1,5 +1,6 @@
 package com.octopus.githubactions.configuration;
 
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
@@ -22,7 +23,8 @@ import org.joda.time.Interval;
     RunStep.class,
     UsesWith.class,
     Workflow.class,
-    WorkflowDispatch.class})
+    WorkflowDispatch.class,
+    TimestampDeserializer.class})
 public class ReflectionConfig {
 
 }
