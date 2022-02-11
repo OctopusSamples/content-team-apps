@@ -24,7 +24,8 @@ import org.joda.time.Interval;
     UsesWith.class,
     Workflow.class,
     WorkflowDispatch.class,
-    TimestampDeserializer.class})
+    TimestampDeserializer.class,
+    Audit.class})
 public class ReflectionConfig {
 
 }
