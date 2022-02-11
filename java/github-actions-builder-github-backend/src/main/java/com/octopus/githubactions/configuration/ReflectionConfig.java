@@ -1,6 +1,7 @@
 package com.octopus.githubactions.configuration;
 
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
+import com.octopus.githubactions.entities.Audit;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.octopus.githubactions.builders.dsl.Build;
 import com.octopus.githubactions.builders.dsl.Jobs;
