@@ -4,6 +4,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.utilities.JwtVerifier;
@@ -122,12 +123,14 @@ public class JoseJwtVerifier implements JwtVerifier {
     final String jwkDecoded = new String(Base64.getDecoder().decode(jwk));
     final JWKSet publicKeys = JWKSet.load(
         IOUtils.toInputStream(jwkDecoded, Charset.defaultCharset()));
-    final JWSVerifier verifier = new RSASSAVerifier(
-        publicKeys.getKeyByKeyId(jwsObject.getHeader().getKeyID()).toRSAKey());
-    if (jwsObject.verify(verifier)) {
-      final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
-      if (payload.containsKey("exp")) {
-        return ((Long) payload.get("exp") * 1000) > new Date().getTime();
+    final JWK key = publicKeys.getKeyByKeyId(jwsObject.getHeader().getKeyID());
+    if (key != null) {
+      final JWSVerifier verifier = new RSASSAVerifier(key.toRSAKey());
+      if (jwsObject.verify(verifier)) {
+        final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
+        if (payload.containsKey("exp")) {
+          return ((Long) payload.get("exp") * 1000) > new Date().getTime();
+        }
       }
     }
 
