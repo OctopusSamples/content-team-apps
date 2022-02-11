@@ -62,8 +62,7 @@ public class AuditGenerator {
                     new JSONAPIDocument<>(audit))),
                 String.join(",", acceptHeaders),
                 String.join(",", authHeaders),
-                "Bearer " + auditAccessToken.getAccessToken(),
-                GlobalConstants.ASYNC_INVOCATION_TYPE))
+                "Bearer " + auditAccessToken.getAccessToken()))
         .onFailure(e -> {
           // Note the failure
           Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-Failed", e);

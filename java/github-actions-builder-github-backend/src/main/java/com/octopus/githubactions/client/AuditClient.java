@@ -18,6 +18,5 @@ public interface AuditClient {
       final String audit,
       @HeaderParam(GlobalConstants.ACCEPT_HEADER) String accept,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth,
-      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth,
-      @HeaderParam(GlobalConstants.INVOCATION_TYPE) String invocationType);
+      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth);
 }
