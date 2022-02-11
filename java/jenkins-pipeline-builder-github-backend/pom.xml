@@ -56,10 +56,6 @@
     </dependency>
 
     <dependency>
-      <artifactId>quarkus-resteasy</artifactId>
-      <groupId>io.quarkus</groupId>
-    </dependency>
-    <dependency>
       <artifactId>quarkus-arc</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
@@ -71,6 +67,15 @@
       <artifactId>quarkus-smallrye-health</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
+    <dependency>
+      <artifactId>quarkus-resteasy-reactive</artifactId>
+      <groupId>io.quarkus</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+      <groupId>io.quarkus</groupId>
+    </dependency>
+
     <!-- Required to get an Ant path matcher implementation -->
     <dependency>
       <artifactId>shiro-core</artifactId>
