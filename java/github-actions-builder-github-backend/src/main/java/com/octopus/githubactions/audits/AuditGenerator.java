@@ -17,6 +17,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * A service used to write audit events to the audits microservice.
@@ -26,10 +27,10 @@ public class AuditGenerator {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  @Inject
+  @RestClient
   AuditClient auditClient;
 
-  @Inject
+  @RestClient
   CognitoClient cognitoClient;
 
   @Inject
