@@ -113,7 +113,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
             accessor,
             lambdaHttpHeaderExtractor.getAllHeaderParams(
                 input,
-                GlobalConstants.ACCEPT_HEADER),
+                GlobalConstants.ROUTING_HEADER),
             lambdaHttpHeaderExtractor.getAllHeaderParams(
                 input,
                 GlobalConstants.AUTHORIZATION_HEADER)));
@@ -121,7 +121,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   private ProxyResponse buildPipeline(
       @NonNull final RepoClient accessor,
-      @NonNull final List<String> acceptHeaders,
+      @NonNull final List<String> routingHeaders,
       @NonNull final List<String> authHeaders) {
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
@@ -136,7 +136,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
                 b.getName()),
-            acceptHeaders,
+            routingHeaders,
             authHeaders)
     );
 

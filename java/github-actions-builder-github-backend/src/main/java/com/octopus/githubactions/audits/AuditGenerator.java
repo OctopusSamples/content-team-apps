@@ -47,12 +47,12 @@ public class AuditGenerator {
    * Create an audit event.
    *
    * @param audit         The details of the audit event.
-   * @param acceptHeaders The "accept" headers to propagate with the request.
+   * @param routingHeaders The "routing" headers to propagate with the request.
    * @param authHeaders   The "authorization" headers propagate with the request.
    */
   public void createAuditEvent(
       @NonNull final Audit audit,
-      @NonNull final List<String> acceptHeaders,
+      @NonNull final List<String> routingHeaders,
       @NonNull final List<String> authHeaders) {
 
     getAccessToken()
@@ -60,7 +60,7 @@ public class AuditGenerator {
             auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
                     new JSONAPIDocument<>(audit))),
-                String.join(",", acceptHeaders),
+                String.join(",", routingHeaders),
                 String.join(",", authHeaders),
                 "Bearer " + auditAccessToken.getAccessToken()))
         .onFailure(e -> {
