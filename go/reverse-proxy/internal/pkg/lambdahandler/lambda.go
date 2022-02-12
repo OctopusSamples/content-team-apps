@@ -26,6 +26,7 @@ import (
 )
 
 const routingHeader = "Routing"
+const dataPartitionHeader = "Data-Partition"
 
 var matcher = antpath.New()
 var groupPath = regexp.MustCompile(`/api/(?:[a-zA-Z]+)/?`)
@@ -105,6 +106,7 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 	svc := sqs.New(sess)
 
 	routingHeaderValue, err := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
+	dataPartitionHeaderValue, err := getHeader(req.Headers, req.MultiValueHeaders, dataPartitionHeader)
 
 	if err != nil {
 		routingHeaderValue = ""
@@ -134,6 +136,10 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 				StringValue: aws.String(utils.GetEnv("ENTITY_TYPE", "Unknown")),
 			},
 			"dataPartition": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(dataPartitionHeaderValue),
+			},
+			"routing": {
 				DataType:    aws.String("String"),
 				StringValue: aws.String(routingHeaderValue),
 			},
