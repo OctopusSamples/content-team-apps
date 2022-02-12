@@ -105,11 +105,16 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 
 	svc := sqs.New(sess)
 
-	routingHeaderValue, err := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
-	dataPartitionHeaderValue, err := getHeader(req.Headers, req.MultiValueHeaders, dataPartitionHeader)
+	routingHeaderValue, routingErr := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
 
-	if err != nil {
+	if routingErr != nil {
 		routingHeaderValue = ""
+	}
+
+	dataPartitionHeaderValue, dataPartitionErr := getHeader(req.Headers, req.MultiValueHeaders, dataPartitionHeader)
+
+	if dataPartitionErr != nil {
+		dataPartitionHeaderValue = ""
 	}
 
 	body := req.Body
