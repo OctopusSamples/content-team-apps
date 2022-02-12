@@ -1,4 +1,4 @@
-module github.com/OctopusSamples/OctoPub/go/reverse-proxy
+module github.com/OctopusSamples/content-team-apps/go/reverse-proxy
 
 go 1.17
 

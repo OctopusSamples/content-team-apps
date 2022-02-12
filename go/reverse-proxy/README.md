@@ -37,19 +37,15 @@ But the code is easy enough to modify if anyone is looking for a place to start.
 
 # How to perform redirections
 
-Redirections are considered to be a specialized form of API versioning in that redirections are expected to direct traffic 
-to feature branch versions of a microservice for testing. A lengthy discussion on how to implement API
-versioning with JSONAPI can be found [here](https://github.com/json-api/json-api/issues/406).
-
-Redirection rules are defined in the `Accept` header based on ant wildcard paths. For example, the header 
+Redirection rules are defined in the `Routing` header based on ant wildcard paths. For example, the header 
 `version[/api/products*]=url[https://c9ce-118-208-2-185.ngrok.io]` instructs this proxy to redirect all requests made on
 paths that match `/api/products*` to https://c9ce-118-208-2-185.ngrok.io. A header like
 `version[/api/products*]=lambda[Development-products-0-myfeature]` will redirect requests made on
 paths that match `/api/products*` to the Lambda called `Development-products-0-myfeature`.
 
-This allows a client to make a request to a top level API with `Accept` headers like 
+This allows a client to make a request to a top level API with `Routing` headers like 
 `version[/api/products*]=https://c9ce-118-208-2-185.ngrok.io;version[/api/audits*]=lambda[Development-audits-0-myfeature]`,
-and so long as each service forwards the `Accept` header to each service it calls, feature branch instances of 
+and so long as each service forwards the `Routing` header to each service it calls, feature branch instances of 
 deeply nested microservices will be executed without having to recreate the entire microservice ecosystem locally.
 
 # Redirection rules

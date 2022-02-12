@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/OctopusSamples/OctoPub/go/reverse-proxy/internal/pkg/utils"
+	"github.com/OctopusSamples/content-team-apps/go/reverse-proxy/internal/pkg/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -25,11 +25,13 @@ import (
 	"strings"
 )
 
+const routingHeader = "Routing"
+
 var matcher = antpath.New()
 var groupPath = regexp.MustCompile(`/api/(?:[a-zA-Z]+)/?`)
 
 // HandleRequest takes the incoming Lambda request and forwards it to the downstream service
-// defined in the "Accept" headers.
+// defined in the routing headers.
 func HandleRequest(_ context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	resp, err := processRequest(req)
 	if err != nil {
@@ -102,10 +104,10 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 
 	svc := sqs.New(sess)
 
-	acceptHeader, err := getHeader(req.Headers, req.MultiValueHeaders, "Accept")
+	routingHeaderValue, err := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
 
 	if err != nil {
-		acceptHeader = ""
+		routingHeaderValue = ""
 	}
 
 	body := req.Body
@@ -123,17 +125,17 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 	_, sqsErr := svc.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds: aws.Int64(0),
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"action": &sqs.MessageAttributeValue{
+			"action": {
 				DataType:    aws.String("String"),
 				StringValue: aws.String(getAction(req)),
 			},
-			"entity": &sqs.MessageAttributeValue{
+			"entity": {
 				DataType:    aws.String("String"),
 				StringValue: aws.String(utils.GetEnv("ENTITY_TYPE", "Unknown")),
 			},
-			"dataPartition": &sqs.MessageAttributeValue{
+			"dataPartition": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(acceptHeader),
+				StringValue: aws.String(routingHeaderValue),
 			},
 		},
 		MessageBody: aws.String(body),
@@ -229,7 +231,7 @@ func authorizeRouting(req events.APIGatewayProxyRequest) bool {
 }
 
 func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, lambda string, sqs string, err error) {
-	acceptAll, err := getHeader(req.Headers, req.MultiValueHeaders, "Accept")
+	routingAll, err := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
 
 	if err != nil {
 		return nil, "", "", errors.New("accept header is required")
@@ -239,14 +241,14 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 		return nil, "", "", errors.New("user is not authorized to route requests")
 	}
 
-	for _, acceptComponent := range getComponentsFromHeader(acceptAll) {
+	for _, acceptComponent := range getComponentsFromHeader(routingAll) {
 		path, method, destination, err := getRuleComponents(acceptComponent)
 		if err == nil {
 			if pathAndMethodIsMatch(path, method, req) {
 
 				// for convenience, rules can reference the destinations of other paths, allowing
 				// complex rule sets to be updated with a single destination
-				pathDest, err := getDestinationPath(acceptAll, destination)
+				pathDest, err := getDestinationPath(routingAll, destination)
 
 				if err == nil {
 					destination = pathDest
