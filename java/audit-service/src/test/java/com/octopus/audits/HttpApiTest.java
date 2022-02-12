@@ -33,7 +33,8 @@ public class HttpApiTest extends BaseTest {
   public void testCreateAndGetAudit() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json")
+            .header("data-partition", "dataPartition=main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -51,7 +52,8 @@ public class HttpApiTest extends BaseTest {
         getAuditFromDocument(resourceConverter, response.extract().body().asString());
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .get("/api/audits")
         .then()
@@ -64,7 +66,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .get("/api/audits/" + created.getId())
         .then()
@@ -82,7 +85,8 @@ public class HttpApiTest extends BaseTest {
   public void failToGetResourceInDifferentPartition() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=testing2")
+            .accept("application/vnd.api+json")
+            .header("data-partition", "dataPartition=testing2")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -96,7 +100,8 @@ public class HttpApiTest extends BaseTest {
         getAuditFromDocument(resourceConverter, response.extract().body().asString());
 
     given()
-        .accept("application/vnd.api+json, application/vnd.api+json; dataPartition=testing")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=testing")
         .when()
         .get("/api/audits/" + created.getId())
         .then()
@@ -107,7 +112,8 @@ public class HttpApiTest extends BaseTest {
   public void failWithMissingContentTypeForPost() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json")
+            .header("data-partition", "dataPartition=main")
             .when()
             .body(
                 auditToResourceDocument(
@@ -121,7 +127,8 @@ public class HttpApiTest extends BaseTest {
   public void failWithoutPlainAcceptForPost() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json; something")
+            .header("data-partition", "dataPartition=main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -136,7 +143,7 @@ public class HttpApiTest extends BaseTest {
   public void failWithoutPlainAcceptForGet() {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json; something")
             .when()
             .get("/api/audits/1")
             .then()
@@ -147,7 +154,7 @@ public class HttpApiTest extends BaseTest {
   public void failWithoutPlainAcceptForGetAll() {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json; something")
             .when()
             .get("/api/audits")
             .then()
@@ -158,7 +165,8 @@ public class HttpApiTest extends BaseTest {
   public void testFilterResults() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
-            .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json")
+            .header("data-partition", "dataPartition=main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -176,7 +184,8 @@ public class HttpApiTest extends BaseTest {
         getAuditFromDocument(resourceConverter, response.extract().body().asString());
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "id==" + created.getId())
         .get("/api/audits")
@@ -190,7 +199,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "subject==testCreateAndGetResource")
         .get("/api/audits")
@@ -204,7 +214,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "subject!=blah")
         .get("/api/audits")
@@ -218,7 +229,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "subject==test*")
         .get("/api/audits")
@@ -232,7 +244,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "subject=in=(testCreateAndGetResource)")
         .get("/api/audits")
@@ -246,7 +259,8 @@ public class HttpApiTest extends BaseTest {
                 "Resource should be returned"));
 
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "id<" + (created.getId() + 1))
         .get("/api/audits")
@@ -263,7 +277,8 @@ public class HttpApiTest extends BaseTest {
   @Test
   public void testBadFilterResults() {
     given()
-        .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+        .accept("application/vnd.api+json")
+        .header("data-partition", "dataPartition=main")
         .when()
         .queryParam("filter", "&^$*^%#$")
         .get("/api/audits")
@@ -274,7 +289,8 @@ public class HttpApiTest extends BaseTest {
   @Test
   public void testCreateWithoutBody() {
         given()
-            .accept("application/vnd.api+json,application/vnd.api+json; dataPartition=main")
+            .accept("application/vnd.api+json")
+            .header("data-partition", "dataPartition=main")
             .contentType("application/vnd.api+json")
             .when()
             .body("{}")

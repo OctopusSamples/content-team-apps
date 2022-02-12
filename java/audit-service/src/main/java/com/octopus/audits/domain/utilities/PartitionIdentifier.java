@@ -40,7 +40,7 @@ public class PartitionIdentifier {
         .map(s -> s.split("="))
         // the split is expected to produce 2 strings
         .filter(a -> a.length == 2)
-        .filter(a -> a[0].trim().equalsIgnoreCase(Constants.ACCEPT_PARTITION_INFO))
+        .filter(a -> a[0].trim().equalsIgnoreCase(Constants.PARTITION_INFO))
         .map(a -> a[1].trim())
         // We don't accept blank values
         .filter(a -> !StringUtils.isBlank(a))

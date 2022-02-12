@@ -50,13 +50,13 @@ public class AuditsHandler {
   /**
    * Returns all matching resources.
    *
-   * @param acceptHeaders The "accept" headers.
-   * @param filterParam   The filter query param.
+   * @param dataPartitionHeaders The "data-partition" headers.
+   * @param filterParam          The filter query param.
    * @return All matching resources
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
-  public String getAll(@NonNull final List<String> acceptHeaders,
+  public String getAll(@NonNull final List<String> dataPartitionHeaders,
       final String filterParam,
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
@@ -67,7 +67,8 @@ public class AuditsHandler {
 
     final List<Audit> audits =
         auditRepository.findAll(
-            List.of(Constants.DEFAULT_PARTITION, partitionIdentifier.getPartition(acceptHeaders)),
+            List.of(Constants.DEFAULT_PARTITION,
+                partitionIdentifier.getPartition(dataPartitionHeaders)),
             filterParam);
     final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(audits);
     final byte[] content = resourceConverter.writeDocumentCollection(document);
@@ -77,15 +78,15 @@ public class AuditsHandler {
   /**
    * Creates a new resource.
    *
-   * @param document      The JSONAPI resource to create.
-   * @param acceptHeaders The "accept" headers.
+   * @param document             The JSONAPI resource to create.
+   * @param dataPartitionHeaders The "Data-Partition" headers.
    * @return The newly created resource
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
   public String create(
       @NonNull final String document,
-      @NonNull final List<String> acceptHeaders,
+      @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
@@ -96,7 +97,7 @@ public class AuditsHandler {
 
     final Audit audit = getResourceFromDocument(document);
 
-    audit.dataPartition = partitionIdentifier.getPartition(acceptHeaders);
+    audit.dataPartition = partitionIdentifier.getPartition(dataPartitionHeaders);
 
     auditRepository.save(audit);
 
@@ -107,13 +108,13 @@ public class AuditsHandler {
    * Returns the one resource that matches the supplied ID.
    *
    * @param id            The ID of the resource to return.
-   * @param acceptHeaders The "accept" headers.
+   * @param dataPartitionHeaders The "data-partition" headers.
    * @return The matching resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
   public String getOne(@NonNull final String id,
-      @NonNull final List<String> acceptHeaders,
+      @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
@@ -126,7 +127,7 @@ public class AuditsHandler {
       if (audit != null
           && (Constants.DEFAULT_PARTITION.equals(audit.getDataPartition())
           || partitionIdentifier
-          .getPartition(acceptHeaders)
+          .getPartition(dataPartitionHeaders)
           .equals(audit.getDataPartition()))) {
         return respondWithResource(audit);
       }

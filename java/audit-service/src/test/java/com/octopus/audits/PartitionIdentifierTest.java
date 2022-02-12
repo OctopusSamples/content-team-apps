@@ -11,14 +11,14 @@ public class PartitionIdentifierTest {
 
   @ParameterizedTest
   @CsvSource({
-    "main,application/vnd.api+json; dataPartition=main",
-    "main,application/vnd.api+json; dataPartition=main ",
-    "main,application/vnd.api+json; dataPartition= main ",
-    "testing,application/vnd.api+json; dataPartition=testing",
-    "testing,application/vnd.api+json; dataPartition=testing ",
-    "testing,application/vnd.api+json; dataPartition= testing ",
-    "main,application/vnd.api+json; dataPartition=",
-    "main,application/vnd.api+json; dataPartition= ",
+    "main,dataPartition=main",
+    "main,dataPartition=main ",
+    "main,dataPartition= main ",
+    "testing,dataPartition=testing",
+    "testing,dataPartition=testing ",
+    "testing,dataPartition= testing ",
+    "main,dataPartition=",
+    "main,dataPartition= ",
     "main,application/vnd.api+json; ",
     "main,application/vnd.api+json",
     "main, ",

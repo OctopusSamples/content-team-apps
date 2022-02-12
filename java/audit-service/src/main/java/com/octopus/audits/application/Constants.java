@@ -6,7 +6,8 @@ package com.octopus.audits.application;
 public final class Constants {
 
   public static final String JSONAPI_CONTENT_TYPE = "application/vnd.api+json";
-  public static final String ACCEPT_HEADER = "Accept";
+  public static final String DATA_PARTITION_HEADER = "Data-Partition";
+  public static final String ACCEPT = "Accept";
   public static final String AUTHORIZATION_HEADER = "Authorization";
   /**
    * A header used for machine to machine communication. This allows the user credentials to be

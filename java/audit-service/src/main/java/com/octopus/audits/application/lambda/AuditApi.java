@@ -128,7 +128,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                 "200",
                 auditsHandler.getAll(
                     getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER),
+                        input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
                     getAllQueryParams(
                             input.getMultiValueQueryStringParameters(),
                             input.getQueryStringParameters(),
@@ -176,7 +176,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
               auditsHandler.getOne(
                   id.get(),
                   getAllHeaders(
-                      input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER),
+                      input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
                   getAllHeaders(
                       input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
                       .stream()
@@ -217,7 +217,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                 auditsHandler.create(
                     getBody(input),
                     getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.ACCEPT_HEADER),
+                        input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
                     getAllHeaders(
                         input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
                         .stream()
