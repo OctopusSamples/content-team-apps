@@ -18,7 +18,8 @@ public interface AuditClient {
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   String createAudit(
       final String audit,
-      @HeaderParam(GlobalConstants.ROUTING_HEADER) String accept,
+      @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
+      @HeaderParam(GlobalConstants.DATA_PARTITION) String dataPartition,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth,
       @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth);
 }

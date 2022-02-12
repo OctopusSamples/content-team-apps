@@ -48,7 +48,8 @@ public class PipelineResource {
   @Produces(MediaType.TEXT_PLAIN)
   public String pipeline(
       @QueryParam("repo") final String repo,
-      @HeaderParam(GlobalConstants.ACCEPT_HEADER) final List<String> acceptHeaders,
+      @HeaderParam(GlobalConstants.ROUTING_HEADER) final List<String> routingHeaders,
+      @HeaderParam(GlobalConstants.DATA_PARTITION) final List<String> dataPartitionHeaders,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final List<String> authHeaders) {
     LOG.log(DEBUG, "PipelineResource.pipeline(String)");
     LOG.log(DEBUG, "repo: " + repo);
@@ -72,7 +73,8 @@ public class PipelineResource {
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
                 b.getName()),
-            acceptHeaders,
+            routingHeaders,
+            dataPartitionHeaders,
             authHeaders)
     );
 
