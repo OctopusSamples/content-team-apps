@@ -129,28 +129,36 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 		}
 	}
 
-	_, sqsErr := svc.SendMessage(&sqs.SendMessageInput{
-		DelaySeconds: aws.Int64(0),
-		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"action": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String(getAction(req)),
-			},
-			"entity": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String(utils.GetEnv("ENTITY_TYPE", "Unknown")),
-			},
-			"dataPartition": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String(dataPartitionHeaderValue),
-			},
-			"routing": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String(routingHeaderValue),
-			},
+	messageAttributes := map[string]*sqs.MessageAttributeValue{
+		"action": {
+			DataType:    aws.String("String"),
+			StringValue: aws.String(getAction(req)),
 		},
-		MessageBody: aws.String(body),
-		QueueUrl:    &queueURL,
+		"entity": {
+			DataType:    aws.String("String"),
+			StringValue: aws.String(utils.GetEnv("ENTITY_TYPE", "Unknown")),
+		},
+	}
+
+	if len(strings.TrimSpace(dataPartitionHeaderValue)) != 0 {
+		messageAttributes["dataPartition"] = &sqs.MessageAttributeValue{
+			DataType:    aws.String("String"),
+			StringValue: aws.String(dataPartitionHeaderValue),
+		}
+	}
+
+	if len(strings.TrimSpace(routingHeaderValue)) != 0 {
+		messageAttributes["routing"] = &sqs.MessageAttributeValue{
+			DataType:    aws.String("String"),
+			StringValue: aws.String(routingHeaderValue),
+		}
+	}
+
+	_, sqsErr := svc.SendMessage(&sqs.SendMessageInput{
+		DelaySeconds:      aws.Int64(0),
+		MessageAttributes: messageAttributes,
+		MessageBody:       aws.String(body),
+		QueueUrl:          &queueURL,
 	})
 
 	if sqsErr != nil {
