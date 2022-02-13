@@ -38,10 +38,10 @@ public class PartitionIdentifier {
       The caller must be a member of a known group to make use of data partitions.
       Everyone else must work in the main partition.
      */
-    if (!cognitoDisableAuth &&
-        (adminGroup.isEmpty() ||
-            StringUtils.isEmpty(jwt) ||
-            !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
+    if (!cognitoDisableAuth
+        && (adminGroup.isEmpty()
+          || StringUtils.isEmpty(jwt)
+          || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
       return Constants.DEFAULT_PARTITION;
     }
 
