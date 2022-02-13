@@ -226,7 +226,9 @@ func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.AP
 	}
 
 	// Allow the caller to determine if this is a sync or async call
-	asyncCall := strings.ToLower(strings.TrimSpace(utils.GetEnv(invocationTypeHeader, lambda.InvocationTypeRequestResponse))) == strings.ToLower(lambda.InvocationTypeEvent)
+	asyncCall := strings.EqualFold(
+		strings.TrimSpace(utils.GetEnv(invocationTypeHeader, lambda.InvocationTypeRequestResponse)),
+		lambda.InvocationTypeEvent)
 	invokeFunction := &lambda.InvokeInput{FunctionName: aws.String(lambdaName), Payload: payload}
 
 	if asyncCall {
