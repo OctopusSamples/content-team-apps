@@ -434,7 +434,8 @@ step "Deploy OAuth Proxy Token Exchange" {
                     "AppLogGroupOne": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
-                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" }
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" },
+                        "RetentionInDays" : 14
                       }
                     },
                     "IamRoleLambdaOneExecution": {
