@@ -1,6 +1,7 @@
 package com.octopus.audits.infrastructure.repositories;
 
 import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
+import com.octopus.audits.application.Constants;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import cz.jirutka.rsql.parser.RSQLParser;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -20,6 +22,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import lombok.NonNull;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.h2.util.StringUtils;
 
 /**
@@ -29,9 +32,11 @@ import org.h2.util.StringUtils;
 @ApplicationScoped
 public class AuditRepository {
 
-  @Inject EntityManager em;
+  @Inject
+  EntityManager em;
 
-  @Inject Validator validator;
+  @Inject
+  Validator validator;
 
   /**
    * Get a single entity.
@@ -58,10 +63,14 @@ public class AuditRepository {
    * Returns all matching entities.
    *
    * @param partitions The partitions that entities can be found in.
-   * @param filter The RSQL filter used to query the entities.
+   * @param filter     The RSQL filter used to query the entities.
    * @return The matching entities.
    */
-  public List<Audit> findAll(@NonNull final List<String> partitions, final String filter) {
+  public List<Audit> findAll(
+      @NonNull final List<String> partitions,
+      final String filter,
+      final String pageOffset,
+      final String pageLimit) {
 
     final CriteriaBuilder builder = em.getCriteriaBuilder();
     final CriteriaQuery<Audit> criteria = builder.createQuery(Audit.class);
@@ -94,7 +103,13 @@ public class AuditRepository {
       criteria.where(partitionPredicate);
     }
 
-    final List<Audit> results = em.createQuery(criteria).getResultList();
+    // Deal with paging
+    final TypedQuery<Audit> query = em.createQuery(criteria);
+    final int pageLimitParsed = NumberUtils.toInt(pageLimit, Constants.DEFAULT_PAGE_LIMIT);
+    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, Constants.DEFAULT_PAGE_OFFSET);
+    query.setFirstResult(pageOffsetParsed);
+    query.setMaxResults(pageLimitParsed);
+    final List<Audit> results =  query.getResultList();
 
     // detach all the entities
     em.clear();

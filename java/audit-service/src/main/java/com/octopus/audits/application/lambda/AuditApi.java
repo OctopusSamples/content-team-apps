@@ -9,6 +9,8 @@ import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
 import com.octopus.audits.domain.handlers.HealthHandler;
 import com.octopus.audits.domain.handlers.AuditsHandler;
+import com.octopus.lambda.LambdaHttpHeaderExtractor;
+import com.octopus.lambda.LambdaHttpValueExtractor;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -40,7 +42,14 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
   @Inject
   AuditsHandler auditsHandler;
 
-  @Inject HealthHandler healthHandler;
+  @Inject
+  HealthHandler healthHandler;
+
+  @Inject
+  LambdaHttpValueExtractor lambdaHttpValueExtractor;
+
+  @Inject
+  LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
 
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
@@ -127,25 +136,12 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
             new ProxyResponse(
                 "200",
                 auditsHandler.getAll(
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
-                    getAllQueryParams(
-                            input.getMultiValueQueryStringParameters(),
-                            input.getQueryStringParameters(),
-                            Constants.FILTER_QUERY_PARAM)
-                        .stream()
-                        .findFirst()
-                        .orElse(null),
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
-                        .stream()
-                        .findFirst()
-                        .orElse(null),
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
-                        .stream()
-                        .findFirst()
-                        .orElse(null))));
+                    lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
+                    lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM).orElse(null),
+                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_OFFSET_QUERY_PARAM).orElse(null),
+                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_LIMIT_QUERY_PARAM).orElse(null),
+                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(buildUnauthorizedRequest(e));
@@ -175,18 +171,9 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
           final String entity =
               auditsHandler.getOne(
                   id.get(),
-                  getAllHeaders(
-                      input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
-                  getAllHeaders(
-                      input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
-                      .stream()
-                      .findFirst()
-                      .orElse(null),
-                  getAllHeaders(
-                      input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
-                      .stream()
-                      .findFirst()
-                      .orElse(null));
+                  lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
+                  lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                  lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
           return Optional.of(new ProxyResponse("200", entity));
         }
@@ -216,18 +203,9 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                 "200",
                 auditsHandler.create(
                     getBody(input),
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.DATA_PARTITION_HEADER),
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.AUTHORIZATION_HEADER)
-                        .stream()
-                        .findFirst()
-                        .orElse(null),
-                    getAllHeaders(
-                        input.getMultiValueHeaders(), input.getHeaders(), Constants.SERVICE_AUTHORIZATION_HEADER)
-                        .stream()
-                        .findFirst()
-                        .orElse(null))));
+                    lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
+                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(buildUnauthorizedRequest(e));
@@ -262,118 +240,6 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Gets headers from every collection they might be in.
-   *
-   * @param multiHeaders The map containing headers with multiple values.
-   * @param headers The map containing headers with one value.
-   * @param header The name of the header.
-   * @return The list of header values.
-   */
-  private List<String> getAllHeaders(
-      final Map<String, List<String>> multiHeaders,
-      final Map<String, String> headers,
-      @NonNull final String header) {
-    final List<String> values = new ArrayList<String>(getMultiHeaders(multiHeaders, header));
-    values.addAll(getHeaders(headers, header));
-    return values;
-  }
-
-  /**
-   * Headers are case insensitive, but the maps we get from Lambda are case sensitive, so we need to
-   * have some additional logic to get the available headers.
-   *
-   * @param headers The list of headers
-   * @param header The name of the header to return
-   * @return The list of header values
-   */
-  private List<String> getMultiHeaders(
-      final Map<String, List<String>> headers, @NonNull final String header) {
-    if (headers == null) {
-      return List.of();
-    }
-
-    return headers.entrySet().stream()
-        .filter(e -> header.equalsIgnoreCase(e.getKey()))
-        .flatMap(e -> e.getValue().stream())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Headers are case insensitive, but the maps we get from Lambda are case sensitive, so we need to
-   * have some additional logic to get the available headers.
-   *
-   * @param headers The list of headers
-   * @param header The name of the header to return
-   * @return The list of header values
-   */
-  private List<String> getHeaders(final Map<String, String> headers, @NonNull final String header) {
-    if (headers == null) {
-      return List.of();
-    }
-
-    return headers.entrySet().stream()
-        .filter(e -> header.equalsIgnoreCase(e.getKey()))
-        .map(e -> e.getValue())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Gets headers from every collection they might be in.
-   *
-   * @param multiQuery The map containing paarms with multiple values.
-   * @param query The map containing query params with one value.
-   * @param header The name of the header.
-   * @return The list of header values.
-   */
-  private List<String> getAllQueryParams(
-      final Map<String, List<String>> multiQuery,
-      final Map<String, String> query,
-      @NonNull final String header) {
-    final List<String> values = new ArrayList<String>(getMultiQuery(multiQuery, header));
-    values.addAll(getQuery(query, header));
-    return values;
-  }
-
-  /**
-   * Headers are case insensitive, but the maps we get from Lambda are case sensitive, so we need to
-   * have some additional logic to get the available headers.
-   *
-   * @param query The list of query params
-   * @param header The name of the query param to return
-   * @return The list of query params
-   */
-  private List<String> getMultiQuery(
-      final Map<String, List<String>> query, @NonNull final String header) {
-    if (query == null) {
-      return List.of();
-    }
-
-    return query.entrySet().stream()
-        .filter(e -> header.equalsIgnoreCase(e.getKey()))
-        .flatMap(e -> e.getValue().stream())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Headers are case insensitive, but the maps we get from Lambda are case sensitive, so we need to
-   * have some additional logic to get the available headers.
-   *
-   * @param query The list of query params
-   * @param header The name of the header to return
-   * @return The list of header values
-   */
-  private List<String> getQuery(final Map<String, String> query, @NonNull final String header) {
-    if (query == null) {
-      return List.of();
-    }
-
-    return query.entrySet().stream()
-        .filter(e -> header.equalsIgnoreCase(e.getKey()))
-        .map(e -> e.getValue())
-        .collect(Collectors.toList());
   }
 
   /**

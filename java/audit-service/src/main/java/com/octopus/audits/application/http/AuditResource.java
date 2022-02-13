@@ -50,12 +50,16 @@ public class AuditResource {
       @HeaderParam(Constants.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader,
-      @QueryParam(Constants.FILTER_QUERY_PARAM) final String filter)
+      @QueryParam(Constants.FILTER_QUERY_PARAM) final String filter,
+      @QueryParam(Constants.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
+      @QueryParam(Constants.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
       throws DocumentSerializationException {
     checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.getAll(
             dataPartitionHeaders,
             filter,
+            pageOffset,
+            pageLimit,
             authorizationHeader.stream().findFirst().orElse(null),
             serviceAuthorizationHeader.stream().findFirst().orElse(null)))
         .build();

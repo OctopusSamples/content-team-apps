@@ -66,6 +66,8 @@ public class AuditsHandler {
    */
   public String getAll(@NonNull final List<String> dataPartitionHeaders,
       final String filterParam,
+      final String pageOffset,
+      final String pageLimit,
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
@@ -81,7 +83,9 @@ public class AuditsHandler {
     final List<Audit> audits =
         auditRepository.findAll(
             List.of(Constants.DEFAULT_PARTITION, partition),
-            filterParam);
+            filterParam,
+            pageOffset,
+            pageLimit);
     final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(audits);
     final byte[] content = resourceConverter.writeDocumentCollection(document);
     return new String(content);
