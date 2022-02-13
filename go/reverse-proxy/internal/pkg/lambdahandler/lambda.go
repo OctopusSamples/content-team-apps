@@ -25,10 +25,21 @@ import (
 	"strings"
 )
 
+// routingHeader defines the header that contains the custom routing rules.
 const routingHeader = "Routing"
+
+// dataPartitionHeader defines the header that specifies the custom data partition used when calling the API.
 const dataPartitionHeader = "Data-Partition"
+
+// authorizationHeader defines the header that includes the user generated access token.
 const authorizationHeader = "Authorization"
+
+// serviceAuthorizationHeader defines the header that includes the machine-to-machine access token.
 const serviceAuthorizationHeader = "Service-Authorization"
+
+// invocationTypeHeader defines the header used to determine if the Lambda call is performed
+// as a synchronous or asynchronous operation. Set the header to "Event" for async, and
+// "RequestResponse" for sync. Any other value will result in the lambda being called synchronously.
 const invocationTypeHeader = "Invocation-Type"
 
 var matcher = antpath.New()
