@@ -29,7 +29,6 @@ step "Create Bucket" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -51,7 +50,6 @@ step "Upload Lambda" {
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Octopus Server (built-in)"
             Octopus.Action.Package.PackageId = "github-oauth-backend-lambda"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
@@ -76,7 +74,6 @@ step "Get Stack Outputs" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 aws cloudformation \
                 	describe-stacks \
@@ -173,7 +170,8 @@ step "Deploy OAuth Proxy Login" {
                     "AppLogGroupOne": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
-                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" }
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" },
+                        "RetentionInDays" : 14
                       }
                     },
                     "IamRoleLambdaOneExecution": {
@@ -371,7 +369,6 @@ step "Deploy OAuth Proxy Login" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -437,7 +434,8 @@ step "Deploy OAuth Proxy Token Exchange" {
                     "AppLogGroupOne": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
-                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" }
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" },
+                        "RetentionInDays" : 14
                       }
                     },
                     "IamRoleLambdaOneExecution": {
@@ -635,7 +633,6 @@ step "Deploy OAuth Proxy Token Exchange" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -709,7 +706,6 @@ step "Update Stage" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -725,7 +721,6 @@ step "Get Stage URL" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 STARGE_URL=$(aws cloudformation \
                 	describe-stacks \
@@ -761,7 +756,6 @@ step "Check for vulnerabilities" {
             Octopus.Action.Aws.Region = "us-west-2"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
@@ -832,7 +826,6 @@ step "Slack - Send Simple Notification - Bash" {
     action {
         environments = ["Development (Security)", "Production (Security)"]
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-1721"
             Octopus.Action.Template.Version = "1"
             ssn_Color = "danger"
