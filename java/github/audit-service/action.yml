@@ -95,7 +95,7 @@ runs:
         path: java/audit-service/dependencyUpdates.txt
 
     - name: Test Backend
-      run: mvn --batch-mode test
+      run: mvn --batch-mode --no-transfer-progress test
       env:
         COGNITO_DISABLE_AUTH: "true"
       shell: bash
