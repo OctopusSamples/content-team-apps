@@ -35,7 +35,7 @@ public class BaseTest {
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
-            List.of("application/vnd.api+json; dataPartition=" + partition),
+            List.of(partition),
             null, null);
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
     return resultObject;
