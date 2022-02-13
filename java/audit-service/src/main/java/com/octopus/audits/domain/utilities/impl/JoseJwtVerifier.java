@@ -69,7 +69,7 @@ public class JoseJwtVerifier implements JwtVerifier {
    * {@inheritDoc}
    */
   @Override
-  public boolean jwtContainsClaim(final String jwt, final String claim) {
+  public boolean jwtContainsScope(final String jwt, final String claim) {
     if (!configIsValid()) {
       return false;
     }

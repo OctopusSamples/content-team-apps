@@ -19,5 +19,5 @@ public interface JwtVerifier {
    * @param claim The claim to find in the JWT.
    * @return true if the claim is found, and false otherwise.
    */
-  boolean jwtContainsClaim(String jwt, String claim);
+  boolean jwtContainsScope(String jwt, String claim);
 }

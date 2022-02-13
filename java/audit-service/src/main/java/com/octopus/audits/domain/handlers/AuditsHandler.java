@@ -13,6 +13,7 @@ import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import com.octopus.audits.infrastructure.repositories.AuditRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
@@ -31,6 +32,9 @@ public class AuditsHandler {
 
   @ConfigProperty(name = "cognito.disable-auth")
   Boolean cognitoDisableAuth;
+
+  @ConfigProperty(name = "cognito.admin-group")
+  Optional<String> adminGroup;
 
   @Inject
   AuditRepository auditRepository;
@@ -61,7 +65,7 @@ public class AuditsHandler {
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    if (!isAuthorized(serviceAuthorizationHeader)) {
+    if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -91,7 +95,7 @@ public class AuditsHandler {
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
 
-    if (!isAuthorized(serviceAuthorizationHeader)) {
+    if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -107,7 +111,7 @@ public class AuditsHandler {
   /**
    * Returns the one resource that matches the supplied ID.
    *
-   * @param id            The ID of the resource to return.
+   * @param id                   The ID of the resource to return.
    * @param dataPartitionHeaders The "data-partition" headers.
    * @return The matching resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
@@ -118,7 +122,7 @@ public class AuditsHandler {
       final String authorizationHeader,
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    if (!isAuthorized(serviceAuthorizationHeader)) {
+    if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
@@ -159,12 +163,24 @@ public class AuditsHandler {
   /**
    * Determines if the supplied token grants the required scopes to execute the operation.
    *
-   * @param authorizationHeader The ServiceAuthorization header.
+   * @param authorizationHeader        The Authorization header.
+   * @param serviceAuthorizationHeader The Service-Authorization header.
    * @return true if the request is authorized, and false otherwise.
    */
-  private boolean isAuthorized(final String authorizationHeader) {
-    return cognitoDisableAuth || jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> jwtVerifier.jwtContainsClaim(jwt, cognitoAdminClaim))
+  private boolean isAuthorized(final String authorizationHeader,
+      final String serviceAuthorizationHeader) {
+    if (cognitoDisableAuth) {
+      return true;
+    }
+
+    if (jwtUtils.getJwtFromAuthorizationHeader(serviceAuthorizationHeader)
+        .map(jwt -> jwtVerifier.jwtContainsScope(jwt, cognitoAdminClaim))
+        .orElse(false)) {
+      return true;
+    }
+
+    return adminGroup.isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
+        .map(jwt -> jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))
         .orElse(false);
   }
 }
