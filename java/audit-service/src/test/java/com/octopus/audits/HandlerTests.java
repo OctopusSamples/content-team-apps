@@ -74,14 +74,14 @@ public class HandlerTests extends BaseTest {
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             null, null);
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
 
     final String getResult =
         auditsHandler.getOne(
             resultObject.getId().toString(),
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             null, null);
     final Audit getResultObject = getAuditFromDocument(resourceConverter, getResult);
 
@@ -105,7 +105,7 @@ public class HandlerTests extends BaseTest {
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             null, null);
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
 
@@ -114,7 +114,7 @@ public class HandlerTests extends BaseTest {
         () ->
             auditsHandler.getOne(
                 resultObject.getId().toString(),
-                List.of("application/vnd.api+json; dataPartition=" + partition),
+                List.of("" + partition),
                 null, null));
 
     assertThrows(
@@ -129,13 +129,13 @@ public class HandlerTests extends BaseTest {
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             null, null);
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
 
     final String getResult =
         auditsHandler.getAll(
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             "id==" + resultObject.getId(), null, null);
     final List<Audit> getResultObjects = getAuditsFromDocument(resourceConverter, getResult);
 
@@ -160,12 +160,12 @@ public class HandlerTests extends BaseTest {
     final String result =
         auditsHandler.create(
             auditToResourceDocument(resourceConverter, audit),
-            List.of("application/vnd.api+json; dataPartition=testing"),
+            List.of("testing"),
             null, null);
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
 
     final String getResult =
-        auditsHandler.getAll(List.of("application/vnd.api+json; dataPartition=" + partition), "", null, null);
+        auditsHandler.getAll(List.of("" + partition), "", null, null);
     final List<Audit> getResultObjects = getAuditsFromDocument(resourceConverter, getResult);
 
     assertFalse(getResultObjects.stream().anyMatch(p -> p.getId().equals(resultObject.getId())));
