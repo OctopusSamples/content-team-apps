@@ -75,6 +75,7 @@ public class AuditRepository {
     final CriteriaBuilder builder = em.getCriteriaBuilder();
     final CriteriaQuery<Audit> criteria = builder.createQuery(Audit.class);
     final From<Audit, Audit> root = criteria.from(Audit.class);
+    criteria.orderBy(builder.desc(root.get("time")));
 
     // add the partition search rules
     final Predicate partitionPredicate =
