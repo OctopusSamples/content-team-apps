@@ -7,6 +7,9 @@ import com.octopus.lambda.LambdaHttpValueExtractor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+/**
+ * Produces a number of objects for injection.
+ */
 @ApplicationScoped
 public class UtilityProducer {
   /**
