@@ -27,6 +27,8 @@ import (
 
 const routingHeader = "Routing"
 const dataPartitionHeader = "Data-Partition"
+const authorizationHeader = "Authorization"
+const serviceAuthorizationHeader = "Service-Authorization"
 
 var matcher = antpath.New()
 var groupPath = regexp.MustCompile(`/api/(?:[a-zA-Z]+)/?`)
@@ -117,6 +119,18 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 		dataPartitionHeaderValue = ""
 	}
 
+	authorizationHeaderValue, authorizationHeaderErr := getHeader(req.Headers, req.MultiValueHeaders, authorizationHeader)
+
+	if authorizationHeaderErr != nil {
+		authorizationHeaderValue = ""
+	}
+
+	serviceAuthorizationHeaderValue, serviceAuthorizationHeaderErr := getHeader(req.Headers, req.MultiValueHeaders, serviceAuthorizationHeader)
+
+	if serviceAuthorizationHeaderErr != nil {
+		serviceAuthorizationHeaderValue = ""
+	}
+
 	body := req.Body
 
 	if req.IsBase64Encoded {
@@ -141,16 +155,30 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 	}
 
 	if len(strings.TrimSpace(dataPartitionHeaderValue)) != 0 {
-		messageAttributes["dataPartition"] = &sqs.MessageAttributeValue{
+		messageAttributes[dataPartitionHeader] = &sqs.MessageAttributeValue{
 			DataType:    aws.String("String"),
 			StringValue: aws.String(dataPartitionHeaderValue),
 		}
 	}
 
 	if len(strings.TrimSpace(routingHeaderValue)) != 0 {
-		messageAttributes["routing"] = &sqs.MessageAttributeValue{
+		messageAttributes[routingHeader] = &sqs.MessageAttributeValue{
 			DataType:    aws.String("String"),
 			StringValue: aws.String(routingHeaderValue),
+		}
+	}
+
+	if len(strings.TrimSpace(authorizationHeaderValue)) != 0 {
+		messageAttributes[authorizationHeader] = &sqs.MessageAttributeValue{
+			DataType:    aws.String("String"),
+			StringValue: aws.String(authorizationHeaderValue),
+		}
+	}
+
+	if len(strings.TrimSpace(serviceAuthorizationHeaderValue)) != 0 {
+		messageAttributes[serviceAuthorizationHeader] = &sqs.MessageAttributeValue{
+			DataType:    aws.String("String"),
+			StringValue: aws.String(serviceAuthorizationHeaderValue),
 		}
 	}
 
