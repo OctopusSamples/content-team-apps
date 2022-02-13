@@ -32,7 +32,8 @@ public class PartitionIdentifierTest {
               {
                 add(acceptHeader);
               }
-            }));
+            },
+            ""));
     Assert.equals(
         expected,
         PARTITION_IDENTIFIER.getPartition(
@@ -40,7 +41,8 @@ public class PartitionIdentifierTest {
               {
                 add("application/vnd.api+json," + acceptHeader);
               }
-            }));
+            },
+            ""));
     Assert.equals(
         expected,
         PARTITION_IDENTIFIER.getPartition(
@@ -49,6 +51,7 @@ public class PartitionIdentifierTest {
                 add(acceptHeader);
                 add("application/vnd.api+json");
               }
-            }));
+            },
+            ""));
   }
 }

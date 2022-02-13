@@ -17,6 +17,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -72,10 +73,14 @@ public class AuditsHandler {
       throw new Unauthorized();
     }
 
+    final String partition = partitionIdentifier
+        .getPartition(
+            dataPartitionHeaders,
+            jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
+
     final List<Audit> audits =
         auditRepository.findAll(
-            List.of(Constants.DEFAULT_PARTITION,
-                partitionIdentifier.getPartition(dataPartitionHeaders)),
+            List.of(Constants.DEFAULT_PARTITION, partition),
             filterParam);
     final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(audits);
     final byte[] content = resourceConverter.writeDocumentCollection(document);
@@ -104,7 +109,9 @@ public class AuditsHandler {
 
     final Audit audit = getResourceFromDocument(document);
 
-    audit.dataPartition = partitionIdentifier.getPartition(dataPartitionHeaders);
+    audit.dataPartition = partitionIdentifier.getPartition(
+        dataPartitionHeaders,
+        jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
     auditRepository.save(audit);
 
@@ -129,13 +136,16 @@ public class AuditsHandler {
       throw new Unauthorized();
     }
 
+    final String partition = partitionIdentifier
+        .getPartition(
+            dataPartitionHeaders,
+            jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
+
     try {
       final Audit audit = auditRepository.findOne(Integer.parseInt(id));
       if (audit != null
           && (Constants.DEFAULT_PARTITION.equals(audit.getDataPartition())
-          || partitionIdentifier
-          .getPartition(dataPartitionHeaders)
-          .equals(audit.getDataPartition()))) {
+          || StringUtils.equals(partition, audit.getDataPartition()))) {
         return respondWithResource(audit);
       }
     } catch (final NumberFormatException ex) {

@@ -71,6 +71,7 @@ public class AuditRepository {
     final Predicate partitionPredicate =
         builder.or(
             partitions.stream()
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
                 .map(p -> builder.equal(root.get("dataPartition"), p))
                 .collect(Collectors.toList())
                 .toArray(new Predicate[0]));
