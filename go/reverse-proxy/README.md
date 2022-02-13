@@ -38,22 +38,22 @@ But the code is easy enough to modify if anyone is looking for a place to start.
 # How to perform redirections
 
 Redirection rules are defined in the `Routing` header based on ant wildcard paths. For example, the header 
-`version[/api/products*]=url[https://c9ce-118-208-2-185.ngrok.io]` instructs this proxy to redirect all requests made on
+`route[/api/products*]=url[https://c9ce-118-208-2-185.ngrok.io]` instructs this proxy to redirect all requests made on
 paths that match `/api/products*` to https://c9ce-118-208-2-185.ngrok.io. A header like
-`version[/api/products*]=lambda[Development-products-0-myfeature]` will redirect requests made on
+`route[/api/products*]=lambda[Development-products-0-myfeature]` will redirect requests made on
 paths that match `/api/products*` to the Lambda called `Development-products-0-myfeature`.
 
 This allows a client to make a request to a top level API with `Routing` headers like 
-`version[/api/products*]=https://c9ce-118-208-2-185.ngrok.io;version[/api/audits*]=lambda[Development-audits-0-myfeature]`,
+`route[/api/products*]=https://c9ce-118-208-2-185.ngrok.io;route[/api/audits*]=lambda[Development-audits-0-myfeature]`,
 and so long as each service forwards the `Routing` header to each service it calls, feature branch instances of 
 deeply nested microservices will be executed without having to recreate the entire microservice ecosystem locally.
 
 # Redirection rules
 
-* HTTP - `version[ant path:method]=url[http://urlgoeshere]`
-* Lambda - `version[ant path:method]=lambda[lambda name or arn]`
-* SQS - `version[ant path:method]=sqs[queue name]`
-* Reference redirection on another path - `version[antpath:method]=path[ant path and method whose redirection rules will be used]`
+* HTTP - `route[ant path:method]=url[http://urlgoeshere]`
+* Lambda - `route[ant path:method]=lambda[lambda name or arn]`
+* SQS - `route[ant path:method]=sqs[queue name]`
+* Reference redirection on another path - `route[antpath:method]=path[ant path and method whose redirection rules will be used]`
 
 # Security
 
@@ -69,4 +69,4 @@ The `COGNITO_AUTHORIZATION_REQUIRED` environment variable can be set to `fasle` 
 The `path` redirection performs a lookup of the redirection rule assigned to another path. This allows you to define
 one redirection rule to a `url`, `sqs`, or `lambda`, and then reference it from multiple other redirection rules.
 
-`version[/api/products*:GET]=https://c9ce-118-208-2-185.ngrok.io;version[/api/products/**/*]=path[/api/products*:GET]`
+`route[/api/products*:GET]=https://c9ce-118-208-2-185.ngrok.io;route[/api/products/**/*]=path[/api/products*:GET]`

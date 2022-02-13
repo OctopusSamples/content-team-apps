@@ -375,8 +375,8 @@ func getRuleComponents(acceptComponent string) (string, string, string, error) {
 	ruleComponents := strings.Split(strings.TrimSpace(acceptComponent), "=")
 	// ensure the component has an equals sign
 	if len(ruleComponents) == 2 {
-		if strings.HasPrefix(ruleComponents[0], "version[") && strings.HasSuffix(ruleComponents[0], "]") {
-			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "version["), "]")
+		if strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]") {
+			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
 			pathAndMethod := strings.Split(strippedVersion, ":")
 			return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
 		}
