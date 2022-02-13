@@ -29,6 +29,7 @@ const routingHeader = "Routing"
 const dataPartitionHeader = "Data-Partition"
 const authorizationHeader = "Authorization"
 const serviceAuthorizationHeader = "Service-Authorization"
+const invocationTypeHeader = "Invocation-Type"
 
 var matcher = antpath.New()
 var groupPath = regexp.MustCompile(`/api/(?:[a-zA-Z]+)/?`)
@@ -64,16 +65,18 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 
 	if os.Getenv("DEFAULT_LAMBDA") != "" {
 		return callLambda(os.Getenv("DEFAULT_LAMBDA"), req)
-	} else if os.Getenv("DEFAULT_SQS") != "" {
-		return callSqs(os.Getenv("DEFAULT_SQS"), req)
-	} else {
-		url, err := url.Parse(os.Getenv("DEFAULT_URL"))
-		if err != nil {
-			log.Println("ReverseProxy-Handler-UrlParseError " + err.Error())
-			return events.APIGatewayProxyResponse{}, err
-		}
-		return httpReverseProxy(url, req)
 	}
+
+	if os.Getenv("DEFAULT_SQS") != "" {
+		return callSqs(os.Getenv("DEFAULT_SQS"), req)
+	}
+
+	url, err := url.Parse(os.Getenv("DEFAULT_URL"))
+	if err != nil {
+		log.Println("ReverseProxy-Handler-UrlParseError " + err.Error())
+		return events.APIGatewayProxyResponse{}, err
+	}
+	return httpReverseProxy(url, req)
 }
 
 func httpReverseProxy(upstreamUrl *url.URL, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -211,7 +214,17 @@ func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.AP
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	lambdaResponse, lambdaErr := client.Invoke(&lambda.InvokeInput{FunctionName: aws.String(lambdaName), Payload: payload})
+	// Allow the caller to determine if this is a sync or async call
+	asyncCall := strings.ToLower(strings.TrimSpace(utils.GetEnv(invocationTypeHeader, lambda.InvocationTypeRequestResponse))) == strings.ToLower(lambda.InvocationTypeEvent)
+	invokeFunction := &lambda.InvokeInput{FunctionName: aws.String(lambdaName), Payload: payload}
+
+	if asyncCall {
+		invokeFunction.InvocationType = aws.String(lambda.InvocationTypeEvent)
+	} else {
+		invokeFunction.InvocationType = aws.String(lambda.InvocationTypeRequestResponse)
+	}
+
+	lambdaResponse, lambdaErr := client.Invoke(invokeFunction)
 
 	if lambdaErr != nil {
 		log.Println("ReverseProxy-Lambda-GeneralFailure " + lambdaErr.Error())
