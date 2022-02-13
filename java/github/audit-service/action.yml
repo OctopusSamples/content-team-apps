@@ -63,7 +63,7 @@ runs:
       working-directory: java/audit-service
 
     - name: Install modules
-      run: ./mvnw --batch-mode install
+      run: ./mvnw --batch-mode --no-transfer-progress install
       shell: bash
       working-directory: java/audit-service
       env:
@@ -86,7 +86,7 @@ runs:
         path: java/audit-service/dependencies.txt
 
     - name: List Dependency Updates
-      run: ./mvnw --batch-mode versions:display-dependency-updates > dependencyUpdates.txt
+      run: ./mvnw --batch-mode --no-transfer-progress versions:display-dependency-updates > dependencyUpdates.txt
       shell: bash
       working-directory: java/audit-service
 
@@ -97,7 +97,7 @@ runs:
         path: java/audit-service/dependencyUpdates.txt
 
     - name: Build with Maven
-      run: ./mvnw --batch-mode package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode --no-transfer-progress package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/audit-service
 
@@ -120,7 +120,7 @@ runs:
       working-directory: java/audit-service
 
     - name: Generate SBOM
-      run: mvn cyclonedx:makeAggregateBom -DskipTests
+      run: mvn --batch-mode --no-transfer-progress cyclonedx:makeAggregateBom -DskipTests
       shell: bash
       working-directory: java/audit-service
 
@@ -135,7 +135,7 @@ runs:
       working-directory: java/audit-service
 
     - run: >
-        ./mvnw deploy:deploy-file
+        ./mvnw --batch-mode --no-transfer-progress deploy:deploy-file
         -Dfile=audits-service-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
         -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
         -DgroupId=com.octopus
