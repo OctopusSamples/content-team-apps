@@ -12,7 +12,7 @@ public final class Constants {
   /**
    * A header used for machine to machine communication. This allows the user credentials to be
    * propagated with the Authorization header, which allows user specific actions to be allowed or
-   * denied, while services communicate amongst themselves with the ServiceAuthorization header.
+   * denied, while services communicate amongst themselves with the Service-Authorization header.
    *
    * <p>The more "correct" approach here is to use the OAuth On-Behalf-of token exchange, which would
    * allow services to call each other on behalf of the user. Unfortunately, Cognito does not
