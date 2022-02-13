@@ -65,7 +65,8 @@ public class AuditGenerator {
                 String.join(",", routingHeaders),
                 String.join(",", dataPartitionHeaders),
                 String.join(",", authHeaders),
-                "Bearer " + auditAccessToken.getAccessToken()))
+                "Bearer " + auditAccessToken.getAccessToken(),
+                GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {
           // Note the failure
           Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-Failed", e);

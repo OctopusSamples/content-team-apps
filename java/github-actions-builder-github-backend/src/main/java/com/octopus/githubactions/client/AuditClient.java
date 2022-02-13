@@ -21,5 +21,6 @@ public interface AuditClient {
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(GlobalConstants.DATA_PARTITION) String dataPartition,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth,
-      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth);
+      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth,
+      @HeaderParam(GlobalConstants.INVOCATION_TYPE) String invocationType);
 }
