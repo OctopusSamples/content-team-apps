@@ -58,7 +58,7 @@ runs:
         password: ${{ inputs.dockerhub_password }}
 
     - name: Checkstyle
-      run: ./mvnw --batch-mode checkstyle:check
+      run: ./mvnw --batch-mode --no-transfer-progress checkstyle:check
       shell: bash
       working-directory: java/audit-service
 
