@@ -136,7 +136,11 @@ public class HandlerTests extends BaseTest {
     final String getResult =
         auditsHandler.getAll(
             List.of("testing"),
-            "id==" + resultObject.getId(), null, null);
+            "id==" + resultObject.getId(),
+            null,
+            null,
+            null,
+            null);
     final List<Audit> getResultObjects = getAuditsFromDocument(resourceConverter, getResult);
 
     assertEquals(1, getResultObjects.size());
@@ -165,12 +169,24 @@ public class HandlerTests extends BaseTest {
     final Audit resultObject = getAuditFromDocument(resourceConverter, result);
 
     final String getResult =
-        auditsHandler.getAll(List.of("" + partition), "", null, null);
+        auditsHandler.getAll(
+            List.of("" + partition),
+            "",
+            null,
+            null,
+            null,
+            null);
     final List<Audit> getResultObjects = getAuditsFromDocument(resourceConverter, getResult);
 
     assertFalse(getResultObjects.stream().anyMatch(p -> p.getId().equals(resultObject.getId())));
 
-    final String getResult2 = auditsHandler.getAll(List.of(), "", null, null);
+    final String getResult2 = auditsHandler.getAll(
+        List.of(),
+        "",
+        null,
+        null,
+        null,
+        null);
     final List<Audit> getResultObjects2 = getAuditsFromDocument(resourceConverter, getResult2);
 
     assertFalse(getResultObjects2.stream().anyMatch(p -> p.getId().equals(resultObject.getId())));
