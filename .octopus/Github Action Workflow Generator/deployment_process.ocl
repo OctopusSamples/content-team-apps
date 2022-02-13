@@ -176,7 +176,8 @@ step "Deploy Pipeline Backend" {
                     "AppLogGroupOne": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
-                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" }
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}" },
+                        "RetentionInDays" : 14
                       }
                     },
                     "IamRoleLambdaOneExecution": {
