@@ -12,7 +12,7 @@ public final class GlobalConstants {
   public static final String ROUTING_HEADER = "Routing";
   public static final String DATA_PARTITION = "Data-Partition";
   public static final String AUTHORIZATION_HEADER = "Authorization";
-  public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+  public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
   public static final String INVOCATION_TYPE = "Invocation-Type";
   public static final String ASYNC_INVOCATION_TYPE = "Event";
   public static final String CREATED_TEMPLATE_ACTION = "CreateTemplateUsing";
