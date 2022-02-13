@@ -31,6 +31,7 @@ public class JoseJwtVerifier implements JwtVerifier {
 
   private static final String COGNITO_GROUPS = "cognito:groups";
   private static final String SCOPE = "scope";
+  private static final String CLIENT_ID = "client_id";
 
   @ConfigProperty(name = "cognito.jwk-base64")
   Optional<String> cognitoJwk;
@@ -69,14 +70,16 @@ public class JoseJwtVerifier implements JwtVerifier {
    * {@inheritDoc}
    */
   @Override
-  public boolean jwtContainsScope(final String jwt, final String claim) {
+  public boolean jwtContainsScope(final String jwt, final String claim, final String clientId) {
     if (!configIsValid()) {
       return false;
     }
 
     try {
       if (jwtIsValid(jwt, cognitoJwk.get())) {
-        return extractClaims(jwt).contains(claim);
+        if (extractClaims(jwt).contains(claim)) {
+          return extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
+        }
       }
     } catch (final IOException | ParseException | JOSEException e) {
       Log.error(GlobalConstants.MICROSERVICE_NAME + "-Jwt-ValidationError", e);
@@ -93,12 +96,31 @@ public class JoseJwtVerifier implements JwtVerifier {
    * @throws ParseException If the string couldn't be parsed to a JWS object.
    */
   public List<String> extractClaims(final String jwt) throws ParseException {
-    final JWSObject jwsObject = JWSObject.parse(jwt);
-    final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
+    final Map<String, Object> payload = getPayload(jwt);
     if (payload.containsKey(SCOPE)) {
       return Arrays.asList(payload.get(SCOPE).toString().split(" "));
     }
     return List.of();
+  }
+
+  /**
+   * Extracts the Cognito client id from the token.
+   *
+   * @param jwt The access token.
+   * @return The client ID if it was found.
+   * @throws ParseException If the string couldn't be parsed to a JWS object.
+   */
+  public Optional<String> extractClientId(final String jwt) throws ParseException {
+    final Map<String, Object> payload = getPayload(jwt);
+    if (payload.containsKey(CLIENT_ID)) {
+      return Optional.of(payload.get(CLIENT_ID).toString());
+    }
+    return Optional.empty();
+  }
+
+  final Map<String, Object> getPayload(final String jwt) throws ParseException {
+    final JWSObject jwsObject = JWSObject.parse(jwt);
+    return jwsObject.getPayload().toJSONObject();
   }
 
   private boolean configIsValid() {

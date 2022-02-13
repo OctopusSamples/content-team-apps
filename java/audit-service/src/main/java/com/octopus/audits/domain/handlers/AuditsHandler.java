@@ -30,6 +30,9 @@ public class AuditsHandler {
   @ConfigProperty(name = "cognito.admin-claim")
   String cognitoAdminClaim;
 
+  @ConfigProperty(name = "cognito.client-id")
+  String cognitoClientId;
+
   @ConfigProperty(name = "cognito.disable-auth")
   Boolean cognitoDisableAuth;
 
@@ -174,7 +177,7 @@ public class AuditsHandler {
     }
 
     if (jwtUtils.getJwtFromAuthorizationHeader(serviceAuthorizationHeader)
-        .map(jwt -> jwtVerifier.jwtContainsScope(jwt, cognitoAdminClaim))
+        .map(jwt -> jwtVerifier.jwtContainsScope(jwt, cognitoAdminClaim, cognitoClientId))
         .orElse(false)) {
       return true;
     }
