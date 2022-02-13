@@ -18,7 +18,7 @@ public final class Constants {
    * allow services to call each other on behalf of the user. Unfortunately, Cognito does not
    * support OBO, so we need to work around the limitation by passing both user and machine tokens.
    */
-  public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+  public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
   public static final String FILTER_QUERY_PARAM = "filter";
   public static final String GET_METHOD = "get";
   public static final String POST_METHOD = "post";
