@@ -55,11 +55,9 @@ public class PartitionIdentifier {
         // split on commas for headers sent as a comma separated list
         .flatMap(h -> Stream.of(h.split(",")))
         // remove any blank strings
-        .filter(s -> !StringUtils.isAllBlank(s))
+        .filter(s -> !StringUtils.isBlank(s))
         // trim all strings
         .map(String::trim)
-        // We don't accept blank values
-        .filter(a -> !StringUtils.isBlank(a))
         .findFirst()
         .orElse(Constants.DEFAULT_PARTITION);
   }
