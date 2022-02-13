@@ -27,10 +27,9 @@ public class PartitionIdentifier {
   boolean cognitoDisableAuth;
 
   /**
-   * The "Accept" header contains the version and partition information. For more information see
-   * the discussion at https://github.com/json-api/json-api/issues/406.
+   * The "Data-Partition" header contains the partition information.
    *
-   * @param header The "Accept" header
+   * @param header The "Data-Partition" header
    * @return The partition that the request is made under, defaulting to main.
    */
   public String getPartition(final List<String> header, final String jwt) {
