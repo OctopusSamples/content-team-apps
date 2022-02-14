@@ -55,14 +55,6 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                 .steps(
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
-                                        .add(UsesWith.builder()
-                                            .name("Set up Python")
-                                            .uses("actions/setup-python@v2")
-                                            .with(
-                                                new ImmutableMap.Builder<String, String>()
-                                                    .put("python-version", "3.x")
-                                                    .build())
-                                            .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
                                         .add(GIT_BUILDER.getVersionCalculate())
                                         .add(GIT_BUILDER.installOctopusCli())
