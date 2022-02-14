@@ -7,16 +7,18 @@ import * as H from "history";
  */
 export interface DynamicConfig {
     settings: {
-        basename: string,
-        generateApiPath: string,
-        title: string,
-        editorFormat: string
+        basename: string;
+        generateApiPath: string;
+        auditEndpoint: string;
+        healthEndpoint: string;
+        title: string;
+        editorFormat: string;
         google: {
-            tag: string
+            tag: string;
         },
         github: {
-            enableLogin: boolean,
-            loginPath: string
+            enableLogin: boolean;
+            loginPath: string;
         },
         aws: {
             cognitoLogin: string;
@@ -26,8 +28,10 @@ export interface DynamicConfig {
             };
         }
     },
-    useDefaultTheme?: boolean,
-    generateTemplate: (url: string, history: H.History) => void,
-    setCopyText: (copyText: string) => void,
-    copyText?: string
+    useDefaultTheme?: boolean;
+    generateTemplate: (url: string, history: H.History) => void;
+    setCopyText: (copyText: string) => void;
+    copyText?: string;
+    partition: string | null;
+    setPartition: (id: string | null) => void;
 }

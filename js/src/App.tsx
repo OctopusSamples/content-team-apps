@@ -22,10 +22,25 @@ import * as H from "history";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
-    settings: {basename: "", title: "", generateApiPath: "", editorFormat: "", google: {tag: ""}, github: {enableLogin: false, loginPath: ""}, aws: {jwk: {keys: []}, cognitoLogin: "", cognitoDeveloperGroup: ""}},
+    settings: {
+        basename: "",
+        title: "",
+        auditEndpoint: "",
+        healthEndpoint: "",
+        generateApiPath: "",
+        editorFormat: "",
+        google: {tag: ""},
+        github: {enableLogin: false, loginPath: ""},
+        aws: {jwk: {keys: []}, cognitoLogin: "", cognitoDeveloperGroup: ""}
+    },
     useDefaultTheme: true,
-    generateTemplate: () => {},
-    setCopyText: () => {},
+    partition: "",
+    setPartition: () => {
+    },
+    generateTemplate: () => {
+    },
+    setCopyText: () => {
+    },
     copyText: ""
 });
 
@@ -47,6 +62,7 @@ function App(config: DynamicConfig) {
 
     const [copyText, setCopyText] = useState("");
     const [requireLogin, setRequireLogin] = useState<boolean>(false);
+    const [partition, setPartition] = useState<string | null>(localStorage.getItem("partition") || "main");
 
     const keys = config.settings.aws?.jwk?.keys;
     const developerGroup = config.settings.aws?.cognitoDeveloperGroup;
@@ -100,7 +116,14 @@ function App(config: DynamicConfig) {
             <Helmet>
                 <title>{config.settings.title}</title>
             </Helmet>
-            <AppContext.Provider value={{...config, generateTemplate, useDefaultTheme, setCopyText, copyText}}>
+            <AppContext.Provider value={{
+                    ...config,
+                    generateTemplate,
+                    useDefaultTheme,
+                    setCopyText,
+                    copyText,
+                    partition,
+                    setPartition}}>
                 <ThemeProvider theme={theme}>
                     {requireLogin && <Login/>}
                     {!requireLogin &&

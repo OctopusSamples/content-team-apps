@@ -3,11 +3,15 @@ import HomeIcon from '@material-ui/icons/Home';
 
 // components
 import Home from '../pages/Home';
+import GitHubLogin from "../pages/GitHubLogin";
+import Audits from "../pages/Audits";
+import Branching from "../pages/Branching";
+import Health from "../pages/Health";
+import Template from "../pages/Template";
 
 // interface
 import RouteItem from '../model/RouteItem.model';
-import Template from "../pages/Template";
-import GitHubLogin from "../pages/GitHubLogin";
+import Settings from "../pages/Settings";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -48,6 +52,46 @@ export const routes: Array<RouteItem> = [
         path: "/githublogin",
         enabled: true,
         component: () => () => <GitHubLogin/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-audits",
+        title: "Audits",
+        tooltip: "Audits",
+        path: "/audits",
+        enabled: true,
+        component: () => () => <Audits/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-settings",
+        title: "Settings",
+        tooltip: "Settings",
+        path: "/settings",
+        enabled: true,
+        component: () => () => <Settings/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-health",
+        title: "Health",
+        tooltip: "Health",
+        path: "/health",
+        enabled: true,
+        component: () => () => <Health/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-branching",
+        title: "Branching",
+        tooltip: "Branching",
+        path: "/branching",
+        enabled: true,
+        component: () => () => <Branching/>,
         icon: HomeIcon,
         appendDivider: true
     }
