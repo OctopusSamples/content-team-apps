@@ -54,8 +54,11 @@ public class JoseJwtVerifier implements JwtVerifier {
         final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
         if (payload.containsKey(COGNITO_GROUPS)) {
           if (payload.get(COGNITO_GROUPS) instanceof List) {
-            return ((List) payload.get(COGNITO_GROUPS))
+            final boolean valid = ((List) payload.get(COGNITO_GROUPS))
                 .stream().anyMatch(g -> g.toString().equals(group));
+          } else {
+            Log.error(GlobalConstants.MICROSERVICE_NAME
+                + "-Jwt-AuthorizationError Authorization token does not contain the group");
           }
         }
       }
@@ -81,13 +84,16 @@ public class JoseJwtVerifier implements JwtVerifier {
           final boolean valid = extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
           if (!valid) {
             Log.error(GlobalConstants.MICROSERVICE_NAME
-                + "-Jwt-AuthorizationError Service-Authorization token does not match the expected Cognito client");
+                + "-Jwt-ServiceAuthorizationError Service-Authorization token does not match the expected Cognito client");
           }
           return valid;
+        } else {
+          Log.error(GlobalConstants.MICROSERVICE_NAME
+              + "-Jwt-ServiceAuthorizationError Service-Authorization token does not contain the required scope");
         }
       }
     } catch (final IOException | ParseException | JOSEException e) {
-      Log.error(GlobalConstants.MICROSERVICE_NAME + "-Jwt-ValidationError", e);
+      Log.error(GlobalConstants.MICROSERVICE_NAME + "-Jwt-ServiceValidationError", e);
     }
 
     return false;
