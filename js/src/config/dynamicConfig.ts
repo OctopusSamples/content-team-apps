@@ -34,4 +34,6 @@ export interface DynamicConfig {
     copyText?: string;
     partition: string | null;
     setPartition: (id: string | null) => void;
+    developerMode: boolean;
+    setDeveloperMode: (developerMode: boolean) => void;
 }

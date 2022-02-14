@@ -15,8 +15,7 @@ import Brightness3Icon from "@material-ui/icons/Brightness3";
 import ContentCopy from '@material-ui/icons/ContentCopy';
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
-import {LocalHospital, SettingsApplications, Share, History} from "@material-ui/icons";
-import {getAccessToken} from "../utils/security";
+import {History, LocalHospital, SettingsApplications, Share} from "@material-ui/icons";
 import {useHistory} from "react-router-dom";
 
 // define css-in-js
@@ -89,7 +88,7 @@ const Header: FC<HeaderProps> = ({
                         </Tooltip>
                     </IconButton>
                 }
-                {getAccessToken() && <div>
+                {context.developerMode && <div>
                     <IconButton onClick={() => history.push('/audits')}>
                         <Tooltip title={"Audits"} placement={"bottom"}>
                             <History/>

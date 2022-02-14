@@ -1,7 +1,10 @@
-import {createStyles, Link, makeStyles, Theme} from "@material-ui/core";
+import {createStyles, IconButton, Link, makeStyles, Theme} from "@material-ui/core";
+import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
 
 // constants
 import {FOOTER_HEIGHT, FOOTER_TEXT} from "../utils/constants";
+import {useContext} from "react";
+import {AppContext} from "../App";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,12 +20,18 @@ const useStyles = makeStyles((theme: Theme) =>
             textTransform: "uppercase",
             color: theme.palette.text.secondary
         },
+        icon: {
+            paddingTop: "0",
+            paddingBottom: "0",
+        }
     })
 );
 
 // functional component
 const Footer = () => {
     const classes = useStyles();
+    const context = useContext(AppContext);
+
     return (
         <div className={classes.root}>
             <Link
@@ -32,6 +41,9 @@ const Footer = () => {
             >
                 {FOOTER_TEXT}
             </Link>
+            <IconButton className={classes.icon} onClick={() => context.setDeveloperMode(!context.developerMode)}>
+                <DeveloperModeIcon/>
+            </IconButton>
         </div>
     );
 };

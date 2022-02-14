@@ -117,13 +117,13 @@ const Audits: FC<{}> = (): ReactElement => {
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
-            {audits && <Grid container={true}>
+            <Grid container={true}>
                 <Grid xs={12} className={classes.mainContent}>
                     <DataGrid
                         pagination
                         paginationMode="server"
                         rowCount={rows}
-                        rows={(audits.data || []).map((a: Audit) => ({
+                        rows={((audits && audits.data) || []).map((a: Audit) => ({
                             id: a.id,
                             time: new Date(a.attributes.time).toLocaleString(),
                             subject: a.attributes.subject,
@@ -141,7 +141,7 @@ const Audits: FC<{}> = (): ReactElement => {
                 <Grid xs={12} className={classes.buttonRow}>
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
-            </Grid>}
+            </Grid>
         </>
     );
 }

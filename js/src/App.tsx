@@ -41,7 +41,10 @@ export const AppContext = React.createContext<DynamicConfig>({
     },
     setCopyText: () => {
     },
-    copyText: ""
+    copyText: "",
+    developerMode: false,
+    setDeveloperMode: () => {
+    },
 });
 
 // default component
@@ -63,6 +66,7 @@ function App(config: DynamicConfig) {
     const [copyText, setCopyText] = useState("");
     const [requireLogin, setRequireLogin] = useState<boolean>(false);
     const [partition, setPartition] = useState<string | null>(localStorage.getItem("partition") || "main");
+    const [developerMode, setDeveloperMode] = useState<boolean>((localStorage.getItem("developerMode") || "false") === "true");
 
     const keys = config.settings.aws?.jwk?.keys;
     const developerGroup = config.settings.aws?.cognitoDeveloperGroup;
@@ -117,13 +121,16 @@ function App(config: DynamicConfig) {
                 <title>{config.settings.title}</title>
             </Helmet>
             <AppContext.Provider value={{
-                    ...config,
-                    generateTemplate,
-                    useDefaultTheme,
-                    setCopyText,
-                    copyText,
-                    partition,
-                    setPartition}}>
+                ...config,
+                generateTemplate,
+                useDefaultTheme,
+                setCopyText,
+                copyText,
+                partition,
+                setPartition,
+                developerMode,
+                setDeveloperMode
+            }}>
                 <ThemeProvider theme={theme}>
                     {requireLogin && <Login/>}
                     {!requireLogin &&
