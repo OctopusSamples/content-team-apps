@@ -9,6 +9,8 @@ import {getAccessToken, getTokenTimeLeft, login, logout} from "../utils/security
 const Settings: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
+    context.setCopyText("");
+
     const classes = styles();
     const history = useHistory();
     const [partition, setPartition] = useState<string | null>(context.partition);

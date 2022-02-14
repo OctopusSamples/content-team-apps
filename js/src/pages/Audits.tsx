@@ -38,6 +38,8 @@ const ROWS_PER_PAGE = 5;
 const Audits: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
+    context.setCopyText("");
+
     const classes = useStyles();
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);

@@ -22,6 +22,7 @@ const Login: FC<{}> = (): ReactElement => {
 
     const classes = useStyles();
     const context = useContext(AppContext);
+    context.setCopyText("");
 
     return (
         <>

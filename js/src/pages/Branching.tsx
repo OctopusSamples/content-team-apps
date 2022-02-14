@@ -14,6 +14,8 @@ export interface RedirectRule {
 const Branching: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
+    context.setCopyText("");
+
     const classes = styles();
 
     const [rules, setRules] = useState<RedirectRule[]>(JSON.parse(localStorage.getItem("branching") || "[]"));

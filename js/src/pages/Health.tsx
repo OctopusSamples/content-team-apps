@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Book: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
+    context.setCopyText("");
 
     const classes = useStyles();
 

@@ -28,6 +28,7 @@ const GitHubLogin: FC<{}> = (): ReactElement => {
 
     const classes = useStyles();
     const context = useContext(AppContext);
+    context.setCopyText("");
 
     function login() {
         if (!logIntoGitHub(context.settings.github.loginPath)) {
