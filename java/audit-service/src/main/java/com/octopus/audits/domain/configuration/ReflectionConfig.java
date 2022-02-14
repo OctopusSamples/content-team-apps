@@ -7,7 +7,9 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * An empty class used to list classes that we need to expose for reflection.
  */
-@RegisterForReflection(targets = {TimestampDeserializer.class, Link.class})
+@RegisterForReflection(
+    targets = {TimestampDeserializer.class, Link.class},
+    classNames = {"com.github.jasminb.jsonapi.Link.LinkSerializer"})
 public class ReflectionConfig {
 
 }
