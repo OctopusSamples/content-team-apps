@@ -79,7 +79,7 @@ const Audits: FC<{}> = (): ReactElement => {
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + pageSize + "&page[offset]=" + (page * pageSize), context.partition)
             .then(data => {
                 setAudits(data);
-                setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
+                setRows(data.links?.first?.meta?.total ?? FALLBACK_ROW_COUNT);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
@@ -91,7 +91,7 @@ const Audits: FC<{}> = (): ReactElement => {
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[offset]=" + (page * pageSize) + "&page[limit]=" + pageSize, context.partition)
             .then(data => {
                 setAudits(data);
-                setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
+                setRows(data.links?.first?.meta?.total ?? FALLBACK_ROW_COUNT);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
