@@ -56,9 +56,11 @@ public class JoseJwtVerifier implements JwtVerifier {
           if (payload.get(COGNITO_GROUPS) instanceof List) {
             final boolean valid = ((List) payload.get(COGNITO_GROUPS))
                 .stream().anyMatch(g -> g.toString().equals(group));
-          } else {
-            Log.error(GlobalConstants.MICROSERVICE_NAME
-                + "-Jwt-AuthorizationError Authorization token does not contain the group");
+            if (!valid) {
+              Log.error(GlobalConstants.MICROSERVICE_NAME
+                  + "-Jwt-AuthorizationError Authorization token does not contain the group");
+            }
+            return valid;
           }
         }
       }
