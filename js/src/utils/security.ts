@@ -75,6 +75,8 @@ export function getAccessToken() {
 
 export function clearTokens() {
     window.localStorage.setItem(getBranch() + "-accesstoken", "");
+    window.localStorage.setItem(getBranch() + "-idtoken", "");
+    window.localStorage.setItem(getBranch() + "-tokenexpiry", "");
 }
 
 export function login(cognitoLogin: string) {
