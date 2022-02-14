@@ -498,7 +498,7 @@ step "Deploy Lambda" {
                             "COGNITO_REGION": {"Ref": "CognitoRegion"},
                             "COGNITO_POOL": {"Ref": "CognitoPool"},
                             "COGNITO_JWK": {"Ref": "CognitoJwk"},
-                            "COGNITO_ADMIN_CLAIM": {"Ref": "CognitoRequiredGroup"},
+                            "COGNITO_ADMIN_CLAIM": {"Ref": "CognitoAdminClaim"},
                             "COGNITO_CLIENT_ID": {"Ref": "CognitoClientId"}
                           }
                         },
