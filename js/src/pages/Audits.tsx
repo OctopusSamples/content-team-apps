@@ -37,10 +37,10 @@ interface Audit {
 const useStyles = makeStyles(() =>
     createStyles({
         mainContent: {
-            height: "90%"
+            height: "calc(100% - 40px)"
         },
         buttonRow: {
-            height: "10%",
+            height: "40px",
             paddingTop: "16px"
         }
     })
