@@ -18,7 +18,7 @@ function getBranchingRules() {
 }
 
 function responseIsError(status: number) {
-    return !responseIsServerError(status) && !responseIsClientError(status);
+    return responseIsServerError(status) || responseIsClientError(status);
 }
 
 function responseIsServerError(status: number) {
