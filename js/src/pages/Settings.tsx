@@ -57,8 +57,8 @@ const Settings: FC<{}> = (): ReactElement => {
                         : <Button variant={"outlined"} onClick={_ => login(context.settings.aws.cognitoLogin)}>Login</Button>}
                     <span className={classes.helpText}>
                         <p>
-                            If your account is part of the "Developers" group, you will be granted access to create,
-                            modify, and delete books.
+                            If your account is part of the "Developers" group, you will be granted permissions such as viewing
+                            audit histories.
                         </p>
                         <p>
                             You must also log in to the "Developers" group to have any branching rules applied.
