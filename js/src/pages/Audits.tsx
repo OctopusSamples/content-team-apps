@@ -4,6 +4,7 @@ import {AppContext} from "../App";
 import {DataGrid} from "@material-ui/data-grid";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {Button, Grid} from "@material-ui/core";
+import {createStyles, makeStyles} from "@material-ui/core/styles";
 
 interface AuditsCollection {
     data: Audit[]
@@ -20,9 +21,22 @@ interface Audit {
     }
 }
 
+const useStyles = makeStyles(() =>
+    createStyles({
+        mainContent: {
+            height: "90%"
+        },
+        buttonRow: {
+            height: "10%",
+            paddingTop: "16px"
+        }
+    })
+);
+
 const Audits: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
+    const classes = useStyles();
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -44,6 +58,8 @@ const Audits: FC<{}> = (): ReactElement => {
     }, [setAudits, context.settings.auditEndpoint, context.partition]);
 
     const refresh = () => {
+        setAudits(null);
+        setError(null);
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint, context.partition)
             .then(data => setAudits(data))
             .catch(() => setError("Failed to retrieve audit resources. "
@@ -58,9 +74,16 @@ const Audits: FC<{}> = (): ReactElement => {
                 </title>
             </Helmet>
             {!audits && !error && <div>Loading...</div>}
-            {!audits && error && <div>{error}</div>}
-            {audits && <Grid container={true}>
+            {!audits && error && <Grid container={true}>
                 <Grid xs={12}>
+                    <div>{error}</div>
+                </Grid>
+                <Grid xs={12}>
+                    <Button variant={"outlined"} onClick={refresh}>Refresh</Button>
+                </Grid>
+            </Grid>}
+            {audits && <Grid container={true}>
+                <Grid xs={12} className={classes.mainContent}>
                     <DataGrid
                         rows={(audits.data || []).map((a: Audit) => ({
                             id: a.id,
@@ -75,7 +98,7 @@ const Audits: FC<{}> = (): ReactElement => {
                         rowsPerPageOptions={[5]}
                     />
                 </Grid>
-                <Grid xs={12}>
+                <Grid xs={12} className={classes.buttonRow}>
                     <Button variant={"outlined"} onClick={refresh}>Refresh</Button>
                 </Grid>
             </Grid>}
