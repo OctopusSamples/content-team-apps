@@ -55,5 +55,7 @@ public class ProxyResponse {
 
   private void addCorsHeaders() {
     headers.put("Access-Control-Allow-Origin", "*");
+    headers.put("Access-Control-Allow-Headers", "*");
+    headers.put("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
   }
 }
