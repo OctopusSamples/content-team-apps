@@ -4,7 +4,7 @@ import {Button, FormLabel, Grid, TextField} from "@material-ui/core";
 import {AppContext} from "../App";
 import {styles} from "../utils/styles";
 import {useHistory} from "react-router-dom";
-import {getAccessToken, login, logout} from "../utils/security";
+import {getAccessToken, getTokenTimeLeft, login, logout} from "../utils/security";
 
 const Settings: FC<{}> = (): ReactElement => {
 
@@ -56,6 +56,9 @@ const Settings: FC<{}> = (): ReactElement => {
                         ? <Button variant={"outlined"} onClick={_ => {logout(); setAccessToken(getAccessToken());}}>Logout</Button>
                         : <Button variant={"outlined"} onClick={_ => login(context.settings.aws.cognitoLogin)}>Login</Button>}
                     <span className={classes.helpText}>
+                        {accessToken && <p>
+                            Current token is valid for {getTokenTimeLeft()} minutes.
+                        </p>}
                         <p>
                             If your account is part of the "Developers" group, you will be granted permissions such as viewing
                             audit histories.

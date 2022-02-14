@@ -86,10 +86,19 @@ export function logout() {
     clearTokens();
 }
 
+export function getTokenTimeLeft() {
+    const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");
+    if (!isNaN(expiry)) {
+        return Math.round((new Date(expiry).getTime() - new Date().getTime()) / 1000 / 60);
+    }
+
+    return 0;
+}
+
 function isTokenExpired() {
     // Check the token expiry
     const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");
-    if (isNaN(expiry) || new Date(expiry * 1000) < new Date()) {
+    if (isNaN(expiry) || new Date(expiry) < new Date()) {
         return true;
     }
 
