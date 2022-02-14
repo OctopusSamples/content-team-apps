@@ -11,7 +11,7 @@ function getBranchingRules() {
         const rules: RedirectRule[] = JSON.parse(localStorage.getItem("branching") || "[]")
         return rules
             .filter(r => r.path.trim() && r.destination.trim())
-            .map(r => "version[" + r.path + "]=" + r.destination).join(";")
+            .map(r => "route[" + r.path + "]=" + r.destination).join(";")
     }
 
     return "";
