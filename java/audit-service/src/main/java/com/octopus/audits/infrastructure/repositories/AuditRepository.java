@@ -4,6 +4,7 @@ import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
 import com.octopus.audits.application.Constants;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.InvalidInput;
+import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
@@ -66,7 +67,7 @@ public class AuditRepository {
    * @param filter     The RSQL filter used to query the entities.
    * @return The matching entities.
    */
-  public List<Audit> findAll(
+  public FilteredResultWrapper<Audit> findAll(
       @NonNull final List<String> partitions,
       final String filter,
       final String pageOffset,
@@ -110,12 +111,18 @@ public class AuditRepository {
     final int pageOffsetParsed = NumberUtils.toInt(pageOffset, Constants.DEFAULT_PAGE_OFFSET);
     query.setFirstResult(pageOffsetParsed);
     query.setMaxResults(pageLimitParsed);
-    final List<Audit> results =  query.getResultList();
+    final List<Audit> results = query.getResultList();
+
+    // Get total results
+    final CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+    countQuery.select(builder.count(countQuery.from(Audit.class)));
+    countQuery.where(criteria.getRestriction());
+    final Long count = em.createQuery(countQuery).getSingleResult();
 
     // detach all the entities
     em.clear();
 
-    return results;
+    return new FilteredResultWrapper(results, count);
   }
 
   /**
