@@ -12,14 +12,10 @@ import com.octopus.audits.domain.handlers.AuditsHandler;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import cz.jirutka.rsql.parser.RSQLParserException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -136,12 +132,12 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
             new ProxyResponse(
                 "200",
                 auditsHandler.getAll(
-                    lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
+                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
                     lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM).orElse(null),
                     lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_OFFSET_QUERY_PARAM).orElse(null),
                     lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_LIMIT_QUERY_PARAM).orElse(null),
-                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(buildUnauthorizedRequest(e));
@@ -171,9 +167,9 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
           final String entity =
               auditsHandler.getOne(
                   id.get(),
-                  lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
-                  lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                  lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
+                  lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+                  lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                  lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
           return Optional.of(new ProxyResponse("200", entity));
         }
@@ -203,9 +199,9 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                 "200",
                 auditsHandler.create(
                     getBody(input),
-                    lambdaHttpHeaderExtractor.getAllHeaderParams(input, Constants.DATA_PARTITION_HEADER),
-                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getHeaderParam(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(buildUnauthorizedRequest(e));

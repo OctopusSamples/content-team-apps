@@ -17,7 +17,7 @@ public interface LambdaHttpHeaderExtractor {
    * @param name The name of the value.
    * @return All the values that match the name.
    */
-  Optional<String> getHeaderParam(APIGatewayProxyRequestEvent input, String name);
+  Optional<String> getFirstHeader(APIGatewayProxyRequestEvent input, String name);
 
   /**
    * Get all values from both the multi and single collections.
@@ -26,7 +26,7 @@ public interface LambdaHttpHeaderExtractor {
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  List<String> getAllHeaderParams(APIGatewayProxyRequestEvent input, String name);
+  List<String> getAllHeaders(APIGatewayProxyRequestEvent input, String name);
 
   /**
    * Get all values from both the multi and single collections.
@@ -36,7 +36,7 @@ public interface LambdaHttpHeaderExtractor {
    * @param name The name of the value.
    * @return All the  values that match the name.
    */
-  List<String> getAllHeaderParams(Map<String, List<String>> multiHeader, Map<String, String> header, String name);
+  List<String> getAllHeaders(Map<String, List<String>> multiHeader, Map<String, String> header, String name);
 
   /**
    * Get all the values from the multi Header collection.

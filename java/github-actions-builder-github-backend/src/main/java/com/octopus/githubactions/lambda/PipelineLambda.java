@@ -111,13 +111,13 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
     return checkForPublicRepo(accessor)
         .orElse(buildPipeline(
             accessor,
-            lambdaHttpHeaderExtractor.getAllHeaderParams(
+            lambdaHttpHeaderExtractor.getAllHeaders(
                 input,
                 GlobalConstants.ROUTING_HEADER),
-            lambdaHttpHeaderExtractor.getAllHeaderParams(
+            lambdaHttpHeaderExtractor.getAllHeaders(
                 input,
                 GlobalConstants.DATA_PARTITION),
-            lambdaHttpHeaderExtractor.getAllHeaderParams(
+            lambdaHttpHeaderExtractor.getAllHeaders(
                 input,
                 GlobalConstants.AUTHORIZATION_HEADER)));
   }

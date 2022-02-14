@@ -17,9 +17,9 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
    * {@inheritDoc}
    */
   @Override
-  public Optional<String> getHeaderParam(@NonNull final APIGatewayProxyRequestEvent input,
+  public Optional<String> getFirstHeader(@NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final String name) {
-    return getAllHeaderParams(input.getMultiValueHeaders(),
+    return getAllHeaders(input.getMultiValueHeaders(),
         input.getHeaders(), name)
         .stream().findFirst();
   }
@@ -28,9 +28,9 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
    * {@inheritDoc}
    */
   @Override
-  public List<String> getAllHeaderParams(@NonNull final APIGatewayProxyRequestEvent input,
+  public List<String> getAllHeaders(@NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final String name) {
-    return getAllHeaderParams(
+    return getAllHeaders(
         input.getMultiValueHeaders(),
         input.getHeaders(),
         name);
@@ -39,7 +39,7 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
   /**
    * {@inheritDoc}
    */
-  public List<String> getAllHeaderParams(
+  public List<String> getAllHeaders(
       final Map<String, List<String>> multiHeader,
       final Map<String, String> header,
       @NonNull final String name) {
