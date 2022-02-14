@@ -15,6 +15,9 @@ import Brightness3Icon from "@material-ui/icons/Brightness3";
 import ContentCopy from '@material-ui/icons/ContentCopy';
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
+import {LocalHospital, SettingsApplications, Share, History} from "@material-ui/icons";
+import {getAccessToken} from "../utils/security";
+import {useHistory} from "react-router-dom";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -64,6 +67,7 @@ const Header: FC<HeaderProps> = ({
                                  }: HeaderProps) => {
     const classes = useStyles();
     const context = useContext(AppContext);
+    const history = useHistory();
     return (
         <AppBar
             position="relative"
@@ -79,12 +83,34 @@ const Header: FC<HeaderProps> = ({
                     </Link>
                 </div>
                 {copyText &&
-                <IconButton onClick={() => navigator.clipboard.writeText(copyText)}>
-                    <Tooltip title={"Copy to clipboard"} placement={"bottom"}>
-                        <ContentCopy/>
-                    </Tooltip>
-                </IconButton>
+                    <IconButton onClick={() => navigator.clipboard.writeText(copyText)}>
+                        <Tooltip title={"Copy to clipboard"} placement={"bottom"}>
+                            <ContentCopy/>
+                        </Tooltip>
+                    </IconButton>
                 }
+                {getAccessToken() && <div>
+                    <IconButton onClick={() => history.push('/audits')}>
+                        <Tooltip title={"Audits"} placement={"bottom"}>
+                            <History/>
+                        </Tooltip>
+                    </IconButton>
+                    <IconButton onClick={() => history.push('/branching')}>
+                        <Tooltip title={"Branching"} placement={"bottom"}>
+                            <Share/>
+                        </Tooltip>
+                    </IconButton>
+                    <IconButton onClick={() => history.push('/settings')}>
+                        <Tooltip title={"Settings"} placement={"bottom"}>
+                            <SettingsApplications/>
+                        </Tooltip>
+                    </IconButton>
+                    <IconButton onClick={() => history.push('/health')}>
+                        <Tooltip title={"Health"} placement={"bottom"}>
+                            <LocalHospital/>
+                        </Tooltip>
+                    </IconButton>
+                </div>}
                 <IconButton onClick={toggleTheme}>
                     {useDefaultTheme ? (
                         <Tooltip title="Switch to dark mode" placement="bottom">
