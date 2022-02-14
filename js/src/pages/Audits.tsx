@@ -3,6 +3,7 @@ import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {DataGrid} from "@material-ui/data-grid";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
+import {Button, Grid} from "@material-ui/core";
 
 interface AuditsCollection {
     data: Audit[]
@@ -29,10 +30,10 @@ const Audits: FC<{}> = (): ReactElement => {
     const columns = [
         {field: 'id', headerName: 'Id', width: 70},
         {field: 'time', headerName: 'TimeStamp', width: 70},
-        {field: 'subject', headerName: 'Subject', width: 130},
+        {field: 'subject', headerName: 'Subject', width: 200},
         {field: 'action', headerName: 'Action', width: 200},
         {field: 'object', headerName: 'Object', width: 200},
-        {field: 'dataPartition', headerName: 'Data Partition', width: 130},
+        {field: 'dataPartition', headerName: 'Data Partition', width: 200},
     ];
 
     useEffect(() => {
@@ -41,6 +42,13 @@ const Audits: FC<{}> = (): ReactElement => {
             .catch(() => setError("Failed to retrieve audit resources. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
     }, [setAudits, context.settings.auditEndpoint, context.partition]);
+
+    const refresh = () => {
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint, context.partition)
+            .then(data => setAudits(data))
+            .catch(() => setError("Failed to retrieve audit resources. "
+                + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
+    }
 
     return (
         <>
@@ -51,19 +59,26 @@ const Audits: FC<{}> = (): ReactElement => {
             </Helmet>
             {!audits && !error && <div>Loading...</div>}
             {!audits && error && <div>{error}</div>}
-            {audits && audits.data && <DataGrid
-                rows={audits.data.map((a: Audit) => ({
-                    id: a.id,
-                    subject: a.attributes.subject,
-                    action: a.attributes.action,
-                    object: a.attributes.object,
-                    dataPartition: a.attributes.dataPartition
-                }))}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-            />}
-
+            {audits && <Grid container={true}>
+                <Grid xs={12}>
+                    <DataGrid
+                        rows={(audits.data || []).map((a: Audit) => ({
+                            id: a.id,
+                            time: a.attributes.time,
+                            subject: a.attributes.subject,
+                            action: a.attributes.action,
+                            object: a.attributes.object,
+                            dataPartition: a.attributes.dataPartition
+                        }))}
+                        columns={columns}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                    />
+                </Grid>
+                <Grid xs={12}>
+                    <Button variant={"outlined"} onClick={refresh}>Refresh</Button>
+                </Grid>
+            </Grid>}
         </>
     );
 }
