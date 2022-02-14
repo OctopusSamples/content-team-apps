@@ -9,6 +9,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @RegisterForReflection(
     targets = {TimestampDeserializer.class, Link.class},
+    ignoreNested = false,
     classNames = {"com.github.jasminb.jsonapi.Link.LinkSerializer"})
 public class ReflectionConfig {
 
