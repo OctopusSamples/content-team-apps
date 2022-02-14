@@ -78,7 +78,12 @@ public class JoseJwtVerifier implements JwtVerifier {
     try {
       if (jwtIsValid(jwt, cognitoJwk.get())) {
         if (extractClaims(jwt).contains(claim)) {
-          return extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
+          final boolean valid = extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
+          if (!valid) {
+            Log.error(GlobalConstants.MICROSERVICE_NAME
+                + "-Jwt-AuthorizationError Service-Authorization token does not match the expected Cognito client");
+          }
+          return valid;
         }
       }
     } catch (final IOException | ParseException | JOSEException e) {

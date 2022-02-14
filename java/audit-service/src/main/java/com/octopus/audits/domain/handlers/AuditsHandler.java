@@ -184,7 +184,8 @@ public class AuditsHandler {
    * @param serviceAuthorizationHeader The Service-Authorization header.
    * @return true if the request is authorized, and false otherwise.
    */
-  private boolean isAuthorized(final String authorizationHeader,
+  private boolean isAuthorized(
+      final String authorizationHeader,
       final String serviceAuthorizationHeader) {
 
     /*
