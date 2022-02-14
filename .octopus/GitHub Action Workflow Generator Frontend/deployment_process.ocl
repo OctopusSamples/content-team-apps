@@ -70,7 +70,6 @@ step "Create S3 bucket" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -92,7 +91,6 @@ step "Upload Frontend" {
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "Octopus Server (built-in)"
             Octopus.Action.Package.PackageId = "pipeline-builder-github-frontend"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
 
@@ -117,7 +115,6 @@ step "Get Stack Outputs" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 WEB_RESOURCE_ID=$(aws cloudformation \
                 	describe-stacks \
@@ -278,7 +275,7 @@ step "Proxy with API Gateway" {
                                   "method.response.header.X-XSS-Protection": "'1; mode=block'",
                                   "method.response.header.Referrer-Policy": "'no-referrer'",
                                   "method.response.header.Permissions-Policy": "'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=*, gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), window-placement=(), vertical-scroll=()'",
-                                  "method.response.header.Content-Security-Policy": "'frame-ancestors 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; default-src 'self' 'unsafe-inline' *.google-analytics.com; script-src 'self' 'unsafe-inline' *.google-analytics.com *.googletagmanager.com; style-src * 'unsafe-inline'; img-src *; font-src *'",
+                                  "method.response.header.Content-Security-Policy": "'frame-ancestors 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; default-src 'self' 'unsafe-inline' *.google-analytics.com *.amazon.com; script-src 'self' 'unsafe-inline' *.google-analytics.com *.googletagmanager.com; style-src * 'unsafe-inline'; img-src *; font-src *'",
                                   "method.response.header.Strict-Transport-Security": "'max-age=15768000'"
                               }
                             }
@@ -437,7 +434,6 @@ step "Proxy with API Gateway" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -512,7 +508,6 @@ step "Update Stage" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
@@ -528,7 +523,6 @@ step "Get Stage URL" {
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 STARGE_URL=$(aws cloudformation \
                 	describe-stacks \
@@ -560,7 +554,6 @@ step "HTTP - Test URL" {
         environments = ["Development", "Production"]
         properties = {
             ExpectedCode = "200"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-1681"
             Octopus.Action.Template.Version = "18"
             SecurityProtocol = "Tls12"
@@ -582,7 +575,6 @@ step "Check for vulnerabilities" {
             Octopus.Action.Aws.Region = "us-west-2"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 TIMESTAMP=$(date +%s%3N)
                 SUCCESS=0
@@ -653,7 +645,6 @@ step "Send Vulnerability Notification" {
     action {
         environments = ["Development (Security)", "Production (Security)"]
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-1721"
             Octopus.Action.Template.Version = "1"
             ssn_Color = "danger"
