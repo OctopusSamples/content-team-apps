@@ -12,8 +12,7 @@ const Settings: FC<{}> = (): ReactElement => {
     const classes = styles();
     const history = useHistory();
     const [partition, setPartition] = useState<string | null>(context.partition);
-
-    const accessToken = getAccessToken();
+    const [accessToken, setAccessToken] = useState<string | null>(getAccessToken());
 
     return (
         <>
@@ -54,7 +53,7 @@ const Settings: FC<{}> = (): ReactElement => {
                 </Grid>
                 <Grid className={classes.cell} item md={10} sm={12} xs={12}>
                     {accessToken
-                        ? <Button variant={"outlined"} onClick={_ => logout()}>Logout</Button>
+                        ? <Button variant={"outlined"} onClick={_ => {logout(); setAccessToken(getAccessToken());}}>Logout</Button>
                         : <Button variant={"outlined"} onClick={_ => login(context.settings.aws.cognitoLogin)}>Login</Button>}
                     <span className={classes.helpText}>
                         <p>
