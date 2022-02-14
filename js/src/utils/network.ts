@@ -17,8 +17,16 @@ function getBranchingRules() {
     return "";
 }
 
+function responseIsError(status: number) {
+    return !responseIsServerError(status) && !responseIsClientError(status);
+}
+
 function responseIsServerError(status: number) {
     return status >= 500 && status <= 599;
+}
+
+function responseIsClientError(status: number) {
+    return status >= 400 && status <= 499;
 }
 
 export function getJson<T>(url: string, retryCount?: number): Promise<T> {
@@ -29,7 +37,7 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
         }
     })
         .then(response => {
-            if (!responseIsServerError(response.status)) {
+            if (!responseIsError(response.status)) {
                 return response.json();
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -56,7 +64,7 @@ export function getJsonApi<T>(url: string, partition: string | null, apiKey?: st
         headers: requestHeaders
     })
         .then(response => {
-            if (!responseIsServerError(response.status)) {
+            if (!responseIsError(response.status)) {
                 return response.json();
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -85,7 +93,7 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
         body: resource
     })
         .then(response => {
-            if (!responseIsServerError(response.status)) {
+            if (!responseIsError(response.status)) {
                 return response.json();
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -135,7 +143,7 @@ export function deleteJsonApi(url: string, partition: string | null, apiKey?: st
         headers: requestHeaders
     })
         .then(response => {
-            if (!responseIsServerError(response.status)) {
+            if (!responseIsError(response.status)) {
                 return Promise.resolve(response);
             }
             if ((retryCount || 0) <= GET_RETRIES) {
