@@ -46,7 +46,6 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const ROWS_PER_PAGE = 5;
 /**
  * In the event that the JSONAPI links collection does not have the total rows, use a large number
  * as a fallback to allow the records to be paged anyway.
@@ -62,7 +61,7 @@ const Audits: FC<{}> = (): ReactElement => {
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [page, setPage] = useState<number>(0);
-    const [pageSize, setPageSize] = useState<number>(ROWS_PER_PAGE);
+    const [pageSize, setPageSize] = useState<number>(0);
     const [rows, setRows] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
 
@@ -76,6 +75,11 @@ const Audits: FC<{}> = (): ReactElement => {
     ];
 
     useEffect(() => {
+        // Don't bother making a request for no records.
+        if (pageSize === 0) {
+            return;
+        }
+
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + pageSize + "&page[offset]=" + (page * pageSize), context.partition)
             .then(data => {
                 setAudits(data);
