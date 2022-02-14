@@ -76,23 +76,21 @@ const Audits: FC<{}> = (): ReactElement => {
     ];
 
     useEffect(() => {
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + pageSize + "&page[offset]=0", context.partition)
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + pageSize + "&page[offset]=" + (page * pageSize), context.partition)
             .then(data => {
                 setAudits(data);
                 setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
-                setPage(0);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
-    }, [setAudits, pageSize, context.settings.auditEndpoint, context.partition]);
+    }, [setAudits, pageSize, page, context.settings.auditEndpoint, context.partition]);
 
-    const refresh = (page:number) => {
+    const refresh = () => {
         setAudits(null);
         setError(null);
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[offset]=" + (page * pageSize) + "&page[limit]=" + pageSize, context.partition)
             .then(data => {
                 setAudits(data);
-                setPage(page);
                 setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
@@ -112,7 +110,7 @@ const Audits: FC<{}> = (): ReactElement => {
                     <div>{error}</div>
                 </Grid>
                 <Grid xs={12}>
-                    <Button variant={"outlined"} onClick={() => refresh(0)}>Reload</Button>
+                    <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
             {audits && <Grid container={true}>
@@ -132,12 +130,12 @@ const Audits: FC<{}> = (): ReactElement => {
                         page={page}
                         columns={columns}
                         autoPageSize
-                        onPageChange={(page) => refresh((page))}
+                        onPageChange={setPage}
                         onPageSizeChange={setPageSize}
                     />
                 </Grid>
                 <Grid xs={12} className={classes.buttonRow}>
-                    <Button variant={"outlined"} onClick={() => refresh(0)}>Reload</Button>
+                    <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
         </>
