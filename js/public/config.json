@@ -3,8 +3,8 @@
     "basename": "",
     "title": "Pipeline Builder",
     "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
-    "healthEndpoint": "https://development.githubactionworkflows.com/health",
-    "auditEndpoint": "https://development.githubactionworkflows.com/api/audits",
+    "healthEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/health",
+    "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
     "editorFormat": "yaml",
     "google": {
       "tag": ""
