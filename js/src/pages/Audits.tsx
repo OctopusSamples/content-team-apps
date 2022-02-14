@@ -96,7 +96,7 @@ const Audits: FC<{}> = (): ReactElement => {
                         rowCount={1000}
                         rows={(audits.data || []).map((a: Audit) => ({
                             id: a.id,
-                            time: a.attributes.time,
+                            time: new Date(a.attributes.time).toLocaleString(),
                             subject: a.attributes.subject,
                             action: a.attributes.action,
                             object: a.attributes.object,

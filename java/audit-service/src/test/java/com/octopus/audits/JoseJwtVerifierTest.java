@@ -20,7 +20,7 @@ public class JoseJwtVerifierTest {
 
   @Test
   public void verifyClaimsExtraction() throws ParseException {
-    final List<String> claims = JOSE_JWT_VERIFIER.extractClaims(EXPIRED_JWT);
+    final List<String> claims = JOSE_JWT_VERIFIER.extractScope(EXPIRED_JWT);
     assertTrue(claims.contains("audit.content-team/admin"));
   }
 

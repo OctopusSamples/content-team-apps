@@ -75,14 +75,14 @@ public class JoseJwtVerifier implements JwtVerifier {
    * {@inheritDoc}
    */
   @Override
-  public boolean jwtContainsScope(final String jwt, final String claim, final String clientId) {
+  public boolean jwtContainsScope(final String jwt, final String scope, final String clientId) {
     if (!configIsValid()) {
       return false;
     }
 
     try {
       if (jwtIsValid(jwt, cognitoJwk.get())) {
-        if (extractClaims(jwt).contains(claim)) {
+        if (extractScope(jwt).contains(scope)) {
           final boolean valid = extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
           if (!valid) {
             Log.error(GlobalConstants.MICROSERVICE_NAME
@@ -91,7 +91,7 @@ public class JoseJwtVerifier implements JwtVerifier {
           return valid;
         } else {
           Log.error(GlobalConstants.MICROSERVICE_NAME
-              + "-Jwt-ServiceAuthorizationError Service-Authorization token does not contain the required scope");
+              + "-Jwt-ServiceAuthorizationError Service-Authorization token does not contain the required scope " + scope);
         }
       }
     } catch (final IOException | ParseException | JOSEException e) {
@@ -108,7 +108,7 @@ public class JoseJwtVerifier implements JwtVerifier {
    * @return The list of scopes.
    * @throws ParseException If the string couldn't be parsed to a JWS object.
    */
-  public List<String> extractClaims(final String jwt) throws ParseException {
+  public List<String> extractScope(final String jwt) throws ParseException {
     final Map<String, Object> payload = getPayload(jwt);
     if (payload.containsKey(SCOPE)) {
       return Arrays.asList(payload.get(SCOPE).toString().split(" "));
