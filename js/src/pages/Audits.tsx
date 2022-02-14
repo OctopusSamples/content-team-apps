@@ -6,8 +6,21 @@ import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {Button, Grid} from "@material-ui/core";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 
+interface JsonAPILink {
+    href: string;
+    meta: {
+        total: number;
+    }
+}
+
 interface AuditsCollection {
-    data: Audit[]
+    data: Audit[],
+    links: {
+        first: JsonAPILink,
+        last: JsonAPILink,
+        prev?: JsonAPILink,
+        next?: JsonAPILink
+    }
 }
 
 interface Audit {
@@ -34,6 +47,7 @@ const useStyles = makeStyles(() =>
 );
 
 const ROWS_PER_PAGE = 5;
+const FALLBACK_ROW_COUNT = 1000;
 
 const Audits: FC<{}> = (): ReactElement => {
 
@@ -44,6 +58,7 @@ const Audits: FC<{}> = (): ReactElement => {
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [page, setPage] = useState<number>(0);
+    const [rows, setRows] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
 
     const columns = [
@@ -57,7 +72,11 @@ const Audits: FC<{}> = (): ReactElement => {
 
     useEffect(() => {
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + ROWS_PER_PAGE + "&page[offset]=0", context.partition)
-            .then(data => setAudits(data))
+            .then(data => {
+                setAudits(data);
+                setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
+                setPage(0);
+            })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
     }, [setAudits, context.settings.auditEndpoint, context.partition]);
@@ -69,6 +88,7 @@ const Audits: FC<{}> = (): ReactElement => {
             .then(data => {
                 setAudits(data);
                 setPage(page);
+                setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
@@ -95,7 +115,7 @@ const Audits: FC<{}> = (): ReactElement => {
                     <DataGrid
                         pagination
                         paginationMode="server"
-                        rowCount={1000}
+                        rowCount={rows}
                         rows={(audits.data || []).map((a: Audit) => ({
                             id: a.id,
                             time: new Date(a.attributes.time).toLocaleString(),
