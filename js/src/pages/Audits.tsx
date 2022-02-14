@@ -51,7 +51,7 @@ const Audits: FC<{}> = (): ReactElement => {
             </Helmet>
             {!audits && !error && <div>Loading...</div>}
             {!audits && error && <div>{error}</div>}
-            {audits && <DataGrid
+            {audits && audits.data && <DataGrid
                 rows={audits.data.map((a: Audit) => ({
                     id: a.id,
                     subject: a.attributes.subject,
