@@ -62,6 +62,7 @@ const Audits: FC<{}> = (): ReactElement => {
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [page, setPage] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(ROWS_PER_PAGE);
     const [rows, setRows] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
 
@@ -75,7 +76,7 @@ const Audits: FC<{}> = (): ReactElement => {
     ];
 
     useEffect(() => {
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + ROWS_PER_PAGE + "&page[offset]=0", context.partition)
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + pageSize + "&page[offset]=0", context.partition)
             .then(data => {
                 setAudits(data);
                 setRows(data.links?.first?.meta?.total || FALLBACK_ROW_COUNT);
@@ -88,7 +89,7 @@ const Audits: FC<{}> = (): ReactElement => {
     const refresh = (page:number) => {
         setAudits(null);
         setError(null);
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[offset]=" + (page * ROWS_PER_PAGE) + "&page[limit]=" + ROWS_PER_PAGE, context.partition)
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[offset]=" + (page * pageSize) + "&page[limit]=" + pageSize, context.partition)
             .then(data => {
                 setAudits(data);
                 setPage(page);
@@ -130,9 +131,9 @@ const Audits: FC<{}> = (): ReactElement => {
                         }))}
                         page={page}
                         columns={columns}
-                        pageSize={ROWS_PER_PAGE}
-                        rowsPerPageOptions={[ROWS_PER_PAGE]}
+                        autoPageSize
                         onPageChange={(page) => refresh((page))}
+                        onPageSizeChange={setPageSize}
                     />
                 </Grid>
                 <Grid xs={12} className={classes.buttonRow}>
