@@ -61,7 +61,7 @@ const Audits: FC<{}> = (): ReactElement => {
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [page, setPage] = useState<number>(0);
-    const [pageSize, setPageSize] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(5);
     const [rows, setRows] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
 
@@ -75,7 +75,6 @@ const Audits: FC<{}> = (): ReactElement => {
     ];
 
     useEffect(() => {
-        // Don't bother making a request for no records.
         if (pageSize === 0) {
             return;
         }
@@ -117,13 +116,13 @@ const Audits: FC<{}> = (): ReactElement => {
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
-            <Grid container={true}>
+            {audits && <Grid container={true}>
                 <Grid xs={12} className={classes.mainContent}>
                     <DataGrid
                         pagination
                         paginationMode="server"
                         rowCount={rows}
-                        rows={((audits && audits.data) || []).map((a: Audit) => ({
+                        rows={(audits.data || []).map((a: Audit) => ({
                             id: a.id,
                             time: new Date(a.attributes.time).toLocaleString(),
                             subject: a.attributes.subject,
@@ -141,7 +140,7 @@ const Audits: FC<{}> = (): ReactElement => {
                 <Grid xs={12} className={classes.buttonRow}>
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
-            </Grid>
+            </Grid>}
         </>
     );
 }
