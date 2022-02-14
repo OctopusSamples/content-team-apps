@@ -1,5 +1,6 @@
 import {GET_RETRIES} from "./constants";
 import {RedirectRule} from "../pages/Branching";
+import {getAccessToken} from "./security";
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
@@ -43,10 +44,12 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
 }
 
 export function getJsonApi<T>(url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<T> {
+    const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
 
     return fetch(url, {
         method: 'GET',
@@ -68,11 +71,13 @@ export function getJsonApi<T>(url: string, partition: string | null, apiKey?: st
 }
 
 export function patchJsonApi<T>(resource: string, url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<T> {
+    const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
 
     return fetch(url, {
         method: 'PATCH',
@@ -95,11 +100,13 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
 }
 
 export function postJsonApi<T>(resource: string, url: string, partition: string | null, apiKey?: string | null): Promise<T> {
+    const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
 
     return fetch(url, {
         method: 'POST',
@@ -115,11 +122,13 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
 }
 
 export function deleteJsonApi(url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<Response> {
+    const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
 
     return fetch(url, {
         method: 'DELETE',
