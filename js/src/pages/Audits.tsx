@@ -47,6 +47,10 @@ const useStyles = makeStyles(() =>
 );
 
 const ROWS_PER_PAGE = 5;
+/**
+ * In the event that the JSONAPI links collection does not have the total rows, use a large number
+ * as a fallback to allow the records to be paged anyway.
+ */
 const FALLBACK_ROW_COUNT = 1000;
 
 const Audits: FC<{}> = (): ReactElement => {
