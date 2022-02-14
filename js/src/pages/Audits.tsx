@@ -56,7 +56,7 @@ const Audits: FC<{}> = (): ReactElement => {
     useEffect(() => {
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=" + ROWS_PER_PAGE + "&page[offset]=0", context.partition)
             .then(data => setAudits(data))
-            .catch(() => setError("Failed to retrieve audit resources. "
+            .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
     }, [setAudits, context.settings.auditEndpoint, context.partition]);
 
@@ -68,7 +68,7 @@ const Audits: FC<{}> = (): ReactElement => {
                 setAudits(data);
                 setPage(page);
             })
-            .catch(() => setError("Failed to retrieve audit resources. "
+            .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
     }
 
