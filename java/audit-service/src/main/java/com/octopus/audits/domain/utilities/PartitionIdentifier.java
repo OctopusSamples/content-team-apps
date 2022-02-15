@@ -29,7 +29,8 @@ public class PartitionIdentifier {
   /**
    * The "Data-Partition" header contains the partition information.
    *
-   * @param header The "Data-Partition" header
+   * @param header The "Data-Partition" header.
+   * @param jwt    The JWT from the "Authorization" header.
    * @return The partition that the request is made under, defaulting to main.
    */
   public String getPartition(final List<String> header, final String jwt) {
@@ -39,8 +40,8 @@ public class PartitionIdentifier {
      */
     if (!cognitoDisableAuth
         && (adminGroup.isEmpty()
-          || StringUtils.isEmpty(jwt)
-          || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
+        || StringUtils.isEmpty(jwt)
+        || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
       return Constants.DEFAULT_PARTITION;
     }
 

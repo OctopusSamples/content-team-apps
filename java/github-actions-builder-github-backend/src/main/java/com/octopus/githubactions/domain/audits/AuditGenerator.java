@@ -11,11 +11,13 @@ import com.octopus.githubactions.infrastructure.client.CognitoClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -26,6 +28,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class AuditGenerator {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static long expiry;
+  private static String accessToken;
 
   @RestClient
   AuditClient auditClient;
@@ -64,7 +68,7 @@ public class AuditGenerator {
                 String.join(",", routingHeaders),
                 String.join(",", dataPartitionHeaders),
                 String.join(",", authHeaders),
-                "Bearer " + auditAccessToken.getAccessToken(),
+                "Bearer " + auditAccessToken,
                 GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {
           // Note the failure
@@ -74,15 +78,25 @@ public class AuditGenerator {
         });
   }
 
-  private Try<Oauth> getAccessToken() {
+  private Try<String> getAccessToken() {
+    if (!StringUtils.isEmpty(accessToken) && new Date().getTime() < expiry) {
+      return Try.of(() -> accessToken);
+    }
+
     if (cognitoClientId.isPresent() && cognitoClientSecret.isPresent()) {
       return Try.of(() -> cognitoClient.getToken(
-          "Basic " + Base64.getEncoder()
-              .encodeToString(
-                  (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
-          GlobalConstants.CLIENT_CREDENTIALS,
-          cognitoClientId.get(),
-          GlobalConstants.AUDIT_SCOPE));
+              "Basic " + Base64.getEncoder()
+                  .encodeToString(
+                      (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
+              GlobalConstants.CLIENT_CREDENTIALS,
+              cognitoClientId.get(),
+              GlobalConstants.AUDIT_SCOPE))
+          .mapTry(oauth -> {
+            // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
+            accessToken = oauth.getAccessToken();
+            expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
+            return accessToken;
+          });
     }
 
     return Try.failure(new Exception("Cognito client ID or secret were not set"));
