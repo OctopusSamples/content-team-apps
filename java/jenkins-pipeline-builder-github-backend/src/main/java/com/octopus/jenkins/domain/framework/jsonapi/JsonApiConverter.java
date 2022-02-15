@@ -1,6 +1,6 @@
 package com.octopus.jenkins.domain.framework.jsonapi;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.jenkins.domain.entities.Audit;
 import javax.enterprise.inject.Produces;
