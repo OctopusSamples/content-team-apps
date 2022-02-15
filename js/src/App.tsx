@@ -95,7 +95,7 @@ function App(config: DynamicConfig) {
             requestHeaders.set('Routing', getBranchingRules());
             requestHeaders.set('Data-Partition', partition || "");
             if (accessToken) {
-                requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
+                requestHeaders.set('Authorization', 'Bearer ' + accessToken);
             }
             const template =
                 await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error", headers: requestHeaders})
