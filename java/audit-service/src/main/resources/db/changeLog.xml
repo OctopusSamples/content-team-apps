@@ -35,7 +35,7 @@
   <!-- Encrypted strings can be pretty long, so these fields need to be expanded. -->
   <changeSet id="2" author="mcasperson">
     <modifyDataType tableName="audit" columnName="object" newDataType="varchar(5000)"/>
-    <modifyDataType tableName="audit" columnName="subjext" newDataType="varchar(5000)"/>
+    <modifyDataType tableName="audit" columnName="subject" newDataType="varchar(5000)"/>
   </changeSet>
 </databaseChangeLog>
 
