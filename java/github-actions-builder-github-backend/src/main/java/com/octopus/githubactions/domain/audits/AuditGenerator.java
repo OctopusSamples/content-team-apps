@@ -91,8 +91,10 @@ public class AuditGenerator {
               GlobalConstants.CLIENT_CREDENTIALS,
               cognitoClientId.get(),
               GlobalConstants.AUDIT_SCOPE))
+          // We expect to see an access token. Fail if the value is empty.
+          .filter(oauth -> StringUtils.isNotEmpty(oauth.getAccessToken()))
+          // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
           .mapTry(oauth -> {
-            // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
             accessToken = oauth.getAccessToken();
             expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
             return accessToken;
