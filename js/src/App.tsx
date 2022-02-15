@@ -90,11 +90,11 @@ function App(config: DynamicConfig) {
     // Generates the template and stores the result in the copyText state variable
     const generateTemplate = (url: string, history: H.History) => {
         async function getTemplate() {
-            const accessToken = getAccessToken();
+            const accessToken = getAccessToken().trim();
             const requestHeaders: HeadersInit = new Headers();
             requestHeaders.set('Routing', getBranchingRules());
             requestHeaders.set('Data-Partition', partition || "");
-            if (getAccessToken()) {
+            if (accessToken) {
                 requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
             }
             const template =
