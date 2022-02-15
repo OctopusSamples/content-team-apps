@@ -1,7 +1,6 @@
 package com.octopus.githuboauth.infrastructure.client;
 
 import com.octopus.githuboauth.domain.oauth.OauthResponse;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

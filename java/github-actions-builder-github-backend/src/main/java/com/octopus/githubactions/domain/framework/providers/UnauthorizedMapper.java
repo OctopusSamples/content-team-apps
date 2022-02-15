@@ -1,6 +1,5 @@
 package com.octopus.githubactions.domain.framework.providers;
 
-import com.octopus.githubactions.domain.exceptions.EntityNotFound;
 import com.octopus.githubactions.domain.exceptions.Unauthorized;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;

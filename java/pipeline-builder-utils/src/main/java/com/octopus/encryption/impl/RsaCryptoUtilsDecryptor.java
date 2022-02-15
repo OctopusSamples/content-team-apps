@@ -1,22 +1,14 @@
 package com.octopus.encryption.impl;
 
-import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
-import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EncryptionException;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * A service that can decrypt values with asymmetric key pairs.

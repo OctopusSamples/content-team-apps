@@ -1,7 +1,6 @@
 package com.octopus.audits.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.DeserializationFeature;
-import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.entities.Health;

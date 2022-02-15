@@ -1,7 +1,6 @@
 package com.octopus.githubactions.domain.framework.providers;
 
 import com.octopus.githubactions.domain.exceptions.ServerError;
-import com.octopus.githubactions.domain.exceptions.Unauthorized;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;

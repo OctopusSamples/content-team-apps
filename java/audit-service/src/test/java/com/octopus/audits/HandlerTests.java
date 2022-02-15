@@ -4,14 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
-import com.octopus.audits.domain.handlers.HealthHandler;
 import com.octopus.audits.domain.handlers.AuditsHandler;
+import com.octopus.audits.domain.handlers.HealthHandler;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;

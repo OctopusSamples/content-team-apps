@@ -1,7 +1,6 @@
 package com.octopus.githuboauth.domain.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 /**
  * Represents the response from the GitHub OAuth service when exchanging a code for a token.
