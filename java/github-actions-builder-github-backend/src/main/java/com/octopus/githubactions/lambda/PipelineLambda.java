@@ -9,19 +9,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Resources;
+import com.nimbusds.jose.JWSObject;
 import com.octopus.PipelineConstants;
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.githubactions.GlobalConstants;
 import com.octopus.githubactions.audits.AuditGenerator;
+import com.octopus.githubactions.client.GitHubUser;
 import com.octopus.githubactions.entities.Audit;
+import com.octopus.githubactions.entities.GitHubEmail;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
+import io.quarkus.logging.Log;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -29,6 +39,7 @@ import javax.inject.Named;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 /**
@@ -64,7 +75,13 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
   CryptoUtils cryptoUtils;
 
   @Inject
+  AsymmetricEncryptor asymmetricEncryptor;
+
+  @Inject
   AuditGenerator auditGenerator;
+
+  @RestClient
+  GitHubUser gitHubUser;
 
   /**
    * The Lambda entry point.
@@ -101,25 +118,62 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
       throw new IllegalArgumentException("repo can not be blank");
     }
 
-    final Optional<String> auth = lambdaHttpCookieExtractor.getCookieValue(input,
-        PipelineConstants.SESSION_COOKIE);
+    final String auth = lambdaHttpCookieExtractor.getCookieValue(
+            input,
+            PipelineConstants.SESSION_COOKIE)
+        .map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse("");
 
-    final RepoClient accessor = repoClientFactory.buildRepoClient(
-        repo,
-        auth.map(s -> cryptoUtils.decrypt(s, githubEncryption, githubSalt)).orElse(""));
+    final List<String> routingHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+        input,
+        GlobalConstants.ROUTING_HEADER);
+
+    final List<String> dataPartitionHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+        input,
+        GlobalConstants.DATA_PARTITION);
+
+    final List<String> authHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+        input,
+        GlobalConstants.AUTHORIZATION_HEADER);
+
+    auditEmail(auth, routingHeaders, dataPartitionHeaders, authHeaders);
+
+    final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElse(buildPipeline(
-            accessor,
-            lambdaHttpHeaderExtractor.getAllHeaders(
-                input,
-                GlobalConstants.ROUTING_HEADER),
-            lambdaHttpHeaderExtractor.getAllHeaders(
-                input,
-                GlobalConstants.DATA_PARTITION),
-            lambdaHttpHeaderExtractor.getAllHeaders(
-                input,
-                GlobalConstants.AUTHORIZATION_HEADER)));
+        .orElse(buildPipeline(accessor, routingHeaders, dataPartitionHeaders, authHeaders));
+  }
+
+  /**
+   * Query the users email addresses, encrypt them, and log them to the audit.
+   * @param token The GitHub access token.
+   * @param routingHeaders The routing headers.
+   * @param dataPartitionHeaders The data-partition headers.
+   * @param authHeaders The authorization headers.
+   */
+  private void auditEmail(@NonNull final String token,
+      @NonNull final List<String> routingHeaders,
+      @NonNull final List<String> dataPartitionHeaders,
+      @NonNull final List<String> authHeaders) {
+    try {
+      final String publicKey = Base64.getEncoder()
+          .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
+
+      final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
+
+      for (final GitHubEmail email : emails) {
+        final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
+
+        auditGenerator.createAuditEvent(new Audit(
+                GlobalConstants.MICROSERVICE_NAME,
+                GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
+                encryptedEmail),
+            routingHeaders,
+            dataPartitionHeaders,
+            authHeaders);
+      }
+    } catch (final Exception e) {
+      Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-RecordEmailFailed", e);
+    }
   }
 
   private ProxyResponse buildPipeline(

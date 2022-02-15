@@ -73,6 +73,16 @@
       <version>1.18.22</version>
     </dependency>
     <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>9.18</version>
+    </dependency>
+    <dependency>
+      <artifactId>joda-time</artifactId>
+      <groupId>joda-time</groupId>
+      <version>2.10.13</version>
+    </dependency>
+    <dependency>
       <artifactId>vavr</artifactId>
       <groupId>io.vavr</groupId>
       <version>1.0.0-alpha-3</version>

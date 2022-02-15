@@ -1,6 +1,7 @@
 package com.octopus.encryption.impl;
 
 import com.google.common.io.Resources;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EncryptionException;
 import java.security.InvalidKeyException;
@@ -22,7 +23,7 @@ import org.apache.commons.lang3.NotImplementedException;
  * https://mkyong.com/java/java-asymmetric-cryptography-example/
  * https://gist.github.com/mcasperson/92e8b9c38793cc830bbbbcf094ce63f6
  */
-public class RsaCryptoUtilsDecryptor implements CryptoUtils {
+public class RsaCryptoUtilsDecryptor implements AsymmetricDecryptor {
 
   private final Cipher cipher;
 
@@ -35,15 +36,7 @@ public class RsaCryptoUtilsDecryptor implements CryptoUtils {
    * {@inheritDoc}
    */
   @Override
-  public String encrypt(final String value, final String publicKeyBase64, final String salt) {
-    throw new NotImplementedException();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String decrypt(final String value, final String privateKeyBase64, final String salt) {
+  public String decrypt(final String value, final String privateKeyBase64) {
     try {
       this.cipher.init(Cipher.DECRYPT_MODE, getPrivate(privateKeyBase64));
       return new String(this.cipher.doFinal(Base64.getDecoder().decode(value)));

@@ -39,10 +39,10 @@ public class PipelineResource {
   AuditGenerator auditGenerator;
 
   /**
-   * Generates a Jenkins pipeline from the given git repository.
+   * Generates a Github Action Workflow from the given git repository.
    *
    * @param repo The repository URL.
-   * @return The Jenkins pipeline.
+   * @return The GitHub Actions Workflow.
    */
   @GET
   @Produces(MediaType.TEXT_PLAIN)

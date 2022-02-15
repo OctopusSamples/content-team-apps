@@ -34,12 +34,10 @@ public class RsaCryptoUtilsTest {
       final String generatedString = RandomStringUtils.random(32, true, true);
       final String encrypted = rsaCryptoUtilsEncryptor.encrypt(
           generatedString,
-          publicKeyBase64,
-          null);
+          publicKeyBase64);
       final String decrypted = rsaCryptoUtilsDecryptor.decrypt(
           encrypted,
-          privateKeyBase64,
-          null);
+          privateKeyBase64);
 
       assertNotEquals(encrypted, generatedString);
       assertNotEquals(encrypted, decrypted);

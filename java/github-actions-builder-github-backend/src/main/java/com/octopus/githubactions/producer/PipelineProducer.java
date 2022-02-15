@@ -1,8 +1,10 @@
 package com.octopus.githubactions.producer;
 
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
 import com.octopus.githubactions.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.builders.GenericBuilder;
 import com.octopus.githubactions.builders.GoBuilder;
@@ -22,7 +24,9 @@ import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -74,6 +78,18 @@ public class PipelineProducer {
   @Produces
   public CryptoUtils getCryptoUtils() {
     return new AesCryptoUtils();
+  }
+
+  /**
+   * Produces the AsymmetricEncryptor.
+   *
+   * @return An implementation of AsymmetricEncryptor.
+   */
+  @ApplicationScoped
+  @Produces
+  public AsymmetricEncryptor getAsymmetricEncryptor()
+      throws NoSuchPaddingException, NoSuchAlgorithmException {
+    return new RsaCryptoUtilsEncryptor();
   }
 
   /**

@@ -112,21 +112,6 @@
       <version>3.10.0</version>
     </dependency>
     <dependency>
-      <artifactId>joda-time</artifactId>
-      <groupId>joda-time</groupId>
-      <version>2.10.13</version>
-    </dependency>
-    <dependency>
-      <artifactId>guava</artifactId>
-      <groupId>com.google.guava</groupId>
-      <version>31.0.1-jre</version>
-    </dependency>
-    <dependency>
-      <artifactId>commons-text</artifactId>
-      <groupId>org.apache.commons</groupId>
-      <version>1.9</version>
-    </dependency>
-    <dependency>
       <artifactId>quarkus-jdbc-h2</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
@@ -166,11 +151,7 @@
       <artifactId>quarkus-core-deployment</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
-    <dependency>
-      <groupId>com.nimbusds</groupId>
-      <artifactId>nimbus-jose-jwt</artifactId>
-      <version>9.18</version>
-    </dependency>
+
     <dependency>
       <artifactId>quarkus-junit5</artifactId>
       <groupId>io.quarkus</groupId>

@@ -16,6 +16,7 @@ public final class GlobalConstants {
   public static final String INVOCATION_TYPE = "Invocation-Type";
   public static final String ASYNC_INVOCATION_TYPE = "Event";
   public static final String CREATED_TEMPLATE_ACTION = "CreateTemplateUsing";
+  public static final String CREATED_TEMPLATE_FOR_ACTION = "CreateTemplateFor";
   public static final String CLIENT_CREDENTIALS = "client_credentials";
   public static final String AUDIT_SCOPE = "audit.content-team/admin";
 }
