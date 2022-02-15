@@ -75,16 +75,17 @@ public class AuditGenerator {
   }
 
   private Try<Oauth> getAccessToken() {
-    return
-        cognitoClientId.isPresent() && cognitoClientSecret.isPresent()
-            ? Try.of(() -> cognitoClient.getToken(
-            "Basic " + Base64.getEncoder()
-                .encodeToString(
-                    (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
-            GlobalConstants.CLIENT_CREDENTIALS,
-            cognitoClientId.get(),
-            GlobalConstants.AUDIT_SCOPE))
-            : Try.failure(new Exception("Cognito client ID or secret were not set"));
+    if (cognitoClientId.isPresent() && cognitoClientSecret.isPresent()) {
+      return Try.of(() -> cognitoClient.getToken(
+          "Basic " + Base64.getEncoder()
+              .encodeToString(
+                  (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
+          GlobalConstants.CLIENT_CREDENTIALS,
+          cognitoClientId.get(),
+          GlobalConstants.AUDIT_SCOPE));
+    }
+
+    return Try.failure(new Exception("Cognito client ID or secret were not set"));
   }
 
 }

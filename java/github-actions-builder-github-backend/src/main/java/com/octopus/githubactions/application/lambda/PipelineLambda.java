@@ -12,6 +12,7 @@ import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
+import io.quarkus.logging.Log;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,20 +72,31 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
               .build());
     }
 
-    final SimpleResponse response = templateHandler.generatePipeline(
-        lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""),
-        auth,
-        routingHeaders,
-        dataPartitionHeaders,
-        authHeaders);
+    try {
+      final SimpleResponse response = templateHandler.generatePipeline(
+          lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""),
+          auth,
+          routingHeaders,
+          dataPartitionHeaders,
+          authHeaders);
 
-    return new
-        ProxyResponse(
-        String.valueOf(response.getCode()),
-        response.getBody(),
-        new ImmutableMap.Builder<String, String>()
-            .put("Content-Type", "text/plain")
-            .build());
+      return new
+          ProxyResponse(
+          String.valueOf(response.getCode()),
+          response.getBody(),
+          new ImmutableMap.Builder<String, String>()
+              .put("Content-Type", "text/plain")
+              .build());
+    } catch (final Exception ex) {
+      Log.error(GlobalConstants.MICROSERVICE_NAME + "-General-Error", ex);
+      return new
+          ProxyResponse(
+          "500",
+          "An internal server error was encountered.",
+          new ImmutableMap.Builder<String, String>()
+              .put("Content-Type", "text/plain")
+              .build());
+    }
   }
 
 }
