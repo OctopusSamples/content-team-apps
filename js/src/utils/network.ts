@@ -30,11 +30,15 @@ function responseIsClientError(status: number) {
 }
 
 export function getJson<T>(url: string, retryCount?: number): Promise<T> {
+    const accessToken = getAccessToken();
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set('Accept', 'application/json');
+    requestHeaders.set('Routing', getBranchingRules());
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
+
     return fetch(url, {
         method: 'GET',
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: requestHeaders
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -51,7 +55,7 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
         });
 }
 
-export function getJsonApi<T>(url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<T> {
+export function getJsonApi<T>(url: string, partition: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -72,13 +76,13 @@ export function getJsonApi<T>(url: string, partition: string | null, apiKey?: st
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return getJsonApi<T>(url, partition, apiKey, (retryCount || 0) + 1);
+                return getJsonApi<T>(url, partition, (retryCount || 0) + 1);
             }
             return Promise.reject(response);
         });
 }
 
-export function patchJsonApi<T>(resource: string, url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<T> {
+export function patchJsonApi<T>(resource: string, url: string, partition: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -101,13 +105,13 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return patchJsonApi<T>(resource, url, partition, apiKey, (retryCount || 0) + 1);
+                return patchJsonApi<T>(resource, url, partition, (retryCount || 0) + 1);
             }
             return Promise.reject(response);
         });
 }
 
-export function postJsonApi<T>(resource: string, url: string, partition: string | null, apiKey?: string | null): Promise<T> {
+export function postJsonApi<T>(resource: string, url: string, partition: string | null): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -129,7 +133,7 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
         });
 }
 
-export function deleteJsonApi(url: string, partition: string | null, apiKey?: string | null, retryCount?: number): Promise<Response> {
+export function deleteJsonApi(url: string, partition: string | null, retryCount?: number): Promise<Response> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -151,7 +155,7 @@ export function deleteJsonApi(url: string, partition: string | null, apiKey?: st
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return deleteJsonApi(url, partition, apiKey, (retryCount || 0) + 1);
+                return deleteJsonApi(url, partition, (retryCount || 0) + 1);
             }
             return Promise.reject(response);
         });

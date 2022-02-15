@@ -93,6 +93,7 @@ function App(config: DynamicConfig) {
             const accessToken = getAccessToken();
             const requestHeaders: HeadersInit = new Headers();
             requestHeaders.set('Routing', getBranchingRules());
+            requestHeaders.set('Data-Partition', partition || "");
             if (getAccessToken()) {
                 requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
             }

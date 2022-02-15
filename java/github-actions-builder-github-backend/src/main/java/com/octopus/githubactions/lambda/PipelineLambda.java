@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import com.nimbusds.jose.JWSObject;
 import com.octopus.PipelineConstants;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
@@ -27,11 +26,8 @@ import com.octopus.lambda.ProxyResponse;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -151,11 +147,18 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
    * @param dataPartitionHeaders The data-partition headers.
    * @param authHeaders          The authorization headers.
    */
-  private void auditEmail(@NonNull final String token,
+  private void auditEmail(final String token,
       @NonNull final List<String> routingHeaders,
       @NonNull final List<String> dataPartitionHeaders,
       @NonNull final List<String> authHeaders) {
+
+    // We may not have a token to use.
+    if (StringUtils.isEmpty(token)) {
+      return;
+    }
+
     try {
+
       final String publicKey = Base64.getEncoder()
           .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
 
