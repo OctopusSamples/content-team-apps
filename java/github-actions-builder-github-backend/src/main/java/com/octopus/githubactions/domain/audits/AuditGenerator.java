@@ -7,7 +7,7 @@ import com.octopus.githubactions.infrastructure.client.AuditClient;
 import com.octopus.githubactions.infrastructure.client.CognitoClient;
 import com.octopus.githubactions.domain.entities.Audit;
 import com.octopus.githubactions.domain.entities.Oauth;
-import com.octopus.githubactions.domain.jsonapi.JsonApiConverter;
+import com.octopus.githubactions.domain.framework.jsonapi.JsonApiConverter;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.util.Base64;

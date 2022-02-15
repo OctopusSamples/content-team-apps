@@ -126,7 +126,9 @@ public class TemplateHandler {
         auditGenerator.createAuditEvent(new Audit(
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
-                encryptedEmail),
+                encryptedEmail,
+                true,
+                false),
             routingHeaders,
             dataPartitionHeaders,
             authHeaders);

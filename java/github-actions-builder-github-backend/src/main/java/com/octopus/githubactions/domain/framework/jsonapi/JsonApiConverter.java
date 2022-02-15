@@ -1,4 +1,4 @@
-package com.octopus.githubactions.domain.jsonapi;
+package com.octopus.githubactions.domain.framework.jsonapi;
 
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;

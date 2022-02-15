@@ -1,4 +1,4 @@
-package com.octopus.githubactions.domain.producer;
+package com.octopus.githubactions.domain.framework.producer;
 
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
