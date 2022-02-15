@@ -6,7 +6,7 @@ export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
 }
 
-function getBranchingRules() {
+export function getBranchingRules() {
     if (isBranchingEnabled()) {
         const rules: RedirectRule[] = JSON.parse(localStorage.getItem("branching") || "[]")
         return rules

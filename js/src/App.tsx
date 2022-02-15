@@ -19,6 +19,7 @@ import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getAccessToken, getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 import * as H from "history";
+import {getBranchingRules} from "./utils/network";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
@@ -91,6 +92,7 @@ function App(config: DynamicConfig) {
         async function getTemplate() {
             const accessToken = getAccessToken();
             const requestHeaders: HeadersInit = new Headers();
+            requestHeaders.set('Routing', getBranchingRules());
             if (getAccessToken()) {
                 requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
             }
