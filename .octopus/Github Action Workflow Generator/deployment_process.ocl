@@ -203,11 +203,13 @@ step "Deploy Pipeline Backend" {
                     "AuditService": {
                      	"Type": "String" 
                     }
-                  },
+                  },  
+                  "Resources": {
                   "AppLogGroupProxyLambda": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
-                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy" }
+                        "LogGroupName": { "Fn::Sub": "/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy" },
+                        "RetentionInDays" : 14
                       }
                     },
                     "IamRoleProxyLambdaExecution": {
@@ -340,7 +342,6 @@ step "Deploy Pipeline Backend" {
                         "Timeout": 30
                       }
                     },
-                  "Resources": {
                     "AppLogGroupOne": {
                       "Type": "AWS::Logs::LogGroup",
                       "Properties": {
