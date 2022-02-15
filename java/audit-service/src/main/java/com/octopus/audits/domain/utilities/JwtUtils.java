@@ -24,6 +24,12 @@ public class JwtUtils {
       return Optional.empty();
     }
 
-    return Optional.of(authorizationHeader.trim().replaceFirst("(?i)" + BEARER + " ", "").trim());
+    final String token = authorizationHeader.trim().replaceFirst("(?i)" + BEARER + " ", "").trim();
+
+    if (StringUtils.isNotBlank(token)) {
+      return Optional.of(token);
+    }
+
+    return Optional.empty();
   }
 }
