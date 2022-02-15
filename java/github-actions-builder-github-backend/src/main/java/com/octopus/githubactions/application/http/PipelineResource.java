@@ -38,9 +38,9 @@ public class PipelineResource {
   @Produces(MediaType.TEXT_PLAIN)
   public String pipeline(
       @QueryParam("repo") final String repo,
-      @HeaderParam(GlobalConstants.ROUTING_HEADER) final List<String> routingHeaders,
-      @HeaderParam(GlobalConstants.DATA_PARTITION) final List<String> dataPartitionHeaders,
-      @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final List<String> authHeaders,
+      @HeaderParam(GlobalConstants.ROUTING_HEADER) final String routingHeaders,
+      @HeaderParam(GlobalConstants.DATA_PARTITION) final String dataPartitionHeaders,
+      @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final String authHeaders,
       @CookieParam(PipelineConstants.SESSION_COOKIE) final String auth) {
 
     if (StringUtils.isBlank(repo)) {

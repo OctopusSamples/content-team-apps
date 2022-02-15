@@ -56,18 +56,18 @@ public class AuditGenerator {
    */
   public void createAuditEvent(
       @NonNull final Audit audit,
-      @NonNull final List<String> routingHeaders,
-      @NonNull final List<String> dataPartitionHeaders,
-      @NonNull final List<String> authHeaders) {
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
 
     getAccessToken()
         .andThenTry(auditAccessToken ->
             auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
                     new JSONAPIDocument<>(audit))),
-                String.join(",", routingHeaders),
-                String.join(",", dataPartitionHeaders),
-                String.join(",", authHeaders),
+                routingHeaders,
+                dataPartitionHeaders,
+                authHeaders,
                 "Bearer " + auditAccessToken,
                 GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {

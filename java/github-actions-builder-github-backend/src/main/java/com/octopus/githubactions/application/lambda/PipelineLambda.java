@@ -47,21 +47,21 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
   public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input,
       final Context context) {
 
-    final String auth = lambdaHttpCookieExtractor.getCookieValue(
+    final String session = lambdaHttpCookieExtractor.getCookieValue(
             input,
             PipelineConstants.SESSION_COOKIE).orElse(null);
 
-    final List<String> routingHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+    final String routingHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,
-        GlobalConstants.ROUTING_HEADER);
+        GlobalConstants.ROUTING_HEADER).orElse("");
 
-    final List<String> dataPartitionHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+    final String dataPartitionHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,
-        GlobalConstants.DATA_PARTITION);
+        GlobalConstants.DATA_PARTITION).orElse("");
 
-    final List<String> authHeaders = lambdaHttpHeaderExtractor.getAllHeaders(
+    final String authHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,
-        GlobalConstants.AUTHORIZATION_HEADER);
+        GlobalConstants.AUTHORIZATION_HEADER).orElse("");
 
     if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
       return new ProxyResponse(
@@ -75,7 +75,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
     try {
       final SimpleResponse response = templateHandler.generatePipeline(
           lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""),
-          auth,
+          session,
           routingHeaders,
           dataPartitionHeaders,
           authHeaders);

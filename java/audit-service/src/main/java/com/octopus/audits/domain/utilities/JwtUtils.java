@@ -10,10 +10,10 @@ public class JwtUtils {
   private static final String BEARER = "bearer";
 
   /**
-   * Extract the JWT from the Authorization header.
+   * Extract the access token from the Authorization header.
    *
    * @param authorizationHeader The Authorization header.
-   * @return The JWT, or an empty optional if the JWT was not found.
+   * @return The access token, or an empty optional if the access token was not found.
    */
   public Optional<String> getJwtFromAuthorizationHeader(final String authorizationHeader) {
     if (StringUtils.isBlank(authorizationHeader)) {
@@ -24,7 +24,11 @@ public class JwtUtils {
       return Optional.empty();
     }
 
-    final String token = authorizationHeader.trim().replaceFirst("(?i)" + BEARER + " ", "").trim();
+    // Assume the first header is the one we want if for some reason we got a comma separated list
+    final String token = authorizationHeader.split(",")[0]
+        .trim()
+        .replaceFirst("(?i)" + BEARER + " ", "")
+        .trim();
 
     if (StringUtils.isNotBlank(token)) {
       return Optional.of(token);

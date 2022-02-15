@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -73,7 +74,7 @@ public class CaseInsensitiveHttpHeaderExtractor implements LambdaHttpHeaderExtra
 
     return header.entrySet().stream()
         .filter(e -> name.equalsIgnoreCase(e.getKey()))
-        .map(e -> e.getValue())
+        .map(Entry::getValue)
         .collect(Collectors.toList());
   }
 }

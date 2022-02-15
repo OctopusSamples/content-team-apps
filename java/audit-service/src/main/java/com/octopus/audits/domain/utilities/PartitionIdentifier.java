@@ -45,7 +45,7 @@ public class PartitionIdentifier {
       return Constants.DEFAULT_PARTITION;
     }
 
-    if (header == null || header.size() == 0 || header.stream().allMatch(StringUtils::isAllBlank)) {
+    if (header == null || header.size() == 0 || header.stream().allMatch(StringUtils::isBlank)) {
       return Constants.DEFAULT_PARTITION;
     }
 

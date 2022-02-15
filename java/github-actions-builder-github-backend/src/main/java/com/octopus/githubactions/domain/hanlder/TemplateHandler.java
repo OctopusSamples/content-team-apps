@@ -72,9 +72,9 @@ public class TemplateHandler {
   public SimpleResponse generatePipeline(
       @NonNull final String repo,
       final String sessionCookie,
-      @NonNull final List<String> routingHeaders,
-      @NonNull final List<String> dataPartitionHeaders,
-      @NonNull final List<String> authHeaders) {
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
     LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
@@ -101,9 +101,9 @@ public class TemplateHandler {
    * @param authHeaders          The authorization headers.
    */
   private void auditEmail(final String token,
-      @NonNull final List<String> routingHeaders,
-      @NonNull final List<String> dataPartitionHeaders,
-      @NonNull final List<String> authHeaders) {
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
 
     // We may not have a token to use.
     if (StringUtils.isEmpty(token)) {
@@ -137,9 +137,9 @@ public class TemplateHandler {
 
   private SimpleResponse buildPipeline(
       @NonNull final RepoClient accessor,
-      @NonNull final List<String> routingHeaders,
-      @NonNull final List<String> dataPartitionHeaders,
-      @NonNull final List<String> authHeaders) {
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
