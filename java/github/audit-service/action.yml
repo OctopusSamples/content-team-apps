@@ -41,6 +41,7 @@ runs:
     - name: Creating a prerelease from the branch
       run: |
         PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        PRERELEASE=${PRERELEASE/_/-}
         echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
       shell: bash
 
