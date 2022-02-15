@@ -1,16 +1,15 @@
-package com.octopus.githubactions.audits;
+package com.octopus.githubactions.domain.audits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.client.AuditClient;
-import com.octopus.githubactions.client.CognitoClient;
-import com.octopus.githubactions.entities.Audit;
-import com.octopus.githubactions.entities.Oauth;
-import com.octopus.githubactions.jsonapi.JsonApiConverter;
+import com.octopus.githubactions.infrastructure.client.AuditClient;
+import com.octopus.githubactions.infrastructure.client.CognitoClient;
+import com.octopus.githubactions.domain.entities.Audit;
+import com.octopus.githubactions.domain.entities.Oauth;
+import com.octopus.githubactions.domain.jsonapi.JsonApiConverter;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;

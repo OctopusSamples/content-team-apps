@@ -1,4 +1,4 @@
-package com.octopus.githubactions.entities;
+package com.octopus.githubactions.domain.entities;
 
 import lombok.Data;
 

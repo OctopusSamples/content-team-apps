@@ -1,9 +1,9 @@
-package com.octopus.githubactions.client;
+package com.octopus.githubactions.infrastructure.client;
 
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.entities.GitHubEmail;
+import com.octopus.githubactions.domain.entities.GitHubEmail;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +24,6 @@ public interface GitHubUser {
    */
   @Path("public_emails")
   @Produces(MediaType.APPLICATION_JSON)
-  @POST
+  @GET
   GitHubEmail[] publicEmails(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);
 }

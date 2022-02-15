@@ -1,4 +1,4 @@
-package com.octopus.githubactions.entities;
+package com.octopus.githubactions.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

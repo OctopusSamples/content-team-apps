@@ -1,4 +1,4 @@
-package com.octopus.githubactions.client;
+package com.octopus.githubactions.infrastructure.client;
 
 import com.octopus.githubactions.GlobalConstants;
 import javax.ws.rs.Consumes;

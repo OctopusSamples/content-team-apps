@@ -1,4 +1,4 @@
-package com.octopus.githubactions.entities;
+package com.octopus.githubactions.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.jasminb.jsonapi.IntegerIdHandler;

@@ -1,8 +1,8 @@
-package com.octopus.githubactions.jsonapi;
+package com.octopus.githubactions.domain.jsonapi;
 
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.octopus.githubactions.entities.Audit;
+import com.octopus.githubactions.domain.entities.Audit;
 import javax.enterprise.inject.Produces;
 
 /** Produces a JSONAPI resource converter. */

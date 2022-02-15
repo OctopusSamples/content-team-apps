@@ -1,7 +1,7 @@
-package com.octopus.githubactions.client;
+package com.octopus.githubactions.infrastructure.client;
 
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.entities.Oauth;
+import com.octopus.githubactions.domain.entities.Oauth;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
