@@ -16,7 +16,7 @@ import {darkTheme, lightTheme} from "./theme/appTheme";
 import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
 import {DEFAULT_BRANCH, getBranch} from "./utils/path";
-import {getIdToken} from "./utils/security";
+import {getAccessToken, getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 import * as H from "history";
 
@@ -89,8 +89,13 @@ function App(config: DynamicConfig) {
     // Generates the template and stores the result in the copyText state variable
     const generateTemplate = (url: string, history: H.History) => {
         async function getTemplate() {
+            const accessToken = getAccessToken();
+            const requestHeaders: HeadersInit = new Headers();
+            if (getAccessToken()) {
+                requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
+            }
             const template =
-                await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error"})
+                await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error", headers: requestHeaders})
                     .then(response => {
                         /*
                             The /generate endpoint will return unauthorized if it detects that it can not read the repo.

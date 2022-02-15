@@ -57,7 +57,7 @@ export function getJsonApi<T>(url: string, partition: string | null, apiKey?: st
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
-    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
     return fetch(url, {
         method: 'GET',
@@ -85,7 +85,7 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
-    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
     return fetch(url, {
         method: 'PATCH',
@@ -114,7 +114,7 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
-    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
     return fetch(url, {
         method: 'POST',
@@ -136,7 +136,7 @@ export function deleteJsonApi(url: string, partition: string | null, apiKey?: st
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
     requestHeaders.set('Routing', getBranchingRules());
-    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + getAccessToken() : '');
+    requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
     return fetch(url, {
         method: 'DELETE',
