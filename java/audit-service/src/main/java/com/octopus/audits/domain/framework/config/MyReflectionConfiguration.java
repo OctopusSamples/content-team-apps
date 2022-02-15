@@ -24,5 +24,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
         TimestampDeserializer.class,
         Link.class,
         Links.class},
-  ignoreNested = false)
-public class MyReflectionConfiguration {}
+    ignoreNested = false)
+public class MyReflectionConfiguration {
+
+}
