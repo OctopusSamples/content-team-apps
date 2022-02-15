@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * A REST client to query GitHub users
+ * A REST client to query GitHub users.
  */
 @Path("user")
 @RegisterRestClient

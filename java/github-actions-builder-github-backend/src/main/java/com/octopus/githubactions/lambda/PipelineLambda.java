@@ -145,10 +145,11 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
   /**
    * Query the users email addresses, encrypt them, and log them to the audit.
-   * @param token The GitHub access token.
-   * @param routingHeaders The routing headers.
+   *
+   * @param token                The GitHub access token.
+   * @param routingHeaders       The routing headers.
    * @param dataPartitionHeaders The data-partition headers.
-   * @param authHeaders The authorization headers.
+   * @param authHeaders          The authorization headers.
    */
   private void auditEmail(@NonNull final String token,
       @NonNull final List<String> routingHeaders,
