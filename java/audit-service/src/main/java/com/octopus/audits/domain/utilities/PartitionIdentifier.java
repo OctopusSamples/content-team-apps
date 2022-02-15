@@ -40,7 +40,7 @@ public class PartitionIdentifier {
      */
     if (!cognitoDisableAuth
         && (adminGroup.isEmpty()
-        || StringUtils.isEmpty(jwt)
+        || StringUtils.isBlank(jwt)
         || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
       return Constants.DEFAULT_PARTITION;
     }
