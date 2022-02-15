@@ -1,7 +1,10 @@
 package com.octopus.audits.domain.framework.config;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
+import com.github.jasminb.jsonapi.Link;
+import com.github.jasminb.jsonapi.Links;
 import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.entities.Health;
@@ -13,5 +16,12 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * reflection.
  */
 @RegisterForReflection(
-    targets = {StringIdHandler.class, Audit.class, Health.class, Audit.class, IntegerIdHandler.class, SerializationFeature.class})
+    targets = {StringIdHandler.class,
+        Audit.class,
+        Health.class,
+        IntegerIdHandler.class,
+        SerializationFeature.class,
+        TimestampDeserializer.class,
+        Link.class,
+        Links.class})
 public class MyReflectionConfiguration {}
