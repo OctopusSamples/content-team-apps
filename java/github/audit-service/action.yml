@@ -102,6 +102,13 @@ runs:
       shell: bash
       working-directory: java/audit-service
 
+    - name: Show test coverage
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.2
+      with:
+        paths: ${{ github.workspace }}/java/audit-service/target/site/jacoco/jacoco.xml
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Build with Maven
       run: ./mvnw --batch-mode --no-transfer-progress package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
       shell: bash
