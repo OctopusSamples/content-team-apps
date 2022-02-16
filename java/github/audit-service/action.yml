@@ -103,13 +103,13 @@ runs:
       working-directory: java/audit-service
 
     - name: Generate JaCoCo Badges
-        id: jacocoMod1
-        uses: cicirello/jacoco-badge-generator@v2
-        with:
-          generate-branches-badge: true
-          jacoco-csv-file: java/audit-service/target/site/jacoco/jacoco.csv
-          coverage-badge-filename: audits.svg
-          branches-badge-filename: auditsbranches.svg
+      id: jacocoMod1
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: java/audit-service/target/site/jacoco/jacoco.csv
+        coverage-badge-filename: audits.svg
+        branches-badge-filename: auditsbranches.svg
 
     - name: Commit the badge (if it changed)
       run: |
