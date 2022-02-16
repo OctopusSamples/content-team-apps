@@ -909,6 +909,102 @@ step "Deploy Lambda" {
                         "RestApiId": {"Ref": "RestApi"}
                       }
                     },
+                    "JsonApiCollectionOptionsMethod": {
+                		"Type": "AWS::ApiGateway::Method",
+                		"Properties": {
+                		  "AuthorizationType": "NONE",
+                		  "RestApiId": {
+                			"Ref": "RestApi"
+                		  },
+                		  "ResourceId": {
+                			"Ref": "ServiceHealthResource"
+                		  },
+                		  "HttpMethod": "OPTIONS",
+                		  "Integration": {
+                			"IntegrationResponses": [
+                			  {
+                				"StatusCode": 200,
+                				"ContentHandling": "CONVERT_TO_TEXT",
+                				"ResponseParameters": {
+                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,Routing,Service-Authorization,Data-Partition,X-Amz-Security-Token'",
+                				  "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,DELETE,PATCH'",
+                				  "method.response.header.Access-Control-Allow-Origin": "'*'"
+                				},
+                				"ResponseTemplates": {
+                				  "application/json": ""
+                				}
+                			  }
+                			],
+                			"PassthroughBehavior": "WHEN_NO_MATCH",
+                			"RequestTemplates": {
+                			  "application/json": "{\"statusCode\": 200}"
+                			},
+                			"Type": "MOCK",
+                			"ContentHandling": "CONVERT_TO_TEXT"
+                		  },
+                		  "MethodResponses": [
+                			{
+                			  "StatusCode": 200,
+                			  "ResponseModels": {
+                				"application/json": "Empty"
+                			  },
+                			  "ResponseParameters": {
+                				"method.response.header.Access-Control-Allow-Headers": false,
+                				"method.response.header.Access-Control-Allow-Methods": false,
+                				"method.response.header.Access-Control-Allow-Origin": false
+                			  }
+                			}
+                		  ]
+                		}
+                	  },
+                    "JsonApiItemOptionsMethod": {
+                		"Type": "AWS::ApiGateway::Method",
+                		"Properties": {
+                		  "AuthorizationType": "NONE",
+                		  "RestApiId": {
+                			"Ref": "RestApi"
+                		  },
+                		  "ResourceId": {
+                			"Ref": "ServiceHealthProxyResource"
+                		  },
+                		  "HttpMethod": "OPTIONS",
+                		  "Integration": {
+                			"IntegrationResponses": [
+                			  {
+                				"StatusCode": 200,
+                				"ContentHandling": "CONVERT_TO_TEXT",
+                				"ResponseParameters": {
+                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                				  "method.response.header.Access-Control-Allow-Methods": "'GET,DELETE,PATCH,OPTIONS'",
+                				  "method.response.header.Access-Control-Allow-Origin": "'*'"
+                				},
+                				"ResponseTemplates": {
+                				  "application/json": ""
+                				}
+                			  }
+                			],
+                			"PassthroughBehavior": "WHEN_NO_MATCH",
+                			"RequestTemplates": {
+                			  "application/json": "{\"statusCode\": 200}"
+                			},
+                			"Type": "MOCK",
+                			"ContentHandling": "CONVERT_TO_TEXT"
+                		  },
+                		  "MethodResponses": [
+                			{
+                			  "StatusCode": 200,
+                			  "ResponseModels": {
+                				"application/json": "Empty"
+                			  },
+                			  "ResponseParameters": {
+                				"method.response.header.Access-Control-Allow-Headers": false,
+                				"method.response.header.Access-Control-Allow-Methods": false,
+                				"method.response.header.Access-Control-Allow-Origin": false
+                			  }
+                			}
+                		  ]
+                		}
+                	  },
                     "ServiceHealthRootMethod": {
                       "Type": "AWS::ApiGateway::Method",
                       "Properties": {      
