@@ -25,7 +25,7 @@
               <goal>report</goal>
             </goals>
             <id>report</id>
-            <phase>verify</phase>
+            <phase>test</phase>
           </execution>
         </executions>
       </plugin>
