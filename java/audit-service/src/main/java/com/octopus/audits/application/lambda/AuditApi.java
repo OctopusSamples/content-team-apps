@@ -28,11 +28,11 @@ import org.apache.commons.text.StringEscapeUtils;
 public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
   /** A regular expression matching the collection of entities. */
-  private static final Pattern ROOT_RE = Pattern.compile("/api/audits/?");
+  public static final Pattern ROOT_RE = Pattern.compile("/api/audits/?");
   /** A regular expression matching a single entity. */
-  private static final Pattern INDIVIDUAL_RE = Pattern.compile("/api/audits/(?<id>\\d+)");
+  public static final Pattern INDIVIDUAL_RE = Pattern.compile("/api/audits/(?<id>\\d+)");
   /** A regular expression matching a health endpoint. */
-  private static final Pattern HEALTH_RE =
+  public static final Pattern HEALTH_RE =
       Pattern.compile("/health/audits/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
 
   @Inject
@@ -248,7 +248,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param method The HTTP method.
    * @return true if this request matches the supplied values, and false otherwise.
    */
-  private boolean requestIsMatch(
+  public boolean requestIsMatch(
       @NonNull final APIGatewayProxyRequestEvent input,
       @NonNull final Pattern regex,
       @NonNull final String method) {
