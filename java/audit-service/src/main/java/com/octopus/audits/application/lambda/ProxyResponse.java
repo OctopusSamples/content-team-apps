@@ -35,10 +35,7 @@ public class ProxyResponse {
    * @param body The response body.
    */
   public ProxyResponse(final String statusCode, final String body) {
-    this.headers = new HashMap<>();
-    this.body = body;
-    this.statusCode = statusCode;
-    addCorsHeaders();
+    this(statusCode, body, new HashMap<>());
   }
 
   /**
@@ -47,10 +44,7 @@ public class ProxyResponse {
    * @param statusCode The response HTTP status code.
    */
   public ProxyResponse(final String statusCode) {
-    this.headers = new HashMap<>();
-    this.body = null;
-    this.statusCode = statusCode;
-    addCorsHeaders();
+    this(statusCode, null, new HashMap<>());
   }
 
   private void addCorsHeaders() {
