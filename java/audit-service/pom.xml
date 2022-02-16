@@ -5,6 +5,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>audit-service</artifactId>
   <groupId>com.octopus</groupId>
+  <version>0.0.1-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>content-team-apps</artifactId>
@@ -38,6 +39,8 @@
       </plugin>
       <plugin>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+        <version>0.8.7</version>
         <executions>
           <execution>
             <goals>
@@ -50,11 +53,9 @@
               <goal>report</goal>
             </goals>
             <id>report</id>
-            <phase>test</phase>
+            <phase>verify</phase>
           </execution>
         </executions>
-        <groupId>org.jacoco</groupId>
-        <version>0.8.7</version>
       </plugin>
       <plugin>
         <artifactId>cyclonedx-maven-plugin</artifactId>
@@ -236,5 +237,4 @@
     <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
-  <version>0.0.1-SNAPSHOT</version>
 </project>

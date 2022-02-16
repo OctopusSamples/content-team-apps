@@ -47,4 +47,43 @@
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+        <version>0.8.7</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <id>prepare-agent</id>
+          </execution>
+          <execution>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <id>report</id>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        This was required to get parameterized tests to run:
+        https://dzone.com/articles/why-your-junit-5-tests-are-not-running-under-maven
+      -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>2.22.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>2.22.2</version>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
