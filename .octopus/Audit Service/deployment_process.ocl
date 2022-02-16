@@ -1068,7 +1068,7 @@ step "Deploy Lambda" {
                           }
                         },        
                         "ResourceId": {
-                          "Ref": "ServiceHealthResource"
+                          "Ref": "ServiceHealthProxyResource"
                         },
                         "RestApiId": {"Ref": "RestApi"}
                       }
