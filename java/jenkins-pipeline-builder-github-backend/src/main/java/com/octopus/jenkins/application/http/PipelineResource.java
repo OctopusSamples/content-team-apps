@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * The REST server.
  */
-@Path("/api/pipeline/github/generate")
+@Path("/api/pipeline/jenkins/generate")
 public class PipelineResource {
 
   @Inject
