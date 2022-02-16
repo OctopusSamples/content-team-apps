@@ -126,6 +126,14 @@ step "Get Stack Outputs" {
                     
                 set_octopusvariable "RestApi" ${REST_API}
                 
+                COGNITO_POOL_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormation.Cognito} \
+                    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+                    --output text)
+                echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
+                set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+                
                 TIMESTAMP=$(date '+%Y%m%d%H%M%S')
                 
                 set_octopusvariable "DeploymentId" ${TIMESTAMP}
