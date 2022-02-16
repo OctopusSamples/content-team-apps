@@ -909,7 +909,7 @@ step "Deploy Lambda" {
                         "RestApiId": {"Ref": "RestApi"}
                       }
                     },
-                    "JsonApiCollectionOptionsMethod": {
+                    "JsonApiCollectionHealthOptionsMethod": {
                 		"Type": "AWS::ApiGateway::Method",
                 		"Properties": {
                 		  "AuthorizationType": "NONE",
@@ -957,7 +957,7 @@ step "Deploy Lambda" {
                 		  ]
                 		}
                 	  },
-                    "JsonApiItemOptionsMethod": {
+                    "JsonApiItemHealthOptionsMethod": {
                 		"Type": "AWS::ApiGateway::Method",
                 		"Properties": {
                 		  "AuthorizationType": "NONE",
@@ -1079,11 +1079,13 @@ step "Deploy Lambda" {
                         "RestApiId": {"Ref": "RestApi"}
                       },
                       "DependsOn": [
-                      	"JsonApiCollectionGetMethod",
                         "JsonApiCollectionOptionsMethod",
                         "JsonApiItemOptionsMethod",
+                      	"JsonApiCollectionGetMethod",
                         "JsonApiItemGetMethod",
                         "JsonApiItemPostMethod",
+                        "JsonApiCollectionHealthOptionsMethod",
+                        "JsonApiItemHealthOptionsMethod",
                         "ServiceHealthRootMethod",
                         "ServiceHealthProxyMethod"
                       ]
