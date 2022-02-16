@@ -175,6 +175,8 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
         }
         return Optional.of(buildNotFound());
       }
+    } catch (final Unauthorized e) {
+      return Optional.of(buildUnauthorizedRequest(e));
     } catch (final EntityNotFound ex) {
       return Optional.of(buildNotFound());
     } catch (final Exception e) {
