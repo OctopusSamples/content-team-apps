@@ -300,6 +300,18 @@ public class HttpApiTest extends BaseTest {
   }
 
   @Test
+  public void testGetMissingEntity() {
+    given()
+        .accept("application/vnd.api+json")
+        .header("data-partition", "main")
+        .contentType("application/vnd.api+json")
+        .when()
+        .get("/api/audits/100000000000")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
   public void testHealthGetCollection() {
     given()
         .when()

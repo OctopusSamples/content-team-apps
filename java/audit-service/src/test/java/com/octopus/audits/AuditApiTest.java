@@ -1,5 +1,6 @@
 package com.octopus.audits;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -43,5 +44,20 @@ public class AuditApiTest {
     event.setHttpMethod("PoSt");
     event.setPath("/api/audits");
     assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.ROOT_RE, Constants.POST_METHOD));
+  }
+
+  @Test
+  public void testNullParams() {
+    assertThrows(NullPointerException.class, () -> {
+      AUDIT_API.requestIsMatch(new APIGatewayProxyRequestEvent(), AuditApi.ROOT_RE, null);
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      AUDIT_API.requestIsMatch(new APIGatewayProxyRequestEvent(), null, "");
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      AUDIT_API.requestIsMatch(null, AuditApi.ROOT_RE, "");
+    });
   }
 }

@@ -29,9 +29,11 @@ public class LambdaTests extends BaseTest {
   @Inject
   AuditApi auditApi;
 
-  @Inject LiquidbaseUpdater liquidbaseUpdater;
+  @Inject
+  LiquidbaseUpdater liquidbaseUpdater;
 
-  @Inject ResourceConverter resourceConverter;
+  @Inject
+  ResourceConverter resourceConverter;
 
   @BeforeAll
   public void setup() throws SQLException, LiquibaseException {
@@ -134,7 +136,8 @@ public class LambdaTests extends BaseTest {
           auditApi.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
       final List<Audit> getEntities =
           getAuditsFromDocument(resourceConverter, getResponse.body);
-      assertTrue(getEntities.stream().anyMatch(p -> p.getSubject().equals(postEntity.getSubject())));
+      assertTrue(
+          getEntities.stream().anyMatch(p -> p.getSubject().equals(postEntity.getSubject())));
     }
 
     {
@@ -186,6 +189,25 @@ public class LambdaTests extends BaseTest {
     final ProxyResponse getResponse =
         auditApi.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals("400", getResponse.statusCode);
+  }
+
+  @Test
+  public void testGetMissingEntity() {
+    final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    getApiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put(
+                "Accept",
+                "application/vnd.api+json");
+          }
+        });
+    getApiGatewayProxyRequestEvent.setHttpMethod("GET");
+    getApiGatewayProxyRequestEvent.setPath("/api/audits/10000000000000000000");
+    final ProxyResponse getResponse =
+        auditApi.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals("404", getResponse.statusCode);
   }
 
   @Test
