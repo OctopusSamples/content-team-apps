@@ -2,6 +2,9 @@ package com.octopus.audits.domain.jsonapi;
 
 import java.util.List;
 
+/**
+ * Represents a service used to verify the JSONAPI accept headers.
+ */
 public interface AcceptHeaderVerifier {
 
   /**
