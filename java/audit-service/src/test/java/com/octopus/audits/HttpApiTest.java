@@ -34,7 +34,7 @@ public class HttpApiTest extends BaseTest {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
-            .header("data-partition", "dataPartition=main")
+            .header("data-partition", "main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -53,7 +53,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .get("/api/audits")
         .then()
@@ -67,7 +67,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .get("/api/audits/" + created.getId())
         .then()
@@ -86,7 +86,7 @@ public class HttpApiTest extends BaseTest {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
-            .header("data-partition", "dataPartition=testing2")
+            .header("data-partition", "testing2")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -101,7 +101,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=testing")
+        .header("data-partition", "testing")
         .when()
         .get("/api/audits/" + created.getId())
         .then()
@@ -113,7 +113,7 @@ public class HttpApiTest extends BaseTest {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
-            .header("data-partition", "dataPartition=main")
+            .header("data-partition", "main")
             .when()
             .body(
                 auditToResourceDocument(
@@ -128,7 +128,7 @@ public class HttpApiTest extends BaseTest {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json; something")
-            .header("data-partition", "dataPartition=main")
+            .header("data-partition", "main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -166,7 +166,7 @@ public class HttpApiTest extends BaseTest {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
-            .header("data-partition", "dataPartition=main")
+            .header("data-partition", "main")
             .contentType("application/vnd.api+json")
             .when()
             .body(
@@ -185,7 +185,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "id==" + created.getId())
         .get("/api/audits")
@@ -200,7 +200,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "subject==testCreateAndGetResource")
         .get("/api/audits")
@@ -215,7 +215,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "subject!=blah")
         .get("/api/audits")
@@ -230,7 +230,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "subject==test*")
         .get("/api/audits")
@@ -245,7 +245,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "subject=in=(testCreateAndGetResource)")
         .get("/api/audits")
@@ -260,7 +260,7 @@ public class HttpApiTest extends BaseTest {
 
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "id<" + (created.getId() + 1))
         .get("/api/audits")
@@ -278,7 +278,7 @@ public class HttpApiTest extends BaseTest {
   public void testBadFilterResults() {
     given()
         .accept("application/vnd.api+json")
-        .header("data-partition", "dataPartition=main")
+        .header("data-partition", "main")
         .when()
         .queryParam("filter", "&^$*^%#$")
         .get("/api/audits")
@@ -290,12 +290,39 @@ public class HttpApiTest extends BaseTest {
   public void testCreateWithoutBody() {
         given()
             .accept("application/vnd.api+json")
-            .header("data-partition", "dataPartition=main")
+            .header("data-partition", "main")
             .contentType("application/vnd.api+json")
             .when()
             .body("{}")
             .post("/api/audits")
             .then()
             .statusCode(400);
+  }
+
+  @Test
+  public void testHealthGetCollection() {
+    given()
+        .when()
+        .get("/health/audits/GET")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  public void testHealthPostItem() {
+    given()
+        .when()
+        .get("/health/audits/POST")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  public void testHealthGetItem() {
+    given()
+        .when()
+        .get("/health/audits/x/GET")
+        .then()
+        .statusCode(200);
   }
 }

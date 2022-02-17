@@ -45,7 +45,7 @@ public class LambdaTests extends BaseTest {
     apiGatewayProxyRequestEvent.setHeaders(
         new HashMap<>() {
           {
-            put("Accept", "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+            put("Accept", "application/vnd.api+json");
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
@@ -63,7 +63,7 @@ public class LambdaTests extends BaseTest {
     getApiGatewayProxyRequestEvent.setHeaders(
         new HashMap<>() {
           {
-            put("Accept", "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+            put("Accept", "application/vnd.api+json");
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
@@ -81,7 +81,7 @@ public class LambdaTests extends BaseTest {
     apiGatewayProxyRequestEvent.setHeaders(
         new HashMap<>() {
           {
-            put("Accept", "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+            put("Accept", "application/vnd.api+json");
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
@@ -98,7 +98,7 @@ public class LambdaTests extends BaseTest {
     apiGatewayProxyRequestEvent.setHeaders(
         new HashMap<>() {
           {
-            put("Accept", "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+            put("Accept", "application/vnd.api+json");
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
@@ -119,7 +119,7 @@ public class LambdaTests extends BaseTest {
             {
               put(
                   "Accept",
-                  "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+                  "application/vnd.api+json");
             }
           });
       getApiGatewayProxyRequestEvent.setHttpMethod("GET");
@@ -145,7 +145,7 @@ public class LambdaTests extends BaseTest {
             {
               put(
                   "Accept",
-                  "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+                  "application/vnd.api+json");
             }
           });
       getApiGatewayProxyRequestEvent.setHttpMethod("GET");
@@ -172,7 +172,7 @@ public class LambdaTests extends BaseTest {
     getApiGatewayProxyRequestEvent.setHeaders(
         new HashMap<>() {
           {
-            put("Accept", "application/vnd.api+json,application/vnd.api+json; dataPartition=main");
+            put("Accept", "application/vnd.api+json");
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
@@ -186,5 +186,38 @@ public class LambdaTests extends BaseTest {
     final ProxyResponse getResponse =
         auditApi.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals("400", getResponse.statusCode);
+  }
+
+  @Test
+  public void testHealthCollection() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHttpMethod("GET");
+    apiGatewayProxyRequestEvent.setPath("/health/audits/GET");
+    final ProxyResponse postResponse =
+        auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals("200", postResponse.statusCode);
+  }
+
+  @Test
+  public void testHealthCreateItem() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHttpMethod("GET");
+    apiGatewayProxyRequestEvent.setPath("/health/audits/POST");
+    final ProxyResponse postResponse =
+        auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals("200", postResponse.statusCode);
+  }
+
+  @Test
+  public void testHealthGetItem() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHttpMethod("GET");
+    apiGatewayProxyRequestEvent.setPath("/health/audits/x/GET");
+    final ProxyResponse postResponse =
+        auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals("200", postResponse.statusCode);
   }
 }
