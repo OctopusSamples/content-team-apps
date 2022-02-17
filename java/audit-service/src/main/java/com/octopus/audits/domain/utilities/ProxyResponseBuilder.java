@@ -28,7 +28,7 @@ public class ProxyResponseBuilder {
    * @param requestBody The request body
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildError(@NonNull final Exception ex, final String requestBody) {
+  public static ProxyResponse buildError(@NonNull final Exception ex, @NonNull final String requestBody) {
     return new ProxyResponse(
         "500",
         "{\"errors\": [{\"code\": \""

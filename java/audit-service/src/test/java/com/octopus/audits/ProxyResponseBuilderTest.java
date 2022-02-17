@@ -2,6 +2,7 @@ package com.octopus.audits;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +15,25 @@ import org.junit.jupiter.api.Test;
 
 public class ProxyResponseBuilderTest {
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  @Test
+  public void testNulls() {
+    assertThrows(NullPointerException.class, () -> {
+      ProxyResponseBuilder.buildError(null);
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      ProxyResponseBuilder.buildError(new Exception(), null);
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      ProxyResponseBuilder.buildUnauthorizedRequest(null);
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      ProxyResponseBuilder.buildBadRequest(null);
+    });
+  }
 
   @Test
   public void testBuildError() throws JsonProcessingException {
