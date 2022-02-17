@@ -9,7 +9,7 @@ import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
-import com.octopus.audits.domain.utilities.DisableSecurityFeature;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtUtils;
 import com.octopus.audits.domain.utilities.PartitionIdentifier;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;

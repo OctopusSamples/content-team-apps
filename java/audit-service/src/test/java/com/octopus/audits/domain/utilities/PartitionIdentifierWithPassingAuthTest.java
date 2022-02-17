@@ -1,19 +1,22 @@
 package com.octopus.audits.domain.utilities;
 
+import static org.mockito.ArgumentMatchers.any;
+
+import com.octopus.audits.domain.features.AdminJwtGroupFeature;
 import com.octopus.audits.domain.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.ArrayList;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.locationtech.jts.util.Assert;
 import org.mockito.Mockito;
 
 @QuarkusTest
-public class PartitionIdentifierTest {
+public class PartitionIdentifierWithPassingAuthTest {
 
   @Inject
   PartitionIdentifier partitionIdentifier;
@@ -24,9 +27,14 @@ public class PartitionIdentifierTest {
   @InjectMock
   JwtVerifier jwtVerifier;
 
+  @InjectMock
+  AdminJwtGroupFeature adminJwtGroupFeature;
+
   @BeforeEach
   public void setup() {
-    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
+    Mockito.when(jwtVerifier.jwtContainsCognitoGroup(any(), any())).thenReturn(true);
+    Mockito.when(adminJwtGroupFeature.getAdminGroup()).thenReturn(Optional.of("Developers"));
   }
 
   @ParameterizedTest
@@ -49,46 +57,6 @@ public class PartitionIdentifierTest {
                 add(dataPartitionHeader);
               }
             },
-            ""));
-  }
-
-  @Test
-  public void testBlankHeaders() {
-    Assert.equals(
-        "main",
-        partitionIdentifier.getPartition(
-            new ArrayList<>() {
-              {
-                add(" , ");
-              }
-            },
-            ""));
-  }
-
-  @Test
-  public void testMissingHeaders() {
-    Assert.equals(
-        "main",
-        partitionIdentifier.getPartition(
-            new ArrayList<>(),
-            ""));
-  }
-
-  @Test
-  public void testNullHeaders() {
-    Assert.equals(
-        "main",
-        partitionIdentifier.getPartition(
-            null,
-            ""));
-  }
-
-  @Test
-  public void testEmptyHeaders() {
-    Assert.equals(
-        "main",
-        partitionIdentifier.getPartition(
-            new ArrayList<>(){{add("");}},
-            ""));
+            "blah"));
   }
 }

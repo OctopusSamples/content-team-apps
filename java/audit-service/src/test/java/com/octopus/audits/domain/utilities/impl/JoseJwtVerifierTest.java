@@ -6,17 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.nimbusds.jose.JOSEException;
-import com.octopus.audits.domain.utilities.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
-import java.io.IOException;
 import java.text.ParseException;
-import java.util.Base64;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 @QuarkusTest
 public class JoseJwtVerifierTest {

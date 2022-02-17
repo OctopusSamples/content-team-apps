@@ -25,5 +25,6 @@ public class RegExUtilsTest {
     assertEquals("hi", RegExUtils.getGroup(Pattern.compile("(?<group>.+)"), "hi", "group").get());
     assertTrue(RegExUtils.getGroup(Pattern.compile("(?<group>.+)"), null, "group").isEmpty());
     assertTrue(RegExUtils.getGroup(Pattern.compile("(?<group>.+)"), "hi", "missing").isEmpty());
+    assertTrue(RegExUtils.getGroup(Pattern.compile("(?<group>hi)"), "blah", "group").isEmpty());
   }
 }

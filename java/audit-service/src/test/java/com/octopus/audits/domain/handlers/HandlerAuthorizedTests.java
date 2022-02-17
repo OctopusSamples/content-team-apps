@@ -3,11 +3,10 @@ package com.octopus.audits.domain.handlers;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.BaseTest;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.Unauthorized;
-import com.octopus.audits.domain.utilities.DisableSecurityFeature;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;

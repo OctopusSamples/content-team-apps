@@ -7,7 +7,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.octopus.audits.GlobalConstants;
-import com.octopus.audits.domain.utilities.DisableSecurityFeature;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtVerifier;
 import io.quarkus.logging.Log;
 import java.io.IOException;

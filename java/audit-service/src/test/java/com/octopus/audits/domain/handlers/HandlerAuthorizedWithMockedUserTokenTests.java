@@ -7,7 +7,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.BaseTest;
 import com.octopus.audits.domain.entities.Audit;
-import com.octopus.audits.domain.utilities.DisableSecurityFeature;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtUtils;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;

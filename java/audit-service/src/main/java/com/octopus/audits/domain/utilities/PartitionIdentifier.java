@@ -1,6 +1,8 @@
 package com.octopus.audits.domain.utilities;
 
 import com.octopus.audits.domain.Constants;
+import com.octopus.audits.domain.features.AdminJwtGroupFeature;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import java.util.List;
 import java.util.Objects;
@@ -20,8 +22,8 @@ public class PartitionIdentifier {
   @Inject
   JoseJwtVerifier jwtVerifier;
 
-  @ConfigProperty(name = "cognito.admin-group")
-  Optional<String> adminGroup;
+  @Inject
+  AdminJwtGroupFeature adminJwtGroupFeature;
 
   @Inject
   DisableSecurityFeature cognitoDisableAuth;
@@ -34,19 +36,14 @@ public class PartitionIdentifier {
    * @return The partition that the request is made under, defaulting to main.
    */
   public String getPartition(final List<String> header, final String jwt) {
-    return getPartition(header, jwt, false);
-  }
-
-  String getPartition(final List<String> header, final String jwt, final boolean assumeValid) {
     /*
       The caller must be a member of a known group to make use of data partitions.
       Everyone else must work in the main partition.
      */
-    if (!assumeValid
-        && !cognitoDisableAuth.getCognitoAuthDisabled()
-        && (adminGroup.isEmpty()
+    if (!cognitoDisableAuth.getCognitoAuthDisabled()
+        && (adminJwtGroupFeature.getAdminGroup().isEmpty()
         || StringUtils.isBlank(jwt)
-        || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {
+        || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))) {
       return Constants.DEFAULT_PARTITION;
     }
 
