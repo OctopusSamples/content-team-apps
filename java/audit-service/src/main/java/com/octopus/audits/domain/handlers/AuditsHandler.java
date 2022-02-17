@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.audits.domain.Constants;
+import com.octopus.audits.domain.PagedResultsLinksBuilder;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
@@ -94,7 +95,7 @@ public class AuditsHandler {
             pageLimit);
     final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(audits.getList());
 
-    generatePageLinks(document, pageLimit, pageOffset, audits);
+    PagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, audits);
 
     final byte[] content = resourceConverter.writeDocumentCollection(document);
     return new String(content);
@@ -231,37 +232,5 @@ public class AuditsHandler {
     return adminGroup.isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
         .map(jwt -> jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))
         .orElse(false);
-  }
-
-  private void generatePageLinks(
-      final JSONAPIDocument<List<Audit>> document,
-      final String pageLimit,
-      final String pageOffset,
-      final FilteredResultWrapper<Audit> audits) {
-    final int pageLimitParsed = NumberUtils.toInt(pageLimit, com.octopus.audits.application.Constants.DEFAULT_PAGE_LIMIT);
-    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, com.octopus.audits.application.Constants.DEFAULT_PAGE_OFFSET);
-    final long lastOffset = Math.max(audits.getCount() - pageLimitParsed, 0);
-
-    // See https://jsonapi.org/format/#document-links for an example of link metadata including a count
-    final Map<String, Long> linkMeta = new ImmutableMap.Builder<String, Long>()
-        .put("total",  audits.getCount())
-            .build();
-
-    document.addLink("first", new Link("/api/audits?page[offset]=0&page[limit]=" + pageLimitParsed, linkMeta));
-    document.addLink("last", new Link("/api/audits?page[offset]=" + lastOffset + "&page[limit]=" + pageLimitParsed, linkMeta));
-
-    if (lastOffset > pageOffsetParsed) {
-      document.addLink("next", new Link(
-          "/api/audits?page[offset]=" + Math.min(audits.getCount() - pageLimitParsed, pageOffsetParsed + pageLimitParsed) + "&page[limit]="
-              + pageLimit,
-          linkMeta));
-    }
-
-    if (pageOffsetParsed > 0) {
-      document.addLink("prev", new Link(
-          "/api/audits?page[offset]=" + Math.max(0, pageOffsetParsed - pageLimitParsed) + "&page[limit]="
-              + pageLimit,
-          linkMeta));
-    }
   }
 }

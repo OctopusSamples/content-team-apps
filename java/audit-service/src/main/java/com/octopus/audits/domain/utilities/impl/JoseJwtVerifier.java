@@ -44,12 +44,16 @@ public class JoseJwtVerifier implements JwtVerifier {
    */
   @Override
   public boolean jwtContainsCognitoGroup(final String jwt, final String group) {
-    if (!configIsValid()) {
+    return jwtContainsCognitoGroup(jwt, group, false);
+  }
+
+  boolean jwtContainsCognitoGroup(final String jwt, final String group, final boolean assumeValid) {
+    if (!assumeValid && !configIsValid()) {
       return false;
     }
 
     try {
-      if (jwtIsValid(jwt, cognitoJwk.get())) {
+      if (assumeValid || jwtIsValid(jwt, cognitoJwk.get())) {
         final JWSObject jwsObject = JWSObject.parse(jwt);
         final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
         if (payload.containsKey(COGNITO_GROUPS)) {
@@ -76,12 +80,16 @@ public class JoseJwtVerifier implements JwtVerifier {
    */
   @Override
   public boolean jwtContainsScope(final String jwt, final String scope, final String clientId) {
-    if (!configIsValid()) {
+    return jwtContainsScope(jwt, scope, clientId, false);
+  }
+
+  public boolean jwtContainsScope(final String jwt, final String scope, final String clientId, final boolean assumeValid) {
+    if (!assumeValid && !configIsValid()) {
       return false;
     }
 
     try {
-      if (jwtIsValid(jwt, cognitoJwk.get())) {
+      if (assumeValid || jwtIsValid(jwt, cognitoJwk.get())) {
         if (extractScope(jwt).contains(scope)) {
           final boolean valid = extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
           if (!valid) {
@@ -108,7 +116,7 @@ public class JoseJwtVerifier implements JwtVerifier {
    * @return The list of scopes.
    * @throws ParseException If the string couldn't be parsed to a JWS object.
    */
-  public List<String> extractScope(final String jwt) throws ParseException {
+  private List<String> extractScope(final String jwt) throws ParseException {
     final Map<String, Object> payload = getPayload(jwt);
     if (payload.containsKey(SCOPE)) {
       return Arrays.asList(payload.get(SCOPE).toString().split(" "));
