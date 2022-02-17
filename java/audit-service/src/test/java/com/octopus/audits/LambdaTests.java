@@ -1,6 +1,7 @@
 package com.octopus.audits;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.Context;
@@ -13,6 +14,7 @@ import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import javax.inject.Inject;
@@ -41,6 +43,17 @@ public class LambdaTests extends BaseTest {
   }
 
   @Test
+  public void assertEventIsNotNull() {
+    assertThrows(NullPointerException.class, () -> {
+      auditApi.handleRequest(null, Mockito.mock(Context.class));
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      auditApi.handleRequest(new APIGatewayProxyRequestEvent(), null);
+    });
+  }
+
+  @Test
   public void testLambdaCreateAndGet() throws DocumentSerializationException {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
@@ -54,6 +67,45 @@ public class LambdaTests extends BaseTest {
     apiGatewayProxyRequestEvent.setPath("/api/audits");
     apiGatewayProxyRequestEvent.setBody(
         auditToResourceDocument(resourceConverter, createAudit("testCreateAndGetResource")));
+    final ProxyResponse postResponse =
+        auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final Audit postEntity = getAuditFromDocument(resourceConverter, postResponse.body);
+    assertEquals("testCreateAndGetResource", postEntity.getSubject());
+    assertEquals("200", postResponse.statusCode);
+
+    final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    getApiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put("Accept", "application/vnd.api+json");
+          }
+        });
+    getApiGatewayProxyRequestEvent.setHttpMethod("GET");
+    getApiGatewayProxyRequestEvent.setPath("/api/audits/" + postEntity.getId());
+    final ProxyResponse getResponse =
+        auditApi.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final Audit getEntity = getAuditFromDocument(resourceConverter, getResponse.body);
+    assertEquals(getEntity.getSubject(), postEntity.getSubject());
+  }
+
+  @Test
+  public void testLambdaCreateAndGetBase64Encoded() throws DocumentSerializationException {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setIsBase64Encoded(true);
+    apiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put("Accept", "application/vnd.api+json");
+          }
+        });
+    apiGatewayProxyRequestEvent.setHttpMethod("POST");
+    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setBody(
+        Base64.getEncoder().encodeToString(
+            auditToResourceDocument(resourceConverter,
+                createAudit("testCreateAndGetResource")).getBytes()));
     final ProxyResponse postResponse =
         auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Audit postEntity = getAuditFromDocument(resourceConverter, postResponse.body);
