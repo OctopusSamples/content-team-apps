@@ -1,4 +1,4 @@
-package com.octopus.audits;
+package com.octopus.audits.domain.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

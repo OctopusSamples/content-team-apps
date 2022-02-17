@@ -1,12 +1,10 @@
 package com.octopus.audits.domain.handlers;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
-import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.google.common.collect.ImmutableMap;
 import com.octopus.audits.domain.Constants;
-import com.octopus.audits.domain.PagedResultsLinksBuilder;
+import com.octopus.audits.domain.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
@@ -18,13 +16,11 @@ import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import com.octopus.audits.infrastructure.repositories.AuditRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -169,7 +165,7 @@ public class AuditsHandler {
     throw new EntityNotFound();
   }
 
-  private Audit getResourceFromDocument(@NonNull final String document) {
+  private Audit getResourceFromDocument(final String document) {
     try {
       final JSONAPIDocument<Audit> resourceDocument =
           resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Audit.class);
@@ -187,7 +183,7 @@ public class AuditsHandler {
     }
   }
 
-  private String respondWithResource(@NonNull final Audit audit)
+  private String respondWithResource(final Audit audit)
       throws DocumentSerializationException {
     final JSONAPIDocument<Audit> document = new JSONAPIDocument<Audit>(audit);
     return new String(resourceConverter.writeDocument(document));

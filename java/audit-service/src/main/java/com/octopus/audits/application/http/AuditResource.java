@@ -4,10 +4,13 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.application.Constants;
 import com.octopus.audits.domain.exceptions.InvalidAcceptHeaders;
 import com.octopus.audits.domain.handlers.AuditsHandler;
+import com.octopus.audits.domain.jsonapi.AcceptHeaderVerifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -33,6 +36,9 @@ public class AuditResource {
   @Inject
   AuditsHandler auditsHandler;
 
+  @Inject
+  AcceptHeaderVerifier acceptHeaderVerifier;
+
   /**
    * The resource collection endpoint.
    *
@@ -54,7 +60,7 @@ public class AuditResource {
       @QueryParam(Constants.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
       @QueryParam(Constants.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
       throws DocumentSerializationException {
-    checkAcceptHeader(acceptHeader);
+    acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.getAll(
             dataPartitionHeaders,
             filter,
@@ -85,7 +91,7 @@ public class AuditResource {
       @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    checkAcceptHeader(acceptHeader);
+    acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.create(
             document,
             dataPartitionHeaders,
@@ -114,29 +120,11 @@ public class AuditResource {
       @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
-    checkAcceptHeader(acceptHeader);
+    acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Optional.ofNullable(auditsHandler.getOne(id, dataPartitionHeaders,
             authorizationHeader.stream().findFirst().orElse(null),
             serviceAuthorizationHeader.stream().findFirst().orElse(null)))
         .map(d -> Response.ok(d).build())
         .orElse(Response.status(Status.NOT_FOUND).build());
-  }
-
-  private void checkAcceptHeader(final List<String> acceptHeader) {
-    if (acceptHeader == null || acceptHeader.isEmpty()) {
-      return;
-    }
-
-    final boolean allAcceptHeadersHaveMediaTypes =
-        acceptHeader.stream()
-            .filter(Objects::nonNull)
-            .flatMap(h -> Arrays.stream(h.split(",")))
-            .map(String::trim)
-            .filter(h -> h.startsWith(Constants.JSONAPI_CONTENT_TYPE))
-            .noneMatch(Constants.JSONAPI_CONTENT_TYPE::equals);
-
-    if (allAcceptHeadersHaveMediaTypes) {
-      throw new InvalidAcceptHeaders();
-    }
   }
 }

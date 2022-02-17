@@ -1,9 +1,10 @@
-package com.octopus.audits;
+package com.octopus.audits.application.http;
 
 import static io.restassured.RestAssured.given;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.audits.BaseTest;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
@@ -110,7 +111,6 @@ public class HttpApiTest extends BaseTest {
 
   @Test
   public void failWithMissingContentTypeForPost() throws DocumentSerializationException {
-    final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
             .header("data-partition", "main")
@@ -125,7 +125,6 @@ public class HttpApiTest extends BaseTest {
 
   @Test
   public void failWithoutPlainAcceptForPost() throws DocumentSerializationException {
-    final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json; something")
             .header("data-partition", "main")
@@ -141,7 +140,6 @@ public class HttpApiTest extends BaseTest {
 
   @Test
   public void failWithoutPlainAcceptForGet() {
-    final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json; something")
             .when()
@@ -152,13 +150,21 @@ public class HttpApiTest extends BaseTest {
 
   @Test
   public void failWithoutPlainAcceptForGetAll() {
-    final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json; something")
             .when()
             .get("/api/audits")
             .then()
             .statusCode(406);
+  }
+
+  @Test
+  public void passWithNoAcceptForGetAll() {
+        given()
+            .when()
+            .get("/api/audits")
+            .then()
+            .statusCode(200);
   }
 
   @Test

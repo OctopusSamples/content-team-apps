@@ -141,13 +141,8 @@ public class AuditRepository {
     return audit;
   }
 
-  private void validateEntity(@NonNull final Audit audit) {
-    final Set<ConstraintViolation<Audit>> violations = validator.validate(audit);
-    if (violations.isEmpty()) {
-      return;
-    }
-
-    /*
+  private void validateEntity(final Audit audit) {
+     /*
       A sanity check to ensure that any audit record that indicates it has encrypted values
       has encoded those values as Base64. Note that this doesn't verify that the values are actually
       encrypted, but simply serves as a safeguard to ensure clients creating encrypted entries
@@ -159,6 +154,11 @@ public class AuditRepository {
 
     if (audit.encryptedObject && !Base64.isBase64(audit.object)) {
       throw new InvalidInput("Encrypted values must be encoded as Base64");
+    }
+
+    final Set<ConstraintViolation<Audit>> violations = validator.validate(audit);
+    if (violations.isEmpty()) {
+      return;
     }
 
     throw new InvalidInput(

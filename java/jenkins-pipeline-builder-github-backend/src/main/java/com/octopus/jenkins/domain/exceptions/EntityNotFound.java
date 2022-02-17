@@ -10,8 +10,4 @@ public class EntityNotFound extends RuntimeException {
   public EntityNotFound() {
     super();
   }
-
-  public EntityNotFound(@NonNull final Exception ex) {
-    super(ex);
-  }
 }

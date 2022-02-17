@@ -1,7 +1,8 @@
-package com.octopus.audits;
+package com.octopus.audits.application.http;
 
 import static io.restassured.RestAssured.given;
 
+import com.octopus.audits.BaseTest;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;

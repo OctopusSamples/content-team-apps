@@ -1,4 +1,4 @@
-package com.octopus.audits.domain;
+package com.octopus.audits.domain.jsonapi;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.Link;

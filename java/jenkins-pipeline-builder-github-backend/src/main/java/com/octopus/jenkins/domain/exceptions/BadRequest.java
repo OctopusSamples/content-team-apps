@@ -9,8 +9,4 @@ public class BadRequest extends RuntimeException {
   public BadRequest() {
     super();
   }
-
-  public BadRequest(@NonNull final Exception ex) {
-    super(ex);
-  }
 }

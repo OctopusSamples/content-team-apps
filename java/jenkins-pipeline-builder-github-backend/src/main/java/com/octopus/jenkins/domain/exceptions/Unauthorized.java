@@ -9,8 +9,4 @@ public class Unauthorized extends RuntimeException {
   public Unauthorized() {
     super();
   }
-
-  public Unauthorized(@NonNull final Exception ex) {
-    super(ex);
-  }
 }

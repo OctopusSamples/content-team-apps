@@ -1,10 +1,10 @@
-package com.octopus.audits;
+package com.octopus.audits.domain.jsonapi;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
-import com.octopus.audits.domain.PagedResultsLinksBuilder;
+import com.octopus.audits.domain.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import java.util.List;
@@ -22,5 +22,18 @@ public class PagedResultsLinksBuilderTests {
     assertTrue(document.getLinks().getLinks().entrySet().stream().anyMatch(e -> "first".equals(e.getKey())));
     assertTrue(document.getLinks().getFirst().getMeta().containsKey("total"));
     assertTrue(document.getLinks().getLast().getMeta().containsKey("total"));
+  }
+
+  @Test
+  public void verifyNullInputs() {
+    final List<Audit> resourceList = List.of(new Audit());
+    final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(resourceList);
+    final FilteredResultWrapper results = new FilteredResultWrapper(resourceList, 1l);
+    assertThrows(NullPointerException.class, () -> {
+      PagedResultsLinksBuilder.generatePageLinks(null, "10", "10", results);
+    });
+    assertThrows(NullPointerException.class, () -> {
+      PagedResultsLinksBuilder.generatePageLinks(document, "10", "10", null);
+    });
   }
 }

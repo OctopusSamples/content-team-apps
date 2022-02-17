@@ -10,8 +10,4 @@ public class ServerError extends RuntimeException {
   public ServerError() {
     super();
   }
-
-  public ServerError(@NonNull final Exception ex) {
-    super(ex);
-  }
 }

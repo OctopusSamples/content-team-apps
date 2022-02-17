@@ -1,7 +1,5 @@
 package com.octopus.audits.domain.exceptions;
 
-import lombok.NonNull;
-
 /**
  * The exception thrown when a request includes accept headers contain the JSON API content type,
  * and also all include media type parameters. From the spec
@@ -14,9 +12,5 @@ import lombok.NonNull;
 public class InvalidAcceptHeaders extends RuntimeException {
   public InvalidAcceptHeaders() {
     super();
-  }
-
-  public InvalidAcceptHeaders(@NonNull final Exception ex) {
-    super(ex);
   }
 }

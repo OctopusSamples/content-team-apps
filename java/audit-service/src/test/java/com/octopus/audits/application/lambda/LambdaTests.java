@@ -1,4 +1,4 @@
-package com.octopus.audits;
+package com.octopus.audits.application.lambda;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.audits.BaseTest;
 import com.octopus.audits.application.lambda.AuditApi;
 import com.octopus.audits.application.lambda.ProxyResponse;
 import com.octopus.audits.domain.entities.Audit;

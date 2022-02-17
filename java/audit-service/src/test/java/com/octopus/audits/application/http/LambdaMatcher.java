@@ -1,4 +1,4 @@
-package com.octopus.audits;
+package com.octopus.audits.application.http;
 
 import java.util.function.Function;
 import org.hamcrest.BaseMatcher;

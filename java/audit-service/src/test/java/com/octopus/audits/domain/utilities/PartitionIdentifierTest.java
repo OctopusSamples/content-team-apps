@@ -1,4 +1,4 @@
-package com.octopus.audits;
+package com.octopus.audits.domain.utilities;
 
 import com.octopus.audits.domain.utilities.PartitionIdentifier;
 import io.quarkus.test.junit.QuarkusTest;

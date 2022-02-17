@@ -1,5 +1,7 @@
 package com.octopus.audits.domain.framework.producers;
 
+import com.octopus.audits.domain.jsonapi.AcceptHeaderVerifier;
+import com.octopus.audits.domain.jsonapi.impl.VersionOneAcceptHeaderVerifier;
 import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
@@ -32,5 +34,16 @@ public class UtilityProducer {
   @Produces
   public LambdaHttpHeaderExtractor getHeaderExtractor() {
     return new CaseInsensitiveHttpHeaderExtractor();
+  }
+
+  /**
+   * Produces the "Accept" header verifier.
+   *
+   * @return An implementation of AcceptHeaderVerifier.
+   */
+  @ApplicationScoped
+  @Produces
+  public AcceptHeaderVerifier getAcceptHeaderVerifier() {
+    return new VersionOneAcceptHeaderVerifier();
   }
 }

@@ -8,10 +8,6 @@ public class InvalidInput extends RuntimeException {
     super();
   }
 
-  public InvalidInput(@NonNull final Exception ex) {
-    super(ex);
-  }
-
   public InvalidInput(@NonNull final String message) {
     super(message);
   }
