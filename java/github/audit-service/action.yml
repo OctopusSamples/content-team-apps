@@ -102,12 +102,18 @@ runs:
       shell: bash
       working-directory: java/audit-service
 
+    - name: Test Common
+      run: mvn --batch-mode test
+      shell: bash
+      working-directory: java/pipeline-builder-utils
+
     - name: Generate JaCoCo Badges
-      id: jacocoMod1
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
-        jacoco-csv-file: java/audit-service/target/site/jacoco/jacoco.csv
+        jacoco-csv-file: >
+          java/audit-service/target/site/jacoco/jacoco.csv
+          java/pipeline-builder-utils/target/site/jacoco/jacoco.csv
         coverage-badge-filename: audits.svg
         branches-badge-filename: auditsbranches.svg
 
