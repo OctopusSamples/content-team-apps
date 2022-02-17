@@ -1,3 +1,1 @@
-![Coverage](../../.github/badges/audits.svg) 
-
-![Branches](../../.github/badges/auditsbranches.svg) 
+![Coverage](../../.github/badges/audits.svg) ![Branches](../../.github/badges/auditsbranches.svg) 

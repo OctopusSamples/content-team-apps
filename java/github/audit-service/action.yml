@@ -113,7 +113,6 @@ runs:
         generate-branches-badge: true
         jacoco-csv-file: >
           java/audit-service/target/site/jacoco/jacoco.csv
-          java/pipeline-builder-utils/target/site/jacoco/jacoco.csv
         coverage-badge-filename: audits.svg
         branches-badge-filename: auditsbranches.svg
 
