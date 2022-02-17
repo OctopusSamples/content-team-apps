@@ -54,6 +54,24 @@ public class LambdaTests extends BaseTest {
   }
 
   @Test
+  public void testLambdaCreateWithBadBody() throws DocumentSerializationException {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put("Accept", "application/vnd.api+json");
+          }
+        });
+    apiGatewayProxyRequestEvent.setHttpMethod("POST");
+    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setBody("Not a valid JSON document");
+    final ProxyResponse postResponse =
+        auditApi.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals("400", postResponse.statusCode);
+  }
+
+  @Test
   public void testLambdaCreateAndGet() throws DocumentSerializationException {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();

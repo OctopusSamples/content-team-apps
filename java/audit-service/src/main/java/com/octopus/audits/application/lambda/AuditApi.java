@@ -3,12 +3,16 @@ package com.octopus.audits.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.application.Constants;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
 import com.octopus.audits.domain.handlers.AuditsHandler;
 import com.octopus.audits.domain.handlers.HealthHandler;
+import com.octopus.audits.domain.utilities.ProxyResponseBuilder;
+import com.octopus.audits.domain.utilities.RegExUtils;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import cz.jirutka.rsql.parser.RSQLParserException;
@@ -68,7 +72,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
         .or(() -> getOne(input))
         .or(() -> createOne(input))
         .or(() -> checkHealth(input))
-        .orElse(buildNotFound());
+        .orElse(ProxyResponseBuilder.buildNotFound());
   }
 
   /**
@@ -100,7 +104,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param input The request details
    * @return The optional proxy response
    */
-  private Optional<ProxyResponse> checkHealth(@NonNull final APIGatewayProxyRequestEvent input) {
+  private Optional<ProxyResponse> checkHealth(final APIGatewayProxyRequestEvent input) {
 
     if (requestIsMatch(input, HEALTH_RE, Constants.GET_METHOD)) {
       try {
@@ -112,7 +116,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     input.getPath().substring(input.getPath().lastIndexOf("/")))));
       } catch (final Exception e) {
         e.printStackTrace();
-        return Optional.of(buildError(e));
+        return Optional.of(ProxyResponseBuilder.buildError(e));
       }
     }
 
@@ -125,7 +129,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> getAll(@NonNull final APIGatewayProxyRequestEvent input) {
+  private Optional<ProxyResponse> getAll(final APIGatewayProxyRequestEvent input) {
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.GET_METHOD)) {
         return Optional.of(
@@ -140,12 +144,12 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final RSQLParserException e) {
-      return Optional.of(buildBadRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(buildError(e));
+      return Optional.of(ProxyResponseBuilder.buildError(e));
     }
 
     return Optional.empty();
@@ -157,11 +161,11 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> getOne(@NonNull final APIGatewayProxyRequestEvent input) {
+  private Optional<ProxyResponse> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
       if (requestIsMatch(input, INDIVIDUAL_RE, Constants.GET_METHOD)) {
-        final Optional<String> id = getGroup(INDIVIDUAL_RE, input.getPath(), "id");
+        final Optional<String> id = RegExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
         if (id.isPresent()) {
           final String entity =
@@ -173,15 +177,15 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
 
           return Optional.of(new ProxyResponse("200", entity));
         }
-        return Optional.of(buildNotFound());
+        return Optional.of(ProxyResponseBuilder.buildNotFound());
       }
     } catch (final Unauthorized e) {
-      return Optional.of(buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final EntityNotFound ex) {
-      return Optional.of(buildNotFound());
+      return Optional.of(ProxyResponseBuilder.buildNotFound());
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(buildError(e));
+      return Optional.of(ProxyResponseBuilder.buildError(e));
     }
 
     return Optional.empty();
@@ -193,7 +197,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> createOne(@NonNull final APIGatewayProxyRequestEvent input) {
+  private Optional<ProxyResponse> createOne(final APIGatewayProxyRequestEvent input) {
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.POST_METHOD)) {
         return Optional.of(
@@ -206,35 +210,12 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final InvalidInput e) {
-      return Optional.of(buildBadRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(buildError(e, getBody(input)));
-    }
-
-    return Optional.empty();
-  }
-
-  /**
-   * Get the regex group from the pattern for the input.
-   *
-   * @param pattern The regex pattern.
-   * @param input The input to apply the pattern to.
-   * @param group The group name to return.
-   * @return The regex group value.
-   */
-  private Optional<String> getGroup(
-      @NonNull final Pattern pattern, final Object input, @NonNull final String group) {
-    if (input == null) {
-      return Optional.empty();
-    }
-
-    final Matcher matcher = pattern.matcher(input.toString());
-
-    if (matcher.find()) {
-      return Optional.of(matcher.group(group));
+      return Optional.of(ProxyResponseBuilder.buildError(e, getBody(input)));
     }
 
     return Optional.empty();
@@ -263,7 +244,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @param input The Lambda request
    * @return The unencoded request body
    */
-  private String getBody(@NonNull final APIGatewayProxyRequestEvent input) {
+  private String getBody(final APIGatewayProxyRequestEvent input) {
     final String body = ObjectUtils.defaultIfNull(input.getBody(), "");
     final String isBase64Encoded =
         ObjectUtils.defaultIfNull(input.getIsBase64Encoded(), "").toString().toLowerCase();
@@ -273,64 +254,5 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
     }
 
     return body;
-  }
-
-  /**
-   * Build an error object including the exception name and the body of the request that was sent.
-   * https://jsonapi.org/format/#error-objects
-   *
-   * @param ex The exception
-   * @param requestBody The request body
-   * @return The ProxyResponse representing the error.
-   */
-  private ProxyResponse buildError(@NonNull final Exception ex, final String requestBody) {
-    return new ProxyResponse(
-        "500",
-        "{\"errors\": [{\"code\": \""
-            + ex.getClass().getCanonicalName()
-            + "\", \"meta\": {\"requestBody\": \""
-            + StringEscapeUtils.escapeJson(requestBody)
-            + "\"}}]}");
-  }
-
-  /**
-   * Build an error object including the exception name. https://jsonapi.org/format/#error-objects
-   *
-   * @param ex The exception
-   * @return The ProxyResponse representing the error.
-   */
-  private ProxyResponse buildError(@NonNull final Exception ex) {
-    return new ProxyResponse(
-        "500", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
-  }
-
-  /**
-   * Build a error object for a 404 not found error. https://jsonapi.org/format/#error-objects
-   *
-   * @return The ProxyResponse representing the error.
-   */
-  private ProxyResponse buildNotFound() {
-    return new ProxyResponse("404", "{\"errors\": [{\"title\": \"Resource not found\"}]}");
-  }
-
-  /**
-   * Build an error object including the exception name. https://jsonapi.org/format/#error-objects
-   *
-   * @param ex The exception
-   * @return The ProxyResponse representing the error.
-   */
-  private ProxyResponse buildBadRequest(@NonNull final Exception ex) {
-    return new ProxyResponse(
-        "400", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
-  }
-
-  /**
-   * Build an error object including the exception name. https://jsonapi.org/format/#error-objects
-   *
-   * @param ex The exception
-   * @return The ProxyResponse representing the error.
-   */
-  private ProxyResponse buildUnauthorizedRequest(@NonNull final Exception ex) {
-    return new ProxyResponse("403", "{\"errors\": [{\"title\": \"Unauthorized\"}]}");
   }
 }

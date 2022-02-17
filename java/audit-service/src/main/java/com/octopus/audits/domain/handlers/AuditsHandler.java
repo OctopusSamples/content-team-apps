@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.octopus.audits.domain.Constants;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
+import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
 import com.octopus.audits.domain.utilities.JwtUtils;
 import com.octopus.audits.domain.utilities.PartitionIdentifier;
@@ -167,16 +168,21 @@ public class AuditsHandler {
   }
 
   private Audit getResourceFromDocument(@NonNull final String document) {
-    final JSONAPIDocument<Audit> resourceDocument =
-        resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Audit.class);
-    final Audit audit = resourceDocument.get();
+    try {
+      final JSONAPIDocument<Audit> resourceDocument =
+          resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Audit.class);
+      final Audit audit = resourceDocument.get();
     /*
      The ID of an audit is determined by the URL, while the partition comes froms
      the headers. If either of these values was sent by the client, strip them out.
     */
-    audit.id = null;
-    audit.dataPartition = null;
-    return audit;
+      audit.id = null;
+      audit.dataPartition = null;
+      return audit;
+    } catch (final Exception ex) {
+      // Assume the JSON is unable to be parsed.
+      throw new InvalidInput();
+    }
   }
 
   private String respondWithResource(@NonNull final Audit audit)
