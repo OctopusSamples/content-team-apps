@@ -26,8 +26,8 @@ public class PagedResultsLinksBuilder {
    */
   public static <T> void generatePageLinks(
       @NonNull final JSONAPIDocument<List<T>> document,
-      @NonNull final String pageLimit,
-      @NonNull final String pageOffset,
+      final String pageLimit,
+      final String pageOffset,
       @NonNull final FilteredResultWrapper<T> audits) {
     final int pageLimitParsed = NumberUtils.toInt(pageLimit, com.octopus.audits.application.Constants.DEFAULT_PAGE_LIMIT);
     final int pageOffsetParsed = NumberUtils.toInt(pageOffset, com.octopus.audits.application.Constants.DEFAULT_PAGE_OFFSET);
