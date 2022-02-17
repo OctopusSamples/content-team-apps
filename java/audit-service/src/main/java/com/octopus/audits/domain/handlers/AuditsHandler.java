@@ -93,7 +93,8 @@ public class AuditsHandler {
             filterParam,
             pageOffset,
             pageLimit);
-    final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(audits.getList());
+    final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(
+        audits.getList());
 
     PagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, audits);
 
