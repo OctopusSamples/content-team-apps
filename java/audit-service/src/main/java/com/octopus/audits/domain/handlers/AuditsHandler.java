@@ -9,6 +9,7 @@ import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
+import com.octopus.audits.domain.utilities.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtUtils;
 import com.octopus.audits.domain.utilities.PartitionIdentifier;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
@@ -37,8 +38,8 @@ public class AuditsHandler {
   @ConfigProperty(name = "cognito.client-id")
   String cognitoClientId;
 
-  @ConfigProperty(name = "cognito.disable-auth")
-  Boolean cognitoDisableAuth;
+  @Inject
+  DisableSecurityFeature cognitoDisableAuth;
 
   @ConfigProperty(name = "cognito.admin-group")
   Optional<String> adminGroup;
@@ -209,7 +210,7 @@ public class AuditsHandler {
       * Otherwise, return false.
      */
 
-    if (cognitoDisableAuth) {
+    if (cognitoDisableAuth.getCognitoAuthDisabled()) {
       return true;
     }
 

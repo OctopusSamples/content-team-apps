@@ -23,8 +23,8 @@ public class PartitionIdentifier {
   @ConfigProperty(name = "cognito.admin-group")
   Optional<String> adminGroup;
 
-  @ConfigProperty(name = "cognito.disable-auth")
-  boolean cognitoDisableAuth;
+  @Inject
+  DisableSecurityFeature cognitoDisableAuth;
 
   /**
    * The "Data-Partition" header contains the partition information.
@@ -34,11 +34,16 @@ public class PartitionIdentifier {
    * @return The partition that the request is made under, defaulting to main.
    */
   public String getPartition(final List<String> header, final String jwt) {
+    return getPartition(header, jwt, false);
+  }
+
+  String getPartition(final List<String> header, final String jwt, final boolean assumeValid) {
     /*
       The caller must be a member of a known group to make use of data partitions.
       Everyone else must work in the main partition.
      */
-    if (!cognitoDisableAuth
+    if (!assumeValid
+        && !cognitoDisableAuth.getCognitoAuthDisabled()
         && (adminGroup.isEmpty()
         || StringUtils.isBlank(jwt)
         || !jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))) {

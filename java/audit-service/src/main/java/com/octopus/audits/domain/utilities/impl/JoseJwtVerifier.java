@@ -7,6 +7,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.octopus.audits.GlobalConstants;
+import com.octopus.audits.domain.utilities.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtVerifier;
 import io.quarkus.logging.Log;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -36,8 +38,8 @@ public class JoseJwtVerifier implements JwtVerifier {
   @ConfigProperty(name = "cognito.jwk-base64")
   Optional<String> cognitoJwk;
 
-  @ConfigProperty(name = "cognito.disable-auth")
-  boolean cognitoDisableAuth;
+  @Inject
+  DisableSecurityFeature cognitoDisableAuth;
 
   /**
    * {@inheritDoc}
@@ -145,7 +147,7 @@ public class JoseJwtVerifier implements JwtVerifier {
   }
 
   private boolean configIsValid() {
-    return cognitoDisableAuth
+    return cognitoDisableAuth.getCognitoAuthDisabled()
         || (cognitoJwk.isPresent()
         && StringUtils.isNotEmpty(cognitoJwk.get()));
   }

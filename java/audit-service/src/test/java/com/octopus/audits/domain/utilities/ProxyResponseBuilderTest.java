@@ -27,6 +27,10 @@ public class ProxyResponseBuilderTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
+      ProxyResponseBuilder.buildError(null, "");
+    });
+
+    assertThrows(NullPointerException.class, () -> {
       ProxyResponseBuilder.buildUnauthorizedRequest(null);
     });
 

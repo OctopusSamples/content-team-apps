@@ -1,6 +1,9 @@
 package com.octopus.audits.domain.utilities;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ import org.locationtech.jts.util.Assert;
 import org.mockito.Mockito;
 
 @QuarkusTest
-public class PartitionIdentifierTest {
+public class PartitionIdentifierWithAuthTest {
 
   @Inject
   PartitionIdentifier partitionIdentifier;
@@ -21,9 +24,13 @@ public class PartitionIdentifierTest {
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
 
+  @InjectMock
+  JoseJwtVerifier jwtVerifier;
+
   @BeforeEach
   public void setup() {
-    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
+    Mockito.when(jwtVerifier.jwtContainsCognitoGroup(any(), any())).thenReturn(false);
   }
 
   @ParameterizedTest
@@ -31,9 +38,9 @@ public class PartitionIdentifierTest {
       "main,main",
       "main,main ",
       "main, main ",
-      "testing,testing",
-      "testing,testing ",
-      "testing, testing ",
+      "main,testing",
+      "main,testing ",
+      "main, testing ",
       "main, ",
       "main,"
   })
@@ -46,20 +53,6 @@ public class PartitionIdentifierTest {
                 add(dataPartitionHeader);
               }
             },
-            ""));
-  }
-
-  @Test
-  public void testBlankHeaders() {
-    Assert.equals(
-        "main",
-        partitionIdentifier.getPartition(
-            new ArrayList<>() {
-              {
-                add(" , ");
-              }
-            },
-            "",
-            true));
+            "blah"));
   }
 }

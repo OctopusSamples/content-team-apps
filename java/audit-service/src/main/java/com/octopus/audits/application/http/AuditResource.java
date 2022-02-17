@@ -85,7 +85,7 @@ public class AuditResource {
   @Produces(Constants.JSONAPI_CONTENT_TYPE)
   @Transactional
   public Response create(
-      @NonNull final String document,
+      final String document,
       @HeaderParam(Constants.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
       @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,

@@ -78,6 +78,11 @@ public class JoseJwtVerifierTest {
     assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "unknown", true));
   }
 
+  @Test
+  public void verifyMissingGroupExtraction() {
+    assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(SIMPLE_JWT, "unknown", true));
+  }
+
   @Test()
   public void verifyTokenExpired() throws ParseException, IOException, JOSEException {
     final String jwkBase64 = Base64.getEncoder().encodeToString(JWK.getBytes());
