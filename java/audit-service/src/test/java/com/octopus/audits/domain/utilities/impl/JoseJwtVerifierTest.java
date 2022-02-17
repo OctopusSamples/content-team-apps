@@ -28,6 +28,12 @@ public class JoseJwtVerifierTest {
   }
 
   @Test
+  public void verifyBadJwtClaimsExtraction() {
+    assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope("blah", "audit.content-team/admin",
+        M2M_CLIENT_ID, true));
+  }
+
+  @Test
   public void verifyBadClientClaimsExtraction() {
     assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
         "Unknown", true));
@@ -42,6 +48,11 @@ public class JoseJwtVerifierTest {
   @Test
   public void verifyGroupExtraction() {
     assertTrue(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers", true));
+  }
+
+  @Test
+  public void verifyBadJwtGroupExtraction() {
+    assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup("blah", "Developers", true));
   }
 
   @Test
