@@ -4,13 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.nimbusds.jose.JOSEException;
+import com.octopus.audits.domain.utilities.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Base64;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 @QuarkusTest
 public class JoseJwtVerifierTest {
@@ -20,86 +26,64 @@ public class JoseJwtVerifierTest {
   private static final String M2M_CLIENT_ID = "710octav2qdu4fjd5v3u3qb1p8";
   private static final String USER_CLIENT_ID = "4r0atff7ovqbhrpe1773k37vk9";
   private static final String SIMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-  private static final String JWK = "{\"keys\":[{\"alg\":\"RS256\",\"e\":\"AQAB\",\"kid\":\"3e6hWRotCd1nqDE5jwzaHW5AELzm2TPl5ADJPM2OOYQ=\",\"kty\":\"RSA\",\"n\":\"0cripNZ9mj_4zuUGkESqZAw2IU2FvmTGdZHk2IxxoAdzz5ESpkqA5UbSoqVm7avAmNf-8jNWaQfjtCPphHVrsjAKqKgUc_haL4kkO5PS_78wCXnq_Yr7d4OyQexD1hgoiI-Ic89Q8R3px1OE1RVVwA815Fvp5OqfVQJc-rpoPaI1rJM02XrpOlKd-PN_bAqYXbpNtwU-kB85ieeoLt3N4EI1RpBB8ZfzWp0YeLYN5jBTRGalmcplQGBTlXJPtMzjLT76cjEgcRVRNZSMWApma-XrWo7UQDdzGZb56_ba2Nx-cSytLwNVyvXeJIcMkKrnu3Gs2jg_jQ5GQbjf3ohygQ\",\"use\":\"sig\"},{\"alg\":\"RS256\",\"e\":\"AQAB\",\"kid\":\"TzkAfSHjD1XItTV3X/XKei6STtUHw0zgjc8NB5g3RxA=\",\"kty\":\"RSA\",\"n\":\"1KPkC5PA9n9g8uYFOaFdR7QgndxSBMYUxQApjrfh-7TCeKBTcW55uHz8FBa2YD3Kl7ei86Zyx7xdcPndouutZIfqMD5Ff6xbXeZ2Q-OCj-3RgnWU-Ie5DI--VjjslG-NlRZYDLpIDyDqho_bRIQ_tuemxDJc_-jJVFjGHUKKsLC6BYifGylqgyILJWjFYadWOoqr4EWE-pvng8bUnT6a1nZTjNtfGUdabp_pHxvi6LWVAeOKkrswZ0vMlKxThh46v0ZsQwqyjjxeSnRBqh_z9wtSleUXfRAXoLZdBpmfxBWoCk7CiGdeaThVx_Amw6qGYK1uX60vtNjRJRDMqy2d3Q\",\"use\":\"sig\"}]}";
-  private static final String INVALID_JWK = "{\"keys\":[{\"alg\":\"RS256\",\"e\":\"AQAB\",\"kid\":\"1234567\",\"kty\":\"RSA\",\"n\":\"0cripNZ9mj_4zuUGkESqZAw2IU2FvmTGdZHk2IxxoAdzz5ESpkqA5UbSoqVm7avAmNf-8jNWaQfjtCPphHVrsjAKqKgUc_haL4kkO5PS_78wCXnq_Yr7d4OyQexD1hgoiI-Ic89Q8R3px1OE1RVVwA815Fvp5OqfVQJc-rpoPaI1rJM02XrpOlKd-PN_bAqYXbpNtwU-kB85ieeoLt3N4EI1RpBB8ZfzWp0YeLYN5jBTRGalmcplQGBTlXJPtMzjLT76cjEgcRVRNZSMWApma-XrWo7UQDdzGZb56_ba2Nx-cSytLwNVyvXeJIcMkKrnu3Gs2jg_jQ5GQbjf3ohygQ\",\"use\":\"sig\"},{\"alg\":\"RS256\",\"e\":\"AQAB\",\"kid\":\"891011\",\"kty\":\"RSA\",\"n\":\"1KPkC5PA9n9g8uYFOaFdR7QgndxSBMYUxQApjrfh-7TCeKBTcW55uHz8FBa2YD3Kl7ei86Zyx7xdcPndouutZIfqMD5Ff6xbXeZ2Q-OCj-3RgnWU-Ie5DI--VjjslG-NlRZYDLpIDyDqho_bRIQ_tuemxDJc_-jJVFjGHUKKsLC6BYifGylqgyILJWjFYadWOoqr4EWE-pvng8bUnT6a1nZTjNtfGUdabp_pHxvi6LWVAeOKkrswZ0vMlKxThh46v0ZsQwqyjjxeSnRBqh_z9wtSleUXfRAXoLZdBpmfxBWoCk7CiGdeaThVx_Amw6qGYK1uX60vtNjRJRDMqy2d3Q\",\"use\":\"sig\"}]}";
-  private static final JoseJwtVerifier JOSE_JWT_VERIFIER = new JoseJwtVerifier();
+  private static final JoseJwtVerifierAlwaysValid JOSE_JWT_VERIFIER_ALWAYS_VALID = new JoseJwtVerifierAlwaysValid();
 
   @Test
   public void verifyClaimsExtraction() {
-    assertTrue(JOSE_JWT_VERIFIER.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
-        M2M_CLIENT_ID, true));
+    assertTrue(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+        M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadJwtClaimsExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope("blah", "audit.content-team/admin",
-        M2M_CLIENT_ID, true));
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsScope("blah", "audit.content-team/admin",
+        M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadClientClaimsExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
-        "Unknown", true));
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+        "Unknown"));
   }
 
   @Test
   public void verifyClientIdExtraction() throws ParseException {
-    assertEquals(M2M_CLIENT_ID, JOSE_JWT_VERIFIER.extractClientId(EXPIRED_M2M_JWT).get());
+    assertEquals(M2M_CLIENT_ID, JOSE_JWT_VERIFIER_ALWAYS_VALID.extractClientId(EXPIRED_M2M_JWT).get());
   }
 
   @Test
   public void verifyMissingClientIdExtraction() throws ParseException {
-    assertTrue(JOSE_JWT_VERIFIER.extractClientId(SIMPLE_JWT).isEmpty());
+    assertTrue(JOSE_JWT_VERIFIER_ALWAYS_VALID.extractClientId(SIMPLE_JWT).isEmpty());
   }
 
   @Test
   public void verifyMissingClaimExtraction() throws ParseException {
-    assertTrue(JOSE_JWT_VERIFIER.extractScope(SIMPLE_JWT).isEmpty());
+    assertTrue(JOSE_JWT_VERIFIER_ALWAYS_VALID.extractScope(SIMPLE_JWT).isEmpty());
   }
 
   @Test
   public void verifyBadClaimClaimsExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope(EXPIRED_M2M_JWT, "unknown",
-        M2M_CLIENT_ID, true));
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "unknown",
+        M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyGroupExtraction() {
-    assertTrue(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers", true));
+    assertTrue(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers"));
   }
 
   @Test
   public void verifyBadJwtGroupExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup("blah", "Developers", true));
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsCognitoGroup("blah", "Developers"));
   }
 
   @Test
   public void verifyBadGroupExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "unknown", true));
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "unknown"));
   }
 
   @Test
   public void verifyMissingGroupExtraction() {
-    assertFalse(JOSE_JWT_VERIFIER.jwtContainsCognitoGroup(SIMPLE_JWT, "unknown", true));
-  }
-
-  @Test()
-  public void verifyTokenExpired() throws ParseException, IOException, JOSEException {
-    final String jwkBase64 = Base64.getEncoder().encodeToString(JWK.getBytes());
-    assertFalse(JOSE_JWT_VERIFIER.jwtIsValid(EXPIRED_M2M_JWT, jwkBase64));
-  }
-
-  @Test()
-  public void verifyInvalidJwk() throws ParseException, IOException, JOSEException {
-    final String jwkBase64 = Base64.getEncoder().encodeToString(INVALID_JWK.getBytes());
-    assertFalse(JOSE_JWT_VERIFIER.jwtIsValid(EXPIRED_M2M_JWT, jwkBase64));
-  }
-
-  @Test()
-  public void verifyTokenNotValid() {
-    assertThrows(ParseException.class, () -> {
-      final String jwkBase64 = Base64.getEncoder().encodeToString(JWK.getBytes());
-      JOSE_JWT_VERIFIER.jwtIsValid("blah", jwkBase64);
-    });
+    assertFalse(JOSE_JWT_VERIFIER_ALWAYS_VALID.jwtContainsCognitoGroup(SIMPLE_JWT, "unknown"));
   }
 }

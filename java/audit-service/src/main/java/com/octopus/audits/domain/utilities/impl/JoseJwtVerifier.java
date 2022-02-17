@@ -41,21 +41,25 @@ public class JoseJwtVerifier implements JwtVerifier {
   @Inject
   DisableSecurityFeature cognitoDisableAuth;
 
+  public Optional<String> getCognitoJwk() {
+    return cognitoJwk;
+  }
+
+  public DisableSecurityFeature getCognitoDisableAuth() {
+    return cognitoDisableAuth;
+  }
+
   /**
    * {@inheritDoc}
    */
   @Override
   public boolean jwtContainsCognitoGroup(final String jwt, final String group) {
-    return jwtContainsCognitoGroup(jwt, group, false);
-  }
-
-  boolean jwtContainsCognitoGroup(final String jwt, final String group, final boolean assumeValid) {
-    if (!assumeValid && !configIsValid()) {
+    if (!configIsValid()) {
       return false;
     }
 
     try {
-      if (assumeValid || jwtIsValid(jwt, cognitoJwk.get())) {
+      if (jwtIsValid(jwt, getCognitoJwk().get())) {
         final JWSObject jwsObject = JWSObject.parse(jwt);
         final Map<String, Object> payload = jwsObject.getPayload().toJSONObject();
         if (payload.containsKey(COGNITO_GROUPS)) {
@@ -82,16 +86,12 @@ public class JoseJwtVerifier implements JwtVerifier {
    */
   @Override
   public boolean jwtContainsScope(final String jwt, final String scope, final String clientId) {
-    return jwtContainsScope(jwt, scope, clientId, false);
-  }
-
-  boolean jwtContainsScope(final String jwt, final String scope, final String clientId, final boolean assumeValid) {
-    if (!assumeValid && !configIsValid()) {
+    if (!configIsValid()) {
       return false;
     }
 
     try {
-      if (assumeValid || jwtIsValid(jwt, cognitoJwk.get())) {
+      if (jwtIsValid(jwt, getCognitoJwk().get())) {
         if (extractScope(jwt).contains(scope)) {
           final boolean valid = extractClientId(jwt).map(c -> c.equals(clientId)).orElse(false);
           if (!valid) {
@@ -146,10 +146,10 @@ public class JoseJwtVerifier implements JwtVerifier {
     return jwsObject.getPayload().toJSONObject();
   }
 
-  private boolean configIsValid() {
-    return cognitoDisableAuth.getCognitoAuthDisabled()
-        || (cognitoJwk.isPresent()
-        && StringUtils.isNotEmpty(cognitoJwk.get()));
+  protected boolean configIsValid() {
+    return getCognitoDisableAuth().getCognitoAuthDisabled()
+        || (getCognitoJwk().isPresent()
+        && StringUtils.isNotEmpty(getCognitoJwk().get()));
   }
 
   /**
