@@ -174,10 +174,10 @@ public class AuditsHandler {
       final JSONAPIDocument<Audit> resourceDocument =
           resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Audit.class);
       final Audit audit = resourceDocument.get();
-    /*
-     The ID of an audit is determined by the URL, while the partition comes froms
-     the headers. If either of these values was sent by the client, strip them out.
-    */
+      /*
+       The ID of an audit is determined by the URL, while the partition comes froms
+       the headers. If either of these values was sent by the client, strip them out.
+      */
       audit.id = null;
       audit.dataPartition = null;
       return audit;

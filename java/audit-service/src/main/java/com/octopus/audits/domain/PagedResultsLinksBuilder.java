@@ -7,17 +7,28 @@ import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * Utility methods for adding links and metadata to pages results.
  */
 public class PagedResultsLinksBuilder {
+
+  /**
+   * Generate the links field for a JSON API collection.
+   *
+   * @param document The document containing the filtered list.
+   * @param pageLimit The request page limit.
+   * @param pageOffset The requested page offset.
+   * @param audits The list of filtered results.
+   * @param <T> The resource type.
+   */
   public static <T> void generatePageLinks(
-      final JSONAPIDocument<List<T>> document,
-      final String pageLimit,
-      final String pageOffset,
-      final FilteredResultWrapper<T> audits) {
+      @NonNull final JSONAPIDocument<List<T>> document,
+      @NonNull final String pageLimit,
+      @NonNull final String pageOffset,
+      @NonNull final FilteredResultWrapper<T> audits) {
     final int pageLimitParsed = NumberUtils.toInt(pageLimit, com.octopus.audits.application.Constants.DEFAULT_PAGE_LIMIT);
     final int pageOffsetParsed = NumberUtils.toInt(pageOffset, com.octopus.audits.application.Constants.DEFAULT_PAGE_OFFSET);
     final long lastOffset = Math.max(audits.getCount() - pageLimitParsed, 0);

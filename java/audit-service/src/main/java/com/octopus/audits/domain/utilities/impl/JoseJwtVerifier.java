@@ -83,7 +83,7 @@ public class JoseJwtVerifier implements JwtVerifier {
     return jwtContainsScope(jwt, scope, clientId, false);
   }
 
-  public boolean jwtContainsScope(final String jwt, final String scope, final String clientId, final boolean assumeValid) {
+  boolean jwtContainsScope(final String jwt, final String scope, final String clientId, final boolean assumeValid) {
     if (!assumeValid && !configIsValid()) {
       return false;
     }
