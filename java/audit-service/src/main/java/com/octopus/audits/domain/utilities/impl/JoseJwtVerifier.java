@@ -116,7 +116,7 @@ public class JoseJwtVerifier implements JwtVerifier {
    * @return The list of scopes.
    * @throws ParseException If the string couldn't be parsed to a JWS object.
    */
-  private List<String> extractScope(final String jwt) throws ParseException {
+  List<String> extractScope(final String jwt) throws ParseException {
     final Map<String, Object> payload = getPayload(jwt);
     if (payload.containsKey(SCOPE)) {
       return Arrays.asList(payload.get(SCOPE).toString().split(" "));
@@ -131,7 +131,7 @@ public class JoseJwtVerifier implements JwtVerifier {
    * @return The client ID if it was found.
    * @throws ParseException If the string couldn't be parsed to a JWS object.
    */
-  public Optional<String> extractClientId(final String jwt) throws ParseException {
+  Optional<String> extractClientId(final String jwt) throws ParseException {
     final Map<String, Object> payload = getPayload(jwt);
     if (payload.containsKey(CLIENT_ID)) {
       return Optional.of(payload.get(CLIENT_ID).toString());

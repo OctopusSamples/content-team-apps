@@ -53,6 +53,11 @@ public class JoseJwtVerifierTest {
   }
 
   @Test
+  public void verifyMissingClaimExtraction() throws ParseException {
+    assertTrue(JOSE_JWT_VERIFIER.extractScope(SIMPLE_JWT).isEmpty());
+  }
+
+  @Test
   public void verifyBadClaimClaimsExtraction() {
     assertFalse(JOSE_JWT_VERIFIER.jwtContainsScope(EXPIRED_M2M_JWT, "unknown",
         M2M_CLIENT_ID, true));
