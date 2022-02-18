@@ -15,6 +15,9 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * A service to validate JWT tokens.
+ */
 @ApplicationScoped
 public class JwtValidator {
   /**
