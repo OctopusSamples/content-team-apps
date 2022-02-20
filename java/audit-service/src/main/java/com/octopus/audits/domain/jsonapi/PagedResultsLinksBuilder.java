@@ -21,21 +21,21 @@ public class PagedResultsLinksBuilder {
    * @param document The document containing the filtered list.
    * @param pageLimit The request page limit.
    * @param pageOffset The requested page offset.
-   * @param audits The list of filtered results.
+   * @param resources The list of filtered results.
    * @param <T> The resource type.
    */
   public static <T> void generatePageLinks(
       @NonNull final JSONAPIDocument<List<T>> document,
       final String pageLimit,
       final String pageOffset,
-      @NonNull final FilteredResultWrapper<T> audits) {
+      @NonNull final FilteredResultWrapper<T> resources) {
     final int pageLimitParsed = NumberUtils.toInt(pageLimit, com.octopus.audits.application.Constants.DEFAULT_PAGE_LIMIT);
     final int pageOffsetParsed = NumberUtils.toInt(pageOffset, com.octopus.audits.application.Constants.DEFAULT_PAGE_OFFSET);
-    final long lastOffset = Math.max(audits.getCount() - pageLimitParsed, 0);
+    final long lastOffset = Math.max(resources.getCount() - pageLimitParsed, 0);
 
     // See https://jsonapi.org/format/#document-links for an example of link metadata including a count
     final Map<String, Long> linkMeta = new ImmutableMap.Builder<String, Long>()
-        .put("total",  audits.getCount())
+        .put("total",  resources.getCount())
         .build();
 
     document.addLink("first", new Link("/api/audits?page[offset]=0&page[limit]=" + pageLimitParsed, linkMeta));
@@ -43,7 +43,7 @@ public class PagedResultsLinksBuilder {
 
     if (lastOffset > pageOffsetParsed) {
       document.addLink("next", new Link(
-          "/api/audits?page[offset]=" + Math.min(audits.getCount() - pageLimitParsed, pageOffsetParsed + pageLimitParsed) + "&page[limit]="
+          "/api/audits?page[offset]=" + Math.min(resources.getCount() - pageLimitParsed, pageOffsetParsed + pageLimitParsed) + "&page[limit]="
               + pageLimit,
           linkMeta));
     }
