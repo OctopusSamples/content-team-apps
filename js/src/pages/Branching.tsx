@@ -39,7 +39,7 @@ const Branching: FC<{}> = (): ReactElement => {
             <Grid container={true} className={classes.container}>
                 <Grid className={classes.cell} xs={12}>
                     <DataGrid
-                        style={{height: "60vh"}}
+                        style={{height: "50vh"}}
                         rows={rules}
                         columns={columns}
                         pageSize={10}
@@ -47,6 +47,23 @@ const Branching: FC<{}> = (): ReactElement => {
                         onSelectionModelChange={(selection) => selectedRows = selection}
                         onCellEditCommit={onEdit}
                     />
+                </Grid>
+                <Grid container={true} className={classes.cell} xs={12}>
+                    <p>
+                        Branching rules allow for client directed routing, enabling feature and local branches to be
+                        called as part of the microservice graph. You must be logged in and belong to the "Developer"
+                        group to have branching rules applied. The routing is applied by the
+                        &nbsp;<a href={"https://github.com/OctopusSamples/content-team-apps/tree/main/go/reverse-proxy"}>reverse proxy</a>.
+                    </p>
+                    <p>
+                        An example path is <code>/api/audits:GET</code>, where the first half is the path, then a colon,
+                        then the HTTP method. Ant wildcards are accepted e.g. <code>/api/audits/**:GET</code>.
+                    </p>
+                    <p>
+                        An example destination is <code>url[https://49c5-94-177-118-180.ngrok.io]</code>, which redirects
+                        requests matching the path to the specified URL. Tools like &nbsp;<a href={"https://ngrok.com/"}>ngrok</a>&nbsp;
+                        are useful for routing public traffic to your local developer workstation.
+                    </p>
                 </Grid>
                 <Grid container={true} className={classes.cell} xs={4}>
                     <FormLabel className={classes.label}>Branching rules enabled</FormLabel>
@@ -98,7 +115,6 @@ const Branching: FC<{}> = (): ReactElement => {
         setRules([...newRules])
     }
 }
-
 
 
 export default Branching;
