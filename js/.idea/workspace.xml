@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/JenkinsPipelineBuilderFrontend.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/github/action.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/logo192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/logo512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.test.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Footer.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Header.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layout.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MenuItem.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/dynamicConfig.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/index.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dynamicConfig.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/RouteItem.model.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Audits.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Branching.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/GitHubLogin.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Health.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Home.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Login.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Settings.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Template.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/images/spinnerDark.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/images/spinnerLight.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/dotnetcore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/golang.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/gradle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/maven.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/nodejs.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/php.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/python.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/logos/ruby.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportWebVitals.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/setupTests.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/theme/appTheme.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/constants.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/githublogin.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/network.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/path.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/security.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/styles.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="25WogvyLVGCFM6dHOwMXVVnncV5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pipeline-generator" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="" />
+      <created>1645652324437</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1645652324437</updated>
+      <workItem from="1645652325814" duration="41000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
