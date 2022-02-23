@@ -20,6 +20,7 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -29,6 +30,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 /** The Lambda entry point used to return audit resources. */
 @Named("Audits")
+@ApplicationScoped
 public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
   /** A regular expression matching the collection of entities. */

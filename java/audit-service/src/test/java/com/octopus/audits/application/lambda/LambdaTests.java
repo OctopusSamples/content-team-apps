@@ -12,8 +12,10 @@ import com.octopus.audits.BaseTest;
 import com.octopus.audits.application.lambda.AuditApi;
 import com.octopus.audits.application.lambda.ProxyResponse;
 import com.octopus.audits.domain.entities.Audit;
+import com.octopus.audits.domain.features.DisableSecurityFeature;
 import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
@@ -37,6 +40,14 @@ public class LambdaTests extends BaseTest {
 
   @Inject
   ResourceConverter resourceConverter;
+
+  @InjectMock
+  DisableSecurityFeature cognitoDisableAuth;
+
+  @BeforeEach
+  public void beforeEach() {
+    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+  }
 
   @BeforeAll
   public void setup() throws SQLException, LiquibaseException {
