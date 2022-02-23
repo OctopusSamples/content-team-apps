@@ -10,6 +10,7 @@ import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ValidatableResponse;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import javax.inject.Inject;
 import liquibase.exception.LiquibaseException;
@@ -60,7 +61,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<List<Audit>>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -198,7 +199,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<List<Audit>>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
