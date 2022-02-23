@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         footer: {
             textTransform: "uppercase",
-            color: theme.palette.text.secondary
+            color: theme.palette.text.secondary,
+            lineHeight: "30px"
         },
         icon: {
             paddingTop: "0",
