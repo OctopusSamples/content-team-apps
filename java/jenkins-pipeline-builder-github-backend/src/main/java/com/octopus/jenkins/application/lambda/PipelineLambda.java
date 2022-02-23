@@ -62,6 +62,10 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         input,
         GlobalConstants.AUTHORIZATION_HEADER).orElse("");
 
+    final String xray = lambdaHttpHeaderExtractor.getFirstHeader(
+        input,
+        GlobalConstants.AMAZON_TRACE_ID_HEADER).orElse("");
+
     if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
       return new ProxyResponse(
           "201",
@@ -75,6 +79,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
       final SimpleResponse response = templateHandler.generatePipeline(
           lambdaHttpValueExtractor.getQueryParam(input, "repo").orElse(""),
           session,
+          xray,
           routingHeaders,
           dataPartitionHeaders,
           authHeaders);

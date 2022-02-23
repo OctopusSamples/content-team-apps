@@ -38,6 +38,7 @@ public class PipelineResource {
   @Produces(MediaType.TEXT_PLAIN)
   public String pipeline(
       @QueryParam("repo") final String repo,
+      @HeaderParam(GlobalConstants.AMAZON_TRACE_ID_HEADER) final String xray,
       @HeaderParam(GlobalConstants.ROUTING_HEADER) final String routingHeaders,
       @HeaderParam(GlobalConstants.DATA_PARTITION) final String dataPartitionHeaders,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final String authHeaders,
@@ -50,6 +51,7 @@ public class PipelineResource {
     final SimpleResponse response = templateHandler.generatePipeline(
         repo,
         auth,
+        xray,
         routingHeaders,
         dataPartitionHeaders,
         authHeaders);

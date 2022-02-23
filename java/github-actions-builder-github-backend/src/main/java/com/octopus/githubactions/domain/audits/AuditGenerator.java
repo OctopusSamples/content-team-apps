@@ -56,6 +56,7 @@ public class AuditGenerator {
    */
   public void createAuditEvent(
       @NonNull final Audit audit,
+      final String xrayId,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
@@ -65,6 +66,7 @@ public class AuditGenerator {
             auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
                     new JSONAPIDocument<>(audit))),
+                StringUtils.defaultString(xrayId),
                 routingHeaders,
                 dataPartitionHeaders,
                 authHeaders,

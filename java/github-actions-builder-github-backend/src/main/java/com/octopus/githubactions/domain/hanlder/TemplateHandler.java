@@ -72,6 +72,7 @@ public class TemplateHandler {
   public SimpleResponse generatePipeline(
       @NonNull final String repo,
       final String sessionCookie,
+      final String xray,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
@@ -84,12 +85,12 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    auditEmail(auth, routingHeaders, dataPartitionHeaders, authHeaders);
+    auditEmail(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElse(buildPipeline(accessor, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElse(buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
   }
 
   /**
@@ -101,6 +102,7 @@ public class TemplateHandler {
    * @param authHeaders          The authorization headers.
    */
   private void auditEmail(final String token,
+      final String xray,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
@@ -126,6 +128,7 @@ public class TemplateHandler {
                 encryptedEmail,
                 true,
                 false),
+            xray,
             routingHeaders,
             dataPartitionHeaders,
             authHeaders);
@@ -137,6 +140,7 @@ public class TemplateHandler {
 
   private SimpleResponse buildPipeline(
       @NonNull final RepoClient accessor,
+      final String xray,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
@@ -153,6 +157,7 @@ public class TemplateHandler {
                 GlobalConstants.MICROSERVICE_NAME,
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
                 b.getName()),
+            xray,
             routingHeaders,
             dataPartitionHeaders,
             authHeaders)

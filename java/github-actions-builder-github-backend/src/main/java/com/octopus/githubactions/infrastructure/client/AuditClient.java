@@ -18,6 +18,7 @@ public interface AuditClient {
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   String createAudit(
       final String audit,
+      @HeaderParam(GlobalConstants.AMAZON_TRACE_ID_HEADER) String xray,
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(GlobalConstants.DATA_PARTITION) String dataPartition,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth,

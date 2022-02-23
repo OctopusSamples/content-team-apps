@@ -9,6 +9,7 @@ public final class GlobalConstants {
   public static final String JSON_CONTENT_TYPE = "application/json";
   public static final String FROM_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
   public static final String ACCEPT_HEADER = "Accept";
+  public static final String AMAZON_TRACE_ID_HEADER = "X-Amzn-Trace-Id";
   public static final String ROUTING_HEADER = "Routing";
   public static final String DATA_PARTITION = "Data-Partition";
   public static final String AUTHORIZATION_HEADER = "Authorization";
