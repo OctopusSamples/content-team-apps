@@ -46,8 +46,8 @@ public class HttpApiTest extends BaseTest {
             .then()
             .statusCode(200)
             .body(
-                new LambdaMatcher<Audit>(
-                    a -> getAuditFromDocument(resourceConverter, a.toString()) != null,
+                new LambdaMatcher<String>(
+                    a -> getAuditFromDocument(resourceConverter, a) != null,
                     "Resource should be returned"));
 
     final Audit created =
@@ -61,9 +61,9 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<List<Audit>>(
+            new LambdaMatcher<String>(
                 a ->
-                    getAuditsFromDocument(resourceConverter, a.toString()).stream()
+                    getAuditsFromDocument(resourceConverter, a).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
                 "Resource should be returned"));
 
@@ -75,7 +75,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditFromDocument(resourceConverter, a.toString())
                         .getSubject()
@@ -183,7 +183,7 @@ public class HttpApiTest extends BaseTest {
             .then()
             .statusCode(200)
             .body(
-                new LambdaMatcher<Audit>(
+                new LambdaMatcher<String>(
                     a -> getAuditFromDocument(resourceConverter, a.toString()) != null,
                     "Resource should be returned"));
 
@@ -199,7 +199,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<List<Audit>>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -214,7 +214,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -229,7 +229,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -244,7 +244,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -259,7 +259,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
@@ -274,7 +274,7 @@ public class HttpApiTest extends BaseTest {
         .then()
         .statusCode(200)
         .body(
-            new LambdaMatcher<Audit>(
+            new LambdaMatcher<String>(
                 a ->
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
