@@ -1,14 +1,9 @@
-import React, {createContext, ReactElement, useEffect, useReducer, useState} from "react";
+import React, {createContext, FC, useEffect, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
 import {Helmet} from "react-helmet";
 import jwt_decode from 'jwt-decode';
 import {createMachine, InterpreterFrom} from 'xstate';
-
-// components
-// theme
 import {darkTheme, lightTheme} from "./theme/appTheme";
-
-// interfaces
 import {RuntimeSettings} from "./config/dynamicConfig";
 import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
@@ -16,10 +11,11 @@ import Login from "./pages/Login";
 import {AnyEventObject} from "xstate/lib/types";
 import {useActor, useInterpret} from "@xstate/react";
 import Layout from "./components/Layout";
+import TargetSelection from "./pages/TargetSelection";
 
 interface StateContext {
     standAlone: boolean,
-    form: ReactElement | null
+    form: FC
 }
 
 const isStandalone = (context: StateContext, event: AnyEventObject) => {
@@ -35,7 +31,7 @@ const appBuilderMachine = createMachine<StateContext>({
         initial: 'selectTarget',
         context: {
             standAlone: false,
-            form: null
+            form: TargetSelection
         },
         states: {
             selectTarget: {
@@ -44,7 +40,8 @@ const appBuilderMachine = createMachine<StateContext>({
                     EKS: {target: 'logIntoOctopus'},
                     LAMBDA: {target: 'logIntoOctopus'},
                     STANDALONE: {target: 'selectFramework'},
-                }
+                },
+
             },
             selectedTargetNotAvailable: {
                 on: {
@@ -161,6 +158,21 @@ function App(settings: RuntimeSettings) {
         }
     }, [developerGroup, branch, idToken]);
 
+
+    const returningFromLogin = new URLSearchParams(window.location.search).get('action') === "loggedin";
+
+    useEffect(() => {
+        /*
+            If we are returning for being logged in, jump straight to the template generation page.
+            It is the github oauth proxy
+            (https://github.com/OctopusSamples/content-team-apps/tree/main/java/github-oauth-backend) that sets the
+            action query parameter.
+         */
+        if (returningFromLogin) {
+
+        }
+    }, [returningFromLogin])
+
     return (
         <>
             <Helmet>
@@ -178,7 +190,7 @@ function App(settings: RuntimeSettings) {
                 <ThemeProvider theme={theme}>
                     <Layout toggleTheme={toggle}>
                         {requireLogin && <Login/>}
-                        {!requireLogin && (state.context as StateContext).form}
+                        {!requireLogin && (state.context as StateContext).form({})}
                     </Layout>
                 </ThemeProvider>
             </AppContext.Provider>

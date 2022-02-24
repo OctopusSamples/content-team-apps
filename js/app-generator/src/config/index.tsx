@@ -2,7 +2,7 @@
 import HomeIcon from '@material-ui/icons/Home';
 
 // components
-import Home from '../pages/Home';
+import TargetSelection from '../pages/TargetSelection';
 import GitHubLogin from "../pages/GitHubLogin";
 import Branching from "../pages/Branching";
 import Health from "../pages/Health";
@@ -15,21 +15,21 @@ import Settings from "../pages/Settings";
 export const routes: Array<RouteItem> = [
     {
         key: "router-home",
-        title: "Home",
-        tooltip: "Home",
+        title: "TargetSelection",
+        tooltip: "TargetSelection",
         path: "/",
         enabled: true,
-        component: () => () => <Home/>,
+        component: () => () => <TargetSelection/>,
         icon: HomeIcon,
         appendDivider: true
     },
     {
         key: "router-home-index",
-        title: "Home",
-        tooltip: "Home",
+        title: "TargetSelection",
+        tooltip: "TargetSelection",
         path: "/index.html",
         enabled: true,
-        component: () => () => <Home/>,
+        component: () => () => <TargetSelection/>,
         icon: HomeIcon,
         appendDivider: true
     },
