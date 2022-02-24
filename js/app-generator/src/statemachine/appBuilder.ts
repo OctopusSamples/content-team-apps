@@ -8,8 +8,9 @@
 import {AnyEventObject, InterpreterFrom} from "xstate/lib/types";
 import {FC} from "react";
 import {assign, createMachine} from "xstate";
-import LogIntoOctopus from "../components/journey/LogIntoOctopus";
+import DoYouHaveCloudOctopus from "../components/journey/DoYouHaveCloudOctopus";
 import TargetSelection from "../components/journey/TargetSelection";
+import SignUpForCloudOctopus from "../components/journey/SignUpForCloudOctopus";
 
 /**
  * The properties associated with each journey component.
@@ -60,16 +61,37 @@ export const appBuilderMachine = createMachine<StateContext>({
             states: {
                 selectTarget: {
                     on: {
-                        ECS: {target: 'logIntoOctopus'},
-                        EKS: {target: 'logIntoOctopus'},
-                        LAMBDA: {target: 'logIntoOctopus'},
+                        ECS: {target: 'doYouHaveCloudOctopus'},
+                        EKS: {target: 'doYouHaveCloudOctopus'},
+                        LAMBDA: {target: 'doYouHaveCloudOctopus'},
                         STANDALONE: {target: 'selectFramework'},
                     },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => TargetSelection
+                    })
                 },
                 selectedTargetNotAvailable: {
                     on: {
                         BACK: {target: 'selectTarget'}
                     }
+                },
+                doYouHaveCloudOctopus: {
+                    on: {
+                        YES: {target: 'logIntoOctopus'},
+                        NO: {target: 'signUpForCloudOctopus'},
+                        BACK: {target: 'selectTarget'},
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
+                    })
+                },
+                signUpForCloudOctopus: {
+                    on: {
+                        NEXT: {target: 'logIntoOctopus'},
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => SignUpForCloudOctopus
+                    })
                 },
                 logIntoOctopus: {
                     on: {
@@ -77,10 +99,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         FAILURE: {target: 'logIntoOctopusFailed'},
                     },
                     entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => {
-                            console.log("updating form");
-                            return LogIntoOctopus
-                        }
+                        form: (context:StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
                     })
                 },
                 logIntoOctopusFailed: {
