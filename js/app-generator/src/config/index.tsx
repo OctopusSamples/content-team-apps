@@ -1,11 +1,11 @@
 // components
-import GitHubLogin from "../pages/GitHubLogin";
-import Branching from "../pages/Branching";
-import Health from "../pages/Health";
+import GitHubLogin from "../pages/developer/GitHubLogin";
+import Branching from "../pages/developer/Branching";
+import Health from "../pages/developer/Health";
 
 // interface
 import RouteItem from '../model/RouteItem.model';
-import Settings from "../pages/Settings";
+import Settings from "../pages/developer/Settings";
 import Home from "../pages/Home";
 
 // define app routes

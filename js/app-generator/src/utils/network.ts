@@ -1,5 +1,5 @@
 import {GET_RETRIES} from "./constants";
-import {RedirectRule} from "../pages/Branching";
+import {RedirectRule} from "../pages/developer/Branching";
 import {getAccessToken} from "./security";
 
 export function isBranchingEnabled() {

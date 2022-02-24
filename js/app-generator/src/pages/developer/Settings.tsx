@@ -1,10 +1,10 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Helmet} from "react-helmet";
 import {Button, FormLabel, Grid, TextField} from "@mui/material";
-import {AppContext} from "../App";
-import {styles} from "../utils/styles";
+import {AppContext} from "../../App";
+import {styles} from "../../utils/styles";
 import {useHistory} from "react-router-dom";
-import {getAccessToken, getTokenTimeLeft, login, logout} from "../utils/security";
+import {getAccessToken, getTokenTimeLeft, login, logout} from "../../utils/security";
 
 const Settings: FC = (): ReactElement => {
 

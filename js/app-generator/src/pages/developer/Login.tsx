@@ -1,9 +1,9 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
 import {Button, Grid, Theme} from "@mui/material";
-import {AppContext} from "../App";
+import {AppContext} from "../../App";
 import {makeStyles} from '@mui/styles';
-import {login} from "../utils/security";
+import {login} from "../../utils/security";
 
 const useStyles = makeStyles((theme: Theme) => {
         return {

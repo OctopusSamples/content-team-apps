@@ -1,7 +1,7 @@
 import {FC, ReactElement, useContext, useEffect, useMemo, useState} from "react";
 import {Helmet} from "react-helmet";
-import {AppContext} from "../App";
-import {getJson} from "../utils/network";
+import {AppContext} from "../../App";
+import {getJson} from "../../utils/network";
 import {Clear, Done} from "@mui/icons-material";
 import {makeStyles} from '@mui/styles';
 import {Theme} from "@mui/material";
