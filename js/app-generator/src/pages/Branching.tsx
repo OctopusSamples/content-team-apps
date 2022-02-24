@@ -1,7 +1,7 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
-import {DataGrid, GridCellEditCommitParams, GridRowId} from "@material-ui/data-grid";
+import {DataGrid, GridCellEditCommitParams, GridRowId} from "@mui/x-data-grid";
 import {styles} from "../utils/styles";
 import {Button, Checkbox, FormLabel, Grid} from "@mui/material";
 

@@ -21,7 +21,7 @@ export const darkTheme: Theme = createTheme({
         mode: "dark",
         text: {
             primary: "#ffffff",
-            secondary: "#afafaf"
+            secondary: "#afafaf",
         },
         background: {
             default: "#112e44",

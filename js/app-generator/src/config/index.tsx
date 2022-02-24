@@ -1,8 +1,4 @@
-// icons
-import HomeIcon from '@material-ui/icons/Home';
-
 // components
-import TargetSelection from '../pages/TargetSelection';
 import GitHubLogin from "../pages/GitHubLogin";
 import Branching from "../pages/Branching";
 import Health from "../pages/Health";
@@ -10,6 +6,7 @@ import Health from "../pages/Health";
 // interface
 import RouteItem from '../model/RouteItem.model';
 import Settings from "../pages/Settings";
+import Home from "../pages/Home";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -19,8 +16,7 @@ export const routes: Array<RouteItem> = [
         tooltip: "TargetSelection",
         path: "/",
         enabled: true,
-        component: () => () => <TargetSelection/>,
-        icon: HomeIcon,
+        component: () => () => <Home/>,
         appendDivider: true
     },
     {
@@ -29,8 +25,7 @@ export const routes: Array<RouteItem> = [
         tooltip: "TargetSelection",
         path: "/index.html",
         enabled: true,
-        component: () => () => <TargetSelection/>,
-        icon: HomeIcon,
+        component: () => () => <Home/>,
         appendDivider: true
     },
     {
@@ -40,7 +35,6 @@ export const routes: Array<RouteItem> = [
         path: "/githublogin",
         enabled: true,
         component: () => () => <GitHubLogin/>,
-        icon: HomeIcon,
         appendDivider: true
     },
     {
@@ -50,7 +44,6 @@ export const routes: Array<RouteItem> = [
         path: "/settings",
         enabled: true,
         component: () => () => <Settings/>,
-        icon: HomeIcon,
         appendDivider: true
     },
     {
@@ -60,7 +53,6 @@ export const routes: Array<RouteItem> = [
         path: "/health",
         enabled: true,
         component: () => () => <Health/>,
-        icon: HomeIcon,
         appendDivider: true
     },
     {
@@ -70,7 +62,6 @@ export const routes: Array<RouteItem> = [
         path: "/branching",
         enabled: true,
         component: () => () => <Branching/>,
-        icon: HomeIcon,
         appendDivider: true
     }
 ]

@@ -1,123 +1,26 @@
-import React, {createContext, FC, useEffect, useReducer, useState} from "react";
+import React, {createContext, useEffect, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, StyledEngineProvider, Theme, ThemeProvider,} from "@mui/material/styles";
 import {Helmet} from "react-helmet";
 import jwt_decode from 'jwt-decode';
-import {createMachine, InterpreterFrom} from 'xstate';
 import {darkTheme, lightTheme} from "./theme/appTheme";
 import {RuntimeSettings} from "./config/dynamicConfig";
 import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/Login";
-import {AnyEventObject} from "xstate/lib/types";
-import {useActor, useInterpret} from "@xstate/react";
 import Layout from "./components/Layout";
-import TargetSelection from "./pages/TargetSelection";
-
+import {HashRouter, Route, Switch} from "react-router-dom";
+import {routes} from "./config";
+import RouteItem from "./model/RouteItem.model";
 
 declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface DefaultTheme extends Theme {
+    }
 }
-
-
-interface StateContext {
-    standAlone: boolean,
-    form: FC
-}
-
-const isStandalone = (context: StateContext, event: AnyEventObject) => {
-    return context.standAlone;
-};
-
-const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
-    return !isStandalone(context, event)
-};
-
-const appBuilderMachine = createMachine<StateContext>({
-        id: 'appBuilder',
-        initial: 'selectTarget',
-        context: {
-            standAlone: false,
-            form: TargetSelection
-        },
-        states: {
-            selectTarget: {
-                on: {
-                    ECS: {target: 'logIntoOctopus'},
-                    EKS: {target: 'logIntoOctopus'},
-                    LAMBDA: {target: 'logIntoOctopus'},
-                    STANDALONE: {target: 'selectFramework'},
-                },
-
-            },
-            selectedTargetNotAvailable: {
-                on: {
-                    BACK: {target: 'selectTarget'}
-                }
-            },
-            logIntoOctopus: {
-                on: {
-                    SUCCESS: {target: 'logIntoGitHub'},
-                    FAILURE: {target: 'logIntoOctopusFailed'},
-                }
-            },
-            logIntoOctopusFailed: {
-                on: {
-                    BACK: {target: 'logIntoOctopus'}
-                }
-            },
-            logIntoGitHub: {
-                on: {
-                    SUCCESS: {target: 'selectFramework'},
-                    FAILURE: {target: 'logIntoGitHubFailed'},
-                }
-            },
-            logIntoGitHubFailed: {
-                on: {
-                    BACK: {target: 'logIntoGitHub'}
-                }
-            },
-            selectFramework: {
-                on: {
-                    QUARKUS: {target: 'defineEntity'},
-                    SPRING: {target: 'selectedFrameworkNotAvailable'},
-                    DOTNETCORE: {target: 'selectedFrameworkNotAvailable'},
-                    PYTHON: {target: 'selectedFrameworkNotAvailable'},
-                    GO: {target: 'selectedFrameworkNotAvailable'}
-                }
-            },
-            selectedFrameworkNotAvailable: {
-                on: {
-                    BACK: {target: 'selectFramework'}
-                }
-            },
-            defineEntity: {
-                on: {
-                    DONE: [
-                        {target: 'pushPackage', cond: isNotStandalone},
-                        {target: 'downloadPackage', cond: isStandalone},
-                    ]
-                }
-            },
-            pushPackage: {
-                type: 'final'
-            },
-            downloadPackage: {
-                type: 'final'
-            }
-        }
-    },
-    {
-        guards: {
-            isStandalone,
-            isNotStandalone
-        }
-    });
 
 // define app context
 export const AppContext = createContext({
     settings: {} as RuntimeSettings,
-    appBuilder: {} as InterpreterFrom<typeof appBuilderMachine>,
     setDeveloperMode: (mode: boolean) => {
     },
     developerMode: false,
@@ -127,11 +30,9 @@ export const AppContext = createContext({
     },
 });
 
+const DefaultComponent = () => <div>No Component Defined.</div>;
+
 function App(settings: RuntimeSettings) {
-
-    const appBuilder = useInterpret(appBuilderMachine);
-    const [state] = useActor(appBuilder);
-
     const [useDefaultTheme, toggle] = useReducer(
         (theme) => {
             localStorage.setItem('defaultTheme', String(!theme));
@@ -186,7 +87,6 @@ function App(settings: RuntimeSettings) {
         </Helmet>
         <AppContext.Provider value={{
             settings,
-            appBuilder,
             useDefaultTheme,
             developerMode,
             setDeveloperMode,
@@ -195,10 +95,34 @@ function App(settings: RuntimeSettings) {
         }}>
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
-                    <Layout toggleTheme={toggle}>
-                        {requireLogin && <Login/>}
-                        {!requireLogin && (state.context as StateContext).form({})}
-                    </Layout>
+
+                    {requireLogin && <Login/>}
+                    {!requireLogin && <HashRouter>
+                        <Switch>
+                            <Layout toggleTheme={toggle}>
+                                {/* for each route config, a react route is created */}
+                                {routes.map((route: RouteItem) =>
+                                    route.subRoutes ? (
+                                        route.subRoutes.map((item: RouteItem) => (
+                                            <Route
+                                                key={`${item.key}`}
+                                                path={`${item.path}`}
+                                                component={(item.component && item.component()) || DefaultComponent}
+                                                exact
+                                            />
+                                        ))
+                                    ) : (
+                                        <Route
+                                            key={`${route.key}`}
+                                            path={`${route.path}`}
+                                            component={(route.component && route.component()) || DefaultComponent}
+                                            exact
+                                        />
+                                    )
+                                )}
+                            </Layout>
+                        </Switch>
+                    </HashRouter>}
                 </ThemeProvider>
             </StyledEngineProvider>
         </AppContext.Provider>
