@@ -1,21 +1,22 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
-import {Button, Grid, Theme} from "@material-ui/core";
+import {Button, Grid, Theme} from "@mui/material";
 import {AppContext} from "../App";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import {makeStyles} from '@mui/styles';
 import {login} from "../utils/security";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        content: {
-            "& a": {
-                color: theme.palette.text.primary
-            },
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.text.primary,
-            padding: "28px"
+const useStyles = makeStyles((theme: Theme) => {
+        return {
+            content: {
+                "& a": {
+                    color: theme.palette.text.primary
+                },
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.text.primary,
+                padding: "28px"
+            }
         }
-    })
+    }
 );
 
 const Login: FC = (): ReactElement => {

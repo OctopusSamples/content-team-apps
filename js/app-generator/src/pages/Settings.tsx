@@ -1,6 +1,6 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Helmet} from "react-helmet";
-import {Button, FormLabel, Grid, TextField} from "@material-ui/core";
+import {Button, FormLabel, Grid, TextField} from "@mui/material";
 import {AppContext} from "../App";
 import {styles} from "../utils/styles";
 import {useHistory} from "react-router-dom";

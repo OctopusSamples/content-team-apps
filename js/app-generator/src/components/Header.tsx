@@ -1,54 +1,45 @@
 import clsx from "clsx";
-import {
-    AppBar,
-    createStyles,
-    IconButton,
-    Link,
-    makeStyles,
-    Theme,
-    Toolbar,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
-import Brightness3Icon from "@material-ui/icons/Brightness3";
+import {AppBar, IconButton, Link, Theme, Toolbar, Tooltip, Typography} from "@mui/material";
+import {makeStyles} from '@mui/styles';
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Brightness3Icon from "@mui/icons-material/Brightness3";
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
-import {History, LocalHospital, SettingsApplications, Share} from "@material-ui/icons";
+import {History, LocalHospital, SettingsApplications, Share} from "@mui/icons-material";
 import {useHistory} from "react-router-dom";
 
-// define css-in-js
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        appBar: {
-            zIndex: theme.zIndex.drawer + 1,
-            transition: theme.transitions.create(["width", "margin"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
-        toolbar: {
-            flex: 1,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-        },
-        title: {
-            flex: 1,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center"
-        },
-        menuButton: {
-            marginRight: 36,
-        },
-        hide: {
-            display: "none",
-        },
-        heading: {
-            color: "white"
+const useStyles = makeStyles((theme: Theme) => {
+        return {
+            appBar: {
+                zIndex: theme.zIndex.drawer + 1,
+                transition: theme.transitions.create(["width", "margin"], {
+                    easing: theme.transitions.easing.sharp,
+                    duration: theme.transitions.duration.leavingScreen,
+                }),
+            },
+            toolbar: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+            },
+            title: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+            },
+            menuButton: {
+                marginRight: 36,
+            },
+            hide: {
+                display: "none",
+            },
+            heading: {
+                color: "white"
+            }
         }
-    })
+    }
 );
 
 // define interface to represent component props
@@ -79,28 +70,28 @@ const Header: FC<HeaderProps> = ({
                     </Link>
                 </div>
                 {context.developerMode && <div>
-                    <IconButton onClick={() => history.push('/audits')}>
+                    <IconButton onClick={() => history.push('/audits')} size="large">
                         <Tooltip title={"Audits"} placement={"bottom"}>
                             <History/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/branching')}>
+                    <IconButton onClick={() => history.push('/branching')} size="large">
                         <Tooltip title={"Branching"} placement={"bottom"}>
                             <Share/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/settings')}>
+                    <IconButton onClick={() => history.push('/settings')} size="large">
                         <Tooltip title={"Settings"} placement={"bottom"}>
                             <SettingsApplications/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/health')}>
+                    <IconButton onClick={() => history.push('/health')} size="large">
                         <Tooltip title={"Health"} placement={"bottom"}>
                             <LocalHospital/>
                         </Tooltip>
                     </IconButton>
                 </div>}
-                <IconButton onClick={toggleTheme}>
+                <IconButton onClick={toggleTheme} size="large">
                     {useDefaultTheme ? (
                         <Tooltip title="Switch to dark mode" placement="bottom">
                             <Brightness3Icon/>

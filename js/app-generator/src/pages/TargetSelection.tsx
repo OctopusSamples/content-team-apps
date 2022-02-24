@@ -1,12 +1,14 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Grid, Theme} from "@material-ui/core";
+import { makeStyles } from '@mui/styles';
+import {Grid} from "@mui/material";
 import {AppContext} from "../App";
 import {Button} from "@mui/material";
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
+const useStyles = makeStyles((theme) => {
+    return {
         root: {
             flex: 1,
             display: "flex",
@@ -14,13 +16,20 @@ const useStyles = makeStyles((theme: Theme) =>
             minWidth: "100%",
             minHeight: "100%",
             justifyContent: "center"
-        },
-        button: {
-            width: "100%",
-            minHeight: "64px"
         }
-    })
-);
+    }
+});
+
+const buttonStyle:SxProps<Theme> = {
+    width: '100%',
+    minHeight: '64px',
+    // color: theme => theme.palette.text.primary,
+    // borderColor: theme => theme.palette.text.primary,
+    // ":hover": {
+    //     borderColor: theme => theme.palette.text.secondary,
+    //     color: theme => theme.palette.text.secondary,
+    // }
+}
 
 const TargetSelection: FC = (): ReactElement => {
     const classes = useStyles();
@@ -40,7 +49,7 @@ const TargetSelection: FC = (): ReactElement => {
             >
                 <Grid item md={4} xs={false}/>
                 <Grid item md={4} xs={12}>
-                    <Button variant="outlined" className={classes.button}>
+                    <Button sx={buttonStyle} variant="outlined">
                         {"EKS with GitHub and Octopus"}
                     </Button>
                 </Grid>

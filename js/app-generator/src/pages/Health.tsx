@@ -2,9 +2,10 @@ import {FC, ReactElement, useContext, useEffect, useMemo, useState} from "react"
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {getJson} from "../utils/network";
-import { Clear, Done } from "@material-ui/icons";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Theme} from "@material-ui/core";
+import { Clear, Done } from "@mui/icons-material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import {Theme} from "@mui/material";
 
 const newHealth: {[key: string]: boolean} = {};
 

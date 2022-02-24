@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {DataGrid, GridCellEditCommitParams, GridRowId} from "@material-ui/data-grid";
 import {styles} from "../utils/styles";
-import {Button, Checkbox, FormLabel, Grid} from "@material-ui/core";
+import {Button, Checkbox, FormLabel, Grid} from "@mui/material";
 
 export interface RedirectRule {
     id: number,

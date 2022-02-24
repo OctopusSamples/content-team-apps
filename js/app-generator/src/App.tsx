@@ -1,5 +1,5 @@
 import React, {createContext, FC, useEffect, useReducer, useState} from "react";
-import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
+import {createTheme, responsiveFontSizes, StyledEngineProvider, Theme, ThemeProvider,} from "@mui/material/styles";
 import {Helmet} from "react-helmet";
 import jwt_decode from 'jwt-decode';
 import {createMachine, InterpreterFrom} from 'xstate';
@@ -12,6 +12,13 @@ import {AnyEventObject} from "xstate/lib/types";
 import {useActor, useInterpret} from "@xstate/react";
 import Layout from "./components/Layout";
 import TargetSelection from "./pages/TargetSelection";
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 interface StateContext {
     standAlone: boolean,
@@ -173,29 +180,29 @@ function App(settings: RuntimeSettings) {
         }
     }, [returningFromLogin])
 
-    return (
-        <>
-            <Helmet>
-                <title>{settings.title}</title>
-            </Helmet>
-            <AppContext.Provider value={{
-                settings,
-                appBuilder,
-                useDefaultTheme,
-                developerMode,
-                setDeveloperMode,
-                partition,
-                setPartition
-            }}>
+    return <>
+        <Helmet>
+            <title>{settings.title}</title>
+        </Helmet>
+        <AppContext.Provider value={{
+            settings,
+            appBuilder,
+            useDefaultTheme,
+            developerMode,
+            setDeveloperMode,
+            partition,
+            setPartition
+        }}>
+            <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
                     <Layout toggleTheme={toggle}>
                         {requireLogin && <Login/>}
                         {!requireLogin && (state.context as StateContext).form({})}
                     </Layout>
                 </ThemeProvider>
-            </AppContext.Provider>
-        </>
-    );
+            </StyledEngineProvider>
+        </AppContext.Provider>
+    </>;
 }
 
 export default App;

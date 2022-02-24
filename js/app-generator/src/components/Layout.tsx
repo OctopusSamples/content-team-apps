@@ -1,6 +1,7 @@
 import {FC, ReactNode, useContext} from "react";
 import clsx from "clsx";
-import {createStyles, CssBaseline, makeStyles, Theme,} from "@material-ui/core";
+import { CssBaseline, Theme } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 
 // components
 import Header from "./Header";
@@ -8,23 +9,24 @@ import Footer from "./Footer";
 import {AppContext} from "../App";
 
 // define css-in-js
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            flexGrow: 1
-        },
-        content: {
-            display: "flex",
-            flexGrow: 1,
-            padding: theme.spacing(3),
-        },
-        toolbar: {
-            ...theme.mixins.toolbar,
-        },
-    })
+const useStyles = makeStyles((theme: Theme) => {
+        return {
+            root: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                flexGrow: 1
+            },
+            content: {
+                display: "flex",
+                flexGrow: 1,
+                padding: theme.spacing(3),
+            },
+            toolbar: {
+                ...theme.mixins.toolbar,
+            },
+        }
+    }
 );
 
 // define interface to represent component props

@@ -1,27 +1,28 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
-import {Button, Grid, Theme} from "@material-ui/core";
+import {Button, Grid, Theme} from "@mui/material";
 import {AppContext} from "../App";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from '@mui/styles';
 import {logIntoGitHub} from "../utils/githublogin";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        content: {
-            "& a": {
-                color: theme.palette.text.primary
+const useStyles = makeStyles((theme: Theme) => {
+        return {
+            content: {
+                "& a": {
+                    color: theme.palette.text.primary
+                },
+                padding: "28px",
+                alignContent: "flex-start"
             },
-            padding: "28px",
-            alignContent: "flex-start"
-        },
-        loginButtonContainer: {
-            textAlign: "center",
-            padding: "24px"
-        },
-        loginButton: {
-            fontSize: "1.5em"
+            loginButtonContainer: {
+                textAlign: "center",
+                padding: "24px"
+            },
+            loginButton: {
+                fontSize: "1.5em"
+            }
         }
-    })
+    }
 );
 
 const GitHubLogin: FC = (): ReactElement => {
