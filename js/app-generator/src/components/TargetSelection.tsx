@@ -23,12 +23,6 @@ const useStyles = makeStyles((theme) => {
 const buttonStyle:SxProps<Theme> = {
     width: '100%',
     minHeight: '64px',
-    // color: theme => theme.palette.text.primary,
-    // borderColor: theme => theme.palette.text.primary,
-    // ":hover": {
-    //     borderColor: theme => theme.palette.text.secondary,
-    //     color: theme => theme.palette.text.secondary,
-    // }
 }
 
 const TargetSelection: FC = (): ReactElement => {
