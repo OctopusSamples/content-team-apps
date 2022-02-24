@@ -1,8 +1,8 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
-import {AnyEventObject} from "xstate/lib/types";
-import {createMachine} from "xstate";
+import {AnyEventObject, EventObject} from "xstate/lib/types";
+import {assign, createMachine} from "xstate";
 import TargetSelection from "../components/TargetSelection";
 import {useActor, useInterpret} from "@xstate/react";
 
@@ -19,6 +19,10 @@ const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
     return !isStandalone(context, event)
 };
 
+const switchToOctopus = assign<StateContext, EventObject>({
+    form: (context: StateContext, event: EventObject) => TargetSelection
+});
+
 const appBuilderMachine = createMachine<StateContext>({
         id: 'appBuilder',
         initial: 'selectTarget',
@@ -29,12 +33,20 @@ const appBuilderMachine = createMachine<StateContext>({
         states: {
             selectTarget: {
                 on: {
-                    ECS: {target: 'logIntoOctopus'},
-                    EKS: {target: 'logIntoOctopus'},
-                    LAMBDA: {target: 'logIntoOctopus'},
+                    ECS: {
+                        target: 'logIntoOctopus',
+                        actions: switchToOctopus
+                    },
+                    EKS: {
+                        target: 'logIntoOctopus',
+                        actions: switchToOctopus
+                    },
+                    LAMBDA: {
+                        target: 'logIntoOctopus',
+                        actions: switchToOctopus
+                    },
                     STANDALONE: {target: 'selectFramework'},
                 },
-
             },
             selectedTargetNotAvailable: {
                 on: {
