@@ -1,5 +1,6 @@
-package com.octopus.http;
+package com.octopus.http.impl;
 
+import com.octopus.http.CookieDateUtils;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;

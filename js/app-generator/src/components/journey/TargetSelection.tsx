@@ -5,7 +5,6 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
-    const selectFramework = () => props.machine.send("selectFramework");
 
     return (
         <>

@@ -163,6 +163,7 @@
     <module>github-actions-builder</module>
     <module>github-oauth-backend</module>
     <module>audit-service</module>
+    <module>octopus-oauth-backend</module>
   </modules>
 
   <name>jenkins-pipeline-builder-backend</name>

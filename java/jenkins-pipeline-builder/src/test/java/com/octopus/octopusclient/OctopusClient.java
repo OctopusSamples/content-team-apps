@@ -1,7 +1,7 @@
 package com.octopus.octopusclient;
 
 import com.google.common.collect.ImmutableMap;
-import com.octopus.http.ReadWriteStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadWriteStringReadOnlyHttpClient;
 import io.vavr.control.Try;
 import java.util.List;
 import java.util.Map;

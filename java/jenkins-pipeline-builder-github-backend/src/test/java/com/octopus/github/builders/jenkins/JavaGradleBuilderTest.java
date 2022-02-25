@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.octopus.builders.java.JavaGradleBuilder;
-import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.repoclients.impl.GithubRepoClient;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;

@@ -53,3 +53,9 @@ export const backButtonStyle: SxProps<Theme> = {
     minHeight: '32px',
     marginTop: '8px'
 }
+
+export const nextButtonStyle: SxProps<Theme> = {
+    width: '128px',
+    minHeight: '64px',
+    marginTop: '8px'
+}

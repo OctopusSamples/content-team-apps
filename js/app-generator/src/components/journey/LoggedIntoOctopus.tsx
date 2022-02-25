@@ -3,8 +3,10 @@ import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
-const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
+const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+
 
     return (
         <>
@@ -20,17 +22,11 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         className={classes.column}
                     >
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
-                        <h2>Complete the cloud Octopus trail sign up.</h2>
+                        <h2>Octopus cloud login successful.</h2>
                         <p>
-                            Click the signup button to open a new tab where you can sign up for a free Octopus cloud trial.
+                            You have successfully logged into your Octopus cloud instance.
                         </p>
-                        <p>
-                            Once you have completed the signup for the cloud trial, return to this page, and click the next button.
-                        </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => window.open("https://octopus.com/start/cloud")}>
-                            {"Signup"}
-                        </Button>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
+                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => window.open}>
                             {"Next >"}
                         </Button>
                     </Grid>
@@ -41,4 +37,4 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     );
 };
 
-export default SignUpForCloudOctopus;
+export default LogIntoOctopus;

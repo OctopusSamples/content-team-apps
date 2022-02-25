@@ -3,8 +3,6 @@ package com.octopus.audits.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.application.Constants;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
@@ -18,7 +16,6 @@ import com.octopus.lambda.LambdaHttpValueExtractor;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -26,7 +23,6 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.text.StringEscapeUtils;
 
 /** The Lambda entry point used to return audit resources. */
 @Named("Audits")

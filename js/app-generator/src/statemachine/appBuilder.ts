@@ -11,6 +11,36 @@ import {assign, createMachine} from "xstate";
 import DoYouHaveCloudOctopus from "../components/journey/DoYouHaveCloudOctopus";
 import TargetSelection from "../components/journey/TargetSelection";
 import SignUpForCloudOctopus from "../components/journey/SignUpForCloudOctopus";
+import LogIntoOctopus from "../components/journey/LogIntoOctopus";
+import LoggedIntoOctopus from "../components/journey/LoggedIntoOctopus";
+
+const LoginActions = ["octopusLoginSucceeded", "githubLoginSucceeded"];
+
+function getInitialStateContext() {
+    if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
+        const stateString = localStorage.getItem("appBuilderStateContext");
+        if (stateString) {
+            const state = JSON.parse(stateString);
+            return {
+                form: null,
+                standAlone: state.standAlone
+            }
+        }
+    }
+
+    return {
+        form: null,
+        standAlone: false
+    }
+}
+
+function getInitialState() {
+    if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
+        return localStorage.getItem("appBuilderState") || "selectTarget";
+    }
+
+    return "selectTarget";
+}
 
 /**
  * The properties associated with each journey component.
@@ -30,7 +60,7 @@ export interface StateContext {
     /**
      * The React component displayed with the current state.
      */
-    form: FC<JourneyProps>
+    form: FC<JourneyProps> | null
 }
 
 /**
@@ -53,11 +83,8 @@ const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
  */
 export const appBuilderMachine = createMachine<StateContext>({
             id: 'appBuilder',
-            initial: 'selectTarget',
-            context: {
-                standAlone: false,
-                form: TargetSelection
-            },
+            initial: getInitialState(),
+            context: getInitialStateContext(),
             states: {
                 selectTarget: {
                     on: {
@@ -88,6 +115,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 signUpForCloudOctopus: {
                     on: {
                         NEXT: {target: 'logIntoOctopus'},
+                        BACK: {target: 'doYouHaveCloudOctopus'},
                     },
                     entry: assign<StateContext>({
                         form: (context:StateContext, event: AnyEventObject) => SignUpForCloudOctopus
@@ -99,7 +127,16 @@ export const appBuilderMachine = createMachine<StateContext>({
                         FAILURE: {target: 'logIntoOctopusFailed'},
                     },
                     entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
+                        form: (context:StateContext, event: AnyEventObject) => LogIntoOctopus
+                    })
+                },
+                loggedIntoOctopus: {
+                    on: {
+                        NEXT: {target: 'logIntoGitHub'},
+                        BACK: {target: 'doYouHaveCloudOctopus'},
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => LoggedIntoOctopus
                     })
                 },
                 logIntoOctopusFailed: {

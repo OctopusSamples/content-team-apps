@@ -1,4 +1,4 @@
-package com.octopus.http;
+package com.octopus.http.impl;
 
 import static org.jboss.logging.Logger.Level.DEBUG;
 import static org.jboss.logging.Logger.Level.ERROR;

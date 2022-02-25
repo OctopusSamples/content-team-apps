@@ -13,7 +13,6 @@ import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import io.quarkus.logging.Log;
-import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 

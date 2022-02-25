@@ -7,5 +7,5 @@ public final class PipelineConstants {
   /**
    * The cookie holding the access token.
    */
-  public static final String SESSION_COOKIE = "UserSession";
+  public static final String SESSION_COOKIE = "OctopusUserSession";
 }

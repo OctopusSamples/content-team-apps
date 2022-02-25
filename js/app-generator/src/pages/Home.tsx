@@ -4,7 +4,6 @@ import {AppContext} from "../App";
 import {useActor, useInterpret} from "@xstate/react";
 import {appBuilderMachine} from "../statemachine/appBuilder";
 
-
 /**
  * The React component that displays the components associated with the states in the state machine.
  * @constructor
@@ -21,7 +20,7 @@ const Home: FC = (): ReactElement => {
                     {settings.title}
                 </title>
             </Helmet>
-            {state.context.form({machine})}
+            {state.context.form && state.context.form({machine})}
         </>
     );
 };
