@@ -13,6 +13,7 @@ import TargetSelection from "../components/journey/TargetSelection";
 import SignUpForCloudOctopus from "../components/journey/SignUpForCloudOctopus";
 import LogIntoOctopus from "../components/journey/LogIntoOctopus";
 import LoggedIntoOctopus from "../components/journey/LoggedIntoOctopus";
+import LogIntoGitHub from "../components/journey/LogIntoGitHub";
 
 const LoginActions = ["octopusLoginSucceeded", "githubLoginSucceeded"];
 
@@ -123,8 +124,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 logIntoOctopus: {
                     on: {
-                        SUCCESS: {target: 'logIntoGitHub'},
-                        FAILURE: {target: 'logIntoOctopusFailed'},
+                        BACK: {target: 'doYouHaveCloudOctopus'},
                     },
                     entry: assign<StateContext>({
                         form: (context:StateContext, event: AnyEventObject) => LogIntoOctopus
@@ -139,20 +139,17 @@ export const appBuilderMachine = createMachine<StateContext>({
                         form: (context:StateContext, event: AnyEventObject) => LoggedIntoOctopus
                     })
                 },
-                logIntoOctopusFailed: {
-                    on: {
-                        BACK: {target: 'logIntoOctopus'}
-                    }
-                },
                 logIntoGitHub: {
                     on: {
-                        SUCCESS: {target: 'selectFramework'},
-                        FAILURE: {target: 'logIntoGitHubFailed'},
-                    }
+                        BACK: {target: 'doYouHaveCloudOctopus'},
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => LogIntoGitHub
+                    })
                 },
-                logIntoGitHubFailed: {
+                loggedIntoGithub: {
                     on: {
-                        BACK: {target: 'logIntoGitHub'}
+                        NEXT: {target: 'selectFramework'}
                     }
                 },
                 selectFramework: {

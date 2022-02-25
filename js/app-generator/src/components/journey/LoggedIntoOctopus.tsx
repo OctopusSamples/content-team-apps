@@ -26,7 +26,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             You have successfully logged into your Octopus cloud instance.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => window.open}>
+                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
                             {"Next >"}
                         </Button>
                     </Grid>

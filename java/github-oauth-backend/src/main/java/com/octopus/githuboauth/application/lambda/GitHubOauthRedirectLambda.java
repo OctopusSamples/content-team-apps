@@ -98,7 +98,7 @@ public class GitHubOauthRedirectLambda implements
       }
 
       return new APIGatewayProxyResponseEvent()
-          .withStatusCode(307)
+          .withStatusCode(303)
           .withHeaders(new ImmutableMap.Builder<String, String>()
               .put("Location", clientRedirect)
               .build())
