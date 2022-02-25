@@ -15,6 +15,9 @@ import LogIntoOctopus from "../components/journey/LogIntoOctopus";
 import LoggedIntoOctopus from "../components/journey/LoggedIntoOctopus";
 import LogIntoGitHub from "../components/journey/LogIntoGitHub";
 import LoggedIntoGithub from "../components/journey/LoggedIntoGitHub";
+import SelectFramework from "../components/journey/SelectFramework";
+import PushPackage from "../components/journey/PushPackage";
+import Done from "../components/journey/Done";
 
 const LoginActions = ["octopusLoginSucceeded", "githubLoginSucceeded"];
 
@@ -166,32 +169,38 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 selectFramework: {
                     on: {
-                        QUARKUS: {target: 'defineEntity'},
+                        QUARKUS: {target: 'pushPackage'},
                         SPRING: {target: 'selectedFrameworkNotAvailable'},
                         DOTNETCORE: {target: 'selectedFrameworkNotAvailable'},
                         PYTHON: {target: 'selectedFrameworkNotAvailable'},
                         GO: {target: 'selectedFrameworkNotAvailable'}
-                    }
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => SelectFramework
+                    })
                 },
                 selectedFrameworkNotAvailable: {
                     on: {
                         BACK: {target: 'selectFramework'}
                     }
                 },
-                defineEntity: {
-                    on: {
-                        DONE: [
-                            {target: 'pushPackage', cond: isNotStandalone},
-                            {target: 'downloadPackage', cond: isStandalone},
-                        ]
-                    }
-                },
                 pushPackage: {
-                    type: 'final'
+                    on: {
+                        NEXT: {target: 'done'}
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => PushPackage
+                    })
                 },
                 downloadPackage: {
                     type: 'final'
-                }
+                },
+                done: {
+                    type: 'final',
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => Done
+                    })
+                },
             }
         },
         {
