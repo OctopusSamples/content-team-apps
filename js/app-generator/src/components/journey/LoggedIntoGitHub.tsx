@@ -3,7 +3,7 @@ import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
-const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
+const LoggedIntoGithub: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
     return (
@@ -20,9 +20,9 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                         className={classes.column}
                     >
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
-                        <h2>Octopus cloud login successful.</h2>
+                        <h2>GitHub login successful.</h2>
                         <p>
-                            You have successfully logged into your Octopus cloud instance.
+                            You have successfully authorized access to GitHub.
                         </p>
                         <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
                             {"Next >"}
@@ -35,4 +35,4 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     );
 };
 
-export default LogIntoOctopus;
+export default LoggedIntoGithub;

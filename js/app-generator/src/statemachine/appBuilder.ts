@@ -14,33 +14,42 @@ import SignUpForCloudOctopus from "../components/journey/SignUpForCloudOctopus";
 import LogIntoOctopus from "../components/journey/LogIntoOctopus";
 import LoggedIntoOctopus from "../components/journey/LoggedIntoOctopus";
 import LogIntoGitHub from "../components/journey/LogIntoGitHub";
+import LoggedIntoGithub from "../components/journey/LoggedIntoGitHub";
 
 const LoginActions = ["octopusLoginSucceeded", "githubLoginSucceeded"];
 
 function getInitialStateContext() {
-    if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
-        const stateString = localStorage.getItem("appBuilderStateContext");
-        if (stateString) {
-            const state = JSON.parse(stateString);
-            return {
-                form: null,
-                standAlone: state.standAlone
+    try {
+        if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
+            const stateString = localStorage.getItem("appBuilderStateContext");
+            if (stateString) {
+                const state = JSON.parse(stateString);
+                return {
+                    form: null,
+                    standAlone: state.standAlone
+                }
             }
         }
-    }
 
-    return {
-        form: null,
-        standAlone: false
+        return {
+            form: null,
+            standAlone: false
+        }
+    } finally {
+        //localStorage.setItem("appBuilderStateContext", "");
     }
 }
 
 function getInitialState() {
-    if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
-        return localStorage.getItem("appBuilderState") || "selectTarget";
-    }
+    try {
+        if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
+            return localStorage.getItem("appBuilderState") || "selectTarget";
+        }
 
-    return "selectTarget";
+        return "selectTarget";
+    } finally {
+        //localStorage.setItem("appBuilderState", "");
+    }
 }
 
 /**
@@ -150,7 +159,10 @@ export const appBuilderMachine = createMachine<StateContext>({
                 loggedIntoGithub: {
                     on: {
                         NEXT: {target: 'selectFramework'}
-                    }
+                    },
+                    entry: assign<StateContext>({
+                        form: (context:StateContext, event: AnyEventObject) => LoggedIntoGithub
+                    })
                 },
                 selectFramework: {
                     on: {
