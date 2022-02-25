@@ -19,41 +19,39 @@ import SelectFramework from "../components/journey/SelectFramework";
 import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 
-
-
 function getInitialStateContext() {
-    try {
-        const stateString = localStorage.getItem("appBuilderStateContext");
-        if (stateString) {
-            const state = JSON.parse(stateString);
-            return {
-                form: null,
-                standAlone: state.standAlone
-            }
-        }
-
+    const stateString = localStorage.getItem("appBuilderStateContext");
+    if (stateString) {
+        const state = JSON.parse(stateString);
         return {
-            form: null,
-            standAlone: false
+            form: TargetSelection,
+            standAlone: !!state.standAlone
         }
-    } finally {
-        //localStorage.setItem("appBuilderStateContext", "");
+    }
+
+    return {
+        form: TargetSelection,
+        standAlone: false
     }
 }
 
 function getInitialState() {
-    try {
-        return localStorage.getItem("appBuilderState") || "selectTarget";
-    } finally {
-        //localStorage.setItem("appBuilderState", "");
-    }
+    return localStorage.getItem("appBuilderState") || "selectTarget";
 }
 
 function saveCurrentState(stateName: string) {
     return (context: StateContext, event: AnyEventObject) => {
-        localStorage.setItem("appBuilderStateContext", JSON.stringify({...context, form: null}))
-        localStorage.setItem("appBuilderState", stateName);
+        if (event.type !== "xstate.init") {
+            localStorage.setItem("appBuilderStateContext", JSON.stringify({...context, form: null}))
+            localStorage.setItem("appBuilderState", stateName);
+        }
     }
+}
+
+function assignForm(component: FC<JourneyProps>) {
+    return assign<StateContext>({
+        form: (context: StateContext, event: AnyEventObject) => component
+    })
 }
 
 /**
@@ -109,9 +107,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("selectTarget"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => TargetSelection
-                        })
+                        assignForm(TargetSelection)
                     ]
                 },
                 selectedTargetNotAvailable: {
@@ -119,7 +115,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         BACK: {target: 'selectTarget'}
                     },
                     entry: [
-                        saveCurrentState("doYouHaveCloudOctopus"),
+                        saveCurrentState("selectedTargetNotAvailable"),
                     ]
                 },
                 doYouHaveCloudOctopus: {
@@ -130,9 +126,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("doYouHaveCloudOctopus"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
-                        })
+                        assignForm(DoYouHaveCloudOctopus)
                     ]
                 },
                 signUpForCloudOctopus: {
@@ -142,9 +136,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("signUpForCloudOctopus"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => SignUpForCloudOctopus
-                        })
+                        assignForm(SignUpForCloudOctopus)
                     ]
                 },
                 logIntoOctopus: {
@@ -153,9 +145,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("logIntoOctopus"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => LogIntoOctopus
-                        })
+                        assignForm(LogIntoOctopus)
                     ]
                 },
                 loggedIntoOctopus: {
@@ -165,9 +155,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("loggedIntoOctopus"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => LoggedIntoOctopus
-                        })
+                        assignForm(LoggedIntoOctopus)
                     ]
                 },
                 logIntoGitHub: {
@@ -176,9 +164,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("logIntoGitHub"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => LogIntoGitHub
-                        })
+                        assignForm(LogIntoGitHub)
                     ]
                 },
                 loggedIntoGithub: {
@@ -187,9 +173,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("loggedIntoGithub"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => LoggedIntoGithub
-                        })
+                        assignForm(LoggedIntoGithub)
                     ]
                 },
                 selectFramework: {
@@ -202,9 +186,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("selectFramework"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => SelectFramework
-                        })
+                        assignForm(SelectFramework)
                     ]
                 },
                 selectedFrameworkNotAvailable: {
@@ -221,9 +203,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     },
                     entry: [
                         saveCurrentState("pushPackage"),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => PushPackage
-                        })
+                        assignForm(PushPackage)
                     ]
                 },
                 downloadPackage: {
@@ -233,10 +213,8 @@ export const appBuilderMachine = createMachine<StateContext>({
                     type: 'final',
                     entry: [
                         saveCurrentState(""),
-                        assign<StateContext>({
-                            form: (context: StateContext, event: AnyEventObject) => Done
-                        })
-                   ]
+                        assignForm(Done)
+                    ]
                 },
             }
         },

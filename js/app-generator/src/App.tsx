@@ -11,6 +11,9 @@ import Layout from "./components/scaffold/Layout";
 import {HashRouter, Route, Switch} from "react-router-dom";
 import {routes} from "./config";
 import RouteItem from "./model/RouteItem.model";
+import {useInterpret} from "@xstate/react";
+import {appBuilderMachine} from "./statemachine/appBuilder";
+import {InterpreterFrom} from "xstate/lib/types";
 
 declare module '@mui/styles/defaultTheme' {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -28,6 +31,7 @@ export const AppContext = createContext({
     partition: "",
     setPartition: (mode: string) => {
     },
+    machine: {} as InterpreterFrom<typeof appBuilderMachine>
 });
 
 const DefaultComponent = () => <div>No Component Defined.</div>;
@@ -66,7 +70,6 @@ function App(settings: RuntimeSettings) {
         }
     }, [developerGroup, branch, idToken]);
 
-
     const returningFromLogin = new URLSearchParams(window.location.search).get('action') === "loggedin";
 
     useEffect(() => {
@@ -81,6 +84,8 @@ function App(settings: RuntimeSettings) {
         }
     }, [returningFromLogin])
 
+    const machine = useInterpret(appBuilderMachine);
+
     return <>
         <Helmet>
             <title>{settings.title}</title>
@@ -91,7 +96,8 @@ function App(settings: RuntimeSettings) {
             developerMode,
             setDeveloperMode,
             partition,
-            setPartition
+            setPartition,
+            machine
         }}>
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
