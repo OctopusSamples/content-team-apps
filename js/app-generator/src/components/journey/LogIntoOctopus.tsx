@@ -2,13 +2,11 @@ import {FC, ReactElement} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import {saveStateMachineStateContext} from "../../utils/statemachineutils";
 
 const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
     const login = () => {
-        saveStateMachineStateContext(props.machine);
         localStorage.setItem("appBuilderState", "loggedIntoOctopus");
         window.open("https://octopus.com/oauth2/authorize?"
             + "client_id=855b8e5a-c3c4-4c4d-91b1-fef5dd762ec2&scope=openid%20profile%20email"

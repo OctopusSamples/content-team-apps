@@ -1,8 +1,7 @@
 import {FC, ReactElement} from "react";
 import {Button, Grid, Link} from "@mui/material";
-import {buttonStyle, journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import {saveStateMachineStateContext} from "../../utils/statemachineutils";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();

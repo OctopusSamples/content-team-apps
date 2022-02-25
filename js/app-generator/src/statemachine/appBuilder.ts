@@ -19,18 +19,16 @@ import SelectFramework from "../components/journey/SelectFramework";
 import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 
-const LoginActions = ["octopusLoginSucceeded", "githubLoginSucceeded"];
+
 
 function getInitialStateContext() {
     try {
-        if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
-            const stateString = localStorage.getItem("appBuilderStateContext");
-            if (stateString) {
-                const state = JSON.parse(stateString);
-                return {
-                    form: null,
-                    standAlone: state.standAlone
-                }
+        const stateString = localStorage.getItem("appBuilderStateContext");
+        if (stateString) {
+            const state = JSON.parse(stateString);
+            return {
+                form: null,
+                standAlone: state.standAlone
             }
         }
 
@@ -45,13 +43,16 @@ function getInitialStateContext() {
 
 function getInitialState() {
     try {
-        if (LoginActions.indexOf(new URLSearchParams(window.location.search).get('action') || "") !== -1) {
-            return localStorage.getItem("appBuilderState") || "selectTarget";
-        }
-
-        return "selectTarget";
+        return localStorage.getItem("appBuilderState") || "selectTarget";
     } finally {
         //localStorage.setItem("appBuilderState", "");
+    }
+}
+
+function saveCurrentState(stateName: string) {
+    return (context: StateContext, event: AnyEventObject) => {
+        localStorage.setItem("appBuilderStateContext", JSON.stringify({...context, form: null}))
+        localStorage.setItem("appBuilderState", stateName);
     }
 }
 
@@ -106,14 +107,20 @@ export const appBuilderMachine = createMachine<StateContext>({
                         LAMBDA: {target: 'doYouHaveCloudOctopus'},
                         STANDALONE: {target: 'selectFramework'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => TargetSelection
-                    })
+                    entry: [
+                        saveCurrentState("selectTarget"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => TargetSelection
+                        })
+                    ]
                 },
                 selectedTargetNotAvailable: {
                     on: {
                         BACK: {target: 'selectTarget'}
-                    }
+                    },
+                    entry: [
+                        saveCurrentState("doYouHaveCloudOctopus"),
+                    ]
                 },
                 doYouHaveCloudOctopus: {
                     on: {
@@ -121,51 +128,69 @@ export const appBuilderMachine = createMachine<StateContext>({
                         NO: {target: 'signUpForCloudOctopus'},
                         BACK: {target: 'selectTarget'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
-                    })
+                    entry: [
+                        saveCurrentState("doYouHaveCloudOctopus"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => DoYouHaveCloudOctopus
+                        })
+                    ]
                 },
                 signUpForCloudOctopus: {
                     on: {
                         NEXT: {target: 'logIntoOctopus'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => SignUpForCloudOctopus
-                    })
+                    entry: [
+                        saveCurrentState("signUpForCloudOctopus"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => SignUpForCloudOctopus
+                        })
+                    ]
                 },
                 logIntoOctopus: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => LogIntoOctopus
-                    })
+                    entry: [
+                        saveCurrentState("logIntoOctopus"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => LogIntoOctopus
+                        })
+                    ]
                 },
                 loggedIntoOctopus: {
                     on: {
                         NEXT: {target: 'logIntoGitHub'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => LoggedIntoOctopus
-                    })
+                    entry: [
+                        saveCurrentState("loggedIntoOctopus"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => LoggedIntoOctopus
+                        })
+                    ]
                 },
                 logIntoGitHub: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => LogIntoGitHub
-                    })
+                    entry: [
+                        saveCurrentState("logIntoGitHub"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => LogIntoGitHub
+                        })
+                    ]
                 },
                 loggedIntoGithub: {
                     on: {
                         NEXT: {target: 'selectFramework'}
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => LoggedIntoGithub
-                    })
+                    entry: [
+                        saveCurrentState("loggedIntoGithub"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => LoggedIntoGithub
+                        })
+                    ]
                 },
                 selectFramework: {
                     on: {
@@ -175,31 +200,43 @@ export const appBuilderMachine = createMachine<StateContext>({
                         PYTHON: {target: 'selectedFrameworkNotAvailable'},
                         GO: {target: 'selectedFrameworkNotAvailable'}
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => SelectFramework
-                    })
+                    entry: [
+                        saveCurrentState("selectFramework"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => SelectFramework
+                        })
+                    ]
                 },
                 selectedFrameworkNotAvailable: {
                     on: {
                         BACK: {target: 'selectFramework'}
-                    }
+                    },
+                    entry: [
+                        saveCurrentState("selectedFrameworkNotAvailable"),
+                    ]
                 },
                 pushPackage: {
                     on: {
                         NEXT: {target: 'done'}
                     },
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => PushPackage
-                    })
+                    entry: [
+                        saveCurrentState("pushPackage"),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => PushPackage
+                        })
+                    ]
                 },
                 downloadPackage: {
                     type: 'final'
                 },
                 done: {
                     type: 'final',
-                    entry: assign<StateContext>({
-                        form: (context:StateContext, event: AnyEventObject) => Done
-                    })
+                    entry: [
+                        saveCurrentState(""),
+                        assign<StateContext>({
+                            form: (context: StateContext, event: AnyEventObject) => Done
+                        })
+                   ]
                 },
             }
         },
