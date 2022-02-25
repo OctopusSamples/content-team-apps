@@ -7,6 +7,7 @@ import {FC, useContext} from "react";
 import {AppContext} from "../../App";
 import {History, LocalHospital, SettingsApplications, Share} from "@mui/icons-material";
 import {useHistory} from "react-router-dom";
+import {startAtBeginning} from "../../statemachine/appBuilder";
 
 const useStyles = makeStyles((theme: Theme) => {
         return {
@@ -63,7 +64,7 @@ const Header: FC<HeaderProps> = ({
         >
             <Toolbar className={classes.toolbar}>
                 <div className={classes.title}>
-                    <Link href={`${process.env.PUBLIC_URL}/index.html`} className={classes.heading}>
+                    <Link href={`${process.env.PUBLIC_URL}/index.html`} onClick={startAtBeginning} className={classes.heading}>
                         <Typography variant="h6">
                             {context.settings.title}
                         </Typography>

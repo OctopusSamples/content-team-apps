@@ -54,6 +54,10 @@ function assignForm(component: FC<JourneyProps>) {
     })
 }
 
+export function startAtBeginning() {
+    localStorage.setItem("appBuilderState", "");
+}
+
 /**
  * The properties associated with each journey component.
  */
