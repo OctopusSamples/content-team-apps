@@ -97,8 +97,8 @@ runs:
       with:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
-    - env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+#    - env:
+#        GITHUB_TOKEN: ${{ inputs.github_token }}
 #      id: create_release
 #      name: Create Release
 #      uses: actions/create-release@v1
