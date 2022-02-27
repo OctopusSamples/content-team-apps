@@ -2,7 +2,9 @@
     This page defines the wizard style interface users interact with to define the application they wish to construct.
 
     The path users can take is defined as a state machine. Each state has an accompanying React component that is
-    displayed. The components are located in the src/components/journey directory.
+    displayed.
+
+    The components are located in the src/components/journey directory.
  */
 
 import {AnyEventObject, InterpreterFrom} from "xstate/lib/types";
@@ -20,12 +22,15 @@ import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
 
+/**
+ * Return the state context from local storage.
+ */
 function getInitialStateContext() {
     const stateString = localStorage.getItem("appBuilderStateContext");
     if (stateString) {
         const state = JSON.parse(stateString);
         return {
-            form: TargetSelection,
+            form: TargetSelection,              // This doesn't matter too much, as the state entry functions override it anyway.
             standAlone: !!state.standAlone,
             awsAccessKey: state.awsAccessKey
         }
@@ -38,10 +43,19 @@ function getInitialStateContext() {
     }
 }
 
+/**
+ * Return the name of the state that we should start the form at.
+ */
 function getInitialState() {
     return localStorage.getItem("appBuilderState") || "selectTarget";
 }
 
+/**
+ * Persist the state machine context to local storage. This allows the end user to reload the app and
+ * drop back into the form at any point.
+ *
+ * @param stateName The name of the current state.
+ */
 function saveCurrentState(stateName: string) {
     return (context: StateContext, event: AnyEventObject) => {
         if (event.type !== "xstate.init") {
@@ -51,12 +65,19 @@ function saveCurrentState(stateName: string) {
     }
 }
 
+/**
+ * Assign a function component to the state context.
+ * @param component The component to save to the state context.
+ */
 function assignForm(component: FC<JourneyProps>) {
     return assign<StateContext>({
         form: (context: StateContext, event: AnyEventObject) => component
     })
 }
 
+/**
+ * Reset the persisted state context.
+ */
 export function startAtBeginning() {
     localStorage.setItem("appBuilderState", "");
 }
