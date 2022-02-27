@@ -1,6 +1,6 @@
 import {FC, ReactElement} from "react";
 import {Button, Grid, Link} from "@mui/material";
-import {buttonStyle, journeyContainer} from "../../utils/styles";
+import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
 const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
@@ -39,8 +39,8 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             Click the login button to be taken to the Octopus login page. You will be returned to this
                             page once you have successfully logged in.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={login}>
-                            {"Login"}
+                        <Button sx={nextButtonStyle} variant="outlined" onClick={login}>
+                            {"Next >"}
                         </Button>
                     </Grid>
                 </Grid>

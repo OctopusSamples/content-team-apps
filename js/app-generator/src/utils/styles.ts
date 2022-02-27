@@ -38,6 +38,12 @@ export const journeyContainer = makeStyles((theme) => {
             minWidth: "100%",
             minHeight: "100%",
             justifyContent: "top"
+        },
+        row: {
+            display: "flex",
+            flexDirection: "row",
+            minWidth: "100%",
+            justifyContent: "center"
         }
     }
 });
@@ -58,4 +64,14 @@ export const nextButtonStyle: SxProps<Theme> = {
     width: '128px',
     minHeight: '64px',
     marginTop: '8px'
+}
+
+export const formContainer: SxProps<Theme> = {
+    alignItems: "center",
+    justifyContent: "center"
+}
+
+export const formElements: SxProps<Theme> = {
+    paddingTop: "8px",
+    width: "100%"
 }

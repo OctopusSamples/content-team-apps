@@ -18,6 +18,7 @@ import LoggedIntoGithub from "../components/journey/LoggedIntoGitHub";
 import SelectFramework from "../components/journey/SelectFramework";
 import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
+import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
 
 function getInitialStateContext() {
     const stateString = localStorage.getItem("appBuilderStateContext");
@@ -173,15 +174,26 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 loggedIntoGithub: {
                     on: {
-                        NEXT: {target: 'selectFramework'}
+                        NEXT: {target: 'enterAwsCredentials'}
                     },
                     entry: [
                         saveCurrentState("loggedIntoGithub"),
                         assignForm(LoggedIntoGithub)
                     ]
                 },
+                enterAwsCredentials: {
+                    on: {
+                        BACK: {target: 'logIntoGitHub'},
+                        NEXT: {target: 'selectFramework'},
+                    },
+                    entry: [
+                        saveCurrentState("enterAwsCredentials"),
+                        assignForm(EnterAwsCredentials)
+                    ]
+                },
                 selectFramework: {
                     on: {
+                        BACK: {target: 'enterAwsCredentials'},
                         QUARKUS: {target: 'pushPackage'},
                         SPRING: {target: 'selectedFrameworkNotAvailable'},
                         DOTNETCORE: {target: 'selectedFrameworkNotAvailable'},

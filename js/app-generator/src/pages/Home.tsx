@@ -1,7 +1,9 @@
-import {FC, ReactElement, useContext} from "react";
+import React, {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {useActor} from "@xstate/react";
+import TargetSelection from "../components/journey/TargetSelection";
+import { JourneyProps } from "../statemachine/appBuilder";
 
 /**
  * The React component that displays the components associated with the states in the state machine. Each state is
@@ -12,6 +14,8 @@ const Home: FC = (): ReactElement => {
     const {settings, machine} = useContext(AppContext)
     const [state] = useActor(machine);
 
+    const Child = (props: React.Attributes & JourneyProps) => React.createElement(state.context.form || TargetSelection, {...props})
+
     return (
         <>
             <Helmet>
@@ -19,7 +23,7 @@ const Home: FC = (): ReactElement => {
                     {settings.title}
                 </title>
             </Helmet>
-            {state.context.form && state.context.form({machine})}
+            <Child machine={machine}/>
         </>
     );
 };

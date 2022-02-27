@@ -1,5 +1,5 @@
 import {FC, ReactElement} from "react";
-import {Button, Grid} from "@mui/material";
+import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
@@ -19,6 +19,7 @@ const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>What application framework do you wish to deploy?</h2>
                         <p>
                             Select the framework for the sample application you wish to deploy.

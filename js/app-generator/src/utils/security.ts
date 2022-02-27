@@ -10,6 +10,7 @@ import {
 } from "./path";
 import jwt from 'jsonwebtoken';
 import jwkToPem, {JWK} from 'jwk-to-pem';
+import {JSEncrypt} from "jsencrypt";
 
 export function setAccessToken(accessToken: string) {
     window.localStorage.setItem(getLoginBranch() + "-accesstoken", accessToken);
@@ -174,4 +175,21 @@ export function handleCognitoLogin() {
     } finally {
         clearLoginBranch();
     }
+}
+
+export async function encryptAndSaveInCookie(value: string, cookie: string) {
+    const key = await fetch("public_key.pem", {
+        method: 'GET'
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            }
+            throw new Error("Failed to load the public key");
+        });
+
+    const encrypt = new JSEncrypt();
+    encrypt.setPublicKey(key);
+    const encrypted = encrypt.encrypt(value);
+    document.cookie = cookie + "=" + encrypted;
 }
