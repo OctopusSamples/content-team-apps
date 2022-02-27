@@ -1,11 +1,11 @@
 import { IconButton, Link, Theme } from "@mui/material";
 import {makeStyles} from '@mui/styles';
 import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
-
-// constants
-import {FOOTER_HEIGHT, FOOTER_TEXT} from "../../utils/constants";
 import {useContext} from "react";
 import {AppContext} from "../../App";
+
+const FOOTER_TEXT = `Built by Octopus. Happy Deployments!`
+const FOOTER_HEIGHT = 30
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) => {

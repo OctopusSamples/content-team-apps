@@ -3,7 +3,7 @@ import {createTheme, responsiveFontSizes, StyledEngineProvider, Theme, ThemeProv
 import {Helmet} from "react-helmet";
 import jwt_decode from 'jwt-decode';
 import {darkTheme, lightTheme} from "./theme/appTheme";
-import {RuntimeSettings} from "./config/dynamicConfig";
+import {RuntimeSettings} from "./config/runtimeConfig";
 import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/developer/Login";

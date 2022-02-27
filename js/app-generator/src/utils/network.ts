@@ -1,6 +1,7 @@
-import {GET_RETRIES} from "./constants";
 import {RedirectRule} from "../pages/developer/Branching";
 import {getAccessToken} from "./security";
+
+const GET_RETRIES = 5;
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";

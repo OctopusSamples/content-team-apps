@@ -1,4 +1,4 @@
-import {RuntimeSettings} from "./config/dynamicConfig";
+import {RuntimeSettings} from "./config/runtimeConfig";
 
 /**
  * We need for this application to work under a variety of subpaths.
