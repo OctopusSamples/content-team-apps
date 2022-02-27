@@ -3,18 +3,22 @@ import {Button, FormLabel, Grid, Link, TextField} from "@mui/material";
 import {formContainer, formElements, journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
+import Cookies from 'js-cookie'
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
-    const [accessKey, setAccessKey] = useState<string>("");
-    const [secretKey, setSecretKey] = useState<string>("");
+    const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
+    const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? "**************" : "");
 
     const next = () => {
         // Asymmetrically encrypt the secret so the browser can not read it again.
         encryptAndSaveInCookie(secretKey, "awsSecretKey")
             .then(() => {
                 setSecretKey("");
+                if (props.machine.state) {
+                    props.machine.state.context.awsAccessKey = accessKey;
+                }
                 props.machine.send("NEXT");
             })
 
@@ -49,13 +53,13 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 <FormLabel sx={formElements}>Access Key</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} onChange={(event) => setAccessKey(event.target.value)}/>
+                                <TextField sx={formElements} value={accessKey} onChange={(event) => setAccessKey(event.target.value)}/>
                             </Grid>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Secret Key</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} type="password" autoComplete="new-password" onChange={(event) => setSecretKey(event.target.value)}/>
+                                <TextField sx={formElements} value={secretKey} type="password" autoComplete="new-password" onChange={(event) => setSecretKey(event.target.value)}/>
                             </Grid>
                         </Grid>
                         <Button sx={nextButtonStyle} variant="outlined" onClick={next}>

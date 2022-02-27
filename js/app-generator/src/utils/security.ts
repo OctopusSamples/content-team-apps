@@ -11,6 +11,8 @@ import {
 import jwt from 'jsonwebtoken';
 import jwkToPem, {JWK} from 'jwk-to-pem';
 import {JSEncrypt} from "jsencrypt";
+import Cookies from 'js-cookie'
+
 
 export function setAccessToken(accessToken: string) {
     window.localStorage.setItem(getLoginBranch() + "-accesstoken", accessToken);
@@ -190,6 +192,6 @@ export async function encryptAndSaveInCookie(value: string, cookie: string) {
 
     const encrypt = new JSEncrypt();
     encrypt.setPublicKey(key);
-    const encrypted = encrypt.encrypt(value);
-    document.cookie = cookie + "=" + encrypted;
+    const encrypted = encrypt.encrypt(value) || "";
+    Cookies.set(cookie, encrypted, {expires: 1});
 }

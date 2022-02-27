@@ -26,13 +26,15 @@ function getInitialStateContext() {
         const state = JSON.parse(stateString);
         return {
             form: TargetSelection,
-            standAlone: !!state.standAlone
+            standAlone: !!state.standAlone,
+            awsAccessKey: state.awsAccessKey
         }
     }
 
     return {
         form: TargetSelection,
-        standAlone: false
+        standAlone: false,
+        awsAccessKey: ""
     }
 }
 
@@ -77,7 +79,11 @@ export interface StateContext {
     /**
      * The React component displayed with the current state.
      */
-    form: FC<JourneyProps> | null
+    form: FC<JourneyProps> | null,
+    /**
+     * The AWS access key
+     */
+    awsAccessKey: string
 }
 
 /**
