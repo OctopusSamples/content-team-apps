@@ -99,45 +99,45 @@ runs:
         github_token: ${{ inputs.github_token }}
     - env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
-      id: create_release
-      name: Create Release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ inputs.run_number }}-attempt${{ inputs.run_attempt }}
-        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
-        draft: 'false'
-        prerelease: 'false'
-    - env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-      name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-        asset_content_type: application/octet-stream
-    - name: Push to Octopus
-      uses: OctopusDeploy/push-package-action@v1.1.1
-      with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        overwrite_mode: OverwriteExisting
-    - name: Generate Octopus Deploy build information
-      uses: xo-energy/action-octopus-build-information@v1.1.2
-      with:
-        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        octopus_project: app-builder-frontend
-        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        push_version: ${{ steps.determine_version.outputs.semVer }}
-        push_package_ids: app-builder-frontend
-        push_overwrite_mode: OverwriteExisting
-        output_path: octopus
-    - name: Create Octopus Release
-      uses: OctopusDeploy/create-release-action@v1.1.1
-      with:
-        api_key: ${{ inputs.octopus_server_url }}
-        project: app-builder-frontend
-        server: ${{ inputs.octopus_api_token }}
-        deploy_to: Development
-        packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
+#      id: create_release
+#      name: Create Release
+#      uses: actions/create-release@v1
+#      with:
+#        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ inputs.run_number }}-attempt${{ inputs.run_attempt }}
+#        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
+#        draft: 'false'
+#        prerelease: 'false'
+#    - env:
+#        GITHUB_TOKEN: ${{ inputs.github_token }}
+#      name: Upload Release Asset
+#      uses: actions/upload-release-asset@v1
+#      with:
+#        upload_url: ${{ steps.create_release.outputs.upload_url }}
+#        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+#        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+#        asset_content_type: application/octet-stream
+#    - name: Push to Octopus
+#      uses: OctopusDeploy/push-package-action@v1.1.1
+#      with:
+#        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+#        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+#        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+#        overwrite_mode: OverwriteExisting
+#    - name: Generate Octopus Deploy build information
+#      uses: xo-energy/action-octopus-build-information@v1.1.2
+#      with:
+#        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+#        octopus_project: app-builder-frontend
+#        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
+#        push_version: ${{ steps.determine_version.outputs.semVer }}
+#        push_package_ids: app-builder-frontend
+#        push_overwrite_mode: OverwriteExisting
+#        output_path: octopus
+#    - name: Create Octopus Release
+#      uses: OctopusDeploy/create-release-action@v1.1.1
+#      with:
+#        api_key: ${{ inputs.octopus_server_url }}
+#        project: app-builder-frontend
+#        server: ${{ inputs.octopus_api_token }}
+#        deploy_to: Development
+#        packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}

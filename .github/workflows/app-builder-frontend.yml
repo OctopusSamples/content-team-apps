@@ -1,0 +1,23 @@
+name: app-builder-frontend
+
+on:
+  push:
+    paths:
+    - 'js/app-generator/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./js/app-generator/github
+        with:
+          octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
+          run_number: ${{ github.run_number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
