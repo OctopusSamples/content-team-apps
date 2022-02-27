@@ -1,6 +1,7 @@
 package com.octopus.octopusoauth.domain.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import com.nimbusds.jose.JWSObject;
 import com.octopus.PipelineConstants;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.CookieDateUtils;
@@ -46,7 +47,7 @@ public class OctopusOauthHandler {
    * @return A simple HTTP response object to be transformed by the Lambda or HTTP application
    *         layer.
    */
-  public SimpleResponse redirectToClient(@NonNull final String body) {
+  public SimpleResponse redirectToClient(@NonNull final String body, @NonNull final String nonce) {
     try {
       final Map<String, String> formFields = formBodyParser.parseFormBody(body);
 
@@ -55,7 +56,13 @@ public class OctopusOauthHandler {
           formFields.getOrDefault("id_token", ""));
 
       if (StringUtils.isBlank(response.getIdToken())) {
-        throw new Exception("ID token can not be blank");
+        throw new Exception("OctopusOauthProxy-Receive-InvalidResponse: ID token can not be blank");
+      }
+
+      final JWSObject jwsObject = JWSObject.parse(response.getIdToken());
+
+      if (!nonce.equals(jwsObject.getPayload().toJSONObject().get("nonce").toString())) {
+        throw new Exception("OctopusOauthProxy-Receive-NonceMismatch: nonce mismatch");
       }
 
       return new SimpleResponse(303, new ImmutableMap.Builder<String, String>()
@@ -71,7 +78,7 @@ public class OctopusOauthHandler {
           .build());
 
     } catch (final Exception ex) {
-      Log.error("OctopusOauthProxy-Exchange-GeneralError: " + ex);
+      Log.error("OctopusOauthProxy-Receive-GeneralError: " + ex);
       return new SimpleResponse(500, "An internal error was detected");
     }
   }
