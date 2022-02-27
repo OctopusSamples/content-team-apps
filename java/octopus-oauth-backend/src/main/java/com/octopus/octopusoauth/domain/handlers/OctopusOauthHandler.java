@@ -15,6 +15,9 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+/**
+ * The common logic handling the response from Octofront with the ID token.
+ */
 @ApplicationScoped
 public class OctopusOauthHandler {
   @ConfigProperty(name = "octopus.client.redirect")
@@ -60,7 +63,7 @@ public class OctopusOauthHandler {
           .build());
 
     } catch (final Exception ex) {
-      Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);
+      Log.error("OctopusOauthProxy-Exchange-GeneralError: " + ex);
       return new SimpleResponse(500, "An internal error was detected");
     }
   }

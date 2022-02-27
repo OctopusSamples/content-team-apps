@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
- * WHen this app is run as a web server, this class defines the REST API endpoints.
+ * When this app is run as a web server, this class defines the REST API endpoints.
  */
 @Path("/oauth/octopus")
 @RequestScoped

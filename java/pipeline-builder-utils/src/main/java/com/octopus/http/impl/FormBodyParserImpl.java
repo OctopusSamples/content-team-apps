@@ -7,8 +7,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * An implementation of FormBodyParser that parses a form body into a String/String map.
+ */
 public class FormBodyParserImpl implements FormBodyParser {
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Map<String, String> parseFormBody(final String body) {
     if (StringUtils.isBlank(body)) {
