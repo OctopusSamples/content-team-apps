@@ -18,8 +18,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+/**
+ * The common logic to handle a redirection to the GitHub oauth provider.
+ */
 @ApplicationScoped
 public class GitHubOauthRedirect {
+
   @ConfigProperty(name = "github.client.redirect")
   String clientRedirect;
 
@@ -44,11 +48,21 @@ public class GitHubOauthRedirect {
   @Inject
   CryptoUtils cryptoUtils;
 
-  public SimpleResponse oauthRedirect(@NonNull final String state, @NonNull final List<String> savedState, @NonNull final String code) {
+  /**
+   * Redirect the browser back to the original application.
+   *
+   * @param state      The OAuth state param.
+   * @param savedState The state param saved before authentication.
+   * @param code       The OAuth code param.
+   * @return A simple HTTP response object to be transformed by the Lambda or HTTP application
+   *         layer.
+   */
+  public SimpleResponse oauthRedirect(@NonNull final String state,
+      @NonNull final List<String> savedState, @NonNull final String code) {
     try {
 
       if (!savedState.contains(state)) {
-        return new SimpleResponse(400,"Invalid state parameter");
+        return new SimpleResponse(400, "Invalid state parameter");
       }
 
       final OauthResponse response = gitHubOauth.accessToken(
@@ -67,19 +81,19 @@ public class GitHubOauthRedirect {
               .put("Location", clientRedirect)
               .build(),
           new ImmutableMap.Builder<String, List<String>>()
-                  .put("Set-Cookie", new ImmutableList.Builder<String>()
-                      .add(PipelineConstants.SESSION_COOKIE + "="
-                          + cryptoUtils.encrypt(
-                          response.getAccessToken(),
-                          githubEncryption,
-                          githubSalt)
-                          + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
-                          + ";path=/"
-                          + ";HttpOnly")
-                      .add(OauthBackendConstants.STATE_COOKIE
-                          + "=deleted;expires=Thu, 01 Jan 1970 00:00:00 GMT;HttpOnly;path=/")
-                      .build())
-                  .build());
+              .put("Set-Cookie", new ImmutableList.Builder<String>()
+                  .add(PipelineConstants.SESSION_COOKIE + "="
+                      + cryptoUtils.encrypt(
+                      response.getAccessToken(),
+                      githubEncryption,
+                      githubSalt)
+                      + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
+                      + ";path=/"
+                      + ";HttpOnly")
+                  .add(OauthBackendConstants.STATE_COOKIE
+                      + "=deleted;expires=Thu, 01 Jan 1970 00:00:00 GMT;HttpOnly;path=/")
+                  .build())
+              .build());
 
     } catch (final Exception ex) {
       Log.error("GitHubOauthProxy-Exchange-GeneralError: " + ex);

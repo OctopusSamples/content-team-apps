@@ -6,6 +6,9 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+/**
+ * The common logic hanlding the response from a GitHub oauth login.
+ */
 @ApplicationScoped
 public class GitHubOauthLoginHandler {
   private static final String GitHubAuthURL = "https://github.com/login/oauth/authorize";
@@ -16,6 +19,11 @@ public class GitHubOauthLoginHandler {
   @ConfigProperty(name = "github.login.redirect")
   String loginRedirect;
 
+  /**
+   * Handle the oauth login response by encrypting the token in a cookie.
+   *
+   * @return A simple HTTP response object to be transformed by the Lambda or HTTP application layer.
+   */
   public SimpleResponse oauthLoginRedirect() {
     final String state = UUID.randomUUID().toString();
     /*

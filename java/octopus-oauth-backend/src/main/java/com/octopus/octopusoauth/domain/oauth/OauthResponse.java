@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents the response from the Octopus OAuth login
+ * Represents the response from the Octopus OAuth login.
  */
 @Data
 @NoArgsConstructor

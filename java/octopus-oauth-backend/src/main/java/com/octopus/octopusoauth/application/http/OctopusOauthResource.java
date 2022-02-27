@@ -27,7 +27,7 @@ public class OctopusOauthResource {
    */
   @POST
   public Response redirect(final String body) {
-    final SimpleResponse simpleResponse = octopusOauthHandler.getResponseHeaders(body);
+    final SimpleResponse simpleResponse = octopusOauthHandler.redirectToClient(body);
     final ResponseBuilder response = Response.status(simpleResponse.getCode(),
         simpleResponse.getBody());
     simpleResponse.getHeaders().forEach(response::header);

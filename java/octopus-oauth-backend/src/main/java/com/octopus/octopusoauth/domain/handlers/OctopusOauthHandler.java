@@ -20,6 +20,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  */
 @ApplicationScoped
 public class OctopusOauthHandler {
+
   @ConfigProperty(name = "octopus.client.redirect")
   String clientRedirect;
 
@@ -38,7 +39,14 @@ public class OctopusOauthHandler {
   @Inject
   CryptoUtils cryptoUtils;
 
-  public SimpleResponse getResponseHeaders(@NonNull final String body) {
+  /**
+   * The common logic handling the OAuth login resdponse.
+   *
+   * @param body The HTTP POST body.
+   * @return A simple HTTP response object to be transformed by the Lambda or HTTP application
+   *         layer.
+   */
+  public SimpleResponse redirectToClient(@NonNull final String body) {
     try {
       final Map<String, String> formFields = formBodyParser.parseFormBody(body);
 
@@ -53,13 +61,13 @@ public class OctopusOauthHandler {
       return new SimpleResponse(303, new ImmutableMap.Builder<String, String>()
           .put("Location", clientRedirect)
           .put("Set-Cookie", PipelineConstants.SESSION_COOKIE + "="
-                  + cryptoUtils.encrypt(
-                  response.getIdToken(),
-                  octopusEncryption,
-                  octopusSalt)
-                  + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
-                  + ";path=/"
-                  + ";HttpOnly")
+              + cryptoUtils.encrypt(
+              response.getIdToken(),
+              octopusEncryption,
+              octopusSalt)
+              + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
+              + ";path=/"
+              + ";HttpOnly")
           .build());
 
     } catch (final Exception ex) {
