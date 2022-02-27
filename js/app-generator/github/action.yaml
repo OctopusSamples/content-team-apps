@@ -1,160 +1,143 @@
-name: 'Pipeline Frontend'
+name: Node.js Build
+'on':
+  workflow_dispatch: {}
+  push: {}
 inputs:
-  octopus_server_url:  
+  octopus_server_url:
     required: true
-  octopus_api_token:  
+  octopus_api_token:
     required: true
-  run_number:  
+  run_number:
     required: true
-  github_token:  
+  github_token:
     required: true
-on:
-  push:
-  workflow_dispatch:
 
 runs:
   using: "composite"
-
   steps:
     - uses: actions/checkout@v1
-
-    - uses: nelonoel/branch-name@v1.0.1
-
+      with:
+        fetch-depth: '0'
+    - uses: actions/setup-node@v2
+      with:
+        node-version: lts/*
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
     - name: Install Octopus Deploy CLI
-      uses: OctopusDeploy/install-octocli@v1
+      uses: OctopusDeploy/install-octocli@v1.1.1
       with:
-        version: 7.4.3124
-
-    - name: Creating a prerelease from the branch
-      run: |
-        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
-        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
-        CHANNEL="${{ env.BRANCH_NAME != 'main' && 'Feature Branch' || 'Default' }}"
-        echo CHANNEL=${CHANNEL} >> $GITHUB_ENV
+        version: latest
+    - name: Install Dependencies
+      run: npm ci
       shell: bash
-
-    - name: Packages
-      run: yarn install
+    - name: List Dependencies
+      run: npm list --all > dependencies.txt
       shell: bash
-      working-directory: js/pipeline-generator
-
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: dependencies.txt
+    - name: List Dependency Updates
+      run: npm outdated > dependencyUpdates.txt || true
+      shell: bash
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: dependencyUpdates.txt
+    - name: Test
+      run: npm test || true
+      shell: bash
     - name: Build
-      run: yarn build
+      run: |-
+        # package.json does not define a build script, so the build command is commented out.
+        # npm run build
       shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Install CycloneDX
-      run: npm install -g @cyclonedx/bom
+    - name: Package
+      run: |-
+        SOURCEPATH=.
+        OUTPUTPATH=.
+        # If there is a build directory, assume that is what we want to package
+        if [[ -d "build" ]]; then
+          SOURCEPATH=build
+        fi
+        octo pack \
+         --basePath ${SOURCEPATH} \
+         --outFolder ${OUTPUTPATH} \
+         --id app-builder-frontend \
+         --version ${{ steps.determine_version.outputs.semVer }} \
+         --format zip \
+         --overwrite \
+         --include '**/*.html' \
+         --include '**/*.htm' \
+         --include '**/*.css' \
+         --include '**/*.js' \
+         --include '**/*.min' \
+         --include '**/*.map' \
+         --include '**/*.sql' \
+         --include '**/*.png' \
+         --include '**/*.jpg' \
+         --include '**/*.jpeg' \
+         --include '**/*.gif' \
+         --include '**/*.json' \
+         --include '**/*.env' \
+         --include '**/*.txt' \
+         --include '**/*.Procfile'
       shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Generate SBOM
-      run: cyclonedx-bom
-      shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Create zip
-      run: cd build; zip -r ../pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip .
-      shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Create zip
-      run: zip pipeline-builder-github-frontend-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip bom.xml
-      shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+    - name: Tag Release
+      uses: mathieudutour/github-tag-action@v6.0
       with:
-        tag_name: pipeline-backend.0.1.${{ inputs.run_number }}
-        release_name: Pipeline Frontend 0.1.${{ inputs.run_number }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
+        custom_tag: ${{ steps.determine_version.outputs.semVer }}
+        github_token: ${{ inputs.github_token }}
+    - env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
+      id: create_release
+      name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ inputs.run_number }}-attempt${{ inputs.run_attempt }}
+        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
+        draft: 'false'
+        prerelease: 'false'
+    - env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: js/pipeline-generator/pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        asset_name: pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        asset_content_type: application/zip
-
-    - name: Push Package
-      run: >
-        octo push --package pipeline-builder-github-frontend.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-      shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Push SBOM Package
-      run: >
-        octo push --package pipeline-builder-github-frontend-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-      shell: bash
-      working-directory: js/pipeline-generator
-
-    - name: Trigger deployment Jenkins Pipelines
-      run: >
-        octo create-release
-        --project "Jenkins Pipeline Generator Frontend"
-        --deployTo "Development"
-        --waitForDeployment
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --gitRef "main"
-        --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        --ignoreExisting
-        --channel "${{ env.CHANNEL }}"
-      shell: bash
-
-    - name: Trigger deployment Jenkins Pipelines Security env
-      run: >
-        octo promote-release
-        --project "Jenkins Pipeline Generator Frontend"
-        --from "Development"
-        --deployTo "Development (Security)"
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --latestSuccessful
-      shell: bash
-
-    - name: Trigger deployment Github Actions
-      run: >
-        octo create-release
-        --project "GitHub Action Workflow Generator Frontend"
-        --deployTo "Development"
-        --waitForDeployment
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --gitRef "main"
-        --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
-        --ignoreExisting
-        --channel "${{ env.CHANNEL }}"
-      shell: bash
-
-    - name: Trigger deployment Github Actions Security env
-      run: >
-        octo promote-release
-        --project "GitHub Action Workflow Generator Frontend"
-        --from "Development"
-        --deployTo "Development (Security)"
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --latestSuccessful
-      shell: bash
+        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        asset_content_type: application/octet-stream
+    - name: Push to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        overwrite_mode: OverwriteExisting
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+        octopus_project: app-builder-frontend
+        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        push_version: ${{ steps.determine_version.outputs.semVer }}
+        push_package_ids: app-builder-frontend
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+    - name: Create Octopus Release
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_server_url }}
+        project: app-builder-frontend
+        server: ${{ inputs.octopus_api_token }}
+        deploy_to: Development
+        packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
