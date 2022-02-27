@@ -113,14 +113,14 @@ runs:
 #      uses: actions/upload-release-asset@v1
 #      with:
 #        upload_url: ${{ steps.create_release.outputs.upload_url }}
-#        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}${{ steps.determine_version.outputs.preReleaseLabelWithDash }}.zip
-#        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}${{ steps.determine_version.outputs.preReleaseLabelWithDash }}.zip
+#        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+#        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
 #        asset_content_type: application/octet-stream
 #    - name: Push to Octopus
 #      uses: OctopusDeploy/push-package-action@v1.1.1
 #      with:
 #        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-#        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}${{ steps.determine_version.outputs.preReleaseLabelWithDash }}.zip
+#        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
 #        server: ${{ secrets.OCTOPUS_SERVER_URL }}
 #        overwrite_mode: OverwriteExisting
 #    - name: Generate Octopus Deploy build information
@@ -129,7 +129,7 @@ runs:
 #        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
 #        octopus_project: app-builder-frontend
 #        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
-#        push_version: ${{ steps.determine_version.outputs.semVer }}${{ steps.determine_version.outputs.preReleaseLabelWithDash }}
+#        push_version: ${{ steps.determine_version.outputs.semVer }}
 #        push_package_ids: app-builder-frontend
 #        push_overwrite_mode: OverwriteExisting
 #        output_path: octopus
