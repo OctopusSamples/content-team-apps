@@ -180,6 +180,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 loggedIntoGithub: {
                     on: {
+                        BACK: {target: 'logIntoGitHub'},
                         NEXT: {target: 'enterAwsCredentials'}
                     },
                     entry: [
@@ -221,7 +222,8 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 pushPackage: {
                     on: {
-                        NEXT: {target: 'done'}
+                        BACK: {target: 'selectFramework'},
+                        NEXT: {target: 'done'},
                     },
                     entry: [
                         saveCurrentState("pushPackage"),
