@@ -13,7 +13,7 @@ resource "octopusdeploy_docker_container_registry" "github_docker_feed" {
 resource "octopusdeploy_maven_feed" "github_maven_feed" {
   download_attempts              = 10
   download_retry_backoff_seconds = 20
-  feed_uri                       = "https://maven.pkg.github.com/${var.github_organization}/${var.github_repo}"
+  feed_uri                       = "https://maven.pkg.github.com/${var.github_repo}"
   password                       = var.github_feed_token
   name                           = "GitHub Maven"
   username                       = var.github_username

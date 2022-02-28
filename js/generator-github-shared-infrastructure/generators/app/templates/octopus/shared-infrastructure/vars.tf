@@ -11,10 +11,6 @@ variable "octopus_space_id" {
   type = string
 }
 
-variable "octopus_user_id" {
-  type = string
-}
-
 variable "github_feed_token" {
   type      = string
   sensitive = true
@@ -25,10 +21,6 @@ variable "github_username" {
 }
 
 variable "github_repo" {
-  type = string
-}
-
-variable "github_organization" {
   type = string
 }
 

@@ -9,7 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Build
+      - name: Create Initial Space
+        id: shared_space
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -18,3 +19,16 @@ jobs:
           octopus_user_id: "<%= octopus_user_id %>"
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Create Shared Resources
+        uses: ./github/shared-infrastructure
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          github_username: ${{ github.actor }}
+          github_repo: ${{ github.repository }}
+          github_feed_token: ${{ secrets.FEED_GITHUB_TOKEN }}

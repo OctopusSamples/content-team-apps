@@ -7,7 +7,6 @@
   ],
   "keywords": ["yeoman-generator"],
   "dependencies": {
-    "yeoman-generator": "^5.6.1",
-    "generator-github-shared-space": "*"
+    "yeoman-generator": "^5.6.1"
   }
 }

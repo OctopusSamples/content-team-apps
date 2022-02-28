@@ -6,11 +6,14 @@ inputs:
   octopus_apikey:
     description: 'Octopus API key'
     required: true
-  octopus_space:
-    description: 'The Octopus space name'
+  octopus_space_id:
+    description: 'The ID of the app builder space'
     required: true
-  octopus_user_id:
-    description: 'The Octopus user to assign to the space'
+  octopus_project:
+    description: 'The Octopus space and project name'
+    required: true
+  github_feed_token:
+    description: 'The github token'
     required: true
   aws_access_key:
     description: 'The AWS access key'
@@ -18,10 +21,15 @@ inputs:
   aws_secret_key:
     description: 'The AWS secret key'
     required: true
-outputs:
-  octopus_space_id:
-    description: "The Octopus space ID"
-    value: ${{ steps.terraform_output.outputs.stdout }}
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+  github_username:
+    description: 'The github username'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -48,7 +56,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: octopus
+      working-directory: octopus/shared-infrastructure
       shell: bash
     - name: Terraform Apply
       env:
@@ -59,15 +67,12 @@ runs:
         -auto-approve 
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
-        -var="octopus_space=${{ inputs.octopus_space }}"
-        -var="octopus_user_id=${{ inputs.octopus_user_id }}"
-      working-directory: octopus
-      shell: bash
-    - name: Terraform Collect Output
-      id: terraform_output
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: terraform output -raw octopus_space_id
-      working-directory: octopus
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+        -var="github_feed_token=${{ inputs.github_feed_token }}"
+        -var="aws_access_key=${{ inputs.aws_access_key }}"
+        -var="aws_secret_key=${{ inputs.aws_secret_key }}"
+        -var="aws_region=${{ inputs.aws_region }}"
+        -var="github_repo=${{ inputs.github_repo }}"
+        -var="github_username=${{ inputs.github_username }}"
+      working-directory: octopus/shared-infrastructure
       shell: bash
