@@ -20,7 +20,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
-  project_id = octopusdeploy_project.deploy_backend_project
+  project_id = octopusdeploy_project.deploy_backend_project.id
   step {
     condition           = "Success"
     name                = "Hello world (using Bash)"

@@ -16,6 +16,7 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.development_environment.id]
     name                         = octopusdeploy_environment.development_environment.name
 
     release_retention_policy {
@@ -50,6 +51,7 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.production_environment.id]
     name                         = octopusdeploy_environment.production_environment.name
 
     release_retention_policy {
@@ -101,6 +103,7 @@ resource "octopusdeploy_lifecycle" "infrastructure_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.development_environment.id]
     name                         = octopusdeploy_environment.development_environment.name
 
     release_retention_policy {
@@ -118,6 +121,7 @@ resource "octopusdeploy_lifecycle" "infrastructure_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.production_environment.id]
     name                         = octopusdeploy_environment.production_environment.name
 
     release_retention_policy {
@@ -152,6 +156,7 @@ resource "octopusdeploy_lifecycle" "administration_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.administration_environment.id]
     name                         = octopusdeploy_environment.administration_environment.name
 
     release_retention_policy {
