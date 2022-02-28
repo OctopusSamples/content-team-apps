@@ -10,7 +10,8 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   lifecycle_id                         = octopusdeploy_lifecycle.administration_lifecycle.id
   name                                 = "Backend"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
-  tenanted_deployment_participation    = "TenantedOrUntenanted"
+  tenanted_deployment_participation    = "Untenanted"
+  space_id                             = var.octopus_space_id
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
