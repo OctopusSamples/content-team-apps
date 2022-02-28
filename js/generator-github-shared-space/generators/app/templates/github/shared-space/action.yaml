@@ -9,6 +9,9 @@ inputs:
   octopus_project:
     description: 'The Octopus space and project name'
     required: true
+  octopus_user_id:
+    description: 'The Octopus user to assign to the space'
+    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -48,6 +51,7 @@ runs:
         -var="octopus_server=${{ input.octopus_server }}" 
         -var="octopus_apikey=${{ input.octopus_apikey }}"
         -var="octopus_space=${{ input.octopus_space }}"
+        -var="octopus_user_id=${{ input.octopus_user_id }}"
       shell: bash
     - name: Terraform Collect Output
       id: terraform_output

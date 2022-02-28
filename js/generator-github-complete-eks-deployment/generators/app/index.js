@@ -7,6 +7,7 @@ module.exports = class extends Generator {
 
         this.s3_bucket_suffix = crypto.randomUUID();
         this.option("aws_region", {type: String});
+        this.option("octopus_user_id", {type: String});
     }
 
     initializing() {
@@ -14,7 +15,7 @@ module.exports = class extends Generator {
             require.resolve('generator-github-shared-space/generators/app'),
             {
                 s3_bucket_suffix: this.s3_bucket_suffix,
-                aws_region: this.options.aws_region
+                aws_region: this.options["awsRegion"]
             });
     }
 
@@ -24,8 +25,9 @@ module.exports = class extends Generator {
             this.destinationPath('.github/workflows/eks-deployment.yaml'),
             {
                 octopus_project: "Octo App Builder",
+                octopus_user_id: this.options["octopusUserId"],
                 s3_bucket_suffix: this.s3_bucket_suffix,
-                aws_region: this.options.aws_region
+                aws_region: this.options["awsRegion"]
             }
         );
     }

@@ -8,12 +8,13 @@ module.exports = class extends Generator {
     }
 
     writing() {
+        console.log(Object.keys(this.options))
         this.fs.copyTpl(
             this.templatePath('github/shared-space/action.yaml'),
             this.destinationPath('github/shared-space/action.yaml'),
             {
-                s3_bucket_suffix: this.options.s3_bucket_suffix,
-                aws_region: this.options.aws_region,
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_region: this.options["aws_region"]
             }
         );
 
@@ -21,8 +22,8 @@ module.exports = class extends Generator {
             this.templatePath('octopus/*.tf'),
             this.destinationPath('octopus'),
             {
-                s3_bucket_suffix: this.options.s3_bucket_suffix,
-                aws_region: this.options.aws_region
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_region: this.options["aws_region"]
             },
             null,
             { globOptions: { dot: true } }
