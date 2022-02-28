@@ -15,6 +15,10 @@ inputs:
   aws_secret_key:
     description: 'The AWS secret key'
     required: true
+outputs:
+  octopus_space_id:
+    description: "The Octopus space ID"
+    value: ${{ steps.terraform_output.outputs.octopus_space_id }}
 runs:
   using: "composite"
   steps:
@@ -44,4 +48,11 @@ runs:
         -var="octopus_server=${{ input.octopus_server }}" 
         -var="octopus_apikey=${{ input.octopus_apikey }}"
         -var="octopus_space=${{ input.octopus_space }}"
+      shell: bash
+    - name: Terraform Collect Output
+      id: terraform_output
+      env:
+        AWS_ACCESS_KEY_ID: ${{ input.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ input.aws_secret_key }}
+      run: echo "::set-output name=octopus_space_id::$(terraform output -raw octopus_space_id)"
       shell: bash
