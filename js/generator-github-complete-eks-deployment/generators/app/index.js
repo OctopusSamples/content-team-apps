@@ -24,7 +24,7 @@ module.exports = class extends Generator {
             this.templatePath('.github/workflows/eks-deployment.yaml'),
             this.destinationPath('.github/workflows/eks-deployment.yaml'),
             {
-                octopus_project: "Octo App Builder",
+                octopus_space: "Octo App Builder",
                 octopus_user_id: this.options["octopusUserId"],
                 s3_bucket_suffix: this.s3_bucket_suffix,
                 aws_region: this.options["awsRegion"]

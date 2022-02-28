@@ -12,9 +12,9 @@ jobs:
       - name: Build
         uses: ./github/shared-space
         with:
-          octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
-          octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
-          octopus_project: "<%= octopus_project %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space: "<%= octopus_space %>"
           octopus_user_id: "<%= octopus_user_id %>"
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
