@@ -6,7 +6,7 @@ module.exports = class extends Generator {
         super(args, opts);
 
         this.s3_bucket_suffix = crypto.randomUUID();
-        this.option("aws_region", {type: "string"});
+        this.option("aws_region", {type: String});
     }
 
     initializing() {
