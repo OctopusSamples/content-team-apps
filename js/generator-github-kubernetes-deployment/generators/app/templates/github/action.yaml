@@ -1,0 +1,20 @@
+name: Docker Build and Push
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_project:
+    description: 'The Octopus space and project name'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
