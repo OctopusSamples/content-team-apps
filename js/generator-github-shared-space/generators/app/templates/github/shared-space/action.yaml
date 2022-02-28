@@ -48,7 +48,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: octopus
+      working-directory: terraform/shared-space
       shell: bash
     - name: Terraform Apply
       env:
@@ -61,7 +61,7 @@ runs:
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space=${{ inputs.octopus_space }}"
         -var="octopus_user_id=${{ inputs.octopus_user_id }}"
-      working-directory: octopus
+      working-directory: terraform/shared-space
       shell: bash
     - name: Terraform Collect Output
       id: terraform_output
@@ -69,5 +69,5 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw octopus_space_id
-      working-directory: octopus
+      working-directory: terraform/shared-space
       shell: bash

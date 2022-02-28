@@ -7,7 +7,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
-  lifecycle_id                         = octopusdeploy_lifecycle.administration_lifecycle.id
+  lifecycle_id                         = data.octopusdeploy_lifecycles.application_lifecycle.id
   name                                 = "Backend"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
@@ -35,8 +35,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
       name                               = "Hello world (using Bash)"
       script_body                        = <<-EOT
           echo 'Hello world, using Bash'
-          #TODO: Experiment with steps of your own :)
-          echo '[Learn more about the types of steps available in Octopus](https://g.octopushq.com/OnboardingAddStepsLearnMore)'
         EOT
       run_on_server                      = true
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.id

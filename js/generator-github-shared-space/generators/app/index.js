@@ -18,8 +18,8 @@ module.exports = class extends Generator {
         );
 
         this.fs.copyTpl(
-            this.templatePath('octopus/*.tf'),
-            this.destinationPath('octopus'),
+            this.templatePath('terraform/shared-space/*.tf'),
+            this.destinationPath('terraform/shared-space'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
                 aws_region: this.options["aws_region"]

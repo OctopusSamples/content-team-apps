@@ -1,14 +1,14 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "octopusdeploy"
+    octopusdeploy = {
+      source  = "OctopusDeployLabs/octopusdeploy"
       version = "~> 0.7.68"
     }
   }
 
   backend "s3" {
-    bucket = "<%= backend_s3_bucket %>"
-    key    = "appbuilder-k8s-deployment"
+    bucket = "app-builder-<%= s3_bucket_suffix %>"
+    key    = "appbuilder-kubernetes-project"
     region = "<%= aws_region %>"
   }
 }

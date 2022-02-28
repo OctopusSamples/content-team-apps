@@ -56,7 +56,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: octopus/shared-infrastructure
+      working-directory: terraform/shared-infrastructure
       shell: bash
     - name: Terraform Apply
       env:
@@ -74,5 +74,5 @@ runs:
         -var="aws_region=${{ inputs.aws_region }}"
         -var="github_repo=${{ inputs.github_repo }}"
         -var="github_username=${{ inputs.github_username }}"
-      working-directory: octopus/shared-infrastructure
+      working-directory: terraform/shared-infrastructure
       shell: bash

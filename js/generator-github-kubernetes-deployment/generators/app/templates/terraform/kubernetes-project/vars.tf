@@ -10,7 +10,3 @@ variable "octopus_apikey" {
 variable "octopus_space_id" {
   type = string
 }
-
-variable "aws_region" {
-  type = string
-}
