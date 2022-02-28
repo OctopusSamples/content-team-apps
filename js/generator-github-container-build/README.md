@@ -1,0 +1,1 @@
+A Yeoman generator to build a GitHub composite actions to build a Docker image and publish it to a GitHub Container Registry 

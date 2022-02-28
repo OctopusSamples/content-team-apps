@@ -1,0 +1,45 @@
+name: Docker Build and Push
+inputs:
+  repository:
+    description: 'GitHub Repository'
+    required: true
+  actor:
+    description: 'GitHub Username'
+    required: true
+  github_token:
+    description: 'GitHub Token'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.11
+      with:
+        versionSpec: 5.x
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.11
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+    - name: Install Octopus Deploy CLI
+      uses: OctopusDeploy/install-octocli@v1.1.1
+      with:
+        version: latest
+    - name: Log in to the Container registry
+      uses: docker/login-action@latest
+      with:
+        registry: gchr.io
+        username: ${{ inputs.actor }}
+        password: ${{ inputs.github_token }}
+    - name: Setup Buildpack
+      uses: buildpacks/github-actions/setup-pack@v4.4.0
+    - name: Build app with pack CLI
+      run: |
+        pack build ghcr.io/${{ inputs.repository }}:${{ steps.determine_version.outputs.semVer }} \
+            --builder paketobuildpacks/builder:base \
+            --path . \
+            --publish
