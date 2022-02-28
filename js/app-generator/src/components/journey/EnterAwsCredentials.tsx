@@ -13,7 +13,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     const next = () => {
         // Asymmetrically encrypt the secret so the browser can not read it again.
-        encryptAndSaveInCookie(secretKey, "awsSecretKey")
+        encryptAndSaveInCookie(secretKey, "awsSecretKey", 1)
             .then(() => {
                 setSecretKey("");
                 if (props.machine.state) {

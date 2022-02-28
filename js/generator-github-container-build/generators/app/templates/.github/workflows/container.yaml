@@ -1,0 +1,40 @@
+name: Docker Build and Push
+on: [push, pull_request]
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone code repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.11
+        with:
+          versionSpec: 5.x
+      - id: determine_version
+        name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.11
+        with:
+          additionalArguments: /overrideconfig mode=Mainline
+      - name: Install Octopus Deploy CLI
+        uses: OctopusDeploy/install-octocli@v1.1.1
+        with:
+          version: latest
+      - name: Log in to the Container registry
+        uses: docker/login-action@latest
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Buildpack
+        uses: buildpacks/github-actions/setup-pack@v4.4.0
+      - name: Build app with pack CLI
+        run: |
+          pack build ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.determine_version.outputs.semVer }} \
+              --builder paketobuildpacks/builder:base \
+              --path . \
+              --publish

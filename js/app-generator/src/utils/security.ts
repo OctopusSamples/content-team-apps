@@ -179,7 +179,7 @@ export function handleCognitoLogin() {
     }
 }
 
-export async function encryptAndSaveInCookie(value: string, cookie: string) {
+export async function encryptAndSaveInCookie(value: string, cookie: string, expires: number) {
     const key = await fetch("public_key.pem", {
         method: 'GET'
     })
@@ -193,5 +193,5 @@ export async function encryptAndSaveInCookie(value: string, cookie: string) {
     const encrypt = new JSEncrypt();
     encrypt.setPublicKey(key);
     const encrypted = encrypt.encrypt(value) || "";
-    Cookies.set(cookie, encrypted, {expires: 1});
+    Cookies.set(cookie, encrypted, {expires});
 }
