@@ -8,7 +8,6 @@ module.exports = class extends Generator {
     }
 
     writing() {
-        console.log(Object.keys(this.options))
         this.fs.copyTpl(
             this.templatePath('github/shared-space/action.yaml'),
             this.destinationPath('github/shared-space/action.yaml'),
