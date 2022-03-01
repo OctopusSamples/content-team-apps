@@ -85,6 +85,7 @@ public class UtilityProducer {
   public RegExUtils getRegExUtils() {
     return new RegExUtilsImpl();
   }
+
   /**
    * Produces paged results link builder.
    *

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
  * An implementation of JwtVerifier using Jose JWT.
  */
 public class JoseJwtInspector implements JwtInspector {
+
   private static Logger LOGGER = Logger.getLogger(JoseJwtInspector.class.getName());
   private static final String COGNITO_GROUPS = "cognito:groups";
   private static final String SCOPE = "scope";
@@ -30,6 +31,14 @@ public class JoseJwtInspector implements JwtInspector {
   private final JwtValidatorImpl jwtValidator;
   private final MicroserviceNameFeature microserviceName;
 
+  /**
+   * Constructor.
+   *
+   * @param cognitoJwk         The cognito JWK feature.
+   * @param cognitoDisableAuth The cognito disable auth feature.
+   * @param jwtValidator       The JWT validator.
+   * @param microserviceName   The microservice name feature.
+   */
   public JoseJwtInspector(
       @NonNull final CognitoJwkBase64Feature cognitoJwk,
       @NonNull final DisableSecurityFeature cognitoDisableAuth,
@@ -67,7 +76,8 @@ public class JoseJwtInspector implements JwtInspector {
         }
       }
     } catch (final IOException | ParseException | JOSEException e) {
-      LOGGER.log(Level.SEVERE, microserviceName.getMicroserviceName() + "-Jwt-ValidationError " + jwt, e);
+      LOGGER.log(Level.SEVERE,
+          microserviceName.getMicroserviceName() + "-Jwt-ValidationError " + jwt, e);
     }
 
     return false;
@@ -98,7 +108,8 @@ public class JoseJwtInspector implements JwtInspector {
         }
       }
     } catch (final IOException | ParseException | JOSEException e) {
-      LOGGER.log(Level.SEVERE, microserviceName.getMicroserviceName() + "-Jwt-ServiceValidationError", e);
+      LOGGER.log(Level.SEVERE,
+          microserviceName.getMicroserviceName() + "-Jwt-ServiceValidationError", e);
     }
 
     return false;

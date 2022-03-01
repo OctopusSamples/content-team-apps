@@ -5,6 +5,9 @@ import com.octopus.wrappers.FilteredResultWrapper;
 import java.util.List;
 import lombok.NonNull;
 
+/**
+ * A service used to build paged links in JSONAPI responses.
+ */
 public interface PagedResultsLinksBuilder {
 
   /**

@@ -16,4 +16,55 @@
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
+  <build>
+    <finalName>quarkus-microservice</finalName>
+    <plugins>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>google_checks.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <encoding>UTF-8</encoding>
+          <failOnViolation>true</failOnViolation>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+          <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+          <violationSeverity>warning</violationSeverity>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <artifactId>checkstyle</artifactId>
+            <groupId>com.puppycrawl.tools</groupId>
+            <version>9.0</version>
+          </dependency>
+        </dependencies>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.1.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+        <version>0.8.7</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <exclClassLoaders>*QuarkusClassLoader</exclClassLoaders>
+              <destFile>${project.build.directory}/jacoco-quarkus.exec</destFile>
+              <append>true</append>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+        <groupId>org.cyclonedx</groupId>
+        <version>2.5.3</version>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

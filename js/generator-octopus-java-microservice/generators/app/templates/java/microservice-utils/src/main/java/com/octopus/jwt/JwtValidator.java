@@ -4,6 +4,9 @@ import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import java.text.ParseException;
 
+/**
+ * A service used to validate JWTs.
+ */
 public interface JwtValidator {
 
   /**

@@ -20,6 +20,9 @@ public final class Constants {
    */
   public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
 
+  /**
+   * Constants relating to JSONAPI.
+   */
   public final class JsonApi {
     public static final String JSONAPI_CONTENT_TYPE = "application/vnd.api+json";
     public static final String FILTER_QUERY_PARAM = "filter";
@@ -27,6 +30,9 @@ public final class Constants {
     public static final String PAGE_LIMIT_QUERY_PARAM = "page[limit]";
   }
 
+  /**
+   * HTTP constants.
+   */
   public final class Http {
     public static final String GET_METHOD = "get";
     public static final String POST_METHOD = "post";
