@@ -240,7 +240,7 @@ public class LambdaTests extends BaseTest {
       getApiGatewayProxyRequestEvent.setQueryStringParameters(
           new HashMap<>() {
             {
-              put("filter", "subject==doesnotexist");
+              put("filter", "firstName==doesnotexist");
             }
           });
       final APIGatewayProxyResponseEvent getResponse =
@@ -252,7 +252,7 @@ public class LambdaTests extends BaseTest {
   }
 
   @Test
-  public void testLambdaBadFilter() throws DocumentSerializationException {
+  public void testLambdaBadFilter() {
 
     final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();

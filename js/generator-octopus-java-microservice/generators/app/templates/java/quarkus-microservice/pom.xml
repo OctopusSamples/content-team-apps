@@ -189,16 +189,6 @@
         </dependency>
         <dependency>
             <groupId>com.octopus</groupId>
-            <artifactId>pipeline-builder-utils</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.octopus</groupId>
-            <artifactId>microservice-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.octopus</groupId>
             <artifactId>microservice-utils</artifactId>
             <version>1.0</version>
             <scope>compile</scope>

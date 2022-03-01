@@ -1,8 +1,5 @@
 package com.octopus.customers.domain.exceptions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.github.jasminb.jsonapi.exceptions.InvalidJsonApiResourceException;
 import com.octopus.customers.domain.framework.providers.DocumentSerializationExceptionMapper;
@@ -16,6 +13,7 @@ import com.octopus.exceptions.InvalidAcceptHeaders;
 import com.octopus.exceptions.InvalidInput;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import io.quarkus.test.junit.QuarkusTest;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,16 +21,34 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class MapperTest {
 
+  @Inject
+  DocumentSerializationExceptionMapper documentSerializationExceptionMapper;
+  
+  @Inject
+  InvalidJsonApiResourceExceptionMapper invalidJsonApiResourceExceptionMapper;
+  
+  @Inject
+  InvalidAcceptHeadersMapper invalidAcceptHeadersMapper;
+  
+  @Inject
+  EntityNotFoundMapper entityNotFoundMapper;
+
+  @Inject
+  RsqlParserExceptionMapper rsqlParserExceptionMapper;
+
+  @Inject
+  InvalidInputExceptionMapper invalidInputExceptionMapper;
+
   @Test
   public void verifyInvalidAcceptHeadersMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new InvalidAcceptHeadersMapper().toResponse(null);
+      invalidAcceptHeadersMapper.toResponse(null);
     });
   }
 
   @Test
   public void verifyInvalidAcceptHeadersMapperResponse() {
-    final Response response = new InvalidAcceptHeadersMapper().toResponse(
+    final Response response = invalidAcceptHeadersMapper.toResponse(
         new InvalidAcceptHeaders());
     Assertions.assertEquals(406, response.getStatus());
   }
@@ -46,7 +62,7 @@ public class MapperTest {
 
   @Test
   public void verifyEntityNotFoundMapperResponse() {
-    final Response response = new EntityNotFoundMapper().toResponse(
+    final Response response = entityNotFoundMapper.toResponse(
         new EntityNotFound());
     Assertions.assertEquals(404, response.getStatus());
   }
@@ -54,13 +70,13 @@ public class MapperTest {
   @Test
   public void verifyRsqlParserExceptionMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new RsqlParserExceptionMapper().toResponse(null);
+      rsqlParserExceptionMapper.toResponse(null);
     });
   }
 
   @Test
   public void verifyRsqlParserExceptionMapperResponse() {
-    final Response response = new RsqlParserExceptionMapper().toResponse(
+    final Response response = rsqlParserExceptionMapper.toResponse(
         new RSQLParserException(new Exception("Doh!")));
     Assertions.assertEquals(400, response.getStatus());
   }
@@ -68,13 +84,13 @@ public class MapperTest {
   @Test
   public void verifyInvalidInputExceptionMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new InvalidInputExceptionMapper().toResponse(null);
+      invalidInputExceptionMapper.toResponse(null);
     });
   }
 
   @Test
   public void verifyInvalidInputExceptionMapperResponse() {
-    final Response response = new InvalidInputExceptionMapper().toResponse(
+    final Response response = invalidInputExceptionMapper.toResponse(
         new InvalidInput());
     Assertions.assertEquals(400, response.getStatus());
   }
@@ -83,13 +99,13 @@ public class MapperTest {
   @Test
   public void verifyInvalidJsonApiResourceExceptionMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new InvalidJsonApiResourceExceptionMapper().toResponse(null);
+      invalidJsonApiResourceExceptionMapper.toResponse(null);
     });
   }
 
   @Test
   public void verifyInvalidJsonApiResourceExceptionMapperResponse() {
-    final Response response = new InvalidJsonApiResourceExceptionMapper().toResponse(
+    final Response response = invalidJsonApiResourceExceptionMapper.toResponse(
         new InvalidJsonApiResourceException("Doh!"));
     Assertions.assertEquals(400, response.getStatus());
   }
@@ -97,13 +113,13 @@ public class MapperTest {
   @Test
   public void verifyDocumentSerializationExceptionMapperMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new DocumentSerializationExceptionMapper().toResponse(null);
+      documentSerializationExceptionMapper.toResponse(null);
     });
   }
 
   @Test
   public void verifyDocumentSerializationExceptionMapperMapperResponse() {
-    final Response response = new DocumentSerializationExceptionMapper().toResponse(
+    final Response response = documentSerializationExceptionMapper.toResponse(
         new DocumentSerializationException(new Exception("Doh!")));
     Assertions.assertEquals(500, response.getStatus());
   }
