@@ -1,0 +1,22 @@
+name: Docker Build and Push
+inputs:
+  github_token:
+    description: 'The GitHub token'
+    required: true
+  repository_owner:
+    description: 'The GitHub repository owner'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        file: java/quarkus-microservice/src/main/docker/Dockerfile.native-distroless
+        context: ./java/quarkus-microservice
+        tags: ghcr.io/${{ inputs.repository_owner }}/octopus-java-microservice:latest
+        secrets: |
+          GIT_AUTH_TOKEN=${{ inputs.github_token }}
