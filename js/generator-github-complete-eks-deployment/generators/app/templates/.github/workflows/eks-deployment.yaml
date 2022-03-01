@@ -32,3 +32,9 @@ jobs:
           github_username: ${{ github.actor }}
           github_repo: ${{ github.repository }}
           github_feed_token: ${{ secrets.FEED_GITHUB_TOKEN }}
+
+      - name: Build Docker Image
+        uses: ./github/java-microservice
+        with:
+          repository_owner: ${{ github.repository_owner }}
+          github_token: ${{ secrets.FEED_GITHUB_TOKEN }}
