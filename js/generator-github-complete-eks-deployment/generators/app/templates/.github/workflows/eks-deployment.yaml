@@ -33,7 +33,7 @@ jobs:
           github_repo: ${{ github.repository }}
           github_feed_token: ${{ secrets.FEED_GITHUB_TOKEN }}
 
-      - name: Build Docker Image
+      - name: Build Java Microservice
         uses: ./github/java-microservice
         with:
           repository_owner: ${{ github.repository_owner }}

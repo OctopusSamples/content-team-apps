@@ -65,7 +65,6 @@ runs:
       working-directory: java/quarkus-microservice
 
     - name: Generate JaCoCo Badges
-      id: jacocoMod1
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
@@ -74,7 +73,6 @@ runs:
         branches-badge-filename: quarkus-microservice-branches.svg
 
     - name: Generate JaCoCo Badges for Shared Library
-      id: jacocoMod1
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true

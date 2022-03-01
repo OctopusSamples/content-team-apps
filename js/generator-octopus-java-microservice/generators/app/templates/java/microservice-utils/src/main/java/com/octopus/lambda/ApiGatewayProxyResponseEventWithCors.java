@@ -6,12 +6,12 @@ import java.util.HashMap;
 /**
  * A wrapper around APIGatewayProxyResponseEvent that always adds CORS headers.
  */
-public class APIGatewayProxyResponseEventWithCors extends APIGatewayProxyResponseEvent {
+public class ApiGatewayProxyResponseEventWithCors extends APIGatewayProxyResponseEvent {
 
   /**
    * Constructor.
    */
-  public APIGatewayProxyResponseEventWithCors() {
+  public ApiGatewayProxyResponseEventWithCors() {
     setHeaders(new HashMap<>());
     getHeaders().put("Access-Control-Allow-Origin", "*");
     getHeaders().put("Access-Control-Allow-Headers", "*");

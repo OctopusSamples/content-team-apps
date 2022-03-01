@@ -11,7 +11,7 @@ import com.octopus.customers.domain.handlers.HealthHandler;
 import com.octopus.exceptions.EntityNotFound;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
-import com.octopus.lambda.APIGatewayProxyResponseEventWithCors;
+import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
@@ -130,7 +130,7 @@ public class CustomersApi implements
     if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       try {
         return Optional.of(
-            new APIGatewayProxyResponseEventWithCors()
+            new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(healthHandler.getHealth(
                     input.getPath().substring(0, input.getPath().lastIndexOf("/")),
@@ -154,7 +154,7 @@ public class CustomersApi implements
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
         return Optional.of(
-            new APIGatewayProxyResponseEventWithCors()
+            new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     customersHandler.getAll(
@@ -208,7 +208,7 @@ public class CustomersApi implements
                       Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
           return Optional.of(
-              new APIGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
+              new ApiGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
         }
         return Optional.of(proxyResponseBuilder.buildNotFound());
       }
@@ -235,7 +235,7 @@ public class CustomersApi implements
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
-            new APIGatewayProxyResponseEventWithCors()
+            new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     customersHandler.create(
