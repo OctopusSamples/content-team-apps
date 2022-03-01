@@ -1,6 +1,7 @@
 package com.octopus.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.utilties.PartitionIdentifier;
@@ -23,6 +24,35 @@ public class PartitionIdentifierTest {
       Optional::empty,
       () -> true
   );
+
+  @Test
+  public void testConstructorNulls() {
+    assertThrows(NullPointerException.class, () -> new PartitionIdentifierImpl(
+        null,
+        Optional::empty,
+        () -> true
+    ));
+    assertThrows(NullPointerException.class, () -> new PartitionIdentifierImpl(
+        new JoseJwtInspector(
+            Optional::empty,
+            () -> true,
+            (jwt, jwk) -> false,
+            () -> "test"
+        ),
+        null,
+        () -> true
+    ));
+    assertThrows(NullPointerException.class, () -> new PartitionIdentifierImpl(
+        new JoseJwtInspector(
+            Optional::empty,
+            () -> true,
+            (jwt, jwk) -> false,
+            () -> "test"
+        ),
+        Optional::empty,
+        null
+    ));
+  }
 
   @ParameterizedTest
   @CsvSource({

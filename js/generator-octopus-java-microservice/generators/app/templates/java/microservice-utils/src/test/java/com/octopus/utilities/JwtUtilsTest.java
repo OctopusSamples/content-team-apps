@@ -20,6 +20,8 @@ public class JwtUtilsTest {
     assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR  abcdefg").get());
     assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader("bEaReR  abcdefg ").get());
     assertEquals("abcdefg", JWT_UTILS.getJwtFromAuthorizationHeader(" bEaReR abcdefg").get());
-    assertTrue( JWT_UTILS.getJwtFromAuthorizationHeader("basic abcdefg").isEmpty());
+    assertTrue(JWT_UTILS.getJwtFromAuthorizationHeader("basic abcdefg").isEmpty());
+    assertTrue(JWT_UTILS.getJwtFromAuthorizationHeader("").isEmpty());
+    assertTrue(JWT_UTILS.getJwtFromAuthorizationHeader("Bearer ").isEmpty());
   }
 }
