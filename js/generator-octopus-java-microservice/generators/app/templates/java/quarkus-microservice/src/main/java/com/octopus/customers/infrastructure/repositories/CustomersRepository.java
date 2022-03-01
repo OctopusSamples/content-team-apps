@@ -75,7 +75,7 @@ public class CustomersRepository {
     final CriteriaBuilder builder = em.getCriteriaBuilder();
     final CriteriaQuery<Customer> criteria = builder.createQuery(Customer.class);
     final From<Customer, Customer> root = criteria.from(Customer.class);
-    criteria.orderBy(builder.desc(root.get("time")));
+    criteria.orderBy(builder.desc(root.get("id")));
 
     // add the partition search rules
     final Predicate partitionPredicate =
