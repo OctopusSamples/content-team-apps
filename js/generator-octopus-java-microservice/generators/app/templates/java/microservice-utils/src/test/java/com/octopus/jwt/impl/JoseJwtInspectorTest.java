@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
@@ -20,10 +19,17 @@ public class JoseJwtInspectorTest {
   private static final String USER_CLIENT_ID = "4r0atff7ovqbhrpe1773k37vk9";
   private static final String SIMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-  private static final JoseJwtInspector jwtInspector = new JoseJwtInspector(
+  private static final JoseJwtInspector JWT_INSPECTOR = new JoseJwtInspector(
       () -> Optional.of(JWK),
       () -> true,
       (jwt, jwk) -> true,
+      () -> "test"
+  );
+
+  private static final JoseJwtInspector JWT_INSPECTOR_NOT_VALID = new JoseJwtInspector(
+      () -> Optional.of(JWK),
+      () -> true,
+      (jwt, jwk) -> false,
       () -> "test"
   );
 
@@ -57,71 +63,82 @@ public class JoseJwtInspectorTest {
 
   @Test
   public void verifyClaimsExtraction() {
-    assertTrue(jwtInspector.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertTrue(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+        M2M_CLIENT_ID));
+  }
+
+  @Test
+  public void verifyClaimsExtractionWhenNotValid() {
+    assertFalse(JWT_INSPECTOR_NOT_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadJwtClaimsExtraction() {
-    assertFalse(jwtInspector.jwtContainsScope("blah", "audit.content-team/admin",
+    assertFalse(JWT_INSPECTOR.jwtContainsScope("blah", "audit.content-team/admin",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadClientClaimsExtraction() {
-    assertFalse(jwtInspector.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertFalse(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
         "Unknown"));
   }
 
   @Test
   public void verifyClientIdExtraction() throws ParseException {
-    assertEquals(M2M_CLIENT_ID, jwtInspector.extractClientId(EXPIRED_M2M_JWT).get());
+    assertEquals(M2M_CLIENT_ID, JWT_INSPECTOR.extractClientId(EXPIRED_M2M_JWT).get());
   }
 
   @Test
   public void verifyScopeExtraction() throws ParseException {
-    assertFalse(jwtInspector.extractScope(EXPIRED_M2M_JWT).isEmpty());
+    assertFalse(JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT).isEmpty());
   }
 
   @Test
   public void verifyScopeContains() throws ParseException {
-    final List<String> scopes = jwtInspector.extractScope(EXPIRED_M2M_JWT);
-    assertTrue(jwtInspector.extractScope(EXPIRED_M2M_JWT).contains("audit.content-team/admin"));
+    final List<String> scopes = JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT);
+    assertTrue(JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT).contains("audit.content-team/admin"));
   }
 
   @Test
   public void verifyMissingClientIdExtraction() throws ParseException {
-    assertTrue(jwtInspector.extractClientId(SIMPLE_JWT).isEmpty());
+    assertTrue(JWT_INSPECTOR.extractClientId(SIMPLE_JWT).isEmpty());
   }
 
   @Test
   public void verifyMissingClaimExtraction() throws ParseException {
-    assertTrue(jwtInspector.extractScope(SIMPLE_JWT).isEmpty());
+    assertTrue(JWT_INSPECTOR.extractScope(SIMPLE_JWT).isEmpty());
   }
 
   @Test
   public void verifyBadClaimClaimsExtraction() {
-    assertFalse(jwtInspector.jwtContainsScope(EXPIRED_M2M_JWT, "unknown",
+    assertFalse(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "unknown",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyGroupExtraction() {
-    assertTrue(jwtInspector.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers"));
+    assertTrue(JWT_INSPECTOR.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers"));
+  }
+
+  @Test
+  public void verifyGroupExtractionWhenNotValid() {
+    assertFalse(JWT_INSPECTOR_NOT_VALID.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "Developers"));
   }
 
   @Test
   public void verifyBadJwtGroupExtraction() {
-    assertFalse(jwtInspector.jwtContainsCognitoGroup("blah", "Developers"));
+    assertFalse(JWT_INSPECTOR.jwtContainsCognitoGroup("blah", "Developers"));
   }
 
   @Test
   public void verifyBadGroupExtraction() {
-    assertFalse(jwtInspector.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "unknown"));
+    assertFalse(JWT_INSPECTOR.jwtContainsCognitoGroup(EXPIRED_USER_JWT, "unknown"));
   }
 
   @Test
   public void verifyMissingGroupExtraction() {
-    assertFalse(jwtInspector.jwtContainsCognitoGroup(SIMPLE_JWT, "unknown"));
+    assertFalse(JWT_INSPECTOR.jwtContainsCognitoGroup(SIMPLE_JWT, "unknown"));
   }
 }

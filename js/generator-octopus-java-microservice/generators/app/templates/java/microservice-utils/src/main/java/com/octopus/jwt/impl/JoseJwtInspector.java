@@ -154,6 +154,6 @@ public class JoseJwtInspector implements JwtInspector {
   protected boolean configIsValid() {
     return cognitoDisableAuth.getCognitoAuthDisabled()
         || (cognitoJwk.getCognitoJwk().isPresent()
-        && StringUtils.isNotEmpty(cognitoJwk.getCognitoJwk().get()));
+        && StringUtils.isNotBlank(cognitoJwk.getCognitoJwk().get()));
   }
 }
