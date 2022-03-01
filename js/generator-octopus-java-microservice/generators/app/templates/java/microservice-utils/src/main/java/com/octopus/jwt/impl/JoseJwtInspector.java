@@ -1,11 +1,11 @@
-package com.octopus.utilties.impl;
+package com.octopus.jwt.impl;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
-import com.octopus.utilties.JwtInspector;
+import com.octopus.jwt.JwtInspector;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;

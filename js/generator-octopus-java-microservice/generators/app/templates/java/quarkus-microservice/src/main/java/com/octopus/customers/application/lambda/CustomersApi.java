@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
-import com.octopus.customers.application.Constants;
+import com.octopus.Constants;
 import com.octopus.customers.domain.handlers.CustomersHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
 import com.octopus.exceptions.EntityNotFound;
@@ -13,7 +13,7 @@ import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
-import com.octopus.utilties.ProxyResponseBuilder;
+import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.utilties.RegExUtils;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.Base64;
@@ -124,7 +124,7 @@ public class CustomersApi implements
   private Optional<APIGatewayProxyResponseEvent> checkHealth(
       final APIGatewayProxyRequestEvent input) {
 
-    if (requestIsMatch(input, HEALTH_RE, Constants.GET_METHOD)) {
+    if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       try {
         return Optional.of(
             new APIGatewayProxyResponseEvent()
@@ -149,7 +149,7 @@ public class CustomersApi implements
    */
   private Optional<APIGatewayProxyResponseEvent> getAll(final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.GET_METHOD)) {
+      if (requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
         return Optional.of(
             new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
@@ -157,13 +157,13 @@ public class CustomersApi implements
                     customersHandler.getAll(
                         lambdaHttpHeaderExtractor.getAllHeaders(input,
                             Constants.DATA_PARTITION_HEADER),
-                        lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM)
+                        lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.FILTER_QUERY_PARAM)
                             .orElse(null),
                         lambdaHttpValueExtractor.getQueryParam(input,
-                                Constants.PAGE_OFFSET_QUERY_PARAM)
+                                Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM)
                             .orElse(null),
                         lambdaHttpValueExtractor.getQueryParam(input,
-                                Constants.PAGE_LIMIT_QUERY_PARAM)
+                                Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM)
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
                             .orElse(null),
@@ -191,7 +191,7 @@ public class CustomersApi implements
   private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
-      if (requestIsMatch(input, INDIVIDUAL_RE, Constants.GET_METHOD)) {
+      if (requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
         final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
         if (id.isPresent()) {
@@ -230,7 +230,7 @@ public class CustomersApi implements
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.POST_METHOD)) {
+      if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
             new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)

@@ -1,6 +1,6 @@
 package com.octopus.customers.domain.framework.providers;
 
-import com.octopus.customers.domain.exceptions.InvalidAcceptHeaders;
+import com.octopus.exceptions.InvalidAcceptHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;

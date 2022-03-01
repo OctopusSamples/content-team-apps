@@ -1,4 +1,4 @@
-package com.octopus.utilties.impl;
+package com.octopus.jwt.impl;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
@@ -6,7 +6,7 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.octopus.utilties.JwtValidator;
+import com.octopus.jwt.JwtValidator;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;

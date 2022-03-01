@@ -1,4 +1,4 @@
-package com.octopus.utilties;
+package com.octopus.lambda;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import lombok.NonNull;

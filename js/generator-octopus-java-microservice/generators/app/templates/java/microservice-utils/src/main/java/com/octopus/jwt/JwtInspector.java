@@ -1,4 +1,4 @@
-package com.octopus.utilties;
+package com.octopus.jwt;
 
 /** An interface exposing methods used to verify a request contains the correct authorization. */
 public interface JwtInspector {

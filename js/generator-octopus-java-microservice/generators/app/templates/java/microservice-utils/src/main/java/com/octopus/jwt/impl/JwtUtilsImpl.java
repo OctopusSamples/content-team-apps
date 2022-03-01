@@ -1,6 +1,6 @@
-package com.octopus.utilties.impl;
+package com.octopus.jwt.impl;
 
-import com.octopus.utilties.JwtUtils;
+import com.octopus.jwt.JwtUtils;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 

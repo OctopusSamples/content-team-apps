@@ -25,9 +25,9 @@ public class VersionOneAcceptHeaderVerifier implements AcceptHeaderVerifier {
             .filter(Objects::nonNull)
             .flatMap(h -> Arrays.stream(h.split(",")))
             .map(String::trim)
-            .filter(h -> h.startsWith(Constants.JSONAPI_CONTENT_TYPE)).toList();
+            .filter(h -> h.startsWith(Constants.JsonApi.JSONAPI_CONTENT_TYPE)).toList();
 
-    if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(Constants.JSONAPI_CONTENT_TYPE)) {
+    if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(Constants.JsonApi.JSONAPI_CONTENT_TYPE)) {
       throw new InvalidAcceptHeaders();
     }
   }

@@ -1,6 +1,6 @@
 package com.octopus.customers.domain.framework.providers;
 
-import com.octopus.customers.domain.exceptions.InvalidInput;
+import com.octopus.exceptions.InvalidInput;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;

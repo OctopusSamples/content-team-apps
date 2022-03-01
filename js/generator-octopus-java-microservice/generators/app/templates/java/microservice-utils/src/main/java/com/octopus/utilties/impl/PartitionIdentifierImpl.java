@@ -3,6 +3,7 @@ package com.octopus.utilties.impl;
 import com.octopus.Constants;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.utilties.PartitionIdentifier;
 import java.util.List;
 import java.util.Objects;

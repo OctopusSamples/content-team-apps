@@ -1,4 +1,4 @@
-package com.octopus.utilties;
+package com.octopus.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import java.io.IOException;

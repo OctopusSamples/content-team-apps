@@ -2,7 +2,7 @@ package com.octopus.customers.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.net.HttpHeaders;
-import com.octopus.customers.application.Constants;
+import com.octopus.Constants;
 import com.octopus.customers.domain.handlers.CustomersHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.List;
@@ -44,16 +44,16 @@ public class CustomersResource {
    *                                        resource.
    */
   @GET
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Transactional
   public Response getAll(
       @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
-      @QueryParam(Constants.FILTER_QUERY_PARAM) final String filter,
-      @QueryParam(Constants.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
-      @QueryParam(Constants.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
+      @QueryParam(Constants.JsonApi.FILTER_QUERY_PARAM) final String filter,
+      @QueryParam(Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
+      @QueryParam(Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(customersHandler.getAll(
@@ -76,8 +76,8 @@ public class CustomersResource {
    *                                        resource.
    */
   @POST
-  @Consumes(Constants.JSONAPI_CONTENT_TYPE)
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
+  @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Transactional
   public Response create(
       final String document,
@@ -105,7 +105,7 @@ public class CustomersResource {
    *                                        resource.
    */
   @GET
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Path("{id}")
   @Transactional
   public Response getOne(

@@ -1,7 +1,7 @@
-package com.octopus.utilties.impl;
+package com.octopus.lambda.impl;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.octopus.utilties.ProxyResponseBuilder;
+import com.octopus.lambda.ProxyResponseBuilder;
 import lombok.NonNull;
 import org.apache.commons.text.StringEscapeUtils;
 

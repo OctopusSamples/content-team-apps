@@ -1,4 +1,4 @@
-package com.octopus.utilties;
+package com.octopus.jwt;
 
 import java.util.Optional;
 

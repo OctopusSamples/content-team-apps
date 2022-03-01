@@ -2,6 +2,7 @@ package com.octopus.customers.application.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import java.sql.SQLException;
 import java.util.Map;
@@ -13,12 +14,12 @@ import liquibase.exception.LiquibaseException;
  * The Lambda entry point used to execute database migrations.
  */
 @Named("DatabaseInit")
-public class DatabaseInit implements RequestHandler<Map<String, Object>, ProxyResponse> {
+public class DatabaseInit implements RequestHandler<Map<String, Object>, APIGatewayProxyResponseEvent> {
 
   @Inject LiquidbaseUpdater liquidbaseUpdater;
 
   @Override
-  public ProxyResponse handleRequest(
+  public APIGatewayProxyResponseEvent handleRequest(
       final Map<String, Object> stringObjectMap, final Context context) {
 
     /*
@@ -29,7 +30,7 @@ public class DatabaseInit implements RequestHandler<Map<String, Object>, ProxyRe
      */
     try {
       liquidbaseUpdater.update();
-      return new ProxyResponse("200", "ok");
+      return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("ok");
     } catch (final LiquibaseException | SQLException ex) {
       return handleRequest(stringObjectMap, context);
     }
