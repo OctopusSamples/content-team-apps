@@ -8,6 +8,8 @@ import com.octopus.jsonapi.AcceptHeaderVerifier;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jsonapi.impl.PagedResultsLinksBuilderImpl;
 import com.octopus.jsonapi.impl.VersionOneAcceptHeaderVerifier;
+import com.octopus.jwt.JwtUtils;
+import com.octopus.jwt.impl.JwtUtilsImpl;
 import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
@@ -109,16 +111,27 @@ public class UtilityProducer {
   }
 
   /**
+   * Produces the JWT utils service.
+   *
+   * @return An implementation of JwtUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public JwtUtils JwtUtils() {
+    return new JwtUtilsImpl();
+  }
+
+  /**
    * Produces the JWT verification service.
    *
    * @return An implementation of JwtVerifier.
    */
   @ApplicationScoped
   @Produces
-  public JwtInspector getJwtVerifier(
+  public JwtInspector getJwtInspector(
       CognitoJwkBase64Feature cognitoJwkBase64Feature,
       DisableSecurityFeature disableSecurityFeature,
-      JwtValidatorImpl jwtValidator,
+      JwtValidator jwtValidator,
       MicroserviceNameFeature microserviceNameFeature) {
     return new JoseJwtInspector(
         cognitoJwkBase64Feature,
@@ -135,9 +148,9 @@ public class UtilityProducer {
   @ApplicationScoped
   @Produces
   public PartitionIdentifier getPartitionIdentifier(
-      JoseJwtInspector jwtVerifier,
+      JwtInspector jwtInspector,
       AdminJwtGroupFeature adminJwtGroupFeature,
       DisableSecurityFeature disableSecurityFeature) {
-    return new PartitionIdentifierImpl(jwtVerifier, adminJwtGroupFeature, disableSecurityFeature);
+    return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
   }
 }

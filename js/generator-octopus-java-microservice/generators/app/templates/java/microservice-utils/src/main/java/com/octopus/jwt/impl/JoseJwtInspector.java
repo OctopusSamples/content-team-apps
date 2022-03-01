@@ -6,6 +6,7 @@ import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jwt.JwtInspector;
+import com.octopus.jwt.JwtValidator;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class JoseJwtInspector implements JwtInspector {
   private static final String CLIENT_ID = "client_id";
   private final CognitoJwkBase64Feature cognitoJwk;
   private final DisableSecurityFeature cognitoDisableAuth;
-  private final JwtValidatorImpl jwtValidator;
+  private final JwtValidator jwtValidator;
   private final MicroserviceNameFeature microserviceName;
 
   /**
@@ -42,7 +43,7 @@ public class JoseJwtInspector implements JwtInspector {
   public JoseJwtInspector(
       @NonNull final CognitoJwkBase64Feature cognitoJwk,
       @NonNull final DisableSecurityFeature cognitoDisableAuth,
-      @NonNull final JwtValidatorImpl jwtValidator,
+      @NonNull final JwtValidator jwtValidator,
       @NonNull final MicroserviceNameFeature microserviceName) {
     this.cognitoJwk = cognitoJwk;
     this.cognitoDisableAuth = cognitoDisableAuth;

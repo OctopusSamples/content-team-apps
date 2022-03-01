@@ -11,9 +11,9 @@ import com.octopus.exceptions.EntityNotFound;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
+import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.utilties.PartitionIdentifier;
-import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.wrappers.FilteredResultWrapper;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -54,7 +54,7 @@ public class CustomersHandler {
   PartitionIdentifier partitionIdentifier;
 
   @Inject
-  JoseJwtInspector jwtVerifier;
+  JwtInspector JwtInspector;
 
   @Inject
   JwtUtils jwtUtils;
@@ -222,7 +222,7 @@ public class CustomersHandler {
       app client is accepted as machine-to-machine communication.
      */
     if (jwtUtils.getJwtFromAuthorizationHeader(serviceAuthorizationHeader)
-        .map(jwt -> jwtVerifier.jwtContainsScope(jwt, cognitoAdminClaim, cognitoClientId))
+        .map(jwt -> JwtInspector.jwtContainsScope(jwt, cognitoAdminClaim, cognitoClientId))
         .orElse(false)) {
       return true;
     }
@@ -231,7 +231,7 @@ public class CustomersHandler {
       Anyone assigned to the appropriate group is also granted access.
      */
     return adminGroup.isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> jwtVerifier.jwtContainsCognitoGroup(jwt, adminGroup.get()))
+        .map(jwt -> JwtInspector.jwtContainsCognitoGroup(jwt, adminGroup.get()))
         .orElse(false);
   }
 }

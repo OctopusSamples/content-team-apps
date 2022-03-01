@@ -3,6 +3,7 @@ package com.octopus.utilties.impl;
 import com.octopus.Constants;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.utilties.PartitionIdentifier;
 import java.util.List;
@@ -16,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PartitionIdentifierImpl implements PartitionIdentifier {
 
-  private final JoseJwtInspector jwtVerifier;
+  private final JwtInspector jwtVerifier;
   private final AdminJwtGroupFeature adminJwtGroupFeature;
   private final DisableSecurityFeature cognitoDisableAuth;
 
@@ -27,7 +28,7 @@ public class PartitionIdentifierImpl implements PartitionIdentifier {
    * @param adminJwtGroupFeature The JWT admin group feature.
    * @param cognitoDisableAuth   The auth disable feature.
    */
-  public PartitionIdentifierImpl(@NonNull final JoseJwtInspector jwtVerifier,
+  public PartitionIdentifierImpl(@NonNull final JwtInspector jwtVerifier,
       @NonNull final AdminJwtGroupFeature adminJwtGroupFeature,
       @NonNull final DisableSecurityFeature cognitoDisableAuth) {
     this.jwtVerifier = jwtVerifier;
