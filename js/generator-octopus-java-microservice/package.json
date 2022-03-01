@@ -1,5 +1,5 @@
 {
-  "name": "generator-octopus-java-microservice",
+  "name": "@octopus-content-team/generator-octopus-java-microservice",
   "version": "0.1.0",
   "description": "",
   "files": [

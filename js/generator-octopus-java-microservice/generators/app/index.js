@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
@@ -13,7 +12,7 @@ module.exports = class extends Generator {
     writing() {
         this.fs.copyTpl(
             this.templatePath('**/*'),
-            this.destinationRoot(),
+            this.destinationRoot('.'),
             {},
             {},
             {globOptions: {ignore: ["**/target", "**/*.iml", "**/.idea"]}}

@@ -1,5 +1,5 @@
 {
-  "name": "generator-github-shared-infrastructure",
+  "name": "@octopus-content-team/generator-github-shared-infrastructure",
   "version": "0.1.0",
   "description": "",
   "files": [
