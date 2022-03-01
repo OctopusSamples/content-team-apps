@@ -11,13 +11,13 @@ import com.octopus.customers.domain.handlers.HealthHandler;
 import com.octopus.exceptions.EntityNotFound;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
+import com.octopus.lambda.APIGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.utilties.RegExUtils;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -127,7 +127,7 @@ public class CustomersApi implements
     if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       try {
         return Optional.of(
-            new APIGatewayProxyResponseEvent()
+            new APIGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(healthHandler.getHealth(
                     input.getPath().substring(0, input.getPath().lastIndexOf("/")),
@@ -151,7 +151,7 @@ public class CustomersApi implements
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
         return Optional.of(
-            new APIGatewayProxyResponseEvent()
+            new APIGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     customersHandler.getAll(
@@ -205,7 +205,7 @@ public class CustomersApi implements
                       Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
           return Optional.of(
-              new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(entity));
+              new APIGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
         }
         return Optional.of(proxyResponseBuilder.buildNotFound());
       }
@@ -232,7 +232,7 @@ public class CustomersApi implements
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
-            new APIGatewayProxyResponseEvent()
+            new APIGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     customersHandler.create(
@@ -289,14 +289,5 @@ public class CustomersApi implements
     }
 
     return body;
-  }
-
-  private void addCorsHeaders(@NonNull final APIGatewayProxyResponseEvent event) {
-    if (event.getHeaders() == null) {
-      event.setHeaders(new HashMap<>());
-    }
-    event.getHeaders().put("Access-Control-Allow-Origin", "*");
-    event.getHeaders().put("Access-Control-Allow-Headers", "*");
-    event.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
   }
 }
