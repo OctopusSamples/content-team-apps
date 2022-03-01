@@ -45,7 +45,7 @@ public interface LambdaHttpCookieExtractor {
    * @param name The name of the value.
    * @return All the values that match the name.
    */
-  List<String> getMultiQuery(Map<String, List<String>> query, String name);
+  List<String> getMultiCookie(Map<String, List<String>> query, String name);
 
   /**
    * Get the value from the single query collection.
@@ -54,5 +54,5 @@ public interface LambdaHttpCookieExtractor {
    * @param name The name of the value.
    * @return A list with zero or one values that match the name.
    */
-  List<String> getQuery(Map<String, String> query, String name);
+  List<String> getCookie(Map<String, String> query, String name);
 }

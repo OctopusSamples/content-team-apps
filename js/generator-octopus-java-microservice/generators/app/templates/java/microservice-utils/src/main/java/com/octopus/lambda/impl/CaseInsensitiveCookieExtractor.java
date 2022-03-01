@@ -43,8 +43,8 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
       final Map<String, List<String>> multiQuery,
       final Map<String, String> query,
       @NonNull final String name) {
-    final List<String> values = new ArrayList<String>(getMultiQuery(multiQuery, name));
-    values.addAll(getQuery(query, name));
+    final List<String> values = new ArrayList<String>(getMultiCookie(multiQuery, name));
+    values.addAll(getCookie(query, name));
     return values;
   }
 
@@ -52,7 +52,7 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
    * {@inheritDoc}
    */
   @Override
-  public List<String> getMultiQuery(
+  public List<String> getMultiCookie(
       final Map<String, List<String>> query, @NonNull final String name) {
     if (query == null) {
       return List.of();
@@ -69,7 +69,7 @@ public class CaseInsensitiveCookieExtractor implements LambdaHttpCookieExtractor
    * {@inheritDoc}
    */
   @Override
-  public List<String> getQuery(final Map<String, String> query, @NonNull final String name) {
+  public List<String> getCookie(final Map<String, String> query, @NonNull final String name) {
     if (query == null) {
       return List.of();
     }
