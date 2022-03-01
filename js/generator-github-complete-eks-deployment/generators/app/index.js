@@ -23,6 +23,9 @@ module.exports = class extends Generator {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"]
             });
+        this.composeWith(
+            require.resolve('../../../generator-octopus-java-microservice/generators/app'),
+            {});
     }
 
     writing() {
