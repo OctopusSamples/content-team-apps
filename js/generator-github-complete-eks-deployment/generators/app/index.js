@@ -12,19 +12,19 @@ module.exports = class extends Generator {
 
     initializing() {
         this.composeWith(
-            require.resolve('../../../generator-github-shared-space/generators/app'),
+            require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
-            require.resolve('../../../generator-github-shared-infrastructure/generators/app'),
+            require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
-            require.resolve('../../../generator-octopus-java-microservice/generators/app'),
+            require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'),
             {});
     }
 

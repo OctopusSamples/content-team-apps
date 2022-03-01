@@ -1,7 +1,8 @@
 {
   "name": "@octopus-content-team/generator-github-shared-space",
   "version": "0.1.0",
-  "description": "",
+  "description": "A Yeoman generator to create an Octopus space with Terraform.",
+  "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [
     "generators"
   ],
