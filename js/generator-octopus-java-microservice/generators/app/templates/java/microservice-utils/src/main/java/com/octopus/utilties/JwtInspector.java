@@ -1,7 +1,7 @@
 package com.octopus.utilties;
 
 /** An interface exposing methods used to verify a request contains the correct authorization. */
-public interface JwtVerifier {
+public interface JwtInspector {
 
   /**
    * Confirms if the JWT contains the specified Cognito group.

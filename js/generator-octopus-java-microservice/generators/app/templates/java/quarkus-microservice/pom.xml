@@ -120,11 +120,7 @@
             <scope>provided</scope>
             <version>2.0.SP1</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.jasminb</groupId>
-            <artifactId>jsonapi-converter</artifactId>
-            <version>0.11</version>
-        </dependency>
+
         <dependency>
             <artifactId>rsql-jpa</artifactId>
             <groupId>com.github.tennaito</groupId>
@@ -194,6 +190,16 @@
         <dependency>
             <groupId>com.octopus</groupId>
             <artifactId>pipeline-builder-utils</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.octopus</groupId>
+            <artifactId>microservice-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.octopus</groupId>
+            <artifactId>microservice-utils</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>

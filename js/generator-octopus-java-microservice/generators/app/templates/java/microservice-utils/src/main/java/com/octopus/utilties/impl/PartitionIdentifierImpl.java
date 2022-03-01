@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PartitionIdentifierImpl implements PartitionIdentifier {
 
-  private final JoseJwtVerifier jwtVerifier;
+  private final JoseJwtInspector jwtVerifier;
   private final AdminJwtGroupFeature adminJwtGroupFeature;
   private final DisableSecurityFeature cognitoDisableAuth;
 
@@ -26,7 +26,7 @@ public class PartitionIdentifierImpl implements PartitionIdentifier {
    * @param adminJwtGroupFeature The JWT admin group feature.
    * @param cognitoDisableAuth   The auth disable feature.
    */
-  public PartitionIdentifierImpl(@NonNull final JoseJwtVerifier jwtVerifier,
+  public PartitionIdentifierImpl(@NonNull final JoseJwtInspector jwtVerifier,
       @NonNull final AdminJwtGroupFeature adminJwtGroupFeature,
       @NonNull final DisableSecurityFeature cognitoDisableAuth) {
     this.jwtVerifier = jwtVerifier;

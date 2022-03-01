@@ -148,6 +148,11 @@
             <groupId>com.amazonaws</groupId>
             <version>3.10.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.jasminb</groupId>
+            <artifactId>jsonapi-converter</artifactId>
+            <version>0.11</version>
+        </dependency>
     </dependencies>
 
 </project>

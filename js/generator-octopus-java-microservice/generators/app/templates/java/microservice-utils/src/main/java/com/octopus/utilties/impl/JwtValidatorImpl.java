@@ -6,6 +6,7 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.octopus.utilties.JwtValidator;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -17,17 +18,8 @@ import org.apache.commons.io.IOUtils;
 /**
  * A service to validate JWT tokens.
  */
-public class JwtValidator {
-  /**
-   * Verify the JWT token has the correct signature and is not expired.
-   *
-   * @param jwt The JWT.
-   * @param jwk The JWK, base64 encoded.
-   * @return true if the JWT is valid, false otherwise.
-   * @throws ParseException If the string couldn't be parsed to a JWS object.
-   * @throws IOException    If the input stream couldn't be read.
-   * @throws JOSEException  If the RSA JWK extraction failed.
-   */
+public class JwtValidatorImpl implements JwtValidator {
+  @Override
   public boolean jwtIsValid(final String jwt, final String jwk)
       throws ParseException, IOException, JOSEException {
     final JWSObject jwsObject = JWSObject.parse(jwt);

@@ -5,7 +5,7 @@ import com.nimbusds.jose.JWSObject;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
-import com.octopus.utilties.JwtVerifier;
+import com.octopus.utilties.JwtInspector;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -20,20 +20,20 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * An implementation of JwtVerifier using Jose JWT.
  */
-public class JoseJwtVerifier implements JwtVerifier {
-  private static Logger LOGGER = Logger.getLogger(JoseJwtVerifier.class.getName());
+public class JoseJwtInspector implements JwtInspector {
+  private static Logger LOGGER = Logger.getLogger(JoseJwtInspector.class.getName());
   private static final String COGNITO_GROUPS = "cognito:groups";
   private static final String SCOPE = "scope";
   private static final String CLIENT_ID = "client_id";
   private final CognitoJwkBase64Feature cognitoJwk;
   private final DisableSecurityFeature cognitoDisableAuth;
-  private final JwtValidator jwtValidator;
+  private final JwtValidatorImpl jwtValidator;
   private final MicroserviceNameFeature microserviceName;
 
-  public JoseJwtVerifier(
+  public JoseJwtInspector(
       @NonNull final CognitoJwkBase64Feature cognitoJwk,
       @NonNull final DisableSecurityFeature cognitoDisableAuth,
-      @NonNull final JwtValidator jwtValidator,
+      @NonNull final JwtValidatorImpl jwtValidator,
       @NonNull final MicroserviceNameFeature microserviceName) {
     this.cognitoJwk = cognitoJwk;
     this.cognitoDisableAuth = cognitoDisableAuth;

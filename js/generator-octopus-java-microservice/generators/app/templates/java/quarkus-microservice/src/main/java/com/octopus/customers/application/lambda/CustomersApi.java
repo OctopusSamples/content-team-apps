@@ -6,15 +6,15 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
 import com.octopus.customers.application.Constants;
-import com.octopus.customers.domain.exceptions.EntityNotFound;
-import com.octopus.customers.domain.exceptions.InvalidInput;
-import com.octopus.customers.domain.exceptions.Unauthorized;
 import com.octopus.customers.domain.handlers.CustomersHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
-import com.octopus.customers.domain.utilities.ProxyResponseBuilder;
-import com.octopus.customers.domain.utilities.RegExUtils;
+import com.octopus.exceptions.EntityNotFound;
+import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.Unauthorized;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
+import com.octopus.utilties.ProxyResponseBuilder;
+import com.octopus.utilties.RegExUtils;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.Base64;
 import java.util.HashMap;
@@ -32,7 +32,8 @@ import org.apache.commons.lang3.ObjectUtils;
  */
 @Named("Customers")
 @ApplicationScoped
-public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class CustomersApi implements
+    RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
   /**
    * A regular expression matching the collection of entities.
@@ -60,6 +61,12 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
   @Inject
   LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
 
+  @Inject
+  ProxyResponseBuilder proxyResponseBuilder;
+
+  @Inject
+  RegExUtils regExUtils;
+
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
    *
@@ -82,7 +89,7 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
         .or(() -> getOne(input))
         .or(() -> createOne(input))
         .or(() -> checkHealth(input))
-        .orElse(ProxyResponseBuilder.buildNotFound());
+        .orElse(proxyResponseBuilder.buildNotFound());
   }
 
   /**
@@ -102,11 +109,10 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
    * represent the status of all endpoints.
    *
    * <p>By ensuring every path has a matching health endpoint, we allow clients to verify the
-   * status
-   * of the service without having to know which lambdas respond to which requests. This does mean
-   * that a client may need to verify the health of half a dozen endpoints to fully determine the
-   * state of the client's dependencies, but this is a more accurate representation of the health of
-   * the system.
+   * status of the service without having to know which lambdas respond to which requests. This does
+   * mean that a client may need to verify the health of half a dozen endpoints to fully determine
+   * the state of the client's dependencies, but this is a more accurate representation of the
+   * health of the system.
    *
    * <p>This particular service will typically be deployed with one lambda responding to many
    * endpoints, but clients can not assume this is always the case, and must check the health of
@@ -115,7 +121,8 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
    * @param input The request details
    * @return The optional proxy response
    */
-  private Optional<APIGatewayProxyResponseEvent> checkHealth(final APIGatewayProxyRequestEvent input) {
+  private Optional<APIGatewayProxyResponseEvent> checkHealth(
+      final APIGatewayProxyRequestEvent input) {
 
     if (requestIsMatch(input, HEALTH_RE, Constants.GET_METHOD)) {
       try {
@@ -127,7 +134,7 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
                     input.getPath().substring(input.getPath().lastIndexOf("/")))));
       } catch (final Exception e) {
         e.printStackTrace();
-        return Optional.of(ProxyResponseBuilder.buildError(e));
+        return Optional.of(proxyResponseBuilder.buildError(e));
       }
     }
 
@@ -140,32 +147,36 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> getAll(final APIGatewayProxyRequestEvent input) {
+  private Optional<APIGatewayProxyResponseEvent> getAll(final APIGatewayProxyRequestEvent input) {
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.GET_METHOD)) {
         return Optional.of(
-            new ProxyResponse(
-                "200",
-                customersHandler.getAll(
-                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM)
-                        .orElse(null),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_OFFSET_QUERY_PARAM)
-                        .orElse(null),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_LIMIT_QUERY_PARAM)
-                        .orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                        .orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input,
-                        Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+            new APIGatewayProxyResponseEvent()
+                .withStatusCode(200)
+                .withBody(
+                    customersHandler.getAll(
+                        lambdaHttpHeaderExtractor.getAllHeaders(input,
+                            Constants.DATA_PARTITION_HEADER),
+                        lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM)
+                            .orElse(null),
+                        lambdaHttpValueExtractor.getQueryParam(input,
+                                Constants.PAGE_OFFSET_QUERY_PARAM)
+                            .orElse(null),
+                        lambdaHttpValueExtractor.getQueryParam(input,
+                                Constants.PAGE_LIMIT_QUERY_PARAM)
+                            .orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                            .orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input,
+                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final RSQLParserException e) {
-      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
+      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e));
+      return Optional.of(proxyResponseBuilder.buildError(e));
     }
 
     return Optional.empty();
@@ -177,11 +188,11 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> getOne(final APIGatewayProxyRequestEvent input) {
+  private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
       if (requestIsMatch(input, INDIVIDUAL_RE, Constants.GET_METHOD)) {
-        final Optional<String> id = RegExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
+        final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
         if (id.isPresent()) {
           final String entity =
@@ -193,17 +204,18 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
                   lambdaHttpHeaderExtractor.getFirstHeader(input,
                       Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
-          return Optional.of(new ProxyResponse("200", entity));
+          return Optional.of(
+              new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(entity));
         }
-        return Optional.of(ProxyResponseBuilder.buildNotFound());
+        return Optional.of(proxyResponseBuilder.buildNotFound());
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final EntityNotFound ex) {
-      return Optional.of(ProxyResponseBuilder.buildNotFound());
+      return Optional.of(proxyResponseBuilder.buildNotFound());
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e));
+      return Optional.of(proxyResponseBuilder.buildError(e));
     }
 
     return Optional.empty();
@@ -215,27 +227,30 @@ public class CustomersApi implements RequestHandler<APIGatewayProxyRequestEvent,
    * @param input The Lambda request.
    * @return The Lambda response.
    */
-  private Optional<ProxyResponse> createOne(final APIGatewayProxyRequestEvent input) {
+  private Optional<APIGatewayProxyResponseEvent> createOne(
+      final APIGatewayProxyRequestEvent input) {
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.POST_METHOD)) {
         return Optional.of(
-            new ProxyResponse(
-                "200",
-                customersHandler.create(
-                    getBody(input),
-                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                        .orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input,
-                        Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+            new APIGatewayProxyResponseEvent()
+                .withStatusCode(200)
+                .withBody(
+                    customersHandler.create(
+                        getBody(input),
+                        lambdaHttpHeaderExtractor.getAllHeaders(input,
+                            Constants.DATA_PARTITION_HEADER),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                            .orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input,
+                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final InvalidInput e) {
-      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
+      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e, getBody(input)));
+      return Optional.of(proxyResponseBuilder.buildError(e, getBody(input)));
     }
 
     return Optional.empty();

@@ -1,4 +1,4 @@
-package com.octopus.customers.domain.wrappers;
+package com.octopus.wrappers;
 
 import java.util.List;
 import lombok.Data;

@@ -4,7 +4,7 @@ import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
 import com.octopus.customers.application.Constants;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.domain.exceptions.InvalidInput;
-import com.octopus.customers.domain.wrappers.FilteredResultWrapper;
+import com.octopus.wrappers.FilteredResultWrapper;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;

@@ -1,9 +1,10 @@
 package com.octopus.customers.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.google.common.net.HttpHeaders;
 import com.octopus.customers.application.Constants;
 import com.octopus.customers.domain.handlers.CustomersHandler;
-import com.octopus.customers.domain.jsonapi.AcceptHeaderVerifier;
+import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
@@ -19,14 +20,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import com.google.common.net.HttpHeaders;
 
 /**
  * WHen this app is run as a web server, this class defines the REST API endpoints.
  */
-@Path("/api/audits")
+@Path("/api/customers")
 @RequestScoped
-public class AuditResource {
+public class CustomersResource {
 
   @Inject
   CustomersHandler customersHandler;

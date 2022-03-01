@@ -1,5 +1,6 @@
 package com.octopus.customers.domain.features;
 
+import com.octopus.features.DisableSecurityFeature;
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -7,7 +8,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * Simple wrapper around a property setting to aid with mocking in tests.
  */
 @ApplicationScoped
-public class DisableSecurityFeature {
+public class DisableSecurityFeatureImpl implements DisableSecurityFeature {
   @ConfigProperty(name = "cognito.disable-auth")
   boolean cognitoDisableAuth;
 

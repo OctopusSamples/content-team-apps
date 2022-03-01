@@ -5,16 +5,16 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.domain.Constants;
 import com.octopus.customers.domain.entities.Customer;
-import com.octopus.customers.domain.jsonapi.PagedResultsLinksBuilder;
-import com.octopus.customers.domain.exceptions.EntityNotFound;
-import com.octopus.customers.domain.exceptions.InvalidInput;
-import com.octopus.customers.domain.exceptions.Unauthorized;
-import com.octopus.customers.domain.features.DisableSecurityFeature;
-import com.octopus.customers.domain.utilities.JwtUtils;
-import com.octopus.customers.domain.utilities.PartitionIdentifier;
-import com.octopus.utilties.impl.JoseJwtVerifier;
-import com.octopus.customers.domain.wrappers.FilteredResultWrapper;
+import com.octopus.customers.domain.features.DisableSecurityFeatureImpl;
 import com.octopus.customers.infrastructure.repositories.CustomersRepository;
+import com.octopus.exceptions.EntityNotFound;
+import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.Unauthorized;
+import com.octopus.jsonapi.PagedResultsLinksBuilder;
+import com.octopus.utilties.JwtUtils;
+import com.octopus.utilties.PartitionIdentifier;
+import com.octopus.utilties.impl.JoseJwtInspector;
+import com.octopus.wrappers.FilteredResultWrapper;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class CustomersHandler {
   String cognitoClientId;
 
   @Inject
-  DisableSecurityFeature cognitoDisableAuth;
+  DisableSecurityFeatureImpl cognitoDisableAuth;
 
   @ConfigProperty(name = "cognito.admin-group")
   Optional<String> adminGroup;
@@ -54,10 +54,13 @@ public class CustomersHandler {
   PartitionIdentifier partitionIdentifier;
 
   @Inject
-  JoseJwtVerifier jwtVerifier;
+  JoseJwtInspector jwtVerifier;
 
   @Inject
   JwtUtils jwtUtils;
+
+  @Inject
+  PagedResultsLinksBuilder pagedResultsLinksBuilder;
 
   /**
    * Returns all matching resources.
@@ -93,7 +96,7 @@ public class CustomersHandler {
     final JSONAPIDocument<List<Customer>> document = new JSONAPIDocument<List<Customer>>(
         audits.getList());
 
-    PagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, audits);
+    pagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, audits);
 
     final byte[] content = resourceConverter.writeDocumentCollection(document);
     return new String(content);

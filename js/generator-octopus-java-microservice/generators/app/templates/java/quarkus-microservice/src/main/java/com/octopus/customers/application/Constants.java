@@ -22,6 +22,5 @@ public final class Constants {
   public static final String PAGE_LIMIT_QUERY_PARAM = "page[limit]";
   public static final String GET_METHOD = "get";
   public static final String POST_METHOD = "post";
-  public static final int DEFAULT_PAGE_LIMIT = 30;
-  public static final int DEFAULT_PAGE_OFFSET = 0;
+
 }
