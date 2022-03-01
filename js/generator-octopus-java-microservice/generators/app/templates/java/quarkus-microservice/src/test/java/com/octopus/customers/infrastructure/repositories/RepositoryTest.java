@@ -3,7 +3,7 @@ package com.octopus.customers.infrastructure.repositories;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.octopus.audits.infrastructure.utilities.LiquidbaseUpdater;
+import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;
 import javax.inject.Inject;
@@ -15,9 +15,9 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @QuarkusTest
 @TestInstance(Lifecycle.PER_CLASS)
-public class AuditRepositoryTest {
+public class RepositoryTest {
   @Inject
-  AuditRepository auditRepository;
+  CustomersRepository repository;
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
@@ -29,17 +29,17 @@ public class AuditRepositoryTest {
 
   @Test
   public void verifyFindNone() {
-    assertNull(auditRepository.findOne(10000000));
+    assertNull(repository.findOne(10000000));
   }
 
   @Test
   public void verifyNullInputs() {
     assertThrows(NullPointerException.class, () -> {
-      auditRepository.findAll(null, null, null, null);
+      repository.findAll(null, null, null, null);
     });
 
     assertThrows(NullPointerException.class, () -> {
-      auditRepository.save(null);
+      repository.save(null);
     });
   }
 }

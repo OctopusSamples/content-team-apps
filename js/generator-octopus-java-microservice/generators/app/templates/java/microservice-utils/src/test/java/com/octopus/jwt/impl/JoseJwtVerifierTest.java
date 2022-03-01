@@ -19,7 +19,7 @@ public class JoseJwtVerifierTest {
   private static final String SIMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
   private static final JoseJwtInspector jwtInspector = new JoseJwtInspector(
-      Optional::empty,
+      () -> Optional.of(JWK),
       () -> true,
       (jwt, jwk) -> true,
       () -> "test"
