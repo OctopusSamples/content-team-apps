@@ -10,10 +10,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class AuditApiTest {
+  private static final String API_ENDPOINT = "/api/customers";
+  private static final String HEALTH_ENDPOINT = "/health/customers";
   private static final CustomersApi API = new CustomersApi();
 
   @ParameterizedTest
-  @ValueSource(strings = {"/health/audits/GET", "/health/audits/POST", "/health/audits/x/GET"})
+  @ValueSource(strings = {HEALTH_ENDPOINT + "/GET", HEALTH_ENDPOINT + "/POST", HEALTH_ENDPOINT + "/x/GET"})
   public void testHealthRequestMatching(final String path) {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
@@ -25,7 +27,7 @@ public class AuditApiTest {
   public void testRootRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
-    event.setPath("/api/audits");
+    event.setPath(API_ENDPOINT);
     assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.GET_METHOD));
   }
 
@@ -33,7 +35,7 @@ public class AuditApiTest {
   public void testIndividualRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
-    event.setPath("/api/audits/1");
+    event.setPath(API_ENDPOINT + "/1");
     assertTrue(API.requestIsMatch(event, API.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
   }
 
@@ -41,7 +43,7 @@ public class AuditApiTest {
   public void testCreateRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
-    event.setPath("/api/audits");
+    event.setPath(API_ENDPOINT);
     assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.POST_METHOD));
   }
 

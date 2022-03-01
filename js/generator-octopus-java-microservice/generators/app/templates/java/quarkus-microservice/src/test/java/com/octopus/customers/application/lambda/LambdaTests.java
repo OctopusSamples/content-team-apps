@@ -31,6 +31,9 @@ import org.mockito.Mockito;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaTests extends BaseTest {
 
+  private static final String API_ENDPOINT = "/api/customers";
+  private static final String HEALTH_ENDPOINT = "/health/customers";
+
   @Inject
   CustomersApi api;
 
@@ -65,7 +68,7 @@ public class LambdaTests extends BaseTest {
   }
 
   @Test
-  public void testLambdaCreateWithBadBody() throws DocumentSerializationException {
+  public void testLambdaCreateWithBadBody() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -75,7 +78,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
     apiGatewayProxyRequestEvent.setBody("Not a valid JSON document");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
@@ -93,7 +96,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
     apiGatewayProxyRequestEvent.setBody(
         resourceToResourceDocument(resourceConverter, createResource("testCreateAndGetResource")));
     final APIGatewayProxyResponseEvent postResponse =
@@ -111,7 +114,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-    getApiGatewayProxyRequestEvent.setPath("/api/audits/" + postEntity.getId());
+    getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT + "/" + postEntity.getId());
     final APIGatewayProxyResponseEvent getResponse =
         api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer getEntity = getResourceFromDocument(resourceConverter, getResponse.getBody());
@@ -130,7 +133,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
     apiGatewayProxyRequestEvent.setBody(
         Base64.getEncoder().encodeToString(
             resourceToResourceDocument(resourceConverter,
@@ -150,7 +153,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-    getApiGatewayProxyRequestEvent.setPath("/api/audits/" + postEntity.getId());
+    getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT + "/" + postEntity.getId());
     final APIGatewayProxyResponseEvent getResponse =
         api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer getEntity = getResourceFromDocument(resourceConverter, getResponse.getBody());
@@ -171,7 +174,7 @@ public class LambdaTests extends BaseTest {
     apiGatewayProxyRequestEvent.setPath("/api/blah");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("404", postResponse.getStatusCode());
+    assertEquals(404, postResponse.getStatusCode());
   }
 
   @Test
@@ -185,14 +188,14 @@ public class LambdaTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath("/api/audits");
+    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
     apiGatewayProxyRequestEvent.setBody(
         resourceToResourceDocument(resourceConverter, createResource("testCreateAndGetResource")));
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer postEntity = getResourceFromDocument(resourceConverter, postResponse.getBody());
     assertEquals("testCreateAndGetResource", postEntity.getFirstName());
-    assertEquals("200", postResponse.getStatusCode());
+    assertEquals(200, postResponse.getStatusCode());
 
     {
       final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
@@ -206,7 +209,7 @@ public class LambdaTests extends BaseTest {
             }
           });
       getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-      getApiGatewayProxyRequestEvent.setPath("/api/audits");
+      getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
       getApiGatewayProxyRequestEvent.setQueryStringParameters(
           new HashMap<>() {
             {
@@ -233,7 +236,7 @@ public class LambdaTests extends BaseTest {
             }
           });
       getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-      getApiGatewayProxyRequestEvent.setPath("/api/audits");
+      getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
       getApiGatewayProxyRequestEvent.setQueryStringParameters(
           new HashMap<>() {
             {
@@ -260,7 +263,7 @@ public class LambdaTests extends BaseTest {
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-    getApiGatewayProxyRequestEvent.setPath("/api/audits");
+    getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
     getApiGatewayProxyRequestEvent.setQueryStringParameters(
         new HashMap<>() {
           {
@@ -269,7 +272,7 @@ public class LambdaTests extends BaseTest {
         });
     final APIGatewayProxyResponseEvent getResponse =
         api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("400", getResponse.getStatusCode());
+    assertEquals(400, getResponse.getStatusCode());
   }
 
   @Test
@@ -285,10 +288,10 @@ public class LambdaTests extends BaseTest {
           }
         });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
-    getApiGatewayProxyRequestEvent.setPath("/api/audits/10000000000000000000");
+    getApiGatewayProxyRequestEvent.setPath(API_ENDPOINT + "/10000000000000000000");
     final APIGatewayProxyResponseEvent getResponse =
         api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("404", getResponse.getStatusCode());
+    assertEquals(404, getResponse.getStatusCode());
   }
 
   @Test
@@ -296,10 +299,10 @@ public class LambdaTests extends BaseTest {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath("/health/audits/GET");
+    apiGatewayProxyRequestEvent.setPath(HEALTH_ENDPOINT + "/GET");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("200", postResponse.getStatusCode());
+    assertEquals(200, postResponse.getStatusCode());
   }
 
   @Test
@@ -307,10 +310,10 @@ public class LambdaTests extends BaseTest {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath("/health/audits/POST");
+    apiGatewayProxyRequestEvent.setPath(HEALTH_ENDPOINT + "/POST");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("200", postResponse.getStatusCode());
+    assertEquals(200, postResponse.getStatusCode());
   }
 
   @Test
@@ -318,9 +321,9 @@ public class LambdaTests extends BaseTest {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath("/health/audits/x/GET");
+    apiGatewayProxyRequestEvent.setPath(HEALTH_ENDPOINT + "/x/GET");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals("200", postResponse.getStatusCode());
+    assertEquals(200, postResponse.getStatusCode());
   }
 }

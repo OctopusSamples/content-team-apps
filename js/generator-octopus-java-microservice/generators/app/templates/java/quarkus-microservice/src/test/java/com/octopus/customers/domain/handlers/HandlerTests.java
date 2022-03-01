@@ -126,7 +126,7 @@ public class HandlerTests extends BaseTest {
     assertNotNull(resultObject.getId());
     assertEquals("testing", resultObject.getDataPartition());
     assertEquals("myname", resultObject.getFirstName());
-    assertEquals("doe", resultObject.getLastName());
+    assertEquals("Doe", resultObject.getLastName());
     assertEquals("1 Octopus St", resultObject.getAddressLine1());
     assertEquals("Coral Garden", resultObject.getAddressLine2());
     assertEquals("Brisbane", resultObject.getCity());
