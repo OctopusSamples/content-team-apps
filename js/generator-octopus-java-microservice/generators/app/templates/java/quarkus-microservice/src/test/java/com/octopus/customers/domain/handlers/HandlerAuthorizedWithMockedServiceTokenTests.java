@@ -8,9 +8,11 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
+import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.sql.SQLException;
@@ -37,6 +39,9 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   DisableSecurityFeature cognitoDisableAuth;
 
   @InjectMock
+  AdminJwtClaimFeature cognitoAdminClaim;
+
+  @InjectMock
   JwtInspector jwtInspector;
 
   @InjectMock
@@ -53,6 +58,7 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
+    Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
     liquidbaseUpdater.update();
   }
 
