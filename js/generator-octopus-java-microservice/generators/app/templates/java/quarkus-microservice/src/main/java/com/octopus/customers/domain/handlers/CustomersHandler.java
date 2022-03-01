@@ -55,7 +55,7 @@ public class CustomersHandler {
   PartitionIdentifier partitionIdentifier;
 
   @Inject
-  JwtInspector JwtInspector;
+  JwtInspector jwtInspector;
 
   @Inject
   JwtUtils jwtUtils;
@@ -224,7 +224,7 @@ public class CustomersHandler {
      */
     if (adminJwtClaimFeature.getAdminClaim().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(
             serviceAuthorizationHeader)
-        .map(jwt -> JwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(), cognitoClientId))
+        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(), cognitoClientId))
         .orElse(false)) {
       return true;
     }
@@ -233,7 +233,7 @@ public class CustomersHandler {
       Anyone assigned to the appropriate group is also granted access.
      */
     return adminJwtGroupFeature.getAdminGroup().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> JwtInspector.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))
+        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))
         .orElse(false);
   }
 }

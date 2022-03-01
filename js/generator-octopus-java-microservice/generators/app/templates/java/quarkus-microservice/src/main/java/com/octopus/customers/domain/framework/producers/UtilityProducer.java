@@ -117,7 +117,7 @@ public class UtilityProducer {
    */
   @ApplicationScoped
   @Produces
-  public JwtUtils JwtUtils() {
+  public JwtUtils jwtUtils() {
     return new JwtUtilsImpl();
   }
 

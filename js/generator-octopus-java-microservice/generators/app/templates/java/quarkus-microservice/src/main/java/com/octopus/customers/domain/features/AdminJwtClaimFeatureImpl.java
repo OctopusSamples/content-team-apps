@@ -5,6 +5,9 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+/**
+ * An implementation of AdminJwtClaimFeature that exposes the admin claim from the properties file.
+ */
 @ApplicationScoped
 public class AdminJwtClaimFeatureImpl implements AdminJwtClaimFeature {
 
