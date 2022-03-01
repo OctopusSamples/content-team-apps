@@ -35,19 +35,22 @@ import org.apache.commons.lang3.ObjectUtils;
 public class CustomersApi implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
+  private static final String API_PATH = "/api/customers";
+  private static final String HEALTH_PATH = "/health/customers";
+
   /**
    * A regular expression matching the collection of entities.
    */
-  public static final Pattern ROOT_RE = Pattern.compile("/api/customers/?");
+  public static final Pattern ROOT_RE = Pattern.compile(API_PATH + "/?");
   /**
    * A regular expression matching a single entity.
    */
-  public static final Pattern INDIVIDUAL_RE = Pattern.compile("/api/customers/(?<id>\\d+)");
+  public static final Pattern INDIVIDUAL_RE = Pattern.compile(API_PATH + "/(?<id>\\d+)");
   /**
    * A regular expression matching a health endpoint.
    */
   public static final Pattern HEALTH_RE =
-      Pattern.compile("/health/customers/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
+      Pattern.compile(HEALTH_PATH + "/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
 
   @Inject
   CustomersHandler customersHandler;
