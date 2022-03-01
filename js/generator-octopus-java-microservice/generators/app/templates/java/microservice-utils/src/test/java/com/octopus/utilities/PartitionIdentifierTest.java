@@ -3,6 +3,7 @@ package com.octopus.utilities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
@@ -23,6 +24,40 @@ public class PartitionIdentifierTest {
       ),
       Optional::empty,
       () -> true
+  );
+
+  private static final PartitionIdentifier PARTITION_IDENTIFIER_AUTH_ENABLED = new PartitionIdentifierImpl(
+      new JwtInspector() {
+
+        @Override
+        public boolean jwtContainsCognitoGroup(String jwt, String group) {
+          return true;
+        }
+
+        @Override
+        public boolean jwtContainsScope(String jwt, String claim, String clientId) {
+          return true;
+        }
+      },
+      () -> Optional.of("admin"),
+      () -> false
+  );
+
+  private static final PartitionIdentifier PARTITION_IDENTIFIER_AUTH_ENABLED_JWT_FAILED = new PartitionIdentifierImpl(
+      new JwtInspector() {
+
+        @Override
+        public boolean jwtContainsCognitoGroup(String jwt, String group) {
+          return false;
+        }
+
+        @Override
+        public boolean jwtContainsScope(String jwt, String claim, String clientId) {
+          return false;
+        }
+      },
+      () -> Optional.of("admin"),
+      () -> false
   );
 
   @Test
@@ -75,6 +110,62 @@ public class PartitionIdentifierTest {
               }
             },
             ""));
+
+    assertEquals(
+        expected,
+        PARTITION_IDENTIFIER_AUTH_ENABLED.getPartition(
+            new ArrayList<>() {
+              {
+                add(dataPartitionHeader);
+              }
+            },
+            "amockjwt"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "main,main",
+      "main,main ",
+      "main, main ",
+      "main,testing",
+      "main,testing ",
+      "main, testing ",
+      "main, ",
+      "main,"
+  })
+  public void testPartitionsEmptyJwt(final String expected, final String dataPartitionHeader) {
+    assertEquals(
+        expected,
+        PARTITION_IDENTIFIER_AUTH_ENABLED.getPartition(
+            new ArrayList<>() {
+              {
+                add(dataPartitionHeader);
+              }
+            },
+            ""));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "main,main",
+      "main,main ",
+      "main, main ",
+      "main,testing",
+      "main,testing ",
+      "main, testing ",
+      "main, ",
+      "main,"
+  })
+  public void testPartitionsJwtNotMatched(final String expected, final String dataPartitionHeader) {
+    assertEquals(
+        expected,
+        PARTITION_IDENTIFIER_AUTH_ENABLED_JWT_FAILED.getPartition(
+            new ArrayList<>() {
+              {
+                add(dataPartitionHeader);
+              }
+            },
+            "mockjwt"));
   }
 
   @Test
