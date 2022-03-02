@@ -12,6 +12,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
+  included_library_variable_sets       = [var.octopus_library_variable_set_id]
 
   connectivity_policy {
     allow_deployments_to_no_targets = false

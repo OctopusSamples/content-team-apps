@@ -3,7 +3,7 @@ resource "octopusdeploy_library_variable_set" "octopus_library_variable_set" {
   description = "Variables that relate to working with Octopus itself, such as API keys"
 }
 
-output "octopus_library_variable_set" {
+output "octopus_library_variable_set_id" {
   value = octopusdeploy_library_variable_set.octopus_library_variable_set.id
 }
 
