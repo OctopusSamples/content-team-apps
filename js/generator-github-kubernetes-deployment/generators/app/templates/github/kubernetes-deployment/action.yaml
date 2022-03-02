@@ -24,7 +24,7 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  github_organization:
+  repository_owner:
     description: 'The github organization'
     required: true
 runs:
