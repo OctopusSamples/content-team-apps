@@ -15,6 +15,9 @@ inputs:
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
     required: true
+  octopus_application_lifecycle_id:
+    description: 'The ID of Application lifecycle'
+    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -70,7 +73,8 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
-        -var="dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
+        -var="octopus_github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
+        -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
+        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
