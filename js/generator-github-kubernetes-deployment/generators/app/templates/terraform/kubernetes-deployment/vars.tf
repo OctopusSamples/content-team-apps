@@ -27,3 +27,8 @@ variable "octopus_application_lifecycle_id" {
   type = string
   nullable = false
 }
+
+variable "octopus_docker_image" {
+  type = string
+  nullable = false
+}

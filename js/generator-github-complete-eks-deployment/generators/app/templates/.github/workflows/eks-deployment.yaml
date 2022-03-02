@@ -46,14 +46,15 @@ jobs:
           octopus_github_docker_feed_id: ${{ steps.shared_resources.outputs.octopus_github_docker_feed_id }}
           octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
+          octopus_docker_image: "mcasperson/octopus-java-microservice"
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
           repository_owner: ${{ github.repository_owner }}
 
-      - name: Build Java Microservice
-        uses: ./github/java-microservice
-        with:
-          repository_owner: ${{ github.repository_owner }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_actor: ${{ github.actor }}
+#      - name: Build Java Microservice
+#        uses: ./github/java-microservice
+#        with:
+#          repository_owner: ${{ github.repository_owner }}
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          github_actor: ${{ github.actor }}

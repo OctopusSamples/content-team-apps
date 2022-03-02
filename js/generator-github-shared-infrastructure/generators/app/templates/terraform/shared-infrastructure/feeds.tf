@@ -3,7 +3,7 @@ resource "octopusdeploy_docker_container_registry" "dockerhub_feed" {
   name          = "DockerHub"
 }
 
-output "octopus_github_docker_feed_id" {
+output "octopus_dockerhub_feed_id" {
   value = octopusdeploy_docker_container_registry.dockerhub_feed.id
 }
 
@@ -14,7 +14,7 @@ resource "octopusdeploy_docker_container_registry" "github_docker_feed" {
   username = var.github_username
 }
 
-output "octopus_dockerhub_feed_id" {
+output "octopus_github_docker_feed_id" {
   value = octopusdeploy_docker_container_registry.github_docker_feed.id
 }
 

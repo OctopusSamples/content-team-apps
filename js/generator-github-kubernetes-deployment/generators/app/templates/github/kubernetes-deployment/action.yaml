@@ -76,5 +76,6 @@ runs:
         -var="octopus_github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash

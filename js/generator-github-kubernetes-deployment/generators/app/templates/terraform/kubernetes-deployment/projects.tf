@@ -24,6 +24,10 @@ output "deploy_backend_project_id" {
   value = octopusdeploy_project.deploy_backend_project.id
 }
 
+locals {
+  package_name = "backend"
+}
+
 resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
   project_id = octopusdeploy_project.deploy_backend_project.id
   step {
@@ -37,8 +41,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
       name          = "Deploy Backend Service"
       run_on_server = true
       package {
-        name                      = "backend"
-        package_id                = "mcasperson/octopus-java-microservice"
+        name                      = local.package_name
+        package_id                = var.octopus_docker_image
         feed_id                   = var.octopus_github_docker_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -61,7 +65,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]"
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]"
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]"
-        "Octopus.Action.KubernetesContainers.DeploymentName" : "octopus-worker"
+        "Octopus.Action.KubernetesContainers.DeploymentName" : "backend"
         "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1"
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]"
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]"
@@ -69,7 +73,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"backend\"}"
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]"
         "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]"
-        "Octopus.Action.KubernetesContainers.Containers" : "[{\"IsNew\" : true,\"InitContainer\" : \"False\",\"Ports\" : [],\"EnvironmentVariables\" : [],\"SecretEnvironmentVariables\" : [],\"SecretEnvFromSource\" : [],\"ConfigMapEnvironmentVariables\" : [],\"ConfigMapEnvFromSource\" : [],\"FieldRefEnvironmentVariables\" : [],\"VolumeMounts\" : [],\"AcquisitionLocation\" : \"NotAcquired\",\"Name\" : \"worker\",\"PackageId\" : \"mcasperson/octopus-java-microservice\",\"FeedId\" : \"${var.octopus_github_docker_feed_id}\",\"Properties\" : {},\"Command\" : [],\"Args\" : [],\"Resources\" : {\"requests\" : {\"memory\" : \"256Mi\",\"cpu\" : \"\",\"ephemeralStorage\" : \"\"},\"limits\" : {\"memory\" : \"1Gi\",\"cpu\" : \"\",\"ephemeralStorage\" : \"\",\"nvidiaGpu\" : \"\",\"amdGpu\" : \"\"}},\"LivenessProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"ReadinessProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"StartupProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"Lifecycle\" : {},\"SecurityContext\" : {\"allowPrivilegeEscalation\" : \"\",\"privileged\" : \"\",\"readOnlyRootFilesystem\" : \"\",\"runAsGroup\" : \"\",\"runAsNonRoot\" : \"\",\"runAsUser\" : \"\",\"capabilities\" : {\"add\" : [],\"drop\" : []},\"seLinuxOptions\" : {\"level\" : \"\",\"role\" : \"\",\"type\" : \"\",\"user\" : \"\"}}}]"
+        "Octopus.Action.KubernetesContainers.Containers" : "[{\"IsNew\" : true,\"InitContainer\" : \"False\",\"Ports\" : [],\"EnvironmentVariables\" : [],\"SecretEnvironmentVariables\" : [],\"SecretEnvFromSource\" : [],\"ConfigMapEnvironmentVariables\" : [],\"ConfigMapEnvFromSource\" : [],\"FieldRefEnvironmentVariables\" : [],\"VolumeMounts\" : [],\"AcquisitionLocation\" : \"NotAcquired\",\"Name\" : \"${local.package_name}\",\"PackageId\" : \"${var.octopus_docker_image}\",\"FeedId\" : \"${var.octopus_github_docker_feed_id}\",\"Properties\" : {},\"Command\" : [],\"Args\" : [],\"Resources\" : {\"requests\" : {\"memory\" : \"256Mi\",\"cpu\" : \"\",\"ephemeralStorage\" : \"\"},\"limits\" : {\"memory\" : \"1Gi\",\"cpu\" : \"\",\"ephemeralStorage\" : \"\",\"nvidiaGpu\" : \"\",\"amdGpu\" : \"\"}},\"LivenessProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"ReadinessProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"StartupProbe\" : {\"failureThreshold\" : \"\",\"initialDelaySeconds\" : \"\",\"periodSeconds\" : \"\",\"successThreshold\" : \"\",\"timeoutSeconds\" : \"\",\"type\" : null,\"exec\" : {\"command\" : []},\"httpGet\" : {\"host\" : \"\",\"path\" : \"\",\"port\" : \"\",\"scheme\" : \"\",\"httpHeaders\" : []},\"tcpSocket\" : {\"host\" : \"\",\"port\" : \"\"}},\"Lifecycle\" : {},\"SecurityContext\" : {\"allowPrivilegeEscalation\" : \"\",\"privileged\" : \"\",\"readOnlyRootFilesystem\" : \"\",\"runAsGroup\" : \"\",\"runAsNonRoot\" : \"\",\"runAsUser\" : \"\",\"capabilities\" : {\"add\" : [],\"drop\" : []},\"seLinuxOptions\" : {\"level\" : \"\",\"role\" : \"\",\"type\" : \"\",\"user\" : \"\"}}}]"
       }
     }
   }
