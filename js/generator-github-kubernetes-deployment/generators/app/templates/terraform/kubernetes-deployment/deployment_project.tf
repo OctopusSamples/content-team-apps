@@ -35,11 +35,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
     name                = "Deploy Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartWithPrevious"
-    target_roles        = ["EKS"]
+    target_roles        = ["App Builder EKS"]
     action {
-      action_type   = "Octopus.KubernetesDeployContainers"
-      name          = "Deploy Backend Service"
-      run_on_server = true
+      action_type    = "Octopus.KubernetesDeployContainers"
+      name           = "Deploy Backend Service"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.id
       package {
         name                      = local.package_name
         package_id                = var.octopus_docker_image
