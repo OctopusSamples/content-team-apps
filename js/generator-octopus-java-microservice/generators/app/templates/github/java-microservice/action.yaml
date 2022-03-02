@@ -94,7 +94,7 @@ runs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: true
         file: java/quarkus-microservice/src/main/docker/Dockerfile.legacy-jar
         context: ./java/quarkus-microservice
         tags: ghcr.io/${{ inputs.repository_owner }}/octopus-java-microservice:latest
