@@ -37,13 +37,6 @@ jobs:
           github_repo: ${{ github.repository }}
           github_feed_token: ${{ secrets.FEED_GITHUB_TOKEN }}
 
-      - name: Build Java Microservice
-        uses: ./github/java-microservice
-        with:
-          repository_owner: ${{ github.repository_owner }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_actor: ${{ github.actor }}
-
       - name: Create Kubernetes Deployment Project
         uses: ./github/kubernetes-deployment
         with:
@@ -56,3 +49,10 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
           repository_owner: ${{ github.repository_owner }}
+
+      - name: Build Java Microservice
+        uses: ./github/java-microservice
+        with:
+          repository_owner: ${{ github.repository_owner }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_actor: ${{ github.actor }}

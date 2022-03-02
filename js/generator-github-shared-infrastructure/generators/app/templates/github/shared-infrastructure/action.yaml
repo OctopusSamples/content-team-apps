@@ -33,10 +33,10 @@ inputs:
 outputs:
   octopus_github_docker_feed_id:
     description: 'The ID of Github docker feed'
-    value: ${{ steps.terraform_output_github_feed_id.outputs.stdout }}
+    value: ${{ steps.octopus_github_docker_feed_id.outputs.stdout }}
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
-    value: ${{ steps.terraform_output_dockerhub_feed_id.outputs.stdout }}
+    value: ${{ steps.octopus_dockerhub_feed_id.outputs.stdout }}
   aws_account_id:
     description: 'The ID of AWS Account'
     value: ${{ steps.aws_account_id.outputs.stdout }}
@@ -117,21 +117,21 @@ runs:
       shell: bash
 
     - name: Terraform Collect GitHub Feed Id
-      id: terraform_output_github_feed_id
+      id: octopus_github_docker_feed_id
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw octopus_github_docker_feed_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Dockerhub Feed Id
-      id: terraform_output_dockerhub_feed_id
+      id: octopus_dockerhub_feed_id
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw octopus_dockerhub_feed_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Account Id
@@ -140,7 +140,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw aws_account_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Development Environment Id
@@ -149,7 +149,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw development_environment_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Development Security Environment Id
@@ -158,7 +158,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw development_security_environment_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Production Environment Id
@@ -167,7 +167,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw production_environment_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Production Security Environment Id
@@ -176,7 +176,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw production_security_environment_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Administration Environment Id
@@ -185,7 +185,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw administration_environment_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Application Lifecycle Id
@@ -194,7 +194,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw application_lifecycle_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Infrastructure Lifecycle Id
@@ -203,7 +203,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw infrastructure_lifecycle_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash
 
     - name: Terraform Collect Administration Lifecycle Id
@@ -212,5 +212,5 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw administration_lifecycle_id
-      working-directory: terraform/shared-space
+      working-directory: terraform/shared-infrastructure
       shell: bash

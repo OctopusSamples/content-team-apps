@@ -10,6 +10,6 @@
     "yeoman-generator": "^5.6.1",
     "@octopus-content-team/generator-octopus-java-microservice": "0.1.9",
     "@octopus-content-team/generator-github-shared-space": "0.1.0",
-    "@octopus-content-team/generator-github-shared-infrastructure": "0.1.0"
+    "@octopus-content-team/generator-github-shared-infrastructure": "0.1.1"
   }
 }

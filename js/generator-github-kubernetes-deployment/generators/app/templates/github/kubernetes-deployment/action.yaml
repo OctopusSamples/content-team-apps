@@ -70,7 +70,7 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="github_docker_feed_id=${{ inputs.github_docker_feed_id }}"
-        -var="dockerhub_feed_id=${{ inputs.dockerhub_feed_id }}"
+        -var="github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
+        -var="dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash

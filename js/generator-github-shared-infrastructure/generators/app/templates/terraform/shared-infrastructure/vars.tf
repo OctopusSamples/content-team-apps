@@ -5,6 +5,7 @@ variable "octopus_server" {
 variable "octopus_apikey" {
   type      = string
   sensitive = true
+  nullable = false
 }
 
 variable "octopus_space_id" {
@@ -14,25 +15,31 @@ variable "octopus_space_id" {
 variable "github_feed_token" {
   type      = string
   sensitive = true
+  nullable = false
 }
 
 variable "github_username" {
   type = string
+  nullable = false
 }
 
 variable "github_repo" {
   type = string
+  nullable = false
 }
 
 variable "aws_access_key" {
   type = string
+  nullable = false
 }
 
 variable "aws_secret_key" {
   type      = string
   sensitive = true
+  nullable = false
 }
 
 variable "aws_region" {
   type = string
+  nullable = false
 }
