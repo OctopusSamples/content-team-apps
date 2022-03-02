@@ -40,7 +40,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
       action_type    = "Octopus.KubernetesDeployContainers"
       name           = "Deploy Backend Service"
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.id
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       package {
         name                      = local.package_name
         package_id                = var.octopus_docker_image

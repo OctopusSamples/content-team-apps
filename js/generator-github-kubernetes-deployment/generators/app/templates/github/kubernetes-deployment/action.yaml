@@ -12,6 +12,9 @@ inputs:
   octopus_github_docker_feed_id:
     description: 'The ID of Github docker feed'
     required: true
+  octopus_docker_image:
+    description: 'The image to be deployed'
+    required: true
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
     required: true
