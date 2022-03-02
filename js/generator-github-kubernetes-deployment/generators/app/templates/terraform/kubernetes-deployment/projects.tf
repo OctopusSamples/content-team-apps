@@ -20,6 +20,10 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   }
 }
 
+output "deploy_backend_project_id" {
+  value = octopusdeploy_project.deploy_backend_project.id
+}
+
 resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
   project_id = octopusdeploy_project.deploy_backend_project.id
   step {
