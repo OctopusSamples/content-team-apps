@@ -12,7 +12,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
-  included_library_variable_sets       = [var.octopus_library_variable_set_id]
+  included_library_variable_sets       = []
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
@@ -29,8 +29,40 @@ locals {
   package_name = "backend"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_backend_step1" {
+resource "octopusdeploy_deployment_process" "deploy_backend" {
   project_id = octopusdeploy_project.deploy_backend_project.id
+  step {
+    condition           = "Success"
+    name                = "Create an EKS cluster"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      name                               = "Create an EKS cluster"
+      script_body                        = <<-EOT
+          cat <<EOF > cluster.yaml
+          apiVersion: eksctl.io/v1alpha5
+          kind: ClusterConfig
+
+          metadata:
+            name: app-builder-cluster
+            region: ${var.aws_region}
+
+          nodeGroups:
+            - name: ng-1
+              instanceType: t3a.small
+              desiredCapacity: 2
+              volumeSize: 80
+          EOF
+          docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v $(pwd):/var/opt/eksctl weaveworks/eksctl create cluster -f /var/opt/eksctl/cluster.yaml
+        EOT
+      run_on_server                      = true
+    }
+  }
   step {
     condition           = "Success"
     name                = "Deploy Backend Service"
