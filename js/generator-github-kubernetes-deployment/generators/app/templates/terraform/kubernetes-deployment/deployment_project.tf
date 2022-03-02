@@ -44,22 +44,22 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       script_syntax                      = "Bash"
       name                               = "Create an EKS cluster"
       script_body                        = <<-EOT
-          cat <<EOF > cluster.yaml
-          apiVersion: eksctl.io/v1alpha5
-          kind: ClusterConfig
+        cat <<EOF > cluster.yaml
+        apiVersion: eksctl.io/v1alpha5
+        kind: ClusterConfig
 
-          metadata:
-            name: app-builder-cluster
-            region: ${var.aws_region}
+        metadata:
+          name: app-builder-cluster
+          region: ${var.aws_region}
 
-          nodeGroups:
-            - name: ng-1
-              instanceType: t3a.small
-              desiredCapacity: 2
-              volumeSize: 80
-          EOF
-          docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v $(pwd):/var/opt/eksctl weaveworks/eksctl create cluster -f /var/opt/eksctl/cluster.yaml
-        EOT
+        nodeGroups:
+          - name: ng-1
+            instanceType: t3a.small
+            desiredCapacity: 2
+            volumeSize: 80
+        EOF
+        docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v $(pwd):/var/opt/eksctl weaveworks/eksctl create cluster -f /var/opt/eksctl/cluster.yaml
+      EOT
       run_on_server                      = true
     }
   }
