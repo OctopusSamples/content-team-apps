@@ -64,6 +64,9 @@ outputs:
   administration_lifecycle_id:
     description: 'The ID of Administration lifecycle'
     value: ${{ steps.administration_lifecycle_id.outputs.stdout }}
+  octopus_library_variable_set:
+    description: 'The ID of Octopus library variable set lifecycle'
+    value: ${{ steps.octopus_library_variable_set.outputs.stdout }}
 runs:
   using: "composite"
   steps:
@@ -212,5 +215,14 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw administration_lifecycle_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Octopus Library Variable Set Id
+      id: octopus_library_variable_set
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_library_variable_set
       working-directory: terraform/shared-infrastructure
       shell: bash

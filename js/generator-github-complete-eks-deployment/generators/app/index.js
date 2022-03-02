@@ -18,7 +18,7 @@ module.exports = class extends Generator {
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'),
+            require.resolve('../../../generator-github-shared-infrastructure/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"]
