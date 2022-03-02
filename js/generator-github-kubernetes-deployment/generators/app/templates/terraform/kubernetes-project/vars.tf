@@ -10,3 +10,11 @@ variable "octopus_apikey" {
 variable "octopus_space_id" {
   type = string
 }
+
+variable "github_docker_feed_id" {
+  type = string
+}
+
+variable "dockerhub_feed_id" {
+  type = string
+}

@@ -26,6 +26,9 @@ module.exports = class extends Generator {
         this.composeWith(
             require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'),
             {});
+        this.composeWith(
+            require.resolve('../../../generator-github-kubernetes-deployment/generators/app'),
+            {});
     }
 
     writing() {

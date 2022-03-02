@@ -9,11 +9,11 @@ inputs:
   octopus_space_id:
     description: 'The ID of the app builder space'
     required: true
-  octopus_project:
-    description: 'The Octopus space and project name'
+  octopus_github_docker_feed_id:
+    description: 'The ID of Github docker feed'
     required: true
-  github_feed_token:
-    description: 'The github token'
+  octopus_dockerhub_feed_id:
+    description: 'The ID of Dockerhub feed'
     required: true
   aws_access_key:
     description: 'The AWS access key'
@@ -24,11 +24,8 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  github_repo:
-    description: 'The github repo'
-    required: true
-  github_username:
-    description: 'The github username'
+  github_organization:
+    description: 'The github organization'
     required: true
 runs:
   using: "composite"
