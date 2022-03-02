@@ -85,6 +85,10 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
   }
 }
 
+output "application_lifecycle_id" {
+  value = octopusdeploy_lifecycle.application_lifecycle.id
+}
+
 resource "octopusdeploy_lifecycle" "infrastructure_lifecycle" {
   description = "The application lifecycle."
   name        = "Infrastructure"
@@ -138,6 +142,10 @@ resource "octopusdeploy_lifecycle" "infrastructure_lifecycle" {
   }
 }
 
+output "infrastructure_lifecycle_id" {
+  value = octopusdeploy_lifecycle.infrastructure_lifecycle.id
+}
+
 resource "octopusdeploy_lifecycle" "administration_lifecycle" {
   description = "The administration lifecycle."
   name        = "Administration"
@@ -171,4 +179,8 @@ resource "octopusdeploy_lifecycle" "administration_lifecycle" {
       unit                = "Items"
     }
   }
+}
+
+output "administration_lifecycle_id" {
+  value = octopusdeploy_lifecycle.administration_lifecycle.id
 }
