@@ -21,7 +21,7 @@ inputs:
   octopus_application_lifecycle_id:
     description: 'The ID of Application lifecycle'
     required: true
-  octopus_library_variable_set:
+  octopus_library_variable_set_id:
     description: 'The ID of Octopus library variable set'
     required: true
   aws_access_key:
@@ -83,6 +83,6 @@ runs:
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
         -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
-        -var="octopus_library_variable_set=${{ inputs.octopus_library_variable_set }}"
+        -var="octopus_library_variable_set_id=${{ inputs.octopus_library_variable_set_id }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
