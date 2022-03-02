@@ -28,7 +28,10 @@ module.exports = class extends Generator {
             {});
         this.composeWith(
             require.resolve('../../../generator-github-kubernetes-deployment/generators/app'),
-            {});
+            {
+                s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_region: this.options["awsRegion"]
+            });
     }
 
     writing() {
