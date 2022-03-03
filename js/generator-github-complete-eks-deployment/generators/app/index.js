@@ -24,7 +24,7 @@ module.exports = class extends Generator {
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
-            require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'),
+            require.resolve('../../../generator-octopus-java-microservice/generators/app'),
             {});
         this.composeWith(
             require.resolve('../../../generator-github-kubernetes-deployment/generators/app'),

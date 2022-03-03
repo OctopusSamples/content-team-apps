@@ -1,13 +1,16 @@
 name: Docker Build and Push
 inputs:
-  github_token:
-    description: 'The GitHub token'
+  ecr_url:
+    description: 'The ECR URL'
     required: true
-  github_actor:
-    description: 'The GitHub user'
+  aws_access_key:
+    description: 'The AWS access key'
     required: true
-  repository_owner:
-    description: 'The GitHub repository owner'
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
     required: true
 runs:
   using: "composite"
@@ -15,12 +18,16 @@ runs:
     - name: Clone code repo
       uses: actions/checkout@v2
 
-    - name: login to GitHub Container Registry
-      uses: docker/login-action@v1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        registry: ghcr.io
-        username: ${{ inputs.github_actor }}
-        password: ${{ inputs.github_token }}
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
@@ -107,4 +114,4 @@ runs:
         push: true
         file: java/quarkus-microservice/src/main/docker/Dockerfile.legacy-jar
         context: ./java/quarkus-microservice
-        tags: ghcr.io/${{ inputs.repository_owner }}/octopus-java-microservice:latest
+        tags: ${{ inputs.ecr_url }}/octopus-java-microservice:latest

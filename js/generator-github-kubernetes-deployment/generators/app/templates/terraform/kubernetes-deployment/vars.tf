@@ -23,6 +23,11 @@ variable "octopus_dockerhub_feed_id" {
   nullable = false
 }
 
+variable "octopus_k8s_feed_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_application_lifecycle_id" {
   type = string
   nullable = false

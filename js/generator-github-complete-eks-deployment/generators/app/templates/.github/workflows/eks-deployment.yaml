@@ -58,7 +58,7 @@ jobs:
           octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
           octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
-          octopus_docker_image: "mcasperson/octopus-java-microservice"
+          octopus_docker_image: "${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}/octopus-java-microservice"
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -66,9 +66,10 @@ jobs:
           repository_owner: ${{ github.repository_owner }}
           octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
 
-#      - name: Build Java Microservice
-#        uses: ./github/java-microservice
-#        with:
-#          repository_owner: ${{ github.repository_owner }}
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          github_actor: ${{ github.actor }}
+      - name: Build Java Microservice
+        uses: ./github/java-microservice
+        with:
+          ecr_url: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
