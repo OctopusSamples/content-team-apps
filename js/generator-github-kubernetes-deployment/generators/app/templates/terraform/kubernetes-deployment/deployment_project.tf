@@ -43,24 +43,49 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       is_required                        = true
       script_syntax                      = "Bash"
       name                               = "Create an EKS cluster"
-      script_body                        = <<-EOT
-        cat <<EOF > cluster.yaml
-        apiVersion: eksctl.io/v1alpha5
-        kind: ClusterConfig
-
-        metadata:
-          name: app-builder-cluster
-          region: ${var.aws_region}
-
-        nodeGroups:
-          - name: ng-1
-            instanceType: t3a.small
-            desiredCapacity: 2
-            volumeSize: 80
-        EOF
-        docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v $(pwd):/var/opt/eksctl weaveworks/eksctl create cluster -f /var/opt/eksctl/cluster.yaml
-      EOT
       run_on_server                      = true
+      script_body                        = <<-EOT
+        # List the clusters to find out if the app-builer cluster already exists.
+        INDEX=$(aws eks list-clusters | docker run --rm -i imega/jq '.clusters | index("app-builder-cluster")')
+
+        # If the cluster does not exist, create it.
+        if [[ $? -eq "null" ]]; then
+
+          # Create the eksctl config file. More information can be found at https://eksctl.io/usage/creating-and-managing-clusters/.
+          cat <<EOF > cluster.yaml
+          apiVersion: eksctl.io/v1alpha5
+          kind: ClusterConfig
+
+          metadata:
+            name: app-builder-cluster
+            region: ${var.aws_region}
+
+          nodeGroups:
+            - name: ng-1
+              instanceType: t3a.small
+              desiredCapacity: 2
+              volumeSize: 80
+          EOF
+
+          # Use eksctl to create the new cluster.
+          docker run --rm -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v $(pwd):/var/opt/eksctl weaveworks/eksctl create cluster -f /var/opt/eksctl/cluster.yaml
+
+      fi
+
+      aws eks describe-cluster --name app-builder-cluster > clusterdetails.json
+
+      echo "##octopus[create-kubernetestarget \
+        name=\"$(encode_servicemessagevalue 'App Builder EKS CLuster')\" \
+        octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes')\" \
+        clusterName=\"$(encode_servicemessagevalue "app-builder-cluster")\" \
+        clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | docker run --rm -i imega/jq -r '.cluster.endpoint')\" \
+        octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
+        namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\" \
+        octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
+        updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
+        skipTlsVerification=\"$(encode_servicemessagevalue 'True')\"]"
+
+      EOT
     }
   }
   step {
@@ -68,7 +93,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     name                = "Deploy Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartWithPrevious"
-    target_roles        = ["App Builder EKS"]
+    target_roles        = ["Kubernetes"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
       name           = "Deploy Backend Service"

@@ -42,3 +42,8 @@ variable "aws_region" {
   type = string
   nullable = false
 }
+
+variable "octopus_aws_account_id" {
+  type = string
+  nullable = false
+}

@@ -52,6 +52,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
           repository_owner: ${{ github.repository_owner }}
+          octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
 
 #      - name: Build Java Microservice
 #        uses: ./github/java-microservice

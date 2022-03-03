@@ -15,6 +15,9 @@ inputs:
   octopus_docker_image:
     description: 'The image to be deployed'
     required: true
+  octopus_aws_account_id:
+    description: 'The AWS account id'
+    required: true
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
     required: true
