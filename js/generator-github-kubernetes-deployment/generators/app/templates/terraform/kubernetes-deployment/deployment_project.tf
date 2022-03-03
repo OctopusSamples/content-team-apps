@@ -40,29 +40,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   project_id = octopusdeploy_project.deploy_backend_project.id
   step {
     condition           = "Success"
-    name                = "Create the K8s Target"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = []
-    action {
-      action_type    = "Octopus.AwsRunScript"
-      name           = "Create the K8s Target"
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      properties     = {
-        "OctopusUseBundledTooling" : "False",
-        "Octopus.Action.Script.ScriptSource" : "Inline",
-        "Octopus.Action.Script.Syntax" : "Bash",
-        "Octopus.Action.Aws.AssumeRole" : "False",
-        "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
-        "Octopus.Action.AwsAccount.Variable" : "AWS Account",
-        "Octopus.Action.Aws.Region" : "${var.aws_region}",
-        "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias jq=\"docker run --rm -i imega/jq\"\n\naws eks describe-cluster --name app-builder-cluster > clusterdetails.json\n\necho \"##octopus[create-kubernetestarget \\\n  name=\\\"$(encode_servicemessagevalue 'App Builder EKS Cluster')\\\" \\\n  octopusRoles=\\\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\\\" \\\n  clusterName=\\\"$(encode_servicemessagevalue \"app-builder-cluster\")\\\" \\\n  clusterUrl=\\\"$(encode_servicemessagevalue \"$(cat clusterdetails.json | jq -r '.cluster.endpoint')\")\\\" \\\n  octopusAccountIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_aws_account_id}\")\\\" \\\n  namespace=\\\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\\\" \\\n  octopusDefaultWorkerPoolIdOrName=\\\"$(encode_servicemessagevalue \"${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}\")\\\" \\\n  updateIfExisting=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  skipTlsVerification=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  healthCheckContainerImageFeedIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_dockerhub_feed_id}\")\\\" \\\n  healthCheckContainerImage=\\\"$(encode_servicemessagevalue \"octopusdeploy/worker-tools:3-ubuntu.18.04\")\\\"]\"",
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Deploy Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
