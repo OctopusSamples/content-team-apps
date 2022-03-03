@@ -2,12 +2,17 @@
   "name": "@octopus-content-team/generator-github-kubernetes-deployment",
   "description": "A Yeoman generator to build a Kubernetes deployment project.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "files": [
     "generators"
   ],
-  "keywords": ["yeoman-generator"],
+  "keywords": [
+    "yeoman-generator"
+  ],
   "dependencies": {
     "yeoman-generator": "^5.6.1"
+  },
+  "scripts": {
+    "pub": "npm version patch --force && npm publish"
   }
 }
