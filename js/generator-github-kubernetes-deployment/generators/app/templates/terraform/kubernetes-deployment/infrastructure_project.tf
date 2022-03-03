@@ -57,4 +57,27 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Deploy the ALB Ingress Controller"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = []
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Deploy the ALB Ingress Controller"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      properties     = {
+        "OctopusUseBundledTooling" : "False",
+        "Octopus.Action.Script.ScriptSource" : "Inline",
+        "Octopus.Action.Script.Syntax" : "Bash",
+        "Octopus.Action.Aws.AssumeRole" : "False",
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account",
+        "Octopus.Action.Aws.Region" : "${var.aws_region}",
+        "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \ndocker pull weaveworks/eksctl 2>&1 \ndocker pull jshimko/kube-tools-aws 2>&1\necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias eksctl=\"docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl\"\nalias kubectl=\"docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY jshimko/kube-tools-aws kubectl\"\nalias jq=\"docker run --rm -i imega/jq\"\n\n# Extract the current AWS account\nACCOUNT=$(aws sts get-caller-identity --query \"Account\" --output text)\n\necho \"Installing ALB Ingress Controller\"\necho \"##octopus[stdout-verbose]\"\n# https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html\ncurl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.0/docs/install/iam_policy.json 2>&1\n\nPOLICY_EXISTS=$(aws iam list-policies | jq '.Policies[] | select (.PolicyName == \"AWSLoadBalancerControllerIAMPolicy\")')\n\nif [[ -z $POLICY_EXISTS ]]; then\n  aws iam create-policy \\\n      --policy-name AWSLoadBalancerControllerIAMPolicy \\\n      --policy-document file:///build/iam_policy.json\nfi      \n    \neksctl utils associate-iam-oidc-provider \\\n\t--region=${var.aws_region} \\\n    --cluster=app-builder-cluster \\\n    --approve\n    \neksctl create iamserviceaccount \\\n  --cluster=app-builder-cluster \\\n  --region=${var.aws_region} \\\n  --namespace=kube-system \\\n  --name=aws-load-balancer-controller \\\n  --attach-policy-arn=arn:aws:iam::$${ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy \\\n  --override-existing-serviceaccounts \\\n  --approve\n  \naws\teks update-kubeconfig --name app-builder-cluster --kubeconfig /build/kubeconfig\n\nkubectl apply \\\n\t--kubeconfig=/build/kubeconfig \\\n    --validate=false \\\n    -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml\n\n# The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.\ncurl -Lo v2_4_0_full.yaml https://gist.githubusercontent.com/mcasperson/e865e5567b1fbff2e969cdf33f0908f7/raw/f21059ce64c84c856ec85e3d63523ce3de45e36a/v2_4_0_full.yaml 2>&1\n\nkubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_0_full.yaml\necho \"##octopus[stdout-default]\"\n\necho \"Displaying the aws-load-balancer-controller deployment\"\nkubectl --kubeconfig=/build/kubeconfig get deployment -n kube-system aws-load-balancer-controller\n",
+      }
+    }
+  }
 }
