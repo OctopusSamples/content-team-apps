@@ -13,7 +13,7 @@ module.exports = class extends Generator {
 
     initializing() {
         this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'),
+            require.resolve('../../../generator-github-shared-space/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
