@@ -49,6 +49,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Deploy Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      features       = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
       package {
         name                      = local.package_name
         package_id                = var.octopus_docker_image
@@ -61,28 +62,33 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
       }
       properties = {
-        "Octopus.Action.EnabledFeatures" : ",Octopus.Features.KubernetesService,Octopus.Features.KubernetesIngress,Octopus.Features.KubernetesConfigMap,Octopus.Features.KubernetesSecret"
-        "Octopus.Action.KubernetesContainers.Replicas" : "1"
-        "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate"
-        "Octopus.Action.KubernetesContainers.ServiceNameType" : "External"
-        "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment"
-        "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait"
-        "Octopus.Action.KubernetesContainers.ServiceType" : "ClusterIP"
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[]"
-        "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]"
-        "Octopus.Action.KubernetesContainers.Tolerations" : "[]"
-        "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]"
-        "Octopus.Action.KubernetesContainers.PodAffinity" : "[]"
-        "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]"
-        "Octopus.Action.KubernetesContainers.DeploymentName" : "backend"
-        "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1"
-        "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]"
-        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]"
-        "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]"
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"backend\"}"
-        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]"
-        "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]"
-        "Octopus.Action.KubernetesContainers.Containers": "[{\"Name\":\"${local.package_name}\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]"
+        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
+        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"backend\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
+        "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"backend\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentName" : "backend",
+        "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment",
+        "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
+        "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
+        "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
+        "Octopus.Action.KubernetesContainers.IngressAnnotations": "[{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
+        "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
+        "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
+        "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
+        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
+        "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
+        "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]",
+        "Octopus.Action.KubernetesContainers.Replicas" : "1",
+        "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1",
+        "Octopus.Action.KubernetesContainers.ServiceNameType" : "External",
+        "Octopus.Action.KubernetesContainers.ServiceType" : "NodePort",
+        "Octopus.Action.KubernetesContainers.Tolerations" : "[]",
+        "OctopusUseBundledTooling" : "False",
+        "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
+        "Octopus.Action.KubernetesContainers.IngressName" : "backend-ingress",
+        "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/api/customers\",\"value\":\"web\",\"option\":\"\",\"option2\":\"ImplementationSpecific\"}]}}]",
+        "Octopus.Action.KubernetesContainers.ServiceName" : "backend-service",
+        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"8083\",\"targetPort\":\"\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
       }
     }
   }
