@@ -4,6 +4,7 @@ module.exports = class extends Generator {
         super(args, opts);
 
         this.option("s3_bucket_suffix", {type: String});
+        this.option("aws_state_bucket_region", {type: String});
         this.option("aws_region", {type: String});
     }
 
@@ -13,6 +14,7 @@ module.exports = class extends Generator {
             this.destinationPath('github/shared-space/action.yaml'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             }
         );
@@ -22,6 +24,7 @@ module.exports = class extends Generator {
             this.destinationPath('terraform/shared-space'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             },
             null,
