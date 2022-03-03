@@ -88,5 +88,6 @@ runs:
         -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
         -var="octopus_library_variable_set_id=${{ inputs.octopus_library_variable_set_id }}"
         -var="aws_region=${{ inputs.aws_region }}"
+        -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
