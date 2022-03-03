@@ -12,7 +12,7 @@ terraform {
 
   backend "s3" {
     bucket = "app-builder-<%= s3_bucket_suffix %>"
-    key    = "appbuilder-shared-infrastructure"
+    key    = "appbuilder-aws-ecr"
     region = "<%= aws_region %>"
   }
 }
@@ -24,5 +24,5 @@ provider "octopusdeploy" {
 }
 
 provider "aws" {
-  # Configuration options
+  region = var.aws_region
 }
