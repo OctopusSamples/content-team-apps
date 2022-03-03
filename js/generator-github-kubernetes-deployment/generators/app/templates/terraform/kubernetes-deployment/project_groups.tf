@@ -15,3 +15,12 @@ resource "octopusdeploy_project_group" "frontend_project_group" {
 output "frontend_project_group_id" {
   value = octopusdeploy_project_group.frontend_project_group.id
 }
+
+resource "octopusdeploy_project_group" "infrastructure_project_group" {
+  description  = "Builds the Kubernetes cluster."
+  name         = "Infrastructure"
+}
+
+output "infrastructure_project_group" {
+  value = octopusdeploy_project_group.infrastructure_project_group.id
+}

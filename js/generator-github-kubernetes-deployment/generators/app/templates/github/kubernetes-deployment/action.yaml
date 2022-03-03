@@ -27,6 +27,9 @@ inputs:
   octopus_application_lifecycle_id:
     description: 'The ID of Application lifecycle'
     required: true
+  octopus_infrastructure_lifecycle_id:
+    description: 'The ID of Infrastructure lifecycle'
+    required: true
   octopus_library_variable_set_id:
     description: 'The ID of Octopus library variable set'
     required: true
