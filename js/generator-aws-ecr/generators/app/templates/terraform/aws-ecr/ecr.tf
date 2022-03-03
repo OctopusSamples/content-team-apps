@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "aws_ecr_repository" {
-  name                 = "octopus-java-microservice"
+  name                 = var.aws_ecr_repository_name
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {

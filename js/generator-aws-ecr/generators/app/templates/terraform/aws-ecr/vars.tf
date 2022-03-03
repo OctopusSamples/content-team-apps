@@ -27,3 +27,8 @@ variable "aws_region" {
   type = string
   nullable = false
 }
+
+variable "aws_ecr_repository_name" {
+  type = string
+  nullable = false
+}
