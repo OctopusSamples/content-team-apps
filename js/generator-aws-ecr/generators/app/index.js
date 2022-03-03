@@ -5,6 +5,7 @@ module.exports = class extends Generator {
 
         this.option("aws_region", {type: String});
         this.option("s3_bucket_suffix", {type: String});
+        this.option("aws_state_bucket_region", {type: String});
     }
 
     writing() {
@@ -13,6 +14,7 @@ module.exports = class extends Generator {
             this.destinationPath('github/aws-ecr/action.yaml'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             }
         );
@@ -22,6 +24,7 @@ module.exports = class extends Generator {
             this.destinationPath('terraform/aws-ecr'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             },
             null,

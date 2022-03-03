@@ -6,6 +6,7 @@ module.exports = class extends Generator {
         super(args, opts);
 
         this.option("aws_region", {type: String});
+        this.option("aws_state_bucket_region", {type: String});
         this.option("octopus_user_id", {type: String});
         this.option("s3_bucket_suffix", {type: String, default: crypto.randomUUID()});
     }
@@ -15,12 +16,14 @@ module.exports = class extends Generator {
             require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
             require.resolve('../../../generator-github-shared-infrastructure/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
@@ -30,12 +33,14 @@ module.exports = class extends Generator {
             require.resolve('../../../generator-github-kubernetes-deployment/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["awsRegion"]
             });
         this.composeWith(
             require.resolve('../../../generator-aws-ecr/generators/app'),
             {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["awsRegion"]
             });
     }

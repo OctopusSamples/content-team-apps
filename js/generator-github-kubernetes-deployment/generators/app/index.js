@@ -6,6 +6,7 @@ module.exports = class extends Generator {
             this.destinationPath('github/kubernetes-deployment/action.yaml'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             }
         );
@@ -15,6 +16,7 @@ module.exports = class extends Generator {
             this.destinationPath('terraform/kubernetes-deployment'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"]
             },
             null,
