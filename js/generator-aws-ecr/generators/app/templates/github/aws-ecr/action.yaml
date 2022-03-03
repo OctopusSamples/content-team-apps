@@ -9,27 +9,6 @@ inputs:
   octopus_space_id:
     description: 'The ID of the app builder space'
     required: true
-  octopus_github_docker_feed_id:
-    description: 'The ID of Github docker feed'
-    required: true
-  octopus_k8s_feed_id:
-    description: 'The ID of feed used to supply the K8s deployment. This can be a plain docker feed, or an ECR feed.'
-    required: true
-  octopus_docker_image:
-    description: 'The image to be deployed'
-    required: true
-  octopus_aws_account_id:
-    description: 'The AWS account id'
-    required: true
-  octopus_dockerhub_feed_id:
-    description: 'The ID of Dockerhub feed'
-    required: true
-  octopus_application_lifecycle_id:
-    description: 'The ID of Application lifecycle'
-    required: true
-  octopus_library_variable_set_id:
-    description: 'The ID of Octopus library variable set'
-    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -39,9 +18,14 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  repository_owner:
-    description: 'The github organization'
-    required: true
+outputs:
+  aws_ecr_repository_url:
+    description: 'The ECR URL'
+    value: ${{ steps.aws_ecr_repository_url.outputs.stdout }}
+  ecr_feed_id:
+    description: 'The ECR Feed ID'
+    value: ${{ steps.ecr_feed_id.outputs.stdout }}
+
 runs:
   using: "composite"
   steps:
@@ -72,7 +56,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/kubernetes-deployment
+      working-directory: terraform/aws-ecr
       shell: bash
 
     - name: Terraform Apply
@@ -85,12 +69,29 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="octopus_github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
-        -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
-        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
-        -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
-        -var="octopus_library_variable_set_id=${{ inputs.octopus_library_variable_set_id }}"
+        -var="github_feed_token=${{ inputs.github_feed_token }}"
+        -var="aws_access_key=${{ inputs.aws_access_key }}"
+        -var="aws_secret_key=${{ inputs.aws_secret_key }}"
         -var="aws_region=${{ inputs.aws_region }}"
-        -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}"
-      working-directory: terraform/kubernetes-deployment
+        -var="github_repo=${{ inputs.github_repo }}"
+        -var="github_username=${{ inputs.github_username }}"
+      working-directory: terraform/aws-ecr
+      shell: bash
+
+    - name: Terraform Collect ECR URL
+      id: aws_ecr_repository_url
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw aws_ecr_repository_url
+      working-directory: terraform/aws-ecr
+      shell: bash
+
+    - name: Terraform Collect ECR Feed ID
+      id: ecr_feed_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw ecr_feed_id
+      working-directory: terraform/aws-ecr
       shell: bash

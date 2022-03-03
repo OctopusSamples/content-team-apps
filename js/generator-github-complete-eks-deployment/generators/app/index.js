@@ -32,6 +32,12 @@ module.exports = class extends Generator {
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"]
             });
+        this.composeWith(
+            require.resolve('../../../generator-aws-ecr/generators/app'),
+            {
+                s3_bucket_suffix: this.options["s3BucketSuffix"],
+                aws_region: this.options["awsRegion"]
+            });
     }
 
     writing() {
