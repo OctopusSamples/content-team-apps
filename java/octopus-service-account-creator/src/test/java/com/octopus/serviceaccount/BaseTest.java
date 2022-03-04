@@ -12,8 +12,8 @@ import lombok.NonNull;
 public class BaseTest {
   protected ServiceAccount createResource(@NonNull final String name) {
     final ServiceAccount resource = new ServiceAccount();
-    resource.setName(name);
-    resource.setDescription("A description");
+    resource.setUsername(name);
+    resource.setDisplayName("A description");
     return resource;
   }
 
@@ -25,7 +25,7 @@ public class BaseTest {
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
-            null, null);
+            null, null, null);
     final ServiceAccount resultObject = getResourceFromDocument(resourceConverter, result);
     return resultObject;
   }

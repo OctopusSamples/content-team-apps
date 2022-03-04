@@ -39,6 +39,6 @@ public class HandlerAuthorizedTests extends BaseTest {
   public void testCreateAudit() {
     assertThrows(Unauthorized.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new ServiceAccount()),
-        null, null));
+        null, null, null));
   }
 }

@@ -11,6 +11,7 @@ import com.octopus.exceptions.Unauthorized;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.serviceaccount.domain.ServiceConstants;
 import com.octopus.serviceaccount.domain.handlers.HealthHandler;
 import com.octopus.serviceaccount.domain.handlers.ServiceAccountHandler;
 import java.util.Base64;
@@ -148,7 +149,9 @@ public class ServiceAccountApi implements
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input,
+                            ServiceConstants.ID_TOKEN).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));

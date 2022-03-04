@@ -3,6 +3,7 @@ package com.octopus.serviceaccount.application.http;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
+import com.octopus.serviceaccount.domain.ServiceConstants;
 import com.octopus.serviceaccount.domain.handlers.ServiceAccountHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.List;
@@ -16,27 +17,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-/**
- * WHen this app is run as a web server, this class defines the REST API endpoints.
- */
+/** WHen this app is run as a web server, this class defines the REST API endpoints. */
 @Path("/api/serviceaccounts")
 @RequestScoped
 public class ServiceAccountResource {
 
-  @Inject
-  ServiceAccountHandler serviceAccountHandler;
+  @Inject ServiceAccountHandler serviceAccountHandler;
 
-  @Inject
-  AcceptHeaderVerifier acceptHeaderVerifier;
+  @Inject AcceptHeaderVerifier acceptHeaderVerifier;
 
   /**
    * The resource creation endpoint.
    *
-   * @param document     The JSONAPI resource to create.
+   * @param document The JSONAPI resource to create.
    * @param acceptHeader The "Accept" headers.
+   * @param idToken The ID token from Octofront.
    * @return An HTTP response object with the created resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   *     resource.
    */
   @POST
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
@@ -46,13 +44,13 @@ public class ServiceAccountResource {
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
+      @HeaderParam(ServiceConstants.ID_TOKEN) final String idToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(serviceAccountHandler.create(
-            document,
-            authorizationHeader,
-            serviceAuthorizationHeader))
+    return Response.ok(
+            serviceAccountHandler.create(
+                document, authorizationHeader, serviceAuthorizationHeader, idToken))
         .build();
   }
 }

@@ -54,12 +54,14 @@ public class HandlerTests extends BaseTest {
       handler.create(
           null,
           null,
+          null,
           null);
     });
 
     assertThrows(NullPointerException.class, () -> {
       final ServiceAccount audit = createResource("subject");
       handler.create(resourceToResourceDocument(resourceConverter, audit),
+          null,
           null,
           null);
     });
@@ -70,7 +72,7 @@ public class HandlerTests extends BaseTest {
   public void testCreateResource() throws DocumentSerializationException {
     final ServiceAccount resultObject = createResource(handler, resourceConverter);
     assertNotNull(resultObject.getId());
-    assertEquals("myname", resultObject.getName());
-    assertEquals("A description", resultObject.getDescription());
+    assertEquals("myname", resultObject.getUsername());
+    assertEquals("A description", resultObject.getDisplayName());
   }
 }

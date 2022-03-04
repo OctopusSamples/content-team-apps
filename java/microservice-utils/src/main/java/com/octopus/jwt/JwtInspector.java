@@ -1,5 +1,7 @@
 package com.octopus.jwt;
 
+import java.util.Optional;
+
 /** An interface exposing methods used to verify a request contains the correct authorization. */
 public interface JwtInspector {
 
@@ -21,4 +23,12 @@ public interface JwtInspector {
    * @return true if the claim is found, and false otherwise.
    */
   boolean jwtContainsScope(String jwt, String claim, final String clientId);
+
+  /**
+   * Returns the claim if it exists.
+   * @param jwt The JWT.
+   * @param claim The name of the claim.
+   * @return The claim value, or empty if it doesn't exist.
+   */
+  Optional<String> getClaim(String jwt, String claim);
 }

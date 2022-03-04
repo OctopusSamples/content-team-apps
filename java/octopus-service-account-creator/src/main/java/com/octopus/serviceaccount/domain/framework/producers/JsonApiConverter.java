@@ -2,6 +2,7 @@ package com.octopus.serviceaccount.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
 import com.octopus.serviceaccount.domain.entities.Health;
 import javax.enterprise.inject.Produces;
@@ -16,7 +17,10 @@ public class JsonApiConverter {
    */
   @Produces
   public ResourceConverter buildResourceConverter() {
-    final ResourceConverter resourceConverter = new ResourceConverter(ServiceAccount.class, Health.class);
+    final ResourceConverter resourceConverter = new ResourceConverter(
+        ServiceAccount.class,
+        CreateServiceAccount.class,
+        Health.class);
     resourceConverter.disableDeserializationOption(DeserializationFeature.REQUIRE_RESOURCE_ID);
     resourceConverter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);
     return resourceConverter;

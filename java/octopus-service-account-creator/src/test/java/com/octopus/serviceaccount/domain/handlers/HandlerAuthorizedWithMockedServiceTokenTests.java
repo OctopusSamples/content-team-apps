@@ -58,6 +58,6 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
     final ServiceAccount resource = createResource(handler, resourceConverter);
-    assertEquals("myname", resource.getName());
+    assertEquals("myname", resource.getUsername());
   }
 }

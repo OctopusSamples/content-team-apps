@@ -81,8 +81,8 @@ public class HttpApiTest extends BaseTest {
             new LambdaMatcher<String>(
                 a ->
                     getResourceFromDocument(resourceConverter, a)
-                        .getName()
-                        .equals(created.getName()),
+                        .getUsername()
+                        .equals(created.getUsername()),
                 "Resource should be returned"));
   }
 

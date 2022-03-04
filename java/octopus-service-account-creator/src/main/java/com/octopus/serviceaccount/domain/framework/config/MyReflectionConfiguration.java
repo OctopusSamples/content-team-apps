@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
 import com.github.jasminb.jsonapi.StringIdHandler;
+import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
 import com.octopus.serviceaccount.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -18,6 +19,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection(
     targets = {StringIdHandler.class,
         ServiceAccount.class,
+        CreateServiceAccount.class,
         Health.class,
         IntegerIdHandler.class,
         SerializationFeature.class,

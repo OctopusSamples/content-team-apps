@@ -22,16 +22,16 @@ public class ServiceAccount {
    * The service account name
    */
   @NotBlank
-  public String name;
+  public String username;
 
   /**
    * The service account description
    */
   @NotBlank
-  public String description;
+  public String displayName;
 
   /**
-   * The customers first name.
+   * The service account description
    */
-  public String apiKey;
+  public boolean isService;
 }
