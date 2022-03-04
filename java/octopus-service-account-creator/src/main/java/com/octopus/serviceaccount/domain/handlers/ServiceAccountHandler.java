@@ -103,26 +103,13 @@ public class ServiceAccountHandler {
           getNonceHash(idToken));
 
       // Extract the Octopus cookies from the response
-      final List<String> cookieHeaders = response
-          .getHeaders()
-          .entrySet()
-          .stream()
-          .filter(e -> e.getKey().equalsIgnoreCase("set-cookie"))
-          .flatMap(e -> e.getValue().stream().map(Object::toString))
-          .map(c -> c.split(";")[0])
-          .filter(c -> c.split("=")[0].startsWith("Octopus"))
-          .toList();
+      final List<String> cookieHeaders = getCookies(response);
 
       // Join the cookies back up
       final String cookies = String.join("; ", cookieHeaders);
 
       // Find the csrf value
-      final Optional<String> csrf = cookieHeaders
-          .stream()
-          .filter(c -> c.startsWith("Octopus-Csrf-Token"))
-          .filter(c -> c.split("=").length == 2)
-          .map(c -> c.split("=")[1])
-          .findFirst();
+      final Optional<String> csrf = getCsrf(cookieHeaders);
 
       // Create a new service account, passing in the cookies
       final ServiceAccount newServiceAccount = createServiceAccount(
@@ -136,6 +123,27 @@ public class ServiceAccountHandler {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed " + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
     }
+  }
+
+  private Optional<String> getCsrf(final List<String> cookieHeaders) {
+    return cookieHeaders
+        .stream()
+        .filter(c -> c.startsWith("Octopus-Csrf-Token"))
+        .filter(c -> c.split("=").length == 2)
+        .map(c -> c.split("=")[1])
+        .findFirst();
+  }
+
+  private List<String> getCookies(final Response response) {
+    return response
+        .getHeaders()
+        .entrySet()
+        .stream()
+        .filter(e -> e.getKey().equalsIgnoreCase("set-cookie"))
+        .flatMap(e -> e.getValue().stream().map(Object::toString))
+        .map(c -> c.split(";")[0])
+        .filter(c -> c.split("=")[0].startsWith("Octopus"))
+        .toList();
   }
 
   private String getStateHash(final String state) {
