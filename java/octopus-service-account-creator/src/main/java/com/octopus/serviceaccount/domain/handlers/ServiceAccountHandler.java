@@ -18,17 +18,20 @@ import com.octopus.serviceaccount.infrastructure.clients.OctopusClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Provider.Service;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -98,13 +101,35 @@ public class ServiceAccountHandler {
           "{}",
           getStateHash("{}"),
           getNonceHash(idToken));
-      // Extract the cookies from the response
-      final List<String> cookieHeaders = response.getHeaders().entrySet().stream()
+
+      // Extract the Octopus cookies from the response
+      final List<String> cookieHeaders = response
+          .getHeaders()
+          .entrySet()
+          .stream()
           .filter(e -> e.getKey().equalsIgnoreCase("set-cookie"))
-          .flatMap(e -> e.getValue().stream().map(Object::toString)).toList();
+          .flatMap(e -> e.getValue().stream().map(Object::toString))
+          .map(c -> c.split(";")[0])
+          .filter(c -> c.split("=")[0].startsWith("Octopus"))
+          .toList();
+
+      // Join the cookies back up
+      final String cookies = String.join("; ", cookieHeaders);
+
+      // Find the csrf value
+      final Optional<String> csrf = cookieHeaders
+          .stream()
+          .filter(c -> c.startsWith("Octopus-Csrf-Token"))
+          .filter(c -> c.split("=").length == 2)
+          .map(c -> c.split("=")[1])
+          .findFirst();
+
       // Create a new service account, passing in the cookies
-      final ServiceAccount newServiceAccount = createServiceAccount(octopusServerUri,
-          serviceAccount, cookieHeaders);
+      final ServiceAccount newServiceAccount = createServiceAccount(
+          octopusServerUri,
+          serviceAccount,
+          cookies,
+          csrf.orElse(""));
 
       return respondWithResource(newServiceAccount);
     } catch (final ClientWebApplicationException ex) {
@@ -130,17 +155,17 @@ public class ServiceAccountHandler {
   }
 
   private Response logIn(final URI apiUri, final String idToken, final String state, final String stateHash, final String nonceHash) {
-    OctopusClient remoteApi = RestClientBuilder.newBuilder()
+    final OctopusClient remoteApi = RestClientBuilder.newBuilder()
         .baseUri(apiUri)
         .build(OctopusClient.class);
     return remoteApi.logIn(idToken, state, "s=" + stateHash + ";n=" + nonceHash);
   }
 
-  private ServiceAccount createServiceAccount(final URI apiUri, final ServiceAccount serviceAccount, final List<String> headers) {
-    OctopusClient remoteApi = RestClientBuilder.newBuilder()
+  private ServiceAccount createServiceAccount(final URI apiUri, final ServiceAccount serviceAccount, final String cookies, final String csrf) {
+    final OctopusClient remoteApi = RestClientBuilder.newBuilder()
         .baseUri(apiUri)
         .build(OctopusClient.class);
-    return remoteApi.createServiceAccount(serviceAccount, headers);
+    return remoteApi.createServiceAccount(serviceAccount, cookies, csrf);
   }
 
   private ServiceAccount sanitizeAccount(final ServiceAccount serviceAccount) {

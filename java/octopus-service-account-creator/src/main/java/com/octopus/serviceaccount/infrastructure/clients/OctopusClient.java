@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,5 +34,13 @@ public interface OctopusClient {
   @Consumes(MediaType.APPLICATION_JSON)
   ServiceAccount createServiceAccount(
       ServiceAccount serviceAccount,
-      @HeaderParam("Cookie") final List<String> cookies);
+      @HeaderParam("Cookie") final String cookies,
+      @HeaderParam("X-Octopus-Csrf-Token") final String csrf);
+
+  @GET
+  @Path("/users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  Response getUsers(
+      @HeaderParam("Cookie") final String cookies);
 }
