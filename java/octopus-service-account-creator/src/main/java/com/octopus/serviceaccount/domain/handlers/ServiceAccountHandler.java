@@ -72,7 +72,7 @@ public class ServiceAccountHandler {
   /**
    * Creates a new resource.
    *
-   * @param document             The JSONAPI resource to create.
+   * @param document The JSONAPI resource to create.
    * @return The newly created resource
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
@@ -120,11 +120,15 @@ public class ServiceAccountHandler {
 
       return respondWithResource(newServiceAccount);
     } catch (final ClientWebApplicationException ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed " + ex.getResponse().readEntity(String.class));
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
+          + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
     }
   }
 
+  /**
+   * Get the CSRF value from the associated cookie.
+   */
   private Optional<String> getCsrf(final List<String> cookieHeaders) {
     return cookieHeaders
         .stream()
@@ -134,6 +138,11 @@ public class ServiceAccountHandler {
         .findFirst();
   }
 
+  /**
+   * Extract any useful cookies from the response. Note this is not a robust cookie parser. For
+   * example, expiry dates are ignored. We just know the few cookies that Octopus considers
+   * important, and ignore the rest.
+   */
   private List<String> getCookies(final Response response) {
     return response
         .getHeaders()
@@ -146,36 +155,61 @@ public class ServiceAccountHandler {
         .toList();
   }
 
+  /**
+   * The state hash uses the "OctoState" salt.
+   *
+   * @param state The state string.
+   * @return The slated, hashed, and base64 encoded version of the state.
+   */
   private String getStateHash(final String state) {
     final byte[] hash = Hashing.sha256()
         .hashBytes(("OctoState" + state).getBytes(StandardCharsets.UTF_8)).asBytes();
     final String base64encoded = Base64.getEncoder().encodeToString(hash);
-    return Try.of(() -> URLEncoder.encode(base64encoded, StandardCharsets.UTF_8.toString())).getOrElse("");
+    return Try.of(() -> URLEncoder.encode(base64encoded, StandardCharsets.UTF_8.toString()))
+        .getOrElse("");
   }
 
+  /**
+   * The nonce hash uses the "OctoNonce" salt.
+   *
+   * @param idToken The id token.
+   * @return The slated, hashed, and base64 encoded version of the nonce found from the id token.
+   */
   private String getNonceHash(final String idToken) {
     return jwtInspector.getClaim(idToken, "nonce")
         .map(n -> Hashing.sha256()
             .hashBytes(("OctoNonce" + n).getBytes(StandardCharsets.UTF_8)).asBytes())
         .map(s -> Base64.getEncoder().encodeToString(s))
-        .map(b -> Try.of(() -> URLEncoder.encode(b, StandardCharsets.UTF_8.toString())).getOrElse(""))
+        .map(b -> Try.of(() -> URLEncoder.encode(b, StandardCharsets.UTF_8.toString()))
+            .getOrElse(""))
         .orElse("");
   }
 
-  private Response logIn(final URI apiUri, final String idToken, final String state, final String stateHash, final String nonceHash) {
+  /**
+   * This is a workaround to use a REST client with a variable base URL.
+   */
+  private Response logIn(final URI apiUri, final String idToken, final String state,
+      final String stateHash, final String nonceHash) {
     final OctopusClient remoteApi = RestClientBuilder.newBuilder()
         .baseUri(apiUri)
         .build(OctopusClient.class);
     return remoteApi.logIn(idToken, state, "s=" + stateHash + ";n=" + nonceHash);
   }
 
-  private ServiceAccount createServiceAccount(final URI apiUri, final ServiceAccount serviceAccount, final String cookies, final String csrf) {
+  /**
+   * This is a workaround to use a REST client with a variable base URL.
+   */
+  private ServiceAccount createServiceAccount(final URI apiUri, final ServiceAccount serviceAccount,
+      final String cookies, final String csrf) {
     final OctopusClient remoteApi = RestClientBuilder.newBuilder()
         .baseUri(apiUri)
         .build(OctopusClient.class);
     return remoteApi.createServiceAccount(serviceAccount, cookies, csrf);
   }
 
+  /**
+   * Ensure the service account being created has the correct values.
+   */
   private ServiceAccount sanitizeAccount(final ServiceAccount serviceAccount) {
     // We don't know the ID before the resource is created
     serviceAccount.setId(null);
@@ -187,7 +221,8 @@ public class ServiceAccountHandler {
   private CreateServiceAccount getResourceFromDocument(final String document) {
     try {
       final JSONAPIDocument<CreateServiceAccount> resourceDocument =
-          resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), CreateServiceAccount.class);
+          resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8),
+              CreateServiceAccount.class);
       final CreateServiceAccount serviceAccount = resourceDocument.get();
       return serviceAccount;
     } catch (final Exception ex) {
@@ -233,7 +268,8 @@ public class ServiceAccountHandler {
      */
     if (adminJwtClaimFeature.getAdminClaim().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(
             serviceAuthorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(), cognitoClientId))
+        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(),
+            cognitoClientId))
         .orElse(false)) {
       return true;
     }
@@ -241,8 +277,10 @@ public class ServiceAccountHandler {
     /*
       Anyone assigned to the appropriate group is also granted access.
      */
-    return adminJwtGroupFeature.getAdminGroup().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))
+    return adminJwtGroupFeature.getAdminGroup().isPresent()
+        && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
+        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt,
+            adminJwtGroupFeature.getAdminGroup().get()))
         .orElse(false);
   }
 }
