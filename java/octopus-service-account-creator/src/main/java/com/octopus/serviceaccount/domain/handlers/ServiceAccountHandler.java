@@ -107,6 +107,7 @@ public class ServiceAccountHandler {
       // Find the csrf value
       final Optional<String> csrf = octopusLoginUtils.getCsrf(cookieHeaders);
 
+      // Get the existing account, or create a new one.
       final String accountId = getExistingAccount(
           octopusServerUri,
           cookies,
@@ -118,7 +119,7 @@ public class ServiceAccountHandler {
               cookies,
               csrf.orElse("")).getId());
 
-      // Create a new API key.
+      // Create a new API key against the service account.
       final OctopusApiKey newApiKey = createApiKey(
           octopusServerUri,
           ApiKey
@@ -170,9 +171,6 @@ public class ServiceAccountHandler {
         .findFirst();
   }
 
-  /**
-   * This is a workaround to use a REST client with a variable base URL.
-   */
   private ServiceAccount createServiceAccount(final URI apiUri, final ServiceAccount serviceAccount,
       final String cookies, final String csrf) {
     final OctopusClient remoteApi = RestClientBuilder.newBuilder()
