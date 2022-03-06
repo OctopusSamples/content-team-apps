@@ -7,7 +7,10 @@ import com.octopus.exceptions.Unauthorized;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.serviceaccount.domain.entities.ApiKey;
 import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
+import com.octopus.serviceaccount.domain.entities.OctopusApiKey;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
+import com.octopus.serviceaccount.domain.entities.User;
+import com.octopus.serviceaccount.domain.entities.Users;
 import com.octopus.serviceaccount.domain.utils.JsonApiResourceUtils;
 import com.octopus.serviceaccount.domain.utils.OctopusLoginUtils;
 import com.octopus.serviceaccount.domain.utils.ServiceAuthUtils;
@@ -31,6 +34,8 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
  */
 @ApplicationScoped
 public class ServiceAccountHandler {
+
+  private static final String API_KEY_DESCRIPTION = "App Builder GitHub Integration";
 
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
@@ -102,31 +107,38 @@ public class ServiceAccountHandler {
       // Find the csrf value
       final Optional<String> csrf = octopusLoginUtils.getCsrf(cookieHeaders);
 
-      // Create a new service account, passing in the cookies for auth.
-      final ServiceAccount newServiceAccount = createServiceAccount(
+      final String accountId = getExistingAccount(
           octopusServerUri,
-          serviceAccount,
           cookies,
-          csrf.orElse(""));
+          csrf.orElse(""),
+          serviceAccount.getUsername())
+          .orElseGet(() -> createServiceAccount(
+              octopusServerUri,
+              serviceAccount,
+              cookies,
+              csrf.orElse("")).getId());
 
       // Create a new API key.
-      final ApiKey newApiKey = createApiKey(
+      final OctopusApiKey newApiKey = createApiKey(
           octopusServerUri,
           ApiKey
               .builder()
-              .purpose("App Builder GitHub Integration")
+              .purpose(API_KEY_DESCRIPTION)
               .build(),
-          newServiceAccount.getId(),
+          accountId,
           cookies,
           csrf.orElse(""));
 
       // The response to the client merges the details of the service account and its api key.
       final CreateServiceAccount combinedResponse = CreateServiceAccount.builder()
-          .apiKey(newApiKey)
+          .apiKey(ApiKey.builder()
+              .id(newApiKey.getId())
+              .apiKey(newApiKey.getApiKey())
+              .build())
           .octopusServer(createServiceAccount.getOctopusServer())
           .displayName(createServiceAccount.getDisplayName())
           .username(createServiceAccount.getUsername())
-          .id(newServiceAccount.getId())
+          .id(accountId)
           .isService(true)
           .build();
 
@@ -138,12 +150,24 @@ public class ServiceAccountHandler {
     }
   }
 
-  private ApiKey createApiKey(final URI apiUri, final ApiKey apiKey, final String userId,
+  private OctopusApiKey createApiKey(final URI apiUri, final ApiKey apiKey, final String userId,
       final String cookies, final String csrf) {
     final OctopusClient remoteApi = RestClientBuilder.newBuilder()
         .baseUri(apiUri)
         .build(OctopusClient.class);
     return remoteApi.createApiKey(apiKey, userId, cookies, csrf);
+  }
+
+  private Optional<String> getExistingAccount(final URI apiUri, final String cookies,
+      final String csrf, final String username) {
+    final OctopusClient remoteApi = RestClientBuilder.newBuilder()
+        .baseUri(apiUri)
+        .build(OctopusClient.class);
+    final Users users = remoteApi.getUsers(cookies, csrf, username);
+    return users.getItems().stream()
+        .filter(u -> username.equals(u.getUsername()))
+        .map(User::getId)
+        .findFirst();
   }
 
   /**

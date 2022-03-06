@@ -2,6 +2,7 @@ package com.octopus.serviceaccount.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.github.jasminb.jsonapi.SerializationFeature;
 import com.octopus.serviceaccount.domain.entities.ApiKey;
 import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
@@ -27,6 +28,7 @@ public class JsonApiConverter {
         Health.class);
     resourceConverter.disableDeserializationOption(DeserializationFeature.REQUIRE_RESOURCE_ID);
     resourceConverter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);
+    resourceConverter.enableSerializationOption(SerializationFeature.INCLUDE_RELATIONSHIP_ATTRIBUTES);
     return resourceConverter;
   }
 }

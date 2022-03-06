@@ -1,7 +1,9 @@
 package com.octopus.serviceaccount.infrastructure.clients;
 
 import com.octopus.serviceaccount.domain.entities.ApiKey;
+import com.octopus.serviceaccount.domain.entities.OctopusApiKey;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
+import com.octopus.serviceaccount.domain.entities.Users;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -10,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -41,7 +44,7 @@ public interface OctopusClient {
   @Path("/users/{user}/apikeys")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  ApiKey createApiKey(
+  OctopusApiKey createApiKey(
       ApiKey apiKey,
       @PathParam("user") final String userId,
       @HeaderParam("Cookie") final String cookies,
@@ -51,6 +54,8 @@ public interface OctopusClient {
   @Path("/users")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  Response getUsers(
-      @HeaderParam("Cookie") final String cookies);
+  Users getUsers(
+      @HeaderParam("Cookie") final String cookies,
+      @HeaderParam("X-Octopus-Csrf-Token") final String csrf,
+      @QueryParam("filter") final String accountName);
 }

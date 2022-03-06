@@ -5,13 +5,13 @@ import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Represents an API key.
+ */
 @Data
 @Builder
 @Type("apikey")
 public class ApiKey {
-  /**
-   * The service account id
-   */
   @Id
   private String id;
   private String purpose;

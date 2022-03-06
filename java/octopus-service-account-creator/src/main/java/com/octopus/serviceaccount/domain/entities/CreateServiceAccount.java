@@ -3,6 +3,7 @@ package com.octopus.serviceaccount.domain.entities;
 import com.github.jasminb.jsonapi.annotations.Type;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @Type("createserviceaccount")
 public class CreateServiceAccount extends ServiceAccount {
 

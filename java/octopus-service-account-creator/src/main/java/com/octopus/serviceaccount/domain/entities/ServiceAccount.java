@@ -1,5 +1,6 @@
 package com.octopus.serviceaccount.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
@@ -39,6 +40,7 @@ public class ServiceAccount {
   /**
    * The service account description
    */
+  @JsonProperty("isService")
   private boolean isService;
 
   @Relationship("apiKey")
