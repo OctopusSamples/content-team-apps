@@ -23,7 +23,7 @@ public class CreateServiceAccount extends ServiceAccount {
   @NotBlank
   private String octopusServer;
 
-  public ServiceAccount getServiceAccount() {
+  public ServiceAccount convertToServiceAccount() {
     return ServiceAccount.builder()
         .isService(this.isService())
         .id(this.getId())

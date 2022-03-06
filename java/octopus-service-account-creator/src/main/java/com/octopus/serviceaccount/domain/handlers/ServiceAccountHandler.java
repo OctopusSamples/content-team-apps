@@ -82,7 +82,7 @@ public class ServiceAccountHandler {
           document, CreateServiceAccount.class);
 
       // Remove any values that are not used with new accounts.
-      final ServiceAccount serviceAccount = createServiceAccount.getServiceAccount();
+      final ServiceAccount serviceAccount = createServiceAccount.convertToServiceAccount();
 
       // Ensure the validity of the request.
       verifyRequest(serviceAccount);
