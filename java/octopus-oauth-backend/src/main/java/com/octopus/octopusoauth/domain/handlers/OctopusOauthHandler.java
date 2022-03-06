@@ -10,6 +10,7 @@ import com.octopus.octopusoauth.domain.oauth.OauthResponse;
 import io.quarkus.logging.Log;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
@@ -21,6 +22,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  */
 @ApplicationScoped
 public class OctopusOauthHandler {
+
+  @ConfigProperty(name = "octopus.test.idToken")
+  Optional<String> testIdToken;
 
   @ConfigProperty(name = "octopus.client.redirect")
   String clientRedirect;
@@ -65,21 +69,29 @@ public class OctopusOauthHandler {
         throw new Exception("OctopusOauthProxy-Receive-NonceMismatch: nonce mismatch");
       }
 
-      return new SimpleResponse(303, new ImmutableMap.Builder<String, String>()
-          .put("Location", clientRedirect)
-          .put("Set-Cookie", PipelineConstants.SESSION_COOKIE + "="
-              + cryptoUtils.encrypt(
-              response.getIdToken(),
-              octopusEncryption,
-              octopusSalt)
-              + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
-              + ";path=/"
-              + ";HttpOnly")
-          .build());
+      if (testIdToken.isEmpty()) {
+        return buildResponse(response.getIdToken());
+      }
+
+      return buildResponse(testIdToken.get());
 
     } catch (final Exception ex) {
       Log.error("OctopusOauthProxy-Receive-GeneralError: " + ex);
       return new SimpleResponse(500, "An internal error was detected");
     }
+  }
+
+  private SimpleResponse buildResponse(final String idToken) {
+    return new SimpleResponse(303, new ImmutableMap.Builder<String, String>()
+        .put("Location", clientRedirect)
+        .put("Set-Cookie", PipelineConstants.SESSION_COOKIE + "="
+            + cryptoUtils.encrypt(
+            idToken,
+            octopusEncryption,
+            octopusSalt)
+            + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
+            + ";path=/"
+            + ";HttpOnly")
+        .build());
   }
 }
