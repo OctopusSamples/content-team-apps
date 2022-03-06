@@ -8,9 +8,9 @@ import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.serviceaccount.domain.entities.ApiKey;
 import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
+import com.octopus.serviceaccount.domain.utils.JsonApiResourceUtils;
 import com.octopus.serviceaccount.domain.utils.OctopusLoginUtils;
 import com.octopus.serviceaccount.domain.utils.ServiceAuthUtils;
-import com.octopus.serviceaccount.domain.utils.impl.JsonApiServiceUtils;
 import com.octopus.serviceaccount.infrastructure.clients.OctopusClient;
 import io.quarkus.logging.Log;
 import java.net.URI;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -41,7 +42,8 @@ public class ServiceAccountHandler {
   ServiceAuthUtils serviceAuthUtils;
 
   @Inject
-  JsonApiServiceUtils jsonApiServiceUtils;
+  @Named("JsonApiServiceUtils")
+  JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils;
 
   /**
    * Creates a new service account in the Octopus cloud instance.

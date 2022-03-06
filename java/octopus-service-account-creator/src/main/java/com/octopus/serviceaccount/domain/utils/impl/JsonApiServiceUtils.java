@@ -7,7 +7,6 @@ import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
  * A concrete implementation for the CreateServiceAccount type.
  */
 public class JsonApiServiceUtils extends JsonApiResourceUtilsImpl<CreateServiceAccount> {
-
   /**
    * Constructor.
    *

@@ -21,6 +21,8 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
+import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
+import com.octopus.serviceaccount.domain.utils.JsonApiResourceUtils;
 import com.octopus.serviceaccount.domain.utils.impl.JsonApiServiceUtils;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
@@ -29,6 +31,7 @@ import com.octopus.utilties.impl.RegExUtilsImpl;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Produces a number of objects for injection.
@@ -159,7 +162,8 @@ public class UtilityProducer {
 
   @ApplicationScoped
   @Produces
-  public JsonApiServiceUtils jsonApiServiceUtils(ResourceConverter resourceConverter) {
+  @Named("JsonApiServiceUtils")
+  public JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils(final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtils(resourceConverter);
   }
 }

@@ -14,7 +14,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * This class is used to configure which other classes must be included in the native image intact.
- * Otherwise the native compilation will strip out unreferenced methods, which can cause issues with
+ * Otherwise, the native compilation will strip out unreferenced methods, which can cause issues with
  * reflection.
  */
 @RegisterForReflection(
