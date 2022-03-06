@@ -1,5 +1,6 @@
 package com.octopus.serviceaccount.domain.framework.producers;
 
+import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -20,12 +21,14 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
+import com.octopus.serviceaccount.domain.utils.impl.JsonApiServiceUtils;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import com.octopus.utilties.impl.RegExUtilsImpl;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
 /**
  * Produces a number of objects for injection.
@@ -152,5 +155,11 @@ public class UtilityProducer {
       AdminJwtGroupFeature adminJwtGroupFeature,
       DisableSecurityFeature disableSecurityFeature) {
     return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
+  }
+
+  @ApplicationScoped
+  @Produces
+  public JsonApiServiceUtils jsonApiServiceUtils(ResourceConverter resourceConverter) {
+    return new JsonApiServiceUtils(resourceConverter);
   }
 }

@@ -1,14 +1,14 @@
 package com.octopus.serviceaccount.infrastructure.clients;
 
+import com.octopus.serviceaccount.domain.entities.ApiKey;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
-import java.util.List;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,10 +37,30 @@ public interface OctopusClient {
       @HeaderParam("Cookie") final String cookies,
       @HeaderParam("X-Octopus-Csrf-Token") final String csrf);
 
+  @POST
+  @Path("/users/{user}/apikeys")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  ApiKey createApiKey(
+      ApiKey apiKey,
+      @PathParam("user") final String userId,
+      @HeaderParam("Cookie") final String cookies,
+      @HeaderParam("X-Octopus-Csrf-Token") final String csrf);
+
   @GET
   @Path("/users")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   Response getUsers(
       @HeaderParam("Cookie") final String cookies);
+
+  @POST
+  @Path("/spaces")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  ApiKey createSpace(
+      ApiKey apiKey,
+      @PathParam("user") final String userId,
+      @HeaderParam("Cookie") final String cookies,
+      @HeaderParam("X-Octopus-Csrf-Token") final String csrf);
 }

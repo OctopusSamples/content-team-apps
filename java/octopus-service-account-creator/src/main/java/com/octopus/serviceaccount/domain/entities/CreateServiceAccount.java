@@ -3,11 +3,15 @@ package com.octopus.serviceaccount.domain.entities;
 import com.github.jasminb.jsonapi.annotations.Type;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 /**
- * Represents an JSONAPI resource and database entity.
+ * Represents an JSONAPI resource requesting the creation of a new Octopus service account.
+ * Note this resource encapsulates the details of the cloud instance to create the account in
+ * as well as the details of the new account.
  */
 @Data
+@SuperBuilder
 @Type("createserviceaccount")
 public class CreateServiceAccount extends ServiceAccount {
 
@@ -15,15 +19,15 @@ public class CreateServiceAccount extends ServiceAccount {
    * The octopus server to create the account against
    */
   @NotBlank
-  public String octopusServer;
+  private String octopusServer;
 
   public ServiceAccount getServiceAccount() {
-    final ServiceAccount serviceAccount = new ServiceAccount();
-    serviceAccount.setService(this.isService());
-    serviceAccount.setId(this.getId());
-    serviceAccount.setUsername(this.getUsername());
-    serviceAccount.setDisplayName(this.getDisplayName());
-    return serviceAccount;
+    return ServiceAccount.builder()
+        .isService(this.isService())
+        .id(this.getId())
+        .username(this.getUsername())
+        .displayName(this.getDisplayName())
+        .build();
   }
 
 }
