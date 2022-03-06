@@ -6,8 +6,6 @@ import com.octopus.serviceaccount.domain.entities.ApiKey;
 import com.octopus.serviceaccount.domain.entities.CreateServiceAccount;
 import com.octopus.serviceaccount.domain.entities.ServiceAccount;
 import com.octopus.serviceaccount.domain.entities.Health;
-import com.octopus.serviceaccount.domain.entities.CreateSpace;
-import com.octopus.serviceaccount.domain.entities.Space;
 import javax.enterprise.inject.Produces;
 
 /**
@@ -25,9 +23,7 @@ public class JsonApiConverter {
     final ResourceConverter resourceConverter = new ResourceConverter(
         ServiceAccount.class,
         CreateServiceAccount.class,
-        Space.class,
         ApiKey.class,
-        CreateSpace.class,
         Health.class);
     resourceConverter.disableDeserializationOption(DeserializationFeature.REQUIRE_RESOURCE_ID);
     resourceConverter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);

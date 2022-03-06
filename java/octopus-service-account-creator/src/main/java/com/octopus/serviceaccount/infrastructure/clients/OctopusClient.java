@@ -53,14 +53,4 @@ public interface OctopusClient {
   @Consumes(MediaType.APPLICATION_JSON)
   Response getUsers(
       @HeaderParam("Cookie") final String cookies);
-
-  @POST
-  @Path("/spaces")
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
-  ApiKey createSpace(
-      ApiKey apiKey,
-      @PathParam("user") final String userId,
-      @HeaderParam("Cookie") final String cookies,
-      @HeaderParam("X-Octopus-Csrf-Token") final String csrf);
 }
