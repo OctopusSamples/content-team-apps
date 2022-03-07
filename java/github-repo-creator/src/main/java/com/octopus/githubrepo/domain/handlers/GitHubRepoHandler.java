@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -35,11 +36,11 @@ import software.pando.crypto.nacl.SecretBox;
 @ApplicationScoped
 public class GitHubRepoHandler {
 
-  @ConfigProperty(name = "octopus.encryption")
-  String octopusEncryption;
+  @ConfigProperty(name = "github.encryption")
+  String githubEncryption;
 
-  @ConfigProperty(name = "octopus.salt")
-  String octopusSalt;
+  @ConfigProperty(name = "github.salt")
+  String githubSalt;
 
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
@@ -94,15 +95,25 @@ public class GitHubRepoHandler {
 
       final String decryptedGithubToken = cryptoUtils.decrypt(
           githubToken,
-          octopusEncryption,
-          octopusSalt);
+          githubEncryption,
+          githubSalt);
 
-      gitHubClient.createRepo(
-          GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
-          "token " + decryptedGithubToken,
-          createGithubRepo.getGithubOwner());
+      // Get the existing repo
+      final Response existingRepoResponse = gitHubClient.getRepo(
+          createGithubRepo.getGithubOwner(),
+          createGithubRepo.getGithubRepository(),
+          "token " + decryptedGithubToken
+      );
 
-      // create the sodium key.
+      // If it doesn't exist, create it.
+      if (existingRepoResponse.getStatus() == 404) {
+        final Response createRepoResponse = gitHubClient.createRepo(
+            GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
+            "token " + decryptedGithubToken,
+            createGithubRepo.getGithubOwner());
+      }
+
+      // Create the sodium key.
       final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
           "token " + decryptedGithubToken,
           createGithubRepo.getGithubOwner()
@@ -110,17 +121,18 @@ public class GitHubRepoHandler {
 
       // Add the repository secrets.
       for (final Secret secret : createGithubRepo.getSecrets()) {
-        final SecretBox box = SecretBox.encrypt(
+        try (final SecretBox box = SecretBox.encrypt(
             SecretBox.key(publicKey.getKey().getBytes()),
-            secret.getValue());
+            secret.getValue())) {
 
-        gitHubClient.createSecret(
-            GitHubSecret.builder().encryptedValue(box.toString()).build(),
-            "token " + decryptedGithubToken,
-            createGithubRepo.getGithubOwner(),
-            createGithubRepo.getGithubRepository(),
-            secret.getName()
-        );
+          final Response createSecretResponse = gitHubClient.createSecret(
+              GitHubSecret.builder().encryptedValue(box.toString()).build(),
+              "token " + decryptedGithubToken,
+              createGithubRepo.getGithubOwner(),
+              createGithubRepo.getGithubRepository(),
+              secret.getName()
+          );
+        }
       }
 
       return "yay!";

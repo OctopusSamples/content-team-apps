@@ -17,9 +17,11 @@ import com.octopus.jwt.JwtValidator;
 import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.jwt.impl.JwtUtilsImpl;
 import com.octopus.jwt.impl.JwtValidatorImpl;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.lambda.impl.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
@@ -60,6 +62,17 @@ public class UtilityProducer {
   @Produces
   public LambdaHttpHeaderExtractor getHeaderExtractor() {
     return new CaseInsensitiveHttpHeaderExtractor();
+  }
+
+  /**
+   * Produces the Lambda cookie extractor.
+   *
+   * @return An implementation of QueryParamExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public LambdaHttpCookieExtractor getCookieExtractor() {
+    return new CaseInsensitiveCookieExtractor();
   }
 
   /**

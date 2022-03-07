@@ -14,11 +14,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.checkerframework.common.reflection.qual.GetClass;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("/")
 @RegisterRestClient
 public interface GitHubClient {
+
+  @GET
+  @Path("/repos/{owner}/{repo}")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response getRepo(
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
   @POST
   @Path("/orgs/{org}/repos")
   @Produces(MediaType.APPLICATION_JSON)
@@ -31,7 +41,6 @@ public interface GitHubClient {
   @GET
   @Path("/orgs/{org}/actions/secrets/public-key")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   GitHubPublicKey getPublicKey(
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
       @PathParam("org") final String org);
