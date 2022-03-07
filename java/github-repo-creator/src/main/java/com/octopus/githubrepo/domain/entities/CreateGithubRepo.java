@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.domain.entities;
 
+import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.util.Collection;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +18,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Type("creategithubrepo")
 public class CreateGithubRepo  {
+
+  @Id
+  private String id;
 
   /**
    * The octopus server to create the account against

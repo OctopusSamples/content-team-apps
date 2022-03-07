@@ -62,6 +62,8 @@ public class GitHubOauth {
     final ResponseBuilder response = Response.status(simpleResponse.getCode(),
         simpleResponse.getBody());
     simpleResponse.getHeaders().forEach(response::header);
+    simpleResponse.getMultiValueHeaders()
+        .forEach((key, value) -> value.forEach(v -> response.header(key, v)));
     return response.build();
   }
 }

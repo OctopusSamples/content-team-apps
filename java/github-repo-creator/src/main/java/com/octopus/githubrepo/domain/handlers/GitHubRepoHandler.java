@@ -14,6 +14,7 @@ import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -98,40 +99,42 @@ public class GitHubRepoHandler {
           githubEncryption,
           githubSalt);
 
-      // Get the existing repo
-      final Response existingRepoResponse = gitHubClient.getRepo(
+      // Get the existing repo, or create a new one.
+      Try.of(() -> gitHubClient.getRepo(
           createGithubRepo.getGithubOwner(),
           createGithubRepo.getGithubRepository(),
           "token " + decryptedGithubToken
-      );
-
-      // If it doesn't exist, create it.
-      if (existingRepoResponse.getStatus() == 404) {
-        final Response createRepoResponse = gitHubClient.createRepo(
-            GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
-            "token " + decryptedGithubToken,
-            createGithubRepo.getGithubOwner());
-      }
+      )).recover(ClientWebApplicationException.class, e -> {
+        // If the repo does not exist, create it.
+        if (e.getResponse().getStatus() == 404) {
+          return gitHubClient.createRepo(
+              GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
+              "token " + decryptedGithubToken);
+        }
+        throw e;
+      }).getOrElseThrow(e -> e);
 
       // Create the sodium key.
       final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
           "token " + decryptedGithubToken,
-          createGithubRepo.getGithubOwner()
+          createGithubRepo.getGithubOwner(),
+          createGithubRepo.getGithubRepository()
       );
 
       // Add the repository secrets.
-      for (final Secret secret : createGithubRepo.getSecrets()) {
-        try (final SecretBox box = SecretBox.encrypt(
+      if (createGithubRepo.getSecrets() != null) {
+        for (final Secret secret : createGithubRepo.getSecrets()) {
+          try (final SecretBox box = SecretBox.encrypt(
             SecretBox.key(publicKey.getKey().getBytes()),
             secret.getValue())) {
-
-          final Response createSecretResponse = gitHubClient.createSecret(
-              GitHubSecret.builder().encryptedValue(box.toString()).build(),
-              "token " + decryptedGithubToken,
-              createGithubRepo.getGithubOwner(),
-              createGithubRepo.getGithubRepository(),
-              secret.getName()
-          );
+            final Response createSecretResponse = gitHubClient.createSecret(
+                GitHubSecret.builder().encryptedValue(box.toString()).build(),
+                "token " + decryptedGithubToken,
+                createGithubRepo.getGithubOwner(),
+                createGithubRepo.getGithubRepository(),
+                secret.getName()
+            );
+          }
         }
       }
 
@@ -139,6 +142,8 @@ public class GitHubRepoHandler {
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class));
+      throw new InvalidInput();
+    } catch (final Throwable ex) {
       throw new InvalidInput();
     }
   }
