@@ -2,9 +2,29 @@ import {FC, ReactElement} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import Cookies from "js-cookie";
+import {postJsonApi} from "../../utils/network";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const pushPackage = () => {
+        const body = {
+            "data": {
+                "type": "createserviceaccount",
+                "attributes": {
+                    "username": "AppBuilder",
+                    "displayName": "App Builder Service Account",
+                    "isService": true,
+                    "octopusServer": "main.testoctopus.app"
+                }
+            }
+        };
+        postJsonApi(JSON.stringify(body), "http://localhost:12000/api/serviceaccounts")
+            .then(body => {
+                props.machine.send("NEXT")
+            });
+    }
 
     return (
         <>
@@ -29,7 +49,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Click the next button to configure your CI/CD pipeline.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
+                        <Button sx={nextButtonStyle} variant="outlined" onClick={pushPackage}>
                             {"Next >"}
                         </Button>
                     </Grid>

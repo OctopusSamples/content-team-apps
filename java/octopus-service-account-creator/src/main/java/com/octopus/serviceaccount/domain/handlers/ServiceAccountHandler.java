@@ -1,6 +1,7 @@
 package com.octopus.serviceaccount.domain.handlers;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidClientId;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
@@ -24,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
@@ -37,6 +39,12 @@ public class ServiceAccountHandler {
 
   private static final String API_KEY_DESCRIPTION = "App Builder GitHub Integration";
 
+  @ConfigProperty(name = "octopus.encryption")
+  String octopusEncryption;
+
+  @ConfigProperty(name = "octopus.salt")
+  String octopusSalt;
+
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
@@ -49,6 +57,9 @@ public class ServiceAccountHandler {
   @Inject
   @Named("JsonApiServiceUtils")
   JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils;
+
+  @Inject
+  CryptoUtils cryptoUtils;
 
   /**
    * Creates a new service account in the Octopus cloud instance.
@@ -69,7 +80,7 @@ public class ServiceAccountHandler {
       @NonNull final String document,
       final String authorizationHeader,
       final String serviceAuthorizationHeader,
-      final String idToken)
+      @NonNull final String idToken)
       throws DocumentSerializationException {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
@@ -90,13 +101,18 @@ public class ServiceAccountHandler {
       // extract the URL of the cloud instance the service account will be created in.
       final URI octopusServerUri = URI.create("https://" + createServiceAccount.getOctopusServer());
 
+      final String decryptedIdToken = cryptoUtils.decrypt(
+          idToken,
+          octopusEncryption,
+          octopusSalt);
+
       // Perform a login with the id token
       final Response response = octopusLoginUtils.logIn(
           octopusServerUri,
-          idToken,
+          decryptedIdToken,
           "{}",
           octopusLoginUtils.getStateHash("{}"),
-          octopusLoginUtils.getNonceHash(idToken));
+          octopusLoginUtils.getNonceHash(decryptedIdToken));
 
       // Extract the Octopus cookies from the response.
       final List<String> cookieHeaders = octopusLoginUtils.getCookies(response);

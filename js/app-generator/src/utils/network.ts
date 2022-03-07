@@ -39,7 +39,8 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
 
     return fetch(url, {
         method: 'GET',
-        headers: requestHeaders
+        headers: requestHeaders,
+        credentials: "include"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -56,7 +57,7 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
         });
 }
 
-export function getJsonApi<T>(url: string, partition: string | null, retryCount?: number): Promise<T> {
+export function getJsonApi<T>(url: string, partition?: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -66,7 +67,8 @@ export function getJsonApi<T>(url: string, partition: string | null, retryCount?
 
     return fetch(url, {
         method: 'GET',
-        headers: requestHeaders
+        headers: requestHeaders,
+        credentials: "include"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -83,7 +85,7 @@ export function getJsonApi<T>(url: string, partition: string | null, retryCount?
         });
 }
 
-export function patchJsonApi<T>(resource: string, url: string, partition: string | null, retryCount?: number): Promise<T> {
+export function patchJsonApi<T>(resource: string, url: string, partition?: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -95,7 +97,8 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
     return fetch(url, {
         method: 'PATCH',
         headers: requestHeaders,
-        body: resource
+        body: resource,
+        credentials: "include"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -112,9 +115,9 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
         });
 }
 
-export function postJsonApi<T>(resource: string, url: string, partition: string | null): Promise<T> {
+export function postJsonApi<T>(resource: string, url: string, partition?: string | null, getHeaders?: () => Headers): Promise<T> {
     const accessToken = getAccessToken();
-    const requestHeaders: HeadersInit = new Headers();
+    const requestHeaders: HeadersInit = getHeaders ? getHeaders() : new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
     requestHeaders.set('Content-Type', 'application/vnd.api+json');
     requestHeaders.set('Data-Partition', partition || "");
@@ -124,7 +127,8 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
     return fetch(url, {
         method: 'POST',
         headers: requestHeaders,
-        body: resource
+        body: resource,
+        credentials: "include"
     })
         .then(response => {
             if (response.ok) {
@@ -145,7 +149,8 @@ export function deleteJsonApi(url: string, partition: string | null, retryCount?
 
     return fetch(url, {
         method: 'DELETE',
-        headers: requestHeaders
+        headers: requestHeaders,
+        credentials: "include"
     })
         .then(response => {
             if (!responseIsError(response.status)) {

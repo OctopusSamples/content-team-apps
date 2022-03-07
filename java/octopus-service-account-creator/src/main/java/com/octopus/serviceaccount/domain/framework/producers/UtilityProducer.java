@@ -1,6 +1,8 @@
 package com.octopus.serviceaccount.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.octopus.encryption.CryptoUtils;
+import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -160,10 +162,26 @@ public class UtilityProducer {
     return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
   }
 
+  /**
+   * Produces a JsonApiResourceUtils typed for CreateServiceAccount.
+   * @param resourceConverter The JSON api resource converter.
+   * @return An instance of JsonApiResourceUtils.
+   */
   @ApplicationScoped
   @Produces
   @Named("JsonApiServiceUtils")
   public JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils(final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtils(resourceConverter);
+  }
+
+  /**
+   * Produces the crypto utils instance.
+   *
+   * @return An implementation of CryptoUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public CryptoUtils getCryptoUtils() {
+    return new AesCryptoUtils();
   }
 }
