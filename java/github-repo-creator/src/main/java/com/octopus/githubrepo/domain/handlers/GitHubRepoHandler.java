@@ -101,19 +101,21 @@ public class GitHubRepoHandler {
           githubSalt);
 
       // Get the existing repo, or create a new one.
-      Try.of(() -> gitHubClient.getRepo(
-          createGithubRepo.getGithubOwner(),
-          createGithubRepo.getGithubRepository(),
-          "token " + decryptedGithubToken
-      )).recover(ClientWebApplicationException.class, e -> {
-        // If the repo does not exist, create it.
-        if (e.getResponse().getStatus() == 404) {
-          return gitHubClient.createRepo(
+      try {
+        gitHubClient.getRepo(
+            createGithubRepo.getGithubOwner(),
+            createGithubRepo.getGithubRepository(),
+            "token " + decryptedGithubToken
+        );
+      } catch (ClientWebApplicationException ex) {
+        if (ex.getResponse().getStatus() == 404) {
+          gitHubClient.createRepo(
               GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
               "token " + decryptedGithubToken);
+        } else {
+          throw ex;
         }
-        throw e;
-      }).getOrElseThrow(e -> e);
+      }
 
       // Create the sodium key.
       final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
@@ -126,9 +128,9 @@ public class GitHubRepoHandler {
       if (createGithubRepo.getSecrets() != null) {
         for (final Secret secret : createGithubRepo.getSecrets()) {
           try (final SecretBox box = SecretBox.encrypt(
-            SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
-            secret.getValue())) {
-            final Response createSecretResponse = gitHubClient.createSecret(
+              SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
+              secret.getValue())) {
+            gitHubClient.createSecret(
                 GitHubSecret.builder()
                     .encryptedValue(box.toString())
                     .keyId(publicKey.getKeyId())

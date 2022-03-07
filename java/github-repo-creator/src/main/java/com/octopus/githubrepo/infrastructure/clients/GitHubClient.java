@@ -23,7 +23,7 @@ public interface GitHubClient {
   @GET
   @Path("/repos/{owner}/{repo}")
   @Produces(MediaType.APPLICATION_JSON)
-  Response getRepo(
+  void getRepo(
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
@@ -32,7 +32,7 @@ public interface GitHubClient {
   @Path("/user/repos")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  Response createRepo(
+  void createRepo(
       GithubRepo repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
@@ -48,7 +48,7 @@ public interface GitHubClient {
   @Path("/repos/{owner}/{repo}/actions/secrets/{secret_name}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  Response createSecret(
+  void createSecret(
       GitHubSecret secret,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
       @PathParam("owner") final String owner,
