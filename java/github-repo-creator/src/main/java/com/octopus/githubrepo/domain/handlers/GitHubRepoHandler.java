@@ -8,30 +8,40 @@ import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.GitHubSecret;
+import com.octopus.githubrepo.domain.entities.GithubFile;
 import com.octopus.githubrepo.domain.entities.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import io.quarkus.logging.Log;
-import io.vavr.control.Try;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import javax.ws.rs.core.Response;
 import lombok.NonNull;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTreeBuilder;
 import org.kohsuke.github.GitHub;
@@ -45,6 +55,11 @@ import software.pando.crypto.nacl.SecretBox;
  */
 @ApplicationScoped
 public class GitHubRepoHandler {
+
+  /**
+   * A list of directories we know we don't want to commit to a new repo.
+   */
+  private static final String[] IGNORE_PATHS = {".git", "target", "node_modules"};
 
   @ConfigProperty(name = "github.encryption")
   String githubEncryption;
@@ -109,6 +124,11 @@ public class GitHubRepoHandler {
       // Create the secrets
       createSecrets(decryptedGithubToken, createGithubRepo);
 
+      populateInitialFile(decryptedGithubToken, createGithubRepo);
+
+      // Commit the files
+      commitFiles(decryptedGithubToken, createGithubRepo, "C:\\Code\\AppBuilderPlayground");
+
       return "yay!";
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
@@ -119,35 +139,52 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo) throws IOException {
-    GitHub gitHub =  new GitHubBuilder().withOAuthToken(githubToken).build();
+  private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo, final String path) throws IOException {
+    final GitHub gitHub =  new GitHubBuilder().withOAuthToken(githubToken).build();
 
     // start with a Repository ref
-    GHRepository repo = gitHub.getRepository(createGithubRepo.getGithubRepository());
+    final GHRepository repo = gitHub.getRepository(
+        createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository());
 
     // get a sha to represent the root branch to start your commit from.
     // this can come from any number of classes:
     //   GHBranch, GHCommit, GHTree, etc...
 
     // for this example, we'll start from the master branch
-    GHBranch masterBranch = repo.getBranch("main");
+    final GHBranch masterBranch = repo.getBranch("main");
 
     // get a tree builder object to build up into the commit.
     // the base of the tree will be the master branch
     GHTreeBuilder treeBuilder = repo.createTree().baseTree(masterBranch.getSHA1());
 
-    // add entries to the tree in various ways.
-    // the nice thing about GHTreeBuilder.textEntry() is that it is an "upsert" (create new or update existing)
-    //treeBuilder = treeBuilder.add(pathToFile, contentOfFile, false);
+    // loop over all the files and add them to the treebuilder.
+    Collection<File> files = FileUtils.listFiles(new File(path), null, true);
+    for(final File file : files) {
+      // don't process git dirs if they exist
+      if (!pathHasIgnoreDirectory(file.getAbsolutePath())) {
+        treeBuilder = treeBuilder.add(
+            file.getAbsolutePath(),
+            FileUtils.readFileToByteArray(file),
+            fileIsExecutable(file));
+      }
+    }
 
     // perform the commit
-    GHCommit commit = repo.createCommit()
+    final GHCommit commit = repo.createCommit()
         // base the commit on the tree we built
         .tree(treeBuilder.create().getSha())
         // set the parent of the commit as the master branch
         .parent(masterBranch.getSHA1()).message("App Builder repo population").create();
+  }
 
-    
+  private boolean fileIsExecutable(final File file) {
+    return "mvnw".equals(file.getName());
+  }
+
+  private boolean pathHasIgnoreDirectory(final String path) {
+    return StreamSupport.stream(Paths.get(path).spliterator(), false)
+        .map(Path::toString)
+        .anyMatch(p -> ArrayUtils.indexOf(IGNORE_PATHS, p) != -1);
   }
 
   private void createRepo(final String decryptedGithubToken,
@@ -166,8 +203,38 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void createSecrets(final String decryptedGithubToken,
+  /**
+   * We need to create an initial file in the repo to then allow the Git client to
+   * upload the rest.
+   */
+  private void populateInitialFile(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) {
+    try {
+      gitHubClient.getFile(
+          "token " + decryptedGithubToken,
+          createGithubRepo.getGithubOwner(),
+          createGithubRepo.getGithubRepository(),
+          "marker");
+    } catch (ClientWebApplicationException ex) {
+      if (ex.getResponse().getStatus() == 404) {
+        gitHubClient.createFile(
+            GithubFile.builder()
+                .content(Base64.getEncoder().encodeToString("This is a unused marker file".getBytes(
+                    StandardCharsets.UTF_8)))
+                .message("Adding the initial marker file")
+                .branch("main")
+                .build(),
+            "token " + decryptedGithubToken,
+            createGithubRepo.getGithubOwner(),
+            createGithubRepo.getGithubRepository(),
+            "marker"
+        );
+      }
+    }
+  }
+
+  private void createSecrets(final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo) throws IOException {
     // Create the sodium key.
     final GitHubPublicKey publicKey = gitHubClient.getPublicKey("token " + decryptedGithubToken,
         createGithubRepo.getGithubOwner(), createGithubRepo.getGithubRepository());
@@ -175,12 +242,26 @@ public class GitHubRepoHandler {
     // Add the repository secrets.
     if (createGithubRepo.getSecrets() != null) {
       for (final Secret secret : createGithubRepo.getSecrets()) {
+        // Create the Sodium secret box
         try (final SecretBox box = SecretBox.encrypt(
             SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())), secret.getValue())) {
-          gitHubClient.createSecret(
-              GitHubSecret.builder().encryptedValue(box.toString()).keyId(publicKey.getKeyId())
-                  .build(), "token " + decryptedGithubToken, createGithubRepo.getGithubOwner(),
-              createGithubRepo.getGithubRepository(), secret.getName());
+
+          // extract the encrypted value
+          try (var out = new ByteArrayOutputStream()) {
+            box.writeTo(out);
+            out.flush();
+
+            // send the encrypted value
+            gitHubClient.createSecret(
+                GitHubSecret.builder()
+                    .encryptedValue(Base64.getEncoder().encodeToString(out.toByteArray()))
+                    .keyId(publicKey.getKeyId())
+                    .build(),
+                "token " + decryptedGithubToken,
+                createGithubRepo.getGithubOwner(),
+                createGithubRepo.getGithubRepository(),
+                secret.getName());
+          }
         }
       }
     }

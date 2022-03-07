@@ -2,6 +2,7 @@ package com.octopus.githubrepo.infrastructure.clients;
 
 import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.GitHubSecret;
+import com.octopus.githubrepo.domain.entities.GithubFile;
 import com.octopus.githubrepo.domain.entities.GithubRepo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -35,6 +36,26 @@ public interface GitHubClient {
   void createRepo(
       GithubRepo repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
+  @PUT
+  @Path("/repos/{owner}/{repo}/contents/{file}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  void createFile(
+      GithubFile fileContents,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @PathParam("file") final String file);
+
+  @GET
+  @Path("/repos/{owner}/{repo}/contents/{file}")
+  @Produces(MediaType.APPLICATION_JSON)
+  void getFile(
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @PathParam("file") final String file);
 
   @GET
   @Path("/repos/{owner}/{repo}/actions/secrets/public-key")
