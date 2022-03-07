@@ -15,6 +15,7 @@ import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
+import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -125,10 +126,13 @@ public class GitHubRepoHandler {
       if (createGithubRepo.getSecrets() != null) {
         for (final Secret secret : createGithubRepo.getSecrets()) {
           try (final SecretBox box = SecretBox.encrypt(
-            SecretBox.key(publicKey.getKey().getBytes()),
+            SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
             secret.getValue())) {
             final Response createSecretResponse = gitHubClient.createSecret(
-                GitHubSecret.builder().encryptedValue(box.toString()).build(),
+                GitHubSecret.builder()
+                    .encryptedValue(box.toString())
+                    .keyId(publicKey.getKeyId())
+                    .build(),
                 "token " + decryptedGithubToken,
                 createGithubRepo.getGithubOwner(),
                 createGithubRepo.getGithubRepository(),

@@ -13,4 +13,6 @@ import lombok.NoArgsConstructor;
 public class GitHubSecret {
   @JsonProperty("encrypted_value")
   private String encryptedValue;
+  @JsonProperty("key_id")
+  private String keyId;
 }
