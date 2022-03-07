@@ -82,7 +82,7 @@ public class GitHubOauthRedirect {
               .build(),
           new ImmutableMap.Builder<String, List<String>>()
               .put("Set-Cookie", new ImmutableList.Builder<String>()
-                  .add(PipelineConstants.SESSION_COOKIE + "="
+                  .add(PipelineConstants.GITHUB_SESSION_COOKIE + "="
                       + cryptoUtils.encrypt(
                       response.getAccessToken(),
                       githubEncryption,

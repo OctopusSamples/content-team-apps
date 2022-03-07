@@ -8,7 +8,9 @@ import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
+import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
@@ -52,6 +54,9 @@ public class ServiceAccountApi implements
 
   @Inject
   LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
+
+  @Inject
+  LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
 
   @Inject
   ProxyResponseBuilder proxyResponseBuilder;
@@ -148,7 +153,9 @@ public class ServiceAccountApi implements
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                        lambdaHttpCookieExtractor.getCookieValue(input,
+                            ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));

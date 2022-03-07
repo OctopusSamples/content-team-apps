@@ -3,6 +3,7 @@ package com.octopus.githubrepo.application.http;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
+import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,7 +33,7 @@ public class ServiceAccountResource {
    *
    * @param document The JSONAPI resource to create.
    * @param acceptHeader The "Accept" headers.
-   * @param idToken The ID token from Octofront.
+   * @param githubToken The GitHub OAuth access token.
    * @return An HTTP response object with the created resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *     resource.
@@ -44,12 +46,13 @@ public class ServiceAccountResource {
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
+      @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(
             gitHubRepoHandler.create(
-                document, authorizationHeader, serviceAuthorizationHeader))
+                document, authorizationHeader, serviceAuthorizationHeader, githubToken))
         .build();
   }
 }

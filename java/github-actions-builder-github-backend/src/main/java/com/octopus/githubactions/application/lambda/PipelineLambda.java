@@ -48,7 +48,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
     final String session = lambdaHttpCookieExtractor.getCookieValue(
             input,
-            PipelineConstants.SESSION_COOKIE).orElse(null);
+            PipelineConstants.GITHUB_SESSION_COOKIE).orElse(null);
 
     final String routingHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,

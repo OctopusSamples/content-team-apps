@@ -7,6 +7,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.githubrepo.BaseTest;
@@ -56,7 +57,7 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final ServiceAccount resource = createResource(handler, resourceConverter);
-    assertEquals("myname", resource.getUsername());
+    final CreateGithubRepo resource = createResource(handler, resourceConverter);
+    assertEquals("myname", resource.getGithubOwner());
   }
 }

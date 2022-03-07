@@ -6,11 +6,8 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import io.restassured.response.ValidatableResponse;
-import java.util.Objects;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,35 +58,6 @@ public class HttpApiTest extends BaseTest {
             .post(API_ENDPOINT)
             .then()
             .statusCode(406);
-  }
-
-  @Test
-  public void failWithoutPlainAcceptForGet() {
-        given()
-            .accept("application/vnd.api+json; something")
-            .when()
-            .get(API_ENDPOINT + "/1")
-            .then()
-            .statusCode(406);
-  }
-
-  @Test
-  public void failWithoutPlainAcceptForGetAll() {
-        given()
-            .accept("application/vnd.api+json; something")
-            .when()
-            .get(API_ENDPOINT)
-            .then()
-            .statusCode(406);
-  }
-
-  @Test
-  public void passWithNoAcceptForGetAll() {
-        given()
-            .when()
-            .get(API_ENDPOINT)
-            .then()
-            .statusCode(200);
   }
 
   @Test

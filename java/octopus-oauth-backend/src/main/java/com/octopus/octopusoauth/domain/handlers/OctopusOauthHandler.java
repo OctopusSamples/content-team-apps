@@ -6,6 +6,7 @@ import com.octopus.PipelineConstants;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.CookieDateUtils;
 import com.octopus.http.FormBodyParser;
+import com.octopus.octopusoauth.OauthBackendConstants;
 import com.octopus.octopusoauth.domain.oauth.OauthResponse;
 import io.quarkus.logging.Log;
 import java.time.temporal.ChronoUnit;
@@ -84,7 +85,7 @@ public class OctopusOauthHandler {
   private SimpleResponse buildResponse(final String idToken) {
     return new SimpleResponse(303, new ImmutableMap.Builder<String, String>()
         .put("Location", clientRedirect)
-        .put("Set-Cookie", PipelineConstants.SESSION_COOKIE + "="
+        .put("Set-Cookie", OauthBackendConstants.OCTOPUS_SESSION_COOKIE + "="
             + cryptoUtils.encrypt(
             idToken,
             octopusEncryption,

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.githubrepo.BaseTest;
@@ -51,7 +52,7 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateAudit() throws DocumentSerializationException {
-    final ServiceAccount audit = createResource(gitHubRepoHandler, resourceConverter);
-    assertEquals("myname", audit.getUsername());
+    final CreateGithubRepo resource = createResource(gitHubRepoHandler, resourceConverter);
+    assertEquals("myname", resource.getGithubOwner());
   }
 }
