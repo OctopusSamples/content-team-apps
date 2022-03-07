@@ -167,6 +167,7 @@
     <module>github-oauth-backend</module>
     <module>audit-service</module>
     <module>octopus-oauth-backend</module>
+    <module>github-repo-creator</module>
   </modules>
 
   <name>jenkins-pipeline-builder-backend</name>
