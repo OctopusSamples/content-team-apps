@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
@@ -145,20 +146,24 @@ public class GitHubRepoHandler {
     }
   }
 
+  /**
+   * This tool won't work without certain scopes granted in the OAuth token. This method verifies
+   * the appropriate scopes are available by making a request to a no-op endpoint and reading the
+   * headers in the response.
+   */
   private void verifyScopes(final String decryptedGithubToken) {
-    final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken);
-    final List<String> scopes = List.of(response.getHeaderString("X-OAuth-Scopes").split(" "));
+    try (final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken)) {
+      final List<String> scopes =
+          Arrays.stream(response.getHeaderString("X-OAuth-Scopes").split(",")).map(String::trim)
+              .toList();
 
-    if (!scopes.contains("workflow")) {
-      throw new InvalidInput("GitHub token did not have the workflow scope");
-    }
+      if (!scopes.contains("workflow")) {
+        throw new InvalidInput("GitHub token did not have the workflow scope");
+      }
 
-    if (!scopes.contains("repo")) {
-      throw new InvalidInput("GitHub token did not have the repo scope");
-    }
-
-    if (!scopes.contains("email")) {
-      throw new InvalidInput("GitHub token did not have the email scope");
+      if (!scopes.contains("repo")) {
+        throw new InvalidInput("GitHub token did not have the repo scope");
+      }
     }
   }
 
