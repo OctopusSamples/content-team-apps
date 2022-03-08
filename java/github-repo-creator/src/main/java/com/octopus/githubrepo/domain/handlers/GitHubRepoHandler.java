@@ -231,12 +231,24 @@ public class GitHubRepoHandler {
           "token " + decryptedGithubToken,
           createGithubRepo.getGithubOwner(),
           createGithubRepo.getGithubRepository(),
-          "marker");
+          "README.md");
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
         gitHubClient.createFile(
             GithubFile.builder()
-                .content(Base64.getEncoder().encodeToString("This is a unused marker file".getBytes(
+                .content(Base64.getEncoder().encodeToString(
+                    """
+                      # App Builder
+                      This repo was populated by the Octopus App Builder tool. The directory structure
+                      is shown below:
+                      
+                      * `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.
+                      * `github`: Composable GitHub Actions that are called by the workflow files.
+                      * `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.
+                      * `java`: The sample Java application.
+                      * `ja`: The sample JavaScript application.
+                      * `dotnet`: The sample DotNET application.
+                    """.getBytes(
                     StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
                 .branch("main")
@@ -244,7 +256,7 @@ public class GitHubRepoHandler {
             "token " + decryptedGithubToken,
             createGithubRepo.getGithubOwner(),
             createGithubRepo.getGithubRepository(),
-            "marker"
+            "README.md"
         );
       }
     }
