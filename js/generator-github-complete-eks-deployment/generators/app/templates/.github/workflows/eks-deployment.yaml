@@ -35,7 +35,6 @@ jobs:
           aws_region: "<%= aws_region %>"
           github_username: ${{ github.actor }}
           github_repo: ${{ github.repository }}
-          github_feed_token: ${{ secrets.FEED_GITHUB_TOKEN }}
 
       - name: Create the ECR repository and feed
         id: ecr_resources

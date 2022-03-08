@@ -9,6 +9,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
+    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "");
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? "**************" : "");
 
     const next = () => {
@@ -18,6 +19,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 setSecretKey("");
                 if (props.machine.state) {
                     props.machine.state.context.awsAccessKey = accessKey;
+                    props.machine.state.context.awsRegion = region;
                 }
                 props.machine.send("NEXT");
             })
@@ -60,6 +62,12 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
                                 <TextField sx={formElements} value={secretKey} type="password" autoComplete="new-password" onChange={(event) => setSecretKey(event.target.value)}/>
+                            </Grid>
+                            <Grid md={3} xs={12} container={true}>
+                                <FormLabel sx={formElements}>Region</FormLabel>
+                            </Grid>
+                            <Grid md={9} xs={12} container={true}>
+                                <TextField sx={formElements} value={accessKey} onChange={(event) => setRegion(event.target.value)}/>
                             </Grid>
                         </Grid>
                         <Button sx={nextButtonStyle} variant="outlined" onClick={next}>

@@ -12,9 +12,6 @@ inputs:
   octopus_project:
     description: 'The Octopus space and project name'
     required: true
-  github_feed_token:
-    description: 'The github token'
-    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true

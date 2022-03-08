@@ -33,14 +33,16 @@ function getInitialStateContext() {
         return {
             form: TargetSelection,              // This doesn't matter too much, as the state entry functions override it anyway.
             standAlone: !!state.standAlone,
-            awsAccessKey: state.awsAccessKey
+            awsAccessKey: state.awsAccessKey,
+            awsRegion: state.awsRegion
         }
     }
 
     return {
         form: TargetSelection,
         standAlone: false,
-        awsAccessKey: ""
+        awsAccessKey: "",
+        awsRegion: ""
     }
 }
 
@@ -105,7 +107,11 @@ export interface StateContext {
     /**
      * The AWS access key
      */
-    awsAccessKey: string
+    awsAccessKey: string,
+    /**
+     * The AWS region
+     */
+    awsRegion: string
 }
 
 /**

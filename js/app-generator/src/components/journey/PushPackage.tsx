@@ -1,10 +1,10 @@
-import {FC, ReactElement, useContext, useState} from "react";
+import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {postJsonApi} from "../../utils/network";
-import {AppContext} from "../../App";
 import lightDark from '../../images/spinnerDark.gif'
+import Cookies from "js-cookie";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -26,6 +26,22 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         };
         postJsonApi(JSON.stringify(body), "http://localhost:12000/api/serviceaccounts")
             .then(body => {
+                const populateRepoBody = {
+                    "data": {
+                        "type": "creategithubrepo",
+                        "attributes": {
+                            githubOwner: "mcasperson",
+                            githubRepository: "AppBuilder",
+                            secrets: [
+                                {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
+                                {name: "OCTOPUS_APIKEY", value: Cookies.get("OctopusUserSession"), serverSideEncrypted: true},
+                                {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey, encrypted: true},
+                                {name: "AWS_SECRET_ACCESS_KEY", value: Cookies.get("awsSecretKey"), clientSideEncrypted: true},
+                            ]
+                        }
+                    }
+                }
+
                 props.machine.send("NEXT")
             })
             .catch(() => props.machine.send("ERROR"))
