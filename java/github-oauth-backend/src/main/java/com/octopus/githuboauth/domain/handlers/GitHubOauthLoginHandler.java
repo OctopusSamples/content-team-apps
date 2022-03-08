@@ -42,7 +42,7 @@ public class GitHubOauthLoginHandler {
                   Yikes! There is no such thing as read only repo access:
                   https://github.com/github/feedback/discussions/7891
                  */
-                + "&scope=user:email%20repo"
+                + "&scope=user:email%20repo%20workflow"
                 + "&state=" + state
                 + "&allow_signup=false")
             .put("Set-Cookie", OauthBackendConstants.STATE_COOKIE + "=" + state + ";HttpOnly;path=/")

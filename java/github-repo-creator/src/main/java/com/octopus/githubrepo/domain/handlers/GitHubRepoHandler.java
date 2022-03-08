@@ -140,6 +140,8 @@ public class GitHubRepoHandler {
   }
 
   private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo, final String path) throws IOException {
+    final Path inputPath = Paths.get(path);
+
     final GitHub gitHub =  new GitHubBuilder().withOAuthToken(githubToken).build();
 
     // start with a Repository ref
@@ -150,7 +152,7 @@ public class GitHubRepoHandler {
     // this can come from any number of classes:
     //   GHBranch, GHCommit, GHTree, etc...
 
-    // for this example, we'll start from the master branch
+    // for this example, we'll start from the main branch
     final GHBranch masterBranch = repo.getBranch("main");
 
     // get a tree builder object to build up into the commit.
@@ -160,21 +162,36 @@ public class GitHubRepoHandler {
     // loop over all the files and add them to the treebuilder.
     Collection<File> files = FileUtils.listFiles(new File(path), null, true);
     for(final File file : files) {
+
       // don't process git dirs if they exist
       if (!pathHasIgnoreDirectory(file.getAbsolutePath())) {
+        final String relativePath = inputPath.relativize(file.toPath()).toString()
+                .replaceAll("\\\\", "/");
+
+        Log.info("Adding " + relativePath);
+
         treeBuilder = treeBuilder.add(
-            file.getAbsolutePath(),
-            FileUtils.readFileToByteArray(file),
+            relativePath,
+            com.google.common.io.Files.toByteArray(file),
             fileIsExecutable(file));
       }
     }
 
-    // perform the commit
+    /*
+      Perform the commit. Note that if you get a 404 here uploading a workflow file, the github token
+      may not have the "workflow" scope. See
+      https://stackoverflow.com/questions/68064458/how-to-upload-content-via-github-api-to-hidden-folder-name.
+    */
     final GHCommit commit = repo.createCommit()
         // base the commit on the tree we built
         .tree(treeBuilder.create().getSha())
         // set the parent of the commit as the master branch
-        .parent(masterBranch.getSHA1()).message("App Builder repo population").create();
+        .parent(masterBranch.getSHA1())
+        .message("App Builder repo population")
+        .create();
+
+    // update the main branch
+    repo.getRef("heads/main").updateTo(commit.getSHA1());
   }
 
   private boolean fileIsExecutable(final File file) {
