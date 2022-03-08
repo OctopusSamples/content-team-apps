@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 /** WHen this app is run as a web server, this class defines the REST API endpoints. */
 @Path("/api/githubrepo")
 @RequestScoped
-public class ServiceAccountResource {
+public class GitHubRepoResource {
 
   @Inject
   GitHubRepoHandler gitHubRepoHandler;

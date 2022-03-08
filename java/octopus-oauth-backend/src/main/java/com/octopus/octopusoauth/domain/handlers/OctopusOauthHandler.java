@@ -91,8 +91,7 @@ public class OctopusOauthHandler {
             octopusEncryption,
             octopusSalt)
             + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
-            + ";path=/"
-            + ";HttpOnly")
+            + ";path=/")
         .build());
   }
 }

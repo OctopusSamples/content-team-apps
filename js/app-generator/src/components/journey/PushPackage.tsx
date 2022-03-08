@@ -35,16 +35,26 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             secrets: [
                                 {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
                                 {name: "OCTOPUS_APIKEY", value: Cookies.get("OctopusUserSession"), serverSideEncrypted: true},
-                                {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey, encrypted: true},
+                                {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
                                 {name: "AWS_SECRET_ACCESS_KEY", value: Cookies.get("awsSecretKey"), clientSideEncrypted: true},
                             ]
                         }
                     }
                 }
 
-                props.machine.send("NEXT")
+                postJsonApi(JSON.stringify(populateRepoBody), "http://localhost:13000/api/githubrepo")
+                    .then(body => {
+                        props.machine.send("NEXT")
+                    })
+                    .catch(() => {
+                        setLoading(false);
+                        window.alert("DOH!")
+                    });
             })
-            .catch(() => props.machine.send("ERROR"))
+            .catch(() => {
+                setLoading(false);
+                window.alert("DOH!")
+            })
     }
 
     return (
@@ -84,9 +94,17 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                     left: "0",
                     bottom: "0",
                     right: "0",
-                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    backgroundColor: "rgba(0, 0, 0, 0.95)",
                     zIndex: 10000
                 }}>
+                    <div style={{
+                        position: "fixed",
+                        top: "30%",
+                        left: "0",
+                        right: "0",
+                        textAlign: "center"}}>
+                        <h3>This will take a minute...</h3>
+                    </div>
                     <img alt="loading" id="spinner" src={lightDark} style={{
                         position: "fixed",
                         top: "50%",

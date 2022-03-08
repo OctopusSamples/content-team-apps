@@ -134,14 +134,22 @@ public class GitHubRepoHandler {
       // Commit the files
       commitFiles(decryptedGithubToken, createGithubRepo, "C:\\Code\\AppBuilderPlayground");
 
-      return "yay!";
+      // return the details of the new repo
+      return jsonApiServiceUtils.respondWithResource(CreateGithubRepo
+          .builder()
+              .id(createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository())
+              .githubOwner(createGithubRepo.getGithubOwner())
+              .githubRepository(createGithubRepo.getGithubRepository())
+          .build());
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
     } catch (final InvalidInput ex) {
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Request-Failed " + ex.getMessage());
       throw ex;
     } catch (final Throwable ex) {
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure " + ex);
       throw new InvalidInput();
     }
   }

@@ -67,7 +67,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 <FormLabel sx={formElements}>Region</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} value={accessKey} onChange={(event) => setRegion(event.target.value)}/>
+                                <TextField sx={formElements} value={region} onChange={(event) => setRegion(event.target.value)}/>
                             </Grid>
                         </Grid>
                         <Button sx={nextButtonStyle} variant="outlined" onClick={next}>
