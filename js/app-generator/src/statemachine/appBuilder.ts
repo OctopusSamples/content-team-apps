@@ -21,6 +21,7 @@ import SelectFramework from "../components/journey/SelectFramework";
 import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
+import Error from "../components/journey/Error";
 
 /**
  * Return the state context from local storage.
@@ -245,6 +246,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     on: {
                         BACK: {target: 'selectFramework'},
                         NEXT: {target: 'done'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("pushPackage"),
@@ -259,6 +261,13 @@ export const appBuilderMachine = createMachine<StateContext>({
                     entry: [
                         saveCurrentState(""),
                         assignForm(Done)
+                    ]
+                },
+                error: {
+                    type: 'final',
+                    entry: [
+                        saveCurrentState(""),
+                        assignForm(Error)
                     ]
                 },
             }

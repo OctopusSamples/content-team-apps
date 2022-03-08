@@ -1,14 +1,18 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import Cookies from "js-cookie";
 import {postJsonApi} from "../../utils/network";
+import {AppContext} from "../../App";
+import lightDark from '../../images/spinnerDark.gif'
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    const [loading, setLoading] = useState<boolean>(false);
+
     const pushPackage = () => {
+        setLoading(true);
         const body = {
             "data": {
                 "type": "createserviceaccount",
@@ -23,7 +27,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         postJsonApi(JSON.stringify(body), "http://localhost:12000/api/serviceaccounts")
             .then(body => {
                 props.machine.send("NEXT")
-            });
+            })
+            .catch(() => props.machine.send("ERROR"))
     }
 
     return (
@@ -56,6 +61,25 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 </Grid>
                 <Grid item md={3} xs={0}/>
             </Grid>
+            {loading &&
+                <div style={{
+                    position: "fixed",
+                    top: "0",
+                    left: "0",
+                    bottom: "0",
+                    right: "0",
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    zIndex: 10000
+                }}>
+                    <img alt="loading" id="spinner" src={lightDark} style={{
+                        position: "fixed",
+                        top: "50%",
+                        left: "50%",
+                        marginTop: "-64px",
+                        marginLeft: "-64px",
+                        zIndex: 10001
+                    }}/>
+                </div>}
         </>
     );
 };
