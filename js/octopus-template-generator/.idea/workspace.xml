@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.eslintignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/octopus-template-generator.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.mocharc.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.vscode/tasks.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.yo-rc.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DEVELOPING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__tests__/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/home-page.acceptance.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/ping.controller.acceptance.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/test-helper.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/application.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controllers/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controllers/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controllers/ping.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/datasources/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/migrate.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/generatetemplate.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/openapi-spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/repositories/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sequence.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="267UQcRJ0bvq78PSvpeyBs2DSsa" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="C:\Code\content-team-apps\js\octopus-template-generator\node_modules\typescript\lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="" />
+      <created>1646774103650</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1646774103650</updated>
+      <workItem from="1646774106095" duration="4121000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

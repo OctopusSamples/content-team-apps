@@ -12,19 +12,23 @@ module.exports = class extends Generator {
     }
 
     initializing() {
+        const awsRegion = this.options["awsRegion"];
+        const awsStateBucketRegion = this.options["awsStateBucketRegion"] || awsRegion;
+        const s3BucketSuffix = this.options["s3BucketSuffix"];
+
         this.composeWith(
             require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'),
             {
-                s3_bucket_suffix: this.options["s3BucketSuffix"],
-                aws_state_bucket_region: this.options["awsStateBucketRegion"],
-                aws_region: this.options["awsRegion"]
+                s3_bucket_suffix: s3BucketSuffix,
+                aws_state_bucket_region: awsStateBucketRegion,
+                aws_region: awsRegion
             });
         this.composeWith(
             require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'),
             {
-                s3_bucket_suffix: this.options["s3BucketSuffix"],
-                aws_state_bucket_region: this.options["awsStateBucketRegion"],
-                aws_region: this.options["awsRegion"]
+                s3_bucket_suffix: s3BucketSuffix,
+                aws_state_bucket_region: awsStateBucketRegion,
+                aws_region: awsRegion
             });
         this.composeWith(
             require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'),
@@ -32,16 +36,16 @@ module.exports = class extends Generator {
         this.composeWith(
             require.resolve('@octopus-content-team/generator-github-kubernetes-deployment/generators/app'),
             {
-                s3_bucket_suffix: this.options["s3BucketSuffix"],
-                aws_state_bucket_region: this.options["awsStateBucketRegion"],
-                aws_region: this.options["awsRegion"]
+                s3_bucket_suffix: s3BucketSuffix,
+                aws_state_bucket_region: awsStateBucketRegion,
+                aws_region: awsRegion
             });
         this.composeWith(
             require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'),
             {
-                s3_bucket_suffix: this.options["s3BucketSuffix"],
-                aws_state_bucket_region: this.options["awsStateBucketRegion"],
-                aws_region: this.options["awsRegion"]
+                s3_bucket_suffix: s3BucketSuffix,
+                aws_state_bucket_region: awsStateBucketRegion,
+                aws_region: awsRegion
             });
     }
 
