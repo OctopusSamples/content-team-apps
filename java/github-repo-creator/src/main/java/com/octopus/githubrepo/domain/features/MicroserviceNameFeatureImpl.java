@@ -11,6 +11,6 @@ public class MicroserviceNameFeatureImpl implements MicroserviceNameFeature {
 
   @Override
   public String getMicroserviceName() {
-    return "ServiceAccounts";
+    return "GitHubRepo";
   }
 }

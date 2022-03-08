@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class Secret {
   private String name;
   private String value;
-  private boolean encrypted;
+  private boolean serverSideEncrypted;
+  private boolean clientSideEncrypted;
 }

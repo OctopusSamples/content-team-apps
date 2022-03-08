@@ -34,9 +34,17 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             githubRepository: "AppBuilder",
                             secrets: [
                                 {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
-                                {name: "OCTOPUS_APIKEY", value: Cookies.get("OctopusUserSession"), serverSideEncrypted: true},
+                                {
+                                    name: "OCTOPUS_APIKEY",
+                                    value: Cookies.get("OctopusUserSession"),
+                                    serverSideEncrypted: true
+                                },
                                 {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
-                                {name: "AWS_SECRET_ACCESS_KEY", value: Cookies.get("awsSecretKey"), clientSideEncrypted: true},
+                                {
+                                    name: "AWS_SECRET_ACCESS_KEY",
+                                    value: Cookies.get("awsSecretKey"),
+                                    clientSideEncrypted: true
+                                },
                             ]
                         }
                     }
@@ -102,7 +110,9 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         top: "30%",
                         left: "0",
                         right: "0",
-                        textAlign: "center"}}>
+                        textAlign: "center",
+                        color: "white"
+                    }}>
                         <h3>This will take a minute...</h3>
                     </div>
                     <img alt="loading" id="spinner" src={lightDark} style={{

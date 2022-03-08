@@ -22,12 +22,6 @@ public class CreateGithubRepo  {
   @Id
   private String id;
 
-  /**
-   * The octopus server to create the account against
-   */
-  @NotBlank
-  private String octopusServer;
-
   @NotBlank
   private String githubOwner;
 

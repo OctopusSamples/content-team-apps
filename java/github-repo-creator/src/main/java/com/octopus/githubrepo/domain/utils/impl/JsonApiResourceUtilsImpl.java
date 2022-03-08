@@ -35,7 +35,7 @@ public class JsonApiResourceUtilsImpl<T> implements JsonApiResourceUtils<T> {
       return resourceDocument.get();
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.
-      throw new InvalidInput();
+      throw new InvalidInput(ex);
     }
   }
 
