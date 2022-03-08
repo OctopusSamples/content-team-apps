@@ -1,6 +1,6 @@
 import {post, requestBody, Response, RestBindings} from '@loopback/rest';
 import {TemplateGenerator} from '../hanlders/templateGenerator';
-import {GenerateTemplate} from '../models/generatetemplate';
+import {GenerateTemplate} from '../models/generate-template';
 import {inject} from '@loopback/core';
 import path from 'path';
 import * as os from 'os';
@@ -17,8 +17,8 @@ export class GenerateTemplateController {
     @requestBody() createTemplate: GenerateTemplate,
     @inject(RestBindings.Http.RESPONSE) response: Response): Promise<Response> {
     const templateZip = await this.templateGenerator.generateTemplate(
-      createTemplate.attributes.template,
-      createTemplate.attributes.options);
+      createTemplate.data.attributes.template,
+      createTemplate.data.attributes.options);
     const resolvedFile = path.resolve(os.tmpdir(), templateZip);
     response.download(resolvedFile, "template.zip");
     return response;

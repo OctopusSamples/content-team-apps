@@ -1,53 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.eslintignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/octopus-template-generator.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.mocharc.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.vscode/tasks.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.yo-rc.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DEVELOPING.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/__tests__/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/home-page.acceptance.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/ping.controller.acceptance.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/__tests__/acceptance/test-helper.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/application.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/ping.controller.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/datasources/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/migrate.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/generatetemplate.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/openapi-spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/repositories/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/sequence.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" afterDir="false" />
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Starting work on Yeoman template generator API">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/application.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/application.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/generatetemplate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/generate-template.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +39,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -97,8 +56,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646774103650</updated>
-      <workItem from="1646774106095" duration="4121000" />
+      <workItem from="1646774106095" duration="5081000" />
     </task>
+    <task id="LOCAL-00001" summary="Starting work on Yeoman template generator API">
+      <created>1646778356737</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1646778356737</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -117,5 +84,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Starting work on Yeoman template generator API" />
+    <option name="LAST_COMMIT_MESSAGE" value="Starting work on Yeoman template generator API" />
   </component>
 </project>
