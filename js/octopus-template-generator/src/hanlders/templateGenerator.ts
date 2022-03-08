@@ -15,7 +15,7 @@ export class TemplateGenerator {
 
     try {
       const env = yeoman.createEnv({cwd: tempDir});
-      env.register(require.resolve(generator), 'octopus-generator:app');
+      env.register(require.resolve(generator + "/generators/app"), 'octopus-generator:app');
 
       await env.run('octopus-generator:app', options);
 
