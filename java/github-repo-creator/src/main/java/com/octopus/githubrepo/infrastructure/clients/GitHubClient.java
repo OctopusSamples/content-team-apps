@@ -65,6 +65,11 @@ public interface GitHubClient {
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo);
 
+  @GET
+  @Path("/rate_limit")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response checkRateLimit(@HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
   @PUT
   @Path("/repos/{owner}/{repo}/actions/secrets/{secret_name}")
   @Produces(MediaType.APPLICATION_JSON)

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -116,6 +118,9 @@ public class GitHubRepoHandler {
       final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
           githubSalt);
 
+      // Ensure we have the required scopes
+      verifyScopes(decryptedGithubToken);
+
       // Get the existing repo, or create a new one.
       createRepo(decryptedGithubToken, createGithubRepo);
 
@@ -133,15 +138,34 @@ public class GitHubRepoHandler {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
+    } catch (final InvalidInput ex) {
+      throw ex;
     } catch (final Throwable ex) {
       throw new InvalidInput();
+    }
+  }
+
+  private void verifyScopes(final String decryptedGithubToken) {
+    final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken);
+    final List<String> scopes = List.of(response.getHeaderString("X-OAuth-Scopes").split(" "));
+
+    if (!scopes.contains("workflow")) {
+      throw new InvalidInput("GitHub token did not have the workflow scope");
+    }
+
+    if (!scopes.contains("repo")) {
+      throw new InvalidInput("GitHub token did not have the repo scope");
+    }
+
+    if (!scopes.contains("email")) {
+      throw new InvalidInput("GitHub token did not have the email scope");
     }
   }
 
   private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo, final String path) throws IOException {
     final Path inputPath = Paths.get(path);
 
-    final GitHub gitHub =  new GitHubBuilder().withOAuthToken(githubToken).build();
+    final GitHub gitHub = new GitHubBuilder().withOAuthToken(githubToken).build();
 
     // start with a Repository ref
     final GHRepository repo = gitHub.getRepository(
