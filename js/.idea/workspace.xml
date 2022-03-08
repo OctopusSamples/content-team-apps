@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/src/components/journey/EnterAwsCredentials.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/src/components/journey/EnterAwsCredentials.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-generator/src/components/journey/PushPackage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/src/components/journey/PushPackage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/src/statemachine/appBuilder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/src/statemachine/appBuilder.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator-github-complete-eks-deployment/generators/app/templates/.github/workflows/eks-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-complete-eks-deployment/generators/app/templates/.github/workflows/eks-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/github/shared-infrastructure/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/github/shared-infrastructure/action.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/terraform/shared-infrastructure/feeds.tf" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/terraform/shared-infrastructure/feeds.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/terraform/shared-infrastructure/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/terraform/shared-infrastructure/vars.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +46,7 @@
       <option name="presentableId" value="Default" />
       <updated>1645652324437</updated>
       <workItem from="1645652325814" duration="41000" />
-      <workItem from="1646709253200" duration="755000" />
+      <workItem from="1646709253200" duration="1094000" />
     </task>
     <servers />
   </component>
