@@ -19,15 +19,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -115,6 +112,7 @@ public class GitHubRepoHandler {
       // Ensure the validity of the request.
       verifyRequest(createGithubRepo);
 
+      // Decrypt the github token passed in as a cookie.
       final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
           githubSalt);
 
@@ -124,6 +122,7 @@ public class GitHubRepoHandler {
       // Create the secrets
       createSecrets(decryptedGithubToken, createGithubRepo);
 
+      // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
       populateInitialFile(decryptedGithubToken, createGithubRepo);
 
       // Commit the files
