@@ -9,6 +9,8 @@ module.exports = class extends Generator {
     }
 
     writing() {
+        console.log("Writing to " + this.destinationRoot());
+
         this.fs.copyTpl(
             this.templatePath('github/shared-infrastructure/action.yaml'),
             this.destinationPath('github/shared-infrastructure/action.yaml'),
