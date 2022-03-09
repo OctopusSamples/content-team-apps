@@ -4,24 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/google-java-format.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/terraform.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app-builder-frontend/action.yaml" afterDir="false" />
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Moved terraform template to a new directory">
       <change beforePath="$PROJECT_DIR$/../js/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../js/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../js/app-generator/github/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/backend.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/backend.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/project_groups.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/project_groups.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/providers.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/providers.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/required_providers.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/required_providers.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../js/app-generator/terraform/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/vars.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-builder-frontend/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/action.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-builder-frontend/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/vars.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +40,10 @@
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "C:/Code/content-team-apps/terraform",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "ruby.rails.projectView.checked": "true"
   }
 }]]></component>
@@ -81,8 +73,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="196000" />
+      <workItem from="1646862240833" duration="897000" />
     </task>
+    <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
+      <created>1646862474566</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1646862474566</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -98,6 +98,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Moved terraform template to a new directory" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved terraform template to a new directory" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

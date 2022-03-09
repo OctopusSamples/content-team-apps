@@ -106,5 +106,31 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
+    action {
+      action_type    = "Octopus.AwsUploadS3"
+      name           = "Upload Frontend"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+
+      packages {
+        acquisition_location = "Server"
+        feed_id = "Feeds-2301"
+        package_id = "app-builder-frontend"
+        properties = {
+          SelectionMode = "immediate"
+        }
+      }
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+        "Octopus.Action.Aws.S3.FileSelections": "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{Prefix}\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
+        "Octopus.Action.Aws.S3.TargetMode": "FileSelections"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Package.DownloadOnTentacle": "False"
+      }
+    }
   }
 }

@@ -2,23 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Fixing some variables">
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/checkstyle-idea.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/google-java-format.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/terraform.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/github/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/backend.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/backend.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/deployment_project.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/octopus_library_variable_set.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/project_groups.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/project_groups.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/providers.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/providers.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/required_providers.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/required_providers.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/vars.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../terraform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../terraform/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/deployment_project.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +44,7 @@
       <updated>1645652324437</updated>
       <workItem from="1645652325814" duration="41000" />
       <workItem from="1646709253200" duration="1322000" />
-      <workItem from="1646860533618" duration="1838000" />
+      <workItem from="1646860533618" duration="2415000" />
     </task>
     <task id="LOCAL-00001" summary="Missed a character">
       <created>1646860739501</created>

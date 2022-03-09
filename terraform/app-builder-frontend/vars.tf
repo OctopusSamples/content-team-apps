@@ -31,3 +31,8 @@ variable "octopus_worker_pool_id" {
   type = string
   nullable = false
 }
+
+variable "octopus_built_in_feed_id" {
+  type = string
+  nullable = false
+}
