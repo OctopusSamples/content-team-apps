@@ -24,6 +24,7 @@ jobs:
           octopus_application_lifecycle_id: Lifecycles-2221
           octopus_development_aws_account_id: Accounts-581
           octopus_production_aws_account_id: Accounts-701
+          octopus_built_in_feed_id: Feeds-2301
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-west-1
