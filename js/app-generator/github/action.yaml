@@ -30,6 +30,9 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
+  aws_terraform_state_bucket_region:
+    description: 'The AWS terraform state bucket region'
+    required: true
   run_number:
     required: true
   github_token:
@@ -151,10 +154,10 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-frontend-c81b45ae-50de-466c-8500-3845fd8b80c4 --region ${{ inputs.aws_region }} 2>/dev/null
+        aws s3api head-bucket --bucket app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-frontend-c81b45ae-50de-466c-8500-3845fd8b80c4 --region ${{ inputs.aws_region }}
+          aws s3 mb s3://app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 

@@ -11,8 +11,8 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "app-builder-<%= s3_bucket_suffix %>"
-    key    = "appbuilder-shared-infrastructure"
-    region = "<%= aws_state_bucket_region %>"
+    bucket = "app-builder-c81b45ae-50de-466c-8500-3845fd8b80c"
+    key    = "app-builder-frontend"
+    region = "us-west-1"
   }
 }

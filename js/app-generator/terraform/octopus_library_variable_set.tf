@@ -1,6 +1,6 @@
 resource "octopusdeploy_library_variable_set" "frontend_library_variable_set" {
-  name = "Octopus Variables"
-  description = "Variables that relate to working with Octopus itself, such as API keys"
+  name = "App Builder Frontend"
+  description = "Variables used when deploying the App Builder Frontend"
 }
 
 output "frontend_library_variable_set_id" {
