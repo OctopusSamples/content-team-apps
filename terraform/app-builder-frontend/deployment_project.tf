@@ -136,8 +136,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
         "Octopus.Action.AwsAccount.Variable": "AWS.Account"
         "Octopus.Action.Package.DownloadOnTentacle": "False"
-        "Octopus.Action.Package.FeedId" = var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId" = "app-builder-frontend"
+        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId": "app-builder-frontend"
       }
     }
   }
