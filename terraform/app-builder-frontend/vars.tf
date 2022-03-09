@@ -36,3 +36,28 @@ variable "octopus_built_in_feed_id" {
   type = string
   nullable = false
 }
+
+variable "octopus_development_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_production_aws_account_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_development_security_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_production_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_production_security_environment_id" {
+  type = string
+  nullable = false
+}
