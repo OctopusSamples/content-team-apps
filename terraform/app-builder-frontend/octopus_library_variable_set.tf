@@ -34,7 +34,7 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   value = "AppBuilder.Frontend"
 }
 
-resource "octopusdeploy_variable" "aws_s3_bucket" {
+resource "octopusdeploy_variable" "aws_s3_directory" {
   name = "S3.Directory"
   type = "String"
   description = "The S3 'directory' that holds the frontend web app files for a given deployment. This directory is based on the package ID."
