@@ -19,7 +19,7 @@ resource "octopusdeploy_variable" "aws_account" {
   }
 }
 
-resource "octopusdeploy_variable" "aws_account" {
+resource "octopusdeploy_variable" "aws_production_account" {
   name = "AWS.Account"
   type = "AmazonWebServicesAccount"
   description = "The AWS account used to deploy the application."
