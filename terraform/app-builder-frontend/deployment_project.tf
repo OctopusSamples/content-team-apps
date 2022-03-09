@@ -37,6 +37,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Create S3 Bucket"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
@@ -117,6 +118,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Upload Frontend"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
 
       primary_package {
         acquisition_location = "Server"
@@ -151,6 +153,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Get Stack Outputs"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
@@ -449,6 +452,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Update Stage"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
@@ -506,6 +510,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Get Stage URL"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
