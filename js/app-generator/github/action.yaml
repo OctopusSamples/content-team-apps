@@ -1,4 +1,5 @@
 name: Node.js Build
+description: Build the frontend web app
 'on':
   workflow_dispatch: {}
   push: {}
@@ -38,8 +39,10 @@ inputs:
     required: true
   run_number:
     required: true
+    description: 'The GitHub run number'
   github_token:
     required: true
+    description: 'The GitHub token'
 
 runs:
   using: "composite"
@@ -159,6 +162,7 @@ runs:
 #        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
 #        draft: 'false'
 #        prerelease: 'false'
+
 #    - env:
 #        GITHUB_TOKEN: ${{ inputs.github_token }}
 #      name: Upload Release Asset
@@ -173,7 +177,7 @@ runs:
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
-        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        packages: js/app-generator/app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
         server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting
@@ -181,13 +185,15 @@ runs:
 #    - name: Generate Octopus Deploy build information
 #      uses: xo-energy/action-octopus-build-information@v1.1.2
 #      with:
-#        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+#        octopus_api_key: ${{ inputs.octopus_apikey }}
 #        octopus_project: app-builder-frontend
-#        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
+#        octopus_server:  ${{ inputs.octopus_server }}
 #        push_version: ${{ steps.determine_version.outputs.semVer }}
 #        push_package_ids: app-builder-frontend
 #        push_overwrite_mode: OverwriteExisting
 #        output_path: octopus
+#        space: "Content Team"
+
 #    - name: Create Octopus Release
 #      uses: OctopusDeploy/create-release-action@v1.1.1
 #      with:
