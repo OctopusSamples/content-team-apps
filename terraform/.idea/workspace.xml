@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Fixed escaping">
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Added update stage step">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
     </list>
@@ -71,7 +71,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="2251000" />
+      <workItem from="1646862240833" duration="2510000" />
     </task>
     <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
       <created>1646862474566</created>
@@ -122,7 +122,21 @@
       <option name="project" value="LOCAL" />
       <updated>1646864067330</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added cloudformation proxy step">
+      <created>1646864537787</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1646864537787</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Added update stage step">
+      <created>1646864696885</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1646864696885</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,7 +161,9 @@
     <MESSAGE value="Added the stack output variable reader step" />
     <MESSAGE value="Fixed a variable name" />
     <MESSAGE value="Fixed escaping" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed escaping" />
+    <MESSAGE value="Added cloudformation proxy step" />
+    <MESSAGE value="Added update stage step" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added update stage step" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

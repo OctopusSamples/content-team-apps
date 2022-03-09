@@ -466,9 +466,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             Stage:
               Type: 'AWS::ApiGateway::Stage'
               Properties:
-                DeploymentId: !Sub '${DeploymentId}'
-                RestApiId: !Sub '${ApiGatewayId}'
-                StageName: !Sub '${EnvironmentName}'
+                DeploymentId: !Sub '$${DeploymentId}'
+                RestApiId: !Sub '$${ApiGatewayId}'
+                StageName: !Sub '$${EnvironmentName}'
                 Variables:
                   indexPage: !Sub /index.html
           Outputs:
@@ -491,6 +491,40 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.WaitForCompletion": "True"
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
         "Octopus.Action.AwsAccount.Variable": "AWS"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Get Stage URL"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stage URL"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+
+      properties = {
+        Octopus.Action.Aws.AssumeRole = "False"
+        Octopus.Action.Aws.Region = "#{AWS.Region}"
+        Octopus.Action.AwsAccount.UseInstanceRole = "False"
+        Octopus.Action.AwsAccount.Variable = "AWS.Account"
+        Octopus.Action.Script.ScriptBody = <<-EOT
+                STARGE_URL=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormationName.ApiGatewayStage} \
+                    --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+                    --output text)
+
+                set_octopusvariable "StageURL" ${STARGE_URL}
+
+                echo "Stage URL: ${STARGE_URL}"
+
+            EOT
+        Octopus.Action.Script.ScriptSource = "Inline"
+        Octopus.Action.Script.Syntax = "Bash"
+        OctopusUseBundledTooling = "False"
       }
     }
   }
