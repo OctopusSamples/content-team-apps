@@ -1,5 +1,5 @@
-name: App Builder Frontend
-description: Deploys the app builder frontend
+name: App Builder Share Network Infrastructure
+description: Deploys the shared network infrastructure project
 'on':
   workflow_dispatch: {}
   push: {}
@@ -13,8 +13,8 @@ inputs:
   octopus_space_id:
     description: 'The ID of the app builder space'
     required: true
-  octopus_application_lifecycle_id:
-    description: 'The application deployment lifecycle'
+  octopus_infrastructure_lifecycle_id:
+    description: 'The infrastructure deployment lifecycle'
     required: true
   octopus_built_in_feed_id:
     description: 'The built in feed ID'
@@ -86,10 +86,9 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}"
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
         -var="octopus_worker_pool_id=${{ inputs.octopus_worker_pool_id }}"
-        -var="octopus_built_in_feed_id=${{ inputs.octopus_built_in_feed_id }}"
       working-directory: terraform/app-builder-frontend
       shell: bash
