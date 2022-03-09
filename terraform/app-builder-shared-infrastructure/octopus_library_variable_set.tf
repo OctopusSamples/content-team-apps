@@ -7,7 +7,7 @@ output "frontend_library_variable_set_id" {
   value = octopusdeploy_library_variable_set.frontend_library_variable_set.id
 }
 
-resource "octopusdeploy_variable" "aws_account" {
+resource "octopusdeploy_variable" "aws_development_account" {
   name = "AWS.Account"
   type = "AmazonWebServicesAccount"
   description = "The AWS account used to deploy the application."
