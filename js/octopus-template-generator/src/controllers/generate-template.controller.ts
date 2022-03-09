@@ -17,6 +17,7 @@ export class GenerateTemplateController {
     const templateZip = await this.templateGenerator.generateTemplate(
       createTemplate.data.attributes.template,
       createTemplate.data.attributes.options);
+    response.setHeader("Content-Type", "application/zip");
     response.download(templateZip, "template.zip", (err: Error) => {
       if (err) {
         console.log(err);

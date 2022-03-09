@@ -7,6 +7,8 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.githubrepo.domain.entities.GenerateTemplate;
+import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtilsGenerateTemplate;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jsonapi.impl.PagedResultsLinksBuilderImpl;
@@ -27,7 +29,7 @@ import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
-import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtils;
+import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtilsCreateGithubRepo;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
@@ -181,9 +183,21 @@ public class UtilityProducer {
    */
   @ApplicationScoped
   @Produces
-  @Named("JsonApiServiceUtils")
-  public JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtils(final ResourceConverter resourceConverter) {
-    return new JsonApiServiceUtils(resourceConverter);
+  @Named("JsonApiServiceUtilsCreateGithubRepo")
+  public JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo(final ResourceConverter resourceConverter) {
+    return new JsonApiServiceUtilsCreateGithubRepo(resourceConverter);
+  }
+
+  /**
+   * Produces a JsonApiResourceUtils typed for CreateServiceAccount.
+   * @param resourceConverter The JSON api resource converter.
+   * @return An instance of JsonApiResourceUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  @Named("JsonApiServiceUtilsGenerateTemplate")
+  public JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate(final ResourceConverter resourceConverter) {
+    return new JsonApiServiceUtilsGenerateTemplate(resourceConverter);
   }
 
   /**

@@ -6,6 +6,7 @@ import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.GithubFile;
@@ -13,12 +14,15 @@ import com.octopus.githubrepo.domain.entities.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
+import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import io.quarkus.logging.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -35,6 +39,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -73,12 +78,19 @@ public class GitHubRepoHandler {
   @RestClient
   GitHubClient gitHubClient;
 
+  @RestClient
+  GenerateTemplateClient generateTemplateClient;
+
   @Inject
   ServiceAuthUtils serviceAuthUtils;
 
   @Inject
-  @Named("JsonApiServiceUtils")
-  JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtils;
+  @Named("JsonApiServiceUtilsCreateGithubRepo")
+  JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
+
+  @Inject
+  @Named("JsonApiGenerateTemplateGenerateTemplate")
+  JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate;
 
   @Inject
   CryptoUtils cryptoUtils;
@@ -109,7 +121,7 @@ public class GitHubRepoHandler {
 
     try {
       // Extract the create service account action from the HTTP body.
-      final CreateGithubRepo createGithubRepo = jsonApiServiceUtils.getResourceFromDocument(
+      final CreateGithubRepo createGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(
           document, CreateGithubRepo.class);
 
       // Ensure the validity of the request.
@@ -131,22 +143,25 @@ public class GitHubRepoHandler {
       // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
       populateInitialFile(decryptedGithubToken, createGithubRepo);
 
+      final String templateDir = downloadTemplate(createGithubRepo);
+
       // Commit the files
-      commitFiles(decryptedGithubToken, createGithubRepo, "C:\\Code\\AppBuilderPlayground");
+      commitFiles(decryptedGithubToken, createGithubRepo, templateDir);
 
       // return the details of the new repo
-      return jsonApiServiceUtils.respondWithResource(CreateGithubRepo
+      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
           .builder()
-              .id(createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository())
-              .githubOwner(createGithubRepo.getGithubOwner())
-              .githubRepository(createGithubRepo.getGithubRepository())
+          .id(createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository())
+          .githubOwner(createGithubRepo.getGithubOwner())
+          .githubRepository(createGithubRepo.getGithubRepository())
           .build());
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
     } catch (final InvalidInput ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-Request-Failed " + ex.getMessage());
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-Request-Failed " + ex.getMessage());
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure " + ex);
@@ -175,7 +190,34 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo, final String path) throws IOException {
+  private String downloadTemplate(final CreateGithubRepo createGithubRepo)
+      throws DocumentSerializationException, IOException {
+    try (final Response response = generateTemplateClient.generateTemplate(
+        jsonApiServiceUtilsGenerateTemplate.respondWithResource(
+            GenerateTemplate.builder()
+                .template(createGithubRepo.getGenerator())
+                .options(createGithubRepo.getOptions())
+                .build()),
+        null,
+        null
+    )) {
+      final InputStream inputStream = response.readEntity(InputStream.class);
+      final Path targetFile = Files.createTempFile("template", ".zip");
+
+      try {
+        FileUtils.copyInputStreamToFile(inputStream, targetFile.toFile());
+        final Path destination = Files.createTempDirectory("template");
+        new ZipFile(targetFile.toString()).extractAll(destination.toString());
+        return destination.toString();
+      } finally {
+        // clean up the zip file once it is extracted
+        FileUtils.deleteQuietly(targetFile.toFile());
+      }
+    }
+  }
+
+  private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo,
+      final String path) throws IOException {
     final Path inputPath = Paths.get(path);
 
     final GitHub gitHub = new GitHubBuilder().withOAuthToken(githubToken).build();
@@ -197,12 +239,12 @@ public class GitHubRepoHandler {
 
     // loop over all the files and add them to the treebuilder.
     Collection<File> files = FileUtils.listFiles(new File(path), null, true);
-    for(final File file : files) {
+    for (final File file : files) {
 
       // don't process git dirs if they exist
       if (!pathHasIgnoreDirectory(file.getAbsolutePath())) {
         final String relativePath = inputPath.relativize(file.toPath()).toString()
-                .replaceAll("\\\\", "/");
+            .replaceAll("\\\\", "/");
 
         Log.info("Adding " + relativePath);
 
@@ -257,8 +299,7 @@ public class GitHubRepoHandler {
   }
 
   /**
-   * We need to create an initial file in the repo to then allow the Git client to
-   * upload the rest.
+   * We need to create an initial file in the repo to then allow the Git client to upload the rest.
    */
   private void populateInitialFile(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) {
@@ -274,17 +315,17 @@ public class GitHubRepoHandler {
             GithubFile.builder()
                 .content(Base64.getEncoder().encodeToString(
                     """
-                      # App Builder
-                      This repo was populated by the Octopus App Builder tool. The directory structure is shown below:
-                      
-                      * `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.
-                      * `github`: Composable GitHub Actions that are called by the workflow files.
-                      * `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.
-                      * `java`: The sample Java application.
-                      * `js`: The sample JavaScript application.
-                      * `dotnet`: The sample DotNET application.
-                    """.getBytes(
-                    StandardCharsets.UTF_8)))
+                          # App Builder
+                          This repo was populated by the Octopus App Builder tool. The directory structure is shown below:
+                          
+                          * `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.
+                          * `github`: Composable GitHub Actions that are called by the workflow files.
+                          * `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.
+                          * `java`: The sample Java application.
+                          * `js`: The sample JavaScript application.
+                          * `dotnet`: The sample DotNET application.
+                        """.getBytes(
+                        StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
                 .branch("main")
                 .build(),
