@@ -73,7 +73,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/app-builder-frontend
+      working-directory: terraform/app-builder-shared-infrastructure
       shell: bash
 
     - name: Terraform Apply
@@ -90,5 +90,5 @@ runs:
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
         -var="octopus_worker_pool_id=${{ inputs.octopus_worker_pool_id }}"
-      working-directory: terraform/app-builder-frontend
+      working-directory: terraform/app-builder-shared-infrastructure
       shell: bash
