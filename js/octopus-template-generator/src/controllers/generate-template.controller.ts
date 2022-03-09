@@ -18,7 +18,9 @@ export class GenerateTemplateController {
       createTemplate.data.attributes.template,
       createTemplate.data.attributes.options);
     response.download(templateZip, "template.zip", (err: Error) => {
-      console.log(err);
+      if (err) {
+        console.log(err);
+      }
     });
     return response;
   }
