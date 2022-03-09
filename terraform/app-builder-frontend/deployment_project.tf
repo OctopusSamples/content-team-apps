@@ -139,4 +139,54 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Get Stack Outputs"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stack Outputs"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+                WEB_RESOURCE_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormationName.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='Web'].OutputValue" \
+                    --output text)
+
+                set_octopusvariable "Web" ${WEB_RESOURCE_ID}
+                echo "Web Resource ID: $WEB_RESOURCE_ID"
+
+                REST_API=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormationName.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
+                    --output text)
+
+                set_octopusvariable "RestApi" ${REST_API}
+                echo "Rest API ID: $REST_API"
+
+                ROOT_RESOURCE_ID=$(aws cloudformation \
+                	describe-stacks \
+                    --stack-name #{CloudFormationName.ApiGateway} \
+                    --query "Stacks[0].Outputs[?OutputKey=='RootResourceId'].OutputValue" \
+                    --output text)
+
+                set_octopusvariable "RootResourceId" ${ROOT_RESOURCE_ID}
+                echo "Root resource ID: $ROOT_RESOURCE_ID"
+            EOT
+        "Octopus.Action.Script.ScriptSource": "Inline"
+        "Octopus.Action.Script.Syntax": "Bash"
+        "OctopusUseBundledTooling": "False"
+      }
+    }
+  }
 }

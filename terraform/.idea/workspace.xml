@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Made individual steps">
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Added the directory variable based of the package id">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" afterDir="false" />
@@ -72,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="1332000" />
+      <workItem from="1646862240833" duration="1646000" />
     </task>
     <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
       <created>1646862474566</created>
@@ -95,7 +95,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646863401587</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added the directory variable based of the package id">
+      <created>1646863606854</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1646863606854</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -116,7 +123,8 @@
     <MESSAGE value="Moved terraform template to a new directory" />
     <MESSAGE value="Fixing package block" />
     <MESSAGE value="Made individual steps" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made individual steps" />
+    <MESSAGE value="Added the directory variable based of the package id" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added the directory variable based of the package id" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

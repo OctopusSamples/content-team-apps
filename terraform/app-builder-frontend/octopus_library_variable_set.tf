@@ -37,12 +37,11 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
 resource "octopusdeploy_variable" "aws_s3_bucket" {
   name = "S3.Directory"
   type = "String"
-  description = "The name of the bucket hosting the App Builder frontend web app."
+  description = "The S3 'directory' that holds the frontend web app files for a given deployment. This directory is based on the package ID."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
 }
-
 
 resource "octopusdeploy_variable" "webapp_hostname" {
   name = "WebApp.Hostname"
@@ -51,4 +50,13 @@ resource "octopusdeploy_variable" "webapp_hostname" {
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "https://example.org"
+}
+
+resource "octopusdeploy_variable" "cloudformation_apigateway" {
+  name = "CloudFormationName.ApiGateway"
+  type = "String"
+  description = "The Cloudformation stack that created the app builder API gateway."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "AppBuilderApiGateway"
 }
