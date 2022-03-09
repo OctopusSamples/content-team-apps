@@ -11,7 +11,7 @@ export class TemplateGenerator {
 
   async generateTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
 
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), crypto.randomUUID()));
+    const tempDir = fs.mkdtempSync(os.tmpdir());
 
     try {
       const env = yeoman.createEnv({cwd: tempDir});
@@ -19,18 +19,19 @@ export class TemplateGenerator {
 
       await env.run('octopus-generator:app', options);
 
-      const output = fs.createWriteStream(path.join(os.tmpdir(), crypto.randomUUID(), 'target.zip'));
+      const zipPath = path.join(os.tmpdir(), crypto.randomUUID() + '.zip');
+      const output = fs.createWriteStream(zipPath);
       const archive = archiver('zip');
 
       archive.pipe(output)
       archive.directory(tempDir, false);
       archive.finalize();
 
-      return output;
+      return zipPath;
 
     } finally {
       try {
-        fs.rmSync(tempDir, { recursive: true });
+        //fs.rmSync(tempDir, { recursive: true });
       } catch {
         console.error('The temporary directory was not removed.')
       }

@@ -19,8 +19,7 @@ export class GenerateTemplateController {
     const templateZip = await this.templateGenerator.generateTemplate(
       createTemplate.data.attributes.template,
       createTemplate.data.attributes.options);
-    const resolvedFile = path.resolve(os.tmpdir(), templateZip);
-    response.download(resolvedFile, "template.zip");
+    response.download(templateZip, "template.zip");
     return response;
   }
 }

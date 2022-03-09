@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Generating a template now">
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/generators/app/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-complete-eks-deployment/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-shared-infrastructure/generators/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-shared-infrastructure/generators/app/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-shared-infrastructure/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-shared-infrastructure/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-github-shared-infrastructure/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-shared-infrastructure/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-octopus-java-microservice/generators/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-octopus-java-microservice/generators/app/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-octopus-java-microservice/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-octopus-java-microservice/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generator-octopus-java-microservice/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-octopus-java-microservice/package.json" afterDir="false" />
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Fixed up the payhs">
+      <change beforePath="$PROJECT_DIR$/../generator-octopus-java-microservice/package-lock.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +56,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646774103650</updated>
-      <workItem from="1646774106095" duration="8952000" />
+      <workItem from="1646774106095" duration="10668000" />
     </task>
     <task id="LOCAL-00001" summary="Starting work on Yeoman template generator API">
       <created>1646778356737</created>
@@ -87,7 +79,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646779552946</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Fixed up the payhs">
+      <created>1646783194963</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1646783194963</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,6 +108,7 @@
     <MESSAGE value="Starting work on Yeoman template generator API" />
     <MESSAGE value="Will need to use a custom body parser at some point, but assume a JSON object for now" />
     <MESSAGE value="Generating a template now" />
-    <option name="LAST_COMMIT_MESSAGE" value="Generating a template now" />
+    <MESSAGE value="Fixed up the payhs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed up the payhs" />
   </component>
 </project>
