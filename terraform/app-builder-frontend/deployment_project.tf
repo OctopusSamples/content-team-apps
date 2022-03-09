@@ -112,7 +112,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
 
-      packages {
+      primary_package {
         acquisition_location = "Server"
         feed_id = "Feeds-2301"
         package_id = "app-builder-frontend"
