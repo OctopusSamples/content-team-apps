@@ -3,7 +3,8 @@ name: app-builder-shared-infrastructure-octopus
 on:
   push:
     paths:
-    - 'terraform/app-builder-shared-infrastructure/**'
+    - 'terraform/app-builder-shared-infrastructure/**
+    - '.github/workflows/app-builder-shared-infrastructure-octopus.yml'
   workflow_dispatch:
 
 jobs:
