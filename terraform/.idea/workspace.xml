@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Added update stage step">
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Fixed variable references">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
     </list>
@@ -71,7 +71,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="2510000" />
+      <workItem from="1646862240833" duration="2606000" />
     </task>
     <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
       <created>1646862474566</created>
@@ -136,7 +136,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646864696885</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Fixed variable references">
+      <created>1646864792052</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1646864792052</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -163,7 +170,8 @@
     <MESSAGE value="Fixed escaping" />
     <MESSAGE value="Added cloudformation proxy step" />
     <MESSAGE value="Added update stage step" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added update stage step" />
+    <MESSAGE value="Fixed variable references" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed variable references" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

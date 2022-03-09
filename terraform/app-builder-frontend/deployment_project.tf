@@ -506,25 +506,25 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       worker_pool_id = var.octopus_worker_pool_id
 
       properties = {
-        Octopus.Action.Aws.AssumeRole = "False"
-        Octopus.Action.Aws.Region = "#{AWS.Region}"
-        Octopus.Action.AwsAccount.UseInstanceRole = "False"
-        Octopus.Action.AwsAccount.Variable = "AWS.Account"
-        Octopus.Action.Script.ScriptBody = <<-EOT
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Script.ScriptBody": <<-EOT
                 STARGE_URL=$(aws cloudformation \
                 	describe-stacks \
                     --stack-name #{CloudFormationName.ApiGatewayStage} \
                     --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
                     --output text)
 
-                set_octopusvariable "StageURL" ${STARGE_URL}
+                set_octopusvariable "StageURL" $${STARGE_URL}
 
-                echo "Stage URL: ${STARGE_URL}"
+                echo "Stage URL: $${STARGE_URL}"
 
             EOT
-        Octopus.Action.Script.ScriptSource = "Inline"
-        Octopus.Action.Script.Syntax = "Bash"
-        OctopusUseBundledTooling = "False"
+        "Octopus.Action.Script.ScriptSource": "Inline"
+        "Octopus.Action.Script.Syntax": "Bash"
+        "OctopusUseBundledTooling": "False"
       }
     }
   }
