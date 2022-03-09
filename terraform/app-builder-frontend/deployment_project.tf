@@ -37,7 +37,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Create S3 Bucket"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      properties = {
+      properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
@@ -106,6 +106,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
+  }
+  step {
+    condition           = "Success"
+    name                = "Upload Frontend"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsUploadS3"
       name           = "Upload Frontend"
