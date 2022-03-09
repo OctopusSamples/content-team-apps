@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port">
-      <change beforePath="$PROJECT_DIR$/../app-generator/terraform/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/terraform/octopus_library_variable_set.tf" afterDir="false" />
-    </list>
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
