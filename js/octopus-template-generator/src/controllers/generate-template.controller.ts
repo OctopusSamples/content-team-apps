@@ -2,8 +2,6 @@ import {post, requestBody, Response, RestBindings} from '@loopback/rest';
 import {TemplateGenerator} from '../hanlders/templateGenerator';
 import {GenerateTemplate} from '../models/generate-template';
 import {inject} from '@loopback/core';
-import path from 'path';
-import * as os from 'os';
 
 export class GenerateTemplateController {
   private templateGenerator: TemplateGenerator;
@@ -19,7 +17,9 @@ export class GenerateTemplateController {
     const templateZip = await this.templateGenerator.generateTemplate(
       createTemplate.data.attributes.template,
       createTemplate.data.attributes.options);
-    response.download(templateZip, "template.zip");
+    response.download(templateZip, "template.zip", (err: Error) => {
+      console.log(err);
+    });
     return response;
   }
 }

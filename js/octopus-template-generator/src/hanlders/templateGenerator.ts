@@ -25,13 +25,13 @@ export class TemplateGenerator {
 
       archive.pipe(output)
       archive.directory(tempDir, false);
-      archive.finalize();
+      await archive.finalize();
 
       return zipPath;
 
     } finally {
       try {
-        //fs.rmSync(tempDir, { recursive: true });
+        fs.rmSync(tempDir, { recursive: true });
       } catch {
         console.error('The temporary directory was not removed.')
       }
