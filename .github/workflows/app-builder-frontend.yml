@@ -23,6 +23,10 @@ jobs:
           octopus_space_id: Spaces-882
           octopus_worker_pool_id: WorkerPools-1282
           octopus_application_lifecycle_id: Lifecycles-2221
+          octopus_development_environment_id: Environments-3322
+          octopus_development_security_environment_id: Environments-3341
+          octopus_production_environment_id: Environments-3342
+          octopus_production_security_environment_id: Environments-3361
           octopus_development_aws_account_id: Accounts-581
           octopus_production_aws_account_id: Accounts-701
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
