@@ -70,6 +70,44 @@ runs:
       with:
         version: latest
 
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1
+          sleep 60 
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: js/app-generator/terraform
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: >
+        terraform apply 
+        -auto-approve 
+        -var="octopus_server=${{ inputs.octopus_server }}" 
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="aws_region=${{ inputs.aws_region }}"
+        -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
+      working-directory: js/app-generator/terraform
+      shell: bash
+
     - name: Install Dependencies
       run: yarn install
       shell: bash
@@ -148,43 +186,7 @@ runs:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
 
-    - name: Create Terraform state S3 bucket
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: |
-        # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1 2>/dev/null
-        # If not, create it
-        if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1
-          sleep 60 
-        fi
-      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
-    - name: Terraform Init
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: terraform init
-      working-directory: js/app-generator/terraform
-      shell: bash
-
-    - name: Terraform Apply
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: >
-        terraform apply 
-        -auto-approve 
-        -var="octopus_server=${{ inputs.octopus_server }}" 
-        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
-        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
-        -var="aws_region=${{ inputs.aws_region }}"
-        -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
-      working-directory: js/app-generator/terraform
-      shell: bash
 
 #    - env:
 #        GITHUB_TOKEN: ${{ inputs.github_token }}

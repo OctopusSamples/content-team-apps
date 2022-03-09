@@ -38,10 +38,10 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       properties = {
-        Octopus.Action.Aws.AssumeRole = "False"
-        Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.S3Bucket}"
-        Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
                 Parameters:
                   Hostname:
@@ -97,13 +97,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                           - DomainName
                     Description: Name of S3 bucket to hold website content
             EOT
-        Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
-        Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
-        Octopus.Action.Aws.Region = "#{AWS.Region}"
-        Octopus.Action.Aws.TemplateSource = "Inline"
-        Octopus.Action.Aws.WaitForCompletion = "True"
-        Octopus.Action.AwsAccount.UseInstanceRole = "False"
-        Octopus.Action.AwsAccount.Variable = "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }

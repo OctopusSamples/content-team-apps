@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.github/workflows/revserse-proxy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../.github/workflows/revserse-proxy.yaml" afterDir="false" />
+    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Missed a character">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator-aws-ecr/generators/app/templates/github/aws-ecr/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-aws-ecr/generators/app/templates/github/aws-ecr/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/github/shared-infrastructure/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-shared-infrastructure/generators/app/templates/github/shared-infrastructure/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator-github-shared-space/generators/app/templates/github/shared-space/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/generator-github-shared-space/generators/app/templates/github/shared-space/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/octopus-template-generator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/octopus-template-generator/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/github/action.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/terraform/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/terraform/deployment_project.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +26,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -48,11 +45,34 @@
       <updated>1645652324437</updated>
       <workItem from="1645652325814" duration="41000" />
       <workItem from="1646709253200" duration="1322000" />
-      <workItem from="1646860533618" duration="194000" />
+      <workItem from="1646860533618" duration="576000" />
     </task>
+    <task id="LOCAL-00001" summary="Missed a character">
+      <created>1646860739501</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1646860739501</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Missed a character" />
+    <option name="LAST_COMMIT_MESSAGE" value="Missed a character" />
   </component>
 </project>
