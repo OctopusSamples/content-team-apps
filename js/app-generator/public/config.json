@@ -1,16 +1,16 @@
 {
   "basename": "",
   "title": "App Builder",
+  "octopusOauthEndpoint": "http://localhost:10000/oauth/octopus",
+  "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
+  "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
+  "githubRepoEndpoint": "http://localhost:13000/api/githubrepo",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
   "healthEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/health",
   "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
   "editorFormat": "yaml",
   "google": {
     "tag": ""
-  },
-  "github": {
-    "enableLogin": true,
-    "loginPath": "https://development.githubactionworkflows.com/oauth/github/login"
   },
   "aws": {
     "cognitoDeveloperGroup": "Developers",

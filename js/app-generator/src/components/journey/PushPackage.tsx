@@ -1,13 +1,16 @@
-import {FC, ReactElement, useState} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {postJsonApi} from "../../utils/network";
 import lightDark from '../../images/spinnerDark.gif'
 import Cookies from "js-cookie";
+import {AppContext} from "../../App";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const context = useContext(AppContext);
 
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -24,7 +27,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 }
             }
         };
-        postJsonApi(JSON.stringify(body), "http://localhost:12000/api/serviceaccounts")
+        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint)
             .then((body: any) => {
                 const populateRepoBody = {
                     "data": {
@@ -57,7 +60,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                     }
                 }
 
-                postJsonApi(JSON.stringify(populateRepoBody), "http://localhost:13000/api/githubrepo")
+                postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint)
                     .then(body => {
                         props.machine.send("NEXT")
                     })

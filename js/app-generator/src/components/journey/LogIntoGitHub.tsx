@@ -1,14 +1,17 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useContext} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import {AppContext} from "../../App";
 
 const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    const context = useContext(AppContext);
+
     const login = () => {
         localStorage.setItem("appBuilderState", "loggedIntoGithub");
-        window.open("http://localhost:9000/oauth/github/login", "_parent");
+        window.open(context.settings.githubOauthEndpoint, "_parent");
     }
 
     return (

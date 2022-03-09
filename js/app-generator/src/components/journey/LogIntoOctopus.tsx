@@ -1,8 +1,9 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useContext} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
+import {AppContext} from "../../App";
 
 // define the randomUUID function
 declare global {
@@ -14,6 +15,8 @@ declare global {
 const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    const context = useContext(AppContext);
+
     const login = () => {
         const nonce = crypto.randomUUID().toString().replaceAll("-", "").substr(0, 19);
         Cookies.set("appBuilderOctopusNonce", nonce);
@@ -23,7 +26,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
             + "&response_type=code+id_token"
             + "&response_mode=form_post"
             + "&nonce=" + nonce
-            + "&redirect_uri=http://localhost:10000/oauth/octopus",
+            + "&redirect_uri=" + context.settings.octopusOauthEndpoint,
             "_parent");
     }
 

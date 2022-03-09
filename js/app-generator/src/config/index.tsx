@@ -1,5 +1,4 @@
 // components
-import GitHubLogin from "../pages/developer/GitHubLogin";
 import Branching from "../pages/developer/Branching";
 import Health from "../pages/developer/Health";
 
@@ -26,15 +25,6 @@ export const routes: Array<RouteItem> = [
         path: "/index.html",
         enabled: true,
         component: () => () => <Home/>,
-        appendDivider: true
-    },
-    {
-        key: "router-githublogin",
-        title: "GitHub Login",
-        tooltip: "GitHub Login",
-        path: "/githublogin",
-        enabled: true,
-        component: () => () => <GitHubLogin/>,
         appendDivider: true
     },
     {

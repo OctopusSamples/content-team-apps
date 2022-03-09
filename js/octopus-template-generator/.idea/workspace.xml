@@ -2,17 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port">
-      <change beforePath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/entities/GenerateTemplate.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/entities/GenerateTemplate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/framework/config/MyReflectionConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/framework/config/MyReflectionConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/framework/producers/JsonApiConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/framework/producers/JsonApiConverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/handlers/GitHubRepoHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../java/github-repo-creator/src/main/java/com/octopus/githubrepo/domain/handlers/GitHubRepoHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app-generator/public/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/public/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoGitHub.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoGitHub.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoOctopus.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoOctopus.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/PushPackage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/PushPackage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app-generator/src/config/runtimeConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/config/runtimeConfig.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/generate-template.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hanlders/templateGenerator.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/generate-template.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/generate-template.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +59,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646774103650</updated>
-      <workItem from="1646774106095" duration="14718000" />
+      <workItem from="1646774106095" duration="15907000" />
     </task>
     <task id="LOCAL-00001" summary="Starting work on Yeoman template generator API">
       <created>1646778356737</created>
