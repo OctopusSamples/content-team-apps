@@ -47,7 +47,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             RestApi:
               Type: 'AWS::ApiGateway::RestApi'
               Properties:
-                Description: My API Gateway
+                Description: App Builder API Gateway
                 Name: GitHub Actions API
                 BinaryMediaTypes:
                   - '*/*'
@@ -95,7 +95,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Value: !Ref ApiPipelineGitHubGenerate
             ApiOAuth:
               Description: ID of the resource exposing the OAuth proxies
-              Value: !Ref ApiPipelineOAuthGitHub
+              Value: !Ref ApiOAuth
 
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
