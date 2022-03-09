@@ -1,4 +1,4 @@
-name: app-builder-frontend-octopus
+name: app-builder-shared-infrastructure-octopus
 
 on:
   push:
