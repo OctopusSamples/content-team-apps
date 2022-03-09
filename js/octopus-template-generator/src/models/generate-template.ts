@@ -7,7 +7,7 @@ export class GenerateTemplate extends Entity {
     type: string;
 
     attributes: {
-      template: string,
+      generator: string,
       options: {[key: string]: string;}
     }
   }

@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.domain.handlers;
 
+import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInput;
@@ -12,6 +13,7 @@ import com.octopus.githubrepo.domain.entities.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.GithubFile;
 import com.octopus.githubrepo.domain.entities.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
+import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
@@ -98,6 +100,9 @@ public class GitHubRepoHandler {
 
   @Inject
   Validator validator;
+
+  @Inject
+  JsonApiConverter jsonApiConverter;
 
   /**
    * Creates a new service account in the Octopus cloud instance.
@@ -193,15 +198,17 @@ public class GitHubRepoHandler {
 
   private String downloadTemplate(final CreateGithubRepo createGithubRepo)
       throws DocumentSerializationException, IOException {
-    try (final Response response = generateTemplateClient.generateTemplate(
-        jsonApiServiceUtilsGenerateTemplate.respondWithResource(
-            GenerateTemplate.builder()
-                .template(createGithubRepo.getGenerator())
-                .options(createGithubRepo.getOptions())
-                .build()),
-        null,
-        null
-    )) {
+
+    final GenerateTemplate generateTemplate = GenerateTemplate.builder()
+        .id("")
+        .generator(createGithubRepo.getGenerator())
+        .options(createGithubRepo.getOptions())
+        .build();
+
+    final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(
+        new JSONAPIDocument<>(generateTemplate)));
+
+    try (final Response response = generateTemplateClient.generateTemplate(body, null, null)) {
       final InputStream inputStream = response.readEntity(InputStream.class);
       final Path targetFile = Files.createTempFile("template", ".zip");
 

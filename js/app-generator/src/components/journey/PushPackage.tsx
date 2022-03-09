@@ -32,6 +32,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "attributes": {
                             githubOwner: "mcasperson",
                             githubRepository: "AppBuilder",
+                            generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                             secrets: [
                                 {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
                                 {

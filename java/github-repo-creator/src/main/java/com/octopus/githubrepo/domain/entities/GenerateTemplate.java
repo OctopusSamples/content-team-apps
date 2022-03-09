@@ -19,7 +19,7 @@ public class GenerateTemplate {
   private String id;
 
   @NotBlank
-  private String template;
+  private String generator;
 
   private Map<String, String> options;
 }

@@ -7,6 +7,7 @@ import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
 import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -19,6 +20,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     targets = {StringIdHandler.class,
         CreateGithubRepo.class,
         Health.class,
+        GenerateTemplate.class,
         IntegerIdHandler.class,
         SerializationFeature.class,
         TimestampDeserializer.class,

@@ -15,7 +15,7 @@ export class GenerateTemplateController {
     @requestBody() createTemplate: GenerateTemplate,
     @inject(RestBindings.Http.RESPONSE) response: Response): Promise<Response> {
     const templateZip = await this.templateGenerator.generateTemplate(
-      createTemplate.data.attributes.template,
+      createTemplate.data.attributes.generator,
       createTemplate.data.attributes.options);
     response.setHeader("Content-Type", "application/zip");
     response.download(templateZip, "template.zip", (err: Error) => {

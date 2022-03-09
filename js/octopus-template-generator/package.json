@@ -57,7 +57,7 @@
     "@loopback/service-proxy": "^4.1.1",
     "@octopus-content-team/generator-github-complete-eks-deployment": "^0.1.20",
     "@types/archiver": "^5.3.1",
-    "archiver": "^5.3.0",
+    "adm-zip": "^0.5.9",
     "tslib": "^2.0.0",
     "yeoman-environment": "^3.9.1"
   },
