@@ -1,6 +1,6 @@
 resource "octopusdeploy_library_variable_set" "frontend_library_variable_set" {
   name = "App Builder Shared Infrastructure"
-  description = "Variables used when deploying the App Builder shared infrastructure"
+  description = "Variables used when deploying the App Builder shared infrastructure. Don't edit these variables directly - update the Terraform files at https://github.com/OctopusSamples/content-team-apps/terraform instead."
 }
 
 output "frontend_library_variable_set_id" {
