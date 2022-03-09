@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Fixing some variables">
+    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Working on upload step">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/github/action.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../terraform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../terraform/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/../terraform/app-builder-frontend/deployment_project.tf" afterDir="false" />
     </list>
@@ -17,12 +19,15 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="25WogvyLVGCFM6dHOwMXVVnncV5" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="TF_FMT" value="false" />
@@ -44,7 +49,7 @@
       <updated>1645652324437</updated>
       <workItem from="1645652325814" duration="41000" />
       <workItem from="1646709253200" duration="1322000" />
-      <workItem from="1646860533618" duration="2415000" />
+      <workItem from="1646860533618" duration="3302000" />
     </task>
     <task id="LOCAL-00001" summary="Missed a character">
       <created>1646860739501</created>
@@ -74,7 +79,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646862085838</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Working on upload step">
+      <created>1646863184677</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1646863184678</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -92,10 +104,12 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Missed a character" />
     <MESSAGE value="Fixing terraform templates" />
     <MESSAGE value="Pass worker pool id directly" />
     <MESSAGE value="Fixing some variables" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing some variables" />
+    <MESSAGE value="Working on upload step" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on upload step" />
   </component>
 </project>

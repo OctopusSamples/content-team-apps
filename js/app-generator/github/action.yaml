@@ -149,8 +149,6 @@ runs:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
 
-
-
 #    - env:
 #        GITHUB_TOKEN: ${{ inputs.github_token }}
 #      id: create_release
@@ -170,13 +168,16 @@ runs:
 #        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
 #        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
 #        asset_content_type: application/octet-stream
-#    - name: Push to Octopus
-#      uses: OctopusDeploy/push-package-action@v1.1.1
-#      with:
-#        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-#        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-#        server: ${{ secrets.OCTOPUS_SERVER_URL }}
-#        overwrite_mode: OverwriteExisting
+
+    - name: Push to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+        packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
 #    - name: Generate Octopus Deploy build information
 #      uses: xo-energy/action-octopus-build-information@v1.1.2
 #      with:
