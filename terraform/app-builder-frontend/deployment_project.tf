@@ -437,4 +437,61 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Update Stage"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Proxy with API Gateways"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team (Shared Resource)\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+          Parameters:
+            EnvironmentName:
+              Type: String
+              Default: '#{Octopus.Environment.Name}'
+            DeploymentId:
+              Type: String
+              Default: 'Deployment#{DeploymentId}'
+            ApiGatewayId:
+              Type: String
+          Resources:
+            Stage:
+              Type: 'AWS::ApiGateway::Stage'
+              Properties:
+                DeploymentId: !Sub '${DeploymentId}'
+                RestApiId: !Sub '${ApiGatewayId}'
+                StageName: !Sub '${EnvironmentName}'
+                Variables:
+                  indexPage: !Sub /index.html
+          Outputs:
+            StageURL:
+              Description: The url of the stage
+              Value: !Join
+                - ''
+                - - 'https://'
+                  - !Ref ApiGatewayId
+                  - .execute-api.
+                  - !Ref 'AWS::Region'
+                  - .amazonaws.com/
+                  - !Ref Stage
+                  - /
+        EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource": "Inline"
+        "Octopus.Action.Aws.WaitForCompletion": "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS"
+      }
+    }
+  }
 }
