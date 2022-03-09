@@ -158,6 +158,7 @@ runs:
         # If not, create it
         if [[ $? -ne 0 ]]; then        
           aws s3 mb s3://app-builder-c81b45ae-50de-466c-8500-3845fd8b80c4 --region us-west-1
+          sleep 60 
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
