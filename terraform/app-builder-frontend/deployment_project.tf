@@ -29,7 +29,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   project_id = octopusdeploy_project.deploy_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Frontend WebApp"
+    name                = "Create S3 Bucket"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
