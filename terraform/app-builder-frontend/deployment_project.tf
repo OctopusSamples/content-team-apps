@@ -204,6 +204,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Proxy with API Gateways"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
