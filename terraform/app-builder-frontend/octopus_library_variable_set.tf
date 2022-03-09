@@ -64,7 +64,7 @@ resource "octopusdeploy_variable" "webapp_hostname" {
   description = "The hostname that users are redirected to if they access a missing page."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "https://example.org"
+  value = "example.org"
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
