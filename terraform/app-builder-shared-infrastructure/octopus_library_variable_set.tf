@@ -27,7 +27,7 @@ resource "octopusdeploy_variable" "aws_production_account" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = var.octopus_production_aws_account_id
   scope {
-    environments = [var.octopus_production_aws_account_id, var.octopus_production_security_environment_id]
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
 }
 
