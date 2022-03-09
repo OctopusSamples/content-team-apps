@@ -49,6 +49,15 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   value = "AppBuilderFrontend"
 }
 
+resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
+  name = "CloudFormation.Frontend"
+  type = "String"
+  description = "The name of the stack hosting the frontend API Gateway resources."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "AppBuilderFrontendApiGateway"
+}
+
 resource "octopusdeploy_variable" "aws_s3_directory" {
   name = "S3.Directory"
   type = "String"
