@@ -2,13 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port">
-      <change beforePath="$PROJECT_DIR$/../app-generator/public/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/public/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoGitHub.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoGitHub.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoOctopus.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/LogIntoOctopus.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app-generator/src/components/journey/PushPackage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/components/journey/PushPackage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app-generator/src/config/runtimeConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/src/config/runtimeConfig.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/backend.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/deployment_project.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/octopus_library_variable_set.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/project_groups.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/providers.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/required_providers.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/vars.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app-generator/terraform/worker_pools.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.github/workflows/app-builder-frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.github/workflows/app-builder-frontend.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../app-generator/github/action.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

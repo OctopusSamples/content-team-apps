@@ -17,7 +17,14 @@ jobs:
       - name: Build
         uses: ./js/app-generator/github
         with:
-          octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
-          octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: Spaces-882
+          octopus_application_lifecycle_id: Lifecycles-2221
+          octopus_development_aws_account_id: Accounts-581
+          octopus_production_aws_account_id: Accounts-701
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-west-1
           run_number: ${{ github.run_number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

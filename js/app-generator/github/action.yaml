@@ -3,9 +3,32 @@ name: Node.js Build
   workflow_dispatch: {}
   push: {}
 inputs:
-  octopus_server_url:
+  octopus_server:
+    description: "The Octopus server"
     required: true
-  octopus_api_token:
+  octopus_apikey:
+    description: "The Octopus API token"
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The application deployment lifecycle'
+    required: true
+  octopus_development_aws_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_production_aws_account_id:
+    description: 'The production AWS account id'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
     required: true
   run_number:
     required: true
@@ -21,46 +44,68 @@ runs:
     - uses: actions/setup-node@v2
       with:
         node-version: lts/*
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
       with:
         versionSpec: 5.x
+
     - id: determine_version
       name: Determine Version
       uses: gittools/actions/gitversion/execute@v0.9.7
       with:
         additionalArguments: /overrideconfig mode=Mainline
+
     - name: Install Octopus Deploy CLI
       uses: OctopusDeploy/install-octocli@v1.1.1
       with:
         version: latest
+
     - name: Install Dependencies
       run: yarn install
       shell: bash
+      working-directory: js/app-generator
+
     - name: List Dependencies
       run: yarn list --all > dependencies.txt
       shell: bash
+      working-directory: js/app-generator
+
     - name: Collect Dependencies
       uses: actions/upload-artifact@v2
       with:
         name: Dependencies
-        path: dependencies.txt
+        path: js/app-generator/dependencies.txt
+
     - name: List Dependency Updates
       run: yarn outdated > dependencyUpdates.txt || true
       shell: bash
+      working-directory: js/app-generator
+
     - name: Collect Dependency Updates
       uses: actions/upload-artifact@v2
       with:
         name: Dependencies Updates
-        path: dependencyUpdates.txt
+        path: js/app-generator/dependencyUpdates.txt
+
     - name: Test
       run: yarn test || true
       shell: bash
+      working-directory: js/app-generator
+
     - name: Build
       run: |-
         # package.json does not define a build script, so the build command is commented out.
         # npm run build
       shell: bash
+      working-directory: js/app-generator
+
     - name: Package
       run: |-
         SOURCEPATH=.
@@ -92,11 +137,51 @@ runs:
          --include '**/*.txt' \
          --include '**/*.Procfile'
       shell: bash
+      working-directory: js/app-generator
+
     - name: Tag Release
       uses: mathieudutour/github-tag-action@v6.0
       with:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
+
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-frontend-c81b45ae-50de-466c-8500-3845fd8b80c4 --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-frontend-c81b45ae-50de-466c-8500-3845fd8b80c4 --region ${{ inputs.aws_region }}
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: js/app-generator/terraform
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: >
+        terraform apply 
+        -auto-approve 
+        -var="octopus_server=${{ inputs.octopus_server }}" 
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="aws_region=${{ inputs.aws_region }}"
+        -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
+      working-directory: js/app-generator/terraform
+      shell: bash
+
 #    - env:
 #        GITHUB_TOKEN: ${{ inputs.github_token }}
 #      id: create_release
