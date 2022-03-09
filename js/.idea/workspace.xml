@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Fixing terraform templates">
-      <change beforePath="$PROJECT_DIR$/../.github/workflows/app-builder-frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../.github/workflows/app-builder-frontend.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/github/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/github/action.yaml" afterDir="false" />
+    <list default="true" id="4e9930c7-d9a2-45b0-8c61-4bbc7455085d" name="Changes" comment="Pass worker pool id directly">
       <change beforePath="$PROJECT_DIR$/app-generator/terraform/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/terraform/deployment_project.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app-generator/terraform/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/terraform/vars.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/terraform/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-generator/terraform/octopus_library_variable_set.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-generator/terraform/worker_pools.tf" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +45,7 @@
       <updated>1645652324437</updated>
       <workItem from="1645652325814" duration="41000" />
       <workItem from="1646709253200" duration="1322000" />
-      <workItem from="1646860533618" duration="1262000" />
+      <workItem from="1646860533618" duration="1522000" />
     </task>
     <task id="LOCAL-00001" summary="Missed a character">
       <created>1646860739501</created>
@@ -63,7 +61,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646861121125</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Pass worker pool id directly">
+      <created>1646861819280</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1646861819280</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -83,6 +88,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Missed a character" />
     <MESSAGE value="Fixing terraform templates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing terraform templates" />
+    <MESSAGE value="Pass worker pool id directly" />
+    <option name="LAST_COMMIT_MESSAGE" value="Pass worker pool id directly" />
   </component>
 </project>

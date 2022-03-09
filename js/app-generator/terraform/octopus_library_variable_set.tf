@@ -33,3 +33,12 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "AppBuilder.Frontend"
 }
+
+resource "octopusdeploy_variable" "webapp_hostname" {
+  name = "WebApp.Hostname"
+  type = "String"
+  description = "The hostname that users are redirected to if they access a missing page."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://example.org"
+}

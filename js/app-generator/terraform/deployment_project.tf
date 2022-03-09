@@ -97,8 +97,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                           - DomainName
                     Description: Name of S3 bucket to hold website content
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{Hostname}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
