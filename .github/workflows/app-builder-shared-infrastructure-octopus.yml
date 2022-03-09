@@ -21,7 +21,7 @@ jobs:
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: Spaces-882
           octopus_worker_pool_id: WorkerPools-1282
-          octopus_application_lifecycle_id: Lifecycles-2221
+          octopus_infrastructure_lifecycle_id: Lifecycles-2241
           octopus_development_aws_account_id: Accounts-581
           octopus_production_aws_account_id: Accounts-701
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
