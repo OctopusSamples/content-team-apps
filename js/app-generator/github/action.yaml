@@ -140,6 +140,7 @@ runs:
          --include '**/*.json' \
          --include '**/*.env' \
          --include '**/*.txt' \
+         --include '**/*.pem' \
          --include '**/*.Procfile'
       shell: bash
       working-directory: js/app-generator
