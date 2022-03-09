@@ -25,7 +25,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             }
         };
         postJsonApi(JSON.stringify(body), "http://localhost:12000/api/serviceaccounts")
-            .then(body => {
+            .then((body: any) => {
                 const populateRepoBody = {
                     "data": {
                         "type": "creategithubrepo",
@@ -36,16 +36,22 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
                                 {
                                     name: "OCTOPUS_APIKEY",
-                                    value: Cookies.get("OctopusUserSession"),
-                                    serverSideEncrypted: true
+                                    value: body.included
+                                        .filter((i: any) => i.type === "apikey")
+                                        .map((i: any) => i.attributes?.apiKey)
+                                        .pop()
                                 },
                                 {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
                                 {
                                     name: "AWS_SECRET_ACCESS_KEY",
                                     value: Cookies.get("awsSecretKey"),
-                                    clientSideEncrypted: true
+                                    encrypted: true
                                 },
-                            ]
+                            ],
+                            options: {
+                                "awsRegion": "us-west-1",
+                                "octopusUserId": "Users-984"
+                            }
                         }
                     }
                 }

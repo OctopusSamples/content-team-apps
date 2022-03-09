@@ -42,6 +42,7 @@ import lombok.NonNull;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -89,7 +90,7 @@ public class GitHubRepoHandler {
   JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
 
   @Inject
-  @Named("JsonApiGenerateTemplateGenerateTemplate")
+  @Named("JsonApiServiceUtilsGenerateTemplate")
   JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate;
 
   @Inject
@@ -347,9 +348,14 @@ public class GitHubRepoHandler {
     // Add the repository secrets.
     if (createGithubRepo.getSecrets() != null) {
       for (final Secret secret : createGithubRepo.getSecrets()) {
+        if (StringUtils.isBlank(secret.getName())) {
+          continue;
+        }
+
         // Create the Sodium secret box
         try (final SecretBox box = SecretBox.encrypt(
-            SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())), secret.getValue())) {
+            SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
+            StringUtils.defaultIfEmpty(secret.getValue(), ""))) {
 
           // extract the encrypted value
           try (var out = new ByteArrayOutputStream()) {
