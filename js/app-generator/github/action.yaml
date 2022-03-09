@@ -172,9 +172,9 @@ runs:
     - name: Push to Octopus
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
+        api_key: ${{ inputs.octopus_apikey }}
         packages: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting
 
