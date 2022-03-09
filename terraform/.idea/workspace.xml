@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Added the stack output variable reader step">
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Fixed a variable name">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -70,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="1723000" />
+      <workItem from="1646862240833" duration="1800000" />
     </task>
     <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
       <created>1646862474566</created>
@@ -107,7 +109,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646863921737</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Fixed a variable name">
+      <created>1646863988999</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1646863988999</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -130,7 +139,8 @@
     <MESSAGE value="Made individual steps" />
     <MESSAGE value="Added the directory variable based of the package id" />
     <MESSAGE value="Added the stack output variable reader step" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added the stack output variable reader step" />
+    <MESSAGE value="Fixed a variable name" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a variable name" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

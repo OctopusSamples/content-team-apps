@@ -162,7 +162,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     --query "Stacks[0].Outputs[?OutputKey=='Web'].OutputValue" \
                     --output text)
 
-                set_octopusvariable "Web" ${WEB_RESOURCE_ID}
+                set_octopusvariable "Web" $${WEB_RESOURCE_ID}
                 echo "Web Resource ID: $WEB_RESOURCE_ID"
 
                 REST_API=$(aws cloudformation \
@@ -171,7 +171,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
                     --output text)
 
-                set_octopusvariable "RestApi" ${REST_API}
+                set_octopusvariable "RestApi" $${REST_API}
                 echo "Rest API ID: $REST_API"
 
                 ROOT_RESOURCE_ID=$(aws cloudformation \
@@ -180,7 +180,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     --query "Stacks[0].Outputs[?OutputKey=='RootResourceId'].OutputValue" \
                     --output text)
 
-                set_octopusvariable "RootResourceId" ${ROOT_RESOURCE_ID}
+                set_octopusvariable "RootResourceId" $${ROOT_RESOURCE_ID}
                 echo "Root resource ID: $ROOT_RESOURCE_ID"
             EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
