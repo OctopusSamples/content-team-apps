@@ -67,6 +67,7 @@ runs:
         # If not, create it
         if [[ $? -ne 0 ]]; then        
           aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 

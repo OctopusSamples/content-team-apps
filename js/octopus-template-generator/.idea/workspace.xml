@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port" />
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port">
+      <change beforePath="$PROJECT_DIR$/../../.github/workflows/revserse-proxy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.github/workflows/revserse-proxy.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
