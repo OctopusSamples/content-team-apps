@@ -92,7 +92,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Value: !Ref Web
             Api:
               Description: ID of the resource exposing the REST API endpoints
-              Value: !Ref ApiPipelineGitHubGenerate
+              Value: !Ref Api
             ApiOAuth:
               Description: ID of the resource exposing the OAuth proxies
               Value: !Ref ApiOAuth
