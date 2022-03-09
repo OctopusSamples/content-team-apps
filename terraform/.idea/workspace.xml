@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Fixing package block">
+    <list default="true" id="c63bc226-71c6-4549-a5e3-fb00491859d4" name="Changes" comment="Made individual steps">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/deployment_project.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" beforeDir="false" afterPath="$PROJECT_DIR$/app-builder-frontend/octopus_library_variable_set.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646862239342</updated>
-      <workItem from="1646862240833" duration="1135000" />
+      <workItem from="1646862240833" duration="1332000" />
     </task>
     <task id="LOCAL-00001" summary="Moved terraform template to a new directory">
       <created>1646862474566</created>
@@ -86,7 +88,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646863298122</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Made individual steps">
+      <created>1646863401587</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1646863401587</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -106,7 +115,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Moved terraform template to a new directory" />
     <MESSAGE value="Fixing package block" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing package block" />
+    <MESSAGE value="Made individual steps" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made individual steps" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

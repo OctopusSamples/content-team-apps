@@ -34,6 +34,16 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   value = "AppBuilder.Frontend"
 }
 
+resource "octopusdeploy_variable" "aws_s3_bucket" {
+  name = "S3.Directory"
+  type = "String"
+  description = "The name of the bucket hosting the App Builder frontend web app."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+}
+
+
 resource "octopusdeploy_variable" "webapp_hostname" {
   name = "WebApp.Hostname"
   type = "String"
