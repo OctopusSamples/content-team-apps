@@ -21,6 +21,9 @@ inputs:
   octopus_production_aws_account_id:
     description: 'The production AWS account id'
     required: true
+  octopus_worker_pool_id:
+    description: 'The worker pool id used for the deployment steps'
+    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -105,6 +108,7 @@ runs:
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
+        -var="octopus_worker_pool_id=${{ inputs.octopus_worker_pool_id }}"
       working-directory: js/app-generator/terraform
       shell: bash
 

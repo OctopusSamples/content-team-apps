@@ -36,7 +36,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Create S3 Bucket"
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      worker_pool_id = var.octopus_worker_pool_id
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"

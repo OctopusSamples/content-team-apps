@@ -26,3 +26,8 @@ variable "octopus_development_aws_account_id" {
   type = string
   nullable = false
 }
+
+variable "octopus_worker_pool_id" {
+  type = string
+  nullable = false
+}
