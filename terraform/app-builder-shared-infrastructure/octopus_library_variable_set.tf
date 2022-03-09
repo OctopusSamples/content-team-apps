@@ -14,6 +14,21 @@ resource "octopusdeploy_variable" "aws_account" {
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = var.octopus_development_aws_account_id
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "aws_account" {
+  name = "AWS.Account"
+  type = "AmazonWebServicesAccount"
+  description = "The AWS account used to deploy the application."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = var.octopus_production_aws_account_id
+  scope {
+    environments = [var.octopus_production_aws_account_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "aws_region" {

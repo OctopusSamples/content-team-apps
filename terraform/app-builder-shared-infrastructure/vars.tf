@@ -27,7 +27,32 @@ variable "octopus_development_aws_account_id" {
   nullable = false
 }
 
+variable "octopus_production_aws_account_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_worker_pool_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_development_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_development_security_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_production_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_production_security_environment_id" {
   type = string
   nullable = false
 }

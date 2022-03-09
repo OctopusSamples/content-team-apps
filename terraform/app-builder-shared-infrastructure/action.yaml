@@ -16,6 +16,18 @@ inputs:
   octopus_infrastructure_lifecycle_id:
     description: 'The infrastructure deployment lifecycle'
     required: true
+  octopus_development_environment_id:
+    description: 'The development environment'
+    required: true
+  octopus_development_security_environment_id:
+    description: 'The development security environment'
+    required: true
+  octopus_production_environment_id:
+    description: 'The production environment'
+    required: true
+  octopus_production_security_environment_id:
+    description: 'The production security environment'
+    required: true
   octopus_built_in_feed_id:
     description: 'The built in feed ID'
     required: true
@@ -89,6 +101,11 @@ runs:
         -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}"
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
+        -var="octopus_production_aws_account_id=${{ inputs.octopus_production_aws_account_id }}"
         -var="octopus_worker_pool_id=${{ inputs.octopus_worker_pool_id }}"
+        -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}"
+        -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}"
+        -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}"
+        -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
       working-directory: terraform/app-builder-shared-infrastructure
       shell: bash
