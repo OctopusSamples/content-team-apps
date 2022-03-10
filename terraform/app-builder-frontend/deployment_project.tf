@@ -201,7 +201,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Proxy with API Gateways"
+      name           = "Proxy with API Gateway"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
