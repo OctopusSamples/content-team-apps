@@ -109,5 +109,5 @@ resource "octopusdeploy_variable" "config_json_branch" {
   description = "The name of the branch to be inserted into the config.json file."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "#{WebApp.SubPath}"
+  value = "#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}"
 }
