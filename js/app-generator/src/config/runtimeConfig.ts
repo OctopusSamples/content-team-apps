@@ -3,6 +3,7 @@ import {JWK} from "jwk-to-pem";
 export interface RuntimeSettings {
     basename: string;
     branch: string;
+    disableExternalCalls: boolean;
     octopusOauthEndpoint: string;
     githubOauthEndpoint: string;
     serviceAccountEndpoint: string;

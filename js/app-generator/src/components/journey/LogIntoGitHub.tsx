@@ -10,8 +10,13 @@ const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
 
     const login = () => {
-        localStorage.setItem("appBuilderState", "loggedIntoGithub");
-        window.open(context.settings.githubOauthEndpoint, "_parent");
+        if (context.settings.disableExternalCalls) {
+            // pretend to do a login
+            props.machine.send("MOCK");
+        } else {
+            localStorage.setItem("appBuilderState", "loggedIntoGithub");
+            window.open(context.settings.githubOauthEndpoint, "_parent");
+        }
     }
 
     return (

@@ -15,64 +15,69 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const pushPackage = () => {
-        setLoading(true);
-        const body = {
-            "data": {
-                "type": "createserviceaccount",
-                "attributes": {
-                    "username": "AppBuilder",
-                    "displayName": "App Builder Service Account",
-                    "isService": true,
-                    "octopusServer": "main.testoctopus.app"
+        if (context.settings.disableExternalCalls) {
+            // pretend to populate the repo
+            props.machine.send("NEXT");
+        } else {
+            setLoading(true);
+            const body = {
+                "data": {
+                    "type": "createserviceaccount",
+                    "attributes": {
+                        "username": "AppBuilder",
+                        "displayName": "App Builder Service Account",
+                        "isService": true,
+                        "octopusServer": "main.testoctopus.app"
+                    }
                 }
-            }
-        };
-        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
-            .then((body: any) => {
-                const populateRepoBody = {
-                    "data": {
-                        "type": "creategithubrepo",
-                        "attributes": {
-                            githubOwner: "mcasperson",
-                            githubRepository: "AppBuilder",
-                            generator: "@octopus-content-team/generator-github-complete-eks-deployment",
-                            secrets: [
-                                {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
-                                {
-                                    name: "OCTOPUS_APIKEY",
-                                    value: body.included
-                                        .filter((i: any) => i.type === "apikey")
-                                        .map((i: any) => i.attributes?.apiKey)
-                                        .pop()
-                                },
-                                {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
-                                {
-                                    name: "AWS_SECRET_ACCESS_KEY",
-                                    value: Cookies.get("awsSecretKey"),
-                                    encrypted: true
-                                },
-                            ],
-                            options: {
-                                "awsRegion": "us-west-1",
-                                "octopusUserId": "Users-984"
+            };
+            postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
+                .then((body: any) => {
+                    const populateRepoBody = {
+                        "data": {
+                            "type": "creategithubrepo",
+                            "attributes": {
+                                githubOwner: "mcasperson",
+                                githubRepository: "AppBuilder",
+                                generator: "@octopus-content-team/generator-github-complete-eks-deployment",
+                                secrets: [
+                                    {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
+                                    {
+                                        name: "OCTOPUS_APIKEY",
+                                        value: body.included
+                                            .filter((i: any) => i.type === "apikey")
+                                            .map((i: any) => i.attributes?.apiKey)
+                                            .pop()
+                                    },
+                                    {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
+                                    {
+                                        name: "AWS_SECRET_ACCESS_KEY",
+                                        value: Cookies.get("awsSecretKey"),
+                                        encrypted: true
+                                    },
+                                ],
+                                options: {
+                                    "awsRegion": "us-west-1",
+                                    "octopusUserId": "Users-984"
+                                }
                             }
                         }
                     }
-                }
 
-                postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings)
-                    .then(body => {
-                        props.machine.send("NEXT")
-                    })
-                    .catch(() => {
-                        setLoading(false);
-                        window.alert("DOH!")
-                    });
-            })
-            .catch(() => {
-                setLoading(false);
-                window.alert("DOH!")
-            })
+                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings)
+                        .then(body => {
+                            props.machine.send("NEXT")
+                        })
+                        .catch(() => {
+                            setLoading(false);
+                            window.alert("DOH!")
+                        });
+                })
+                .catch(() => {
+                    setLoading(false);
+                    window.alert("DOH!")
+                })
+        }
     }
 
     return (

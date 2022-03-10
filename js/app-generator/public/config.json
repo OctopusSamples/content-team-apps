@@ -1,6 +1,7 @@
 {
   "basename": "",
   "branch": "main",
+  "disableExternalCalls": true,
   "title": "App Builder",
   "octopusOauthEndpoint": "http://localhost:10000/oauth/octopus",
   "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
