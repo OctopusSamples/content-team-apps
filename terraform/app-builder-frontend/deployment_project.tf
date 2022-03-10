@@ -125,7 +125,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         feed_id = var.octopus_built_in_feed_id
         package_id = "app-builder-frontend"
         properties = {
-          SelectionMode = "immediate"
+          "SelectionMode": "immediate"
         }
       }
 
