@@ -48,7 +48,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: 'AWS::ApiGateway::RestApi'
               Properties:
                 Description: App Builder API Gateway
-                Name: GitHub Actions API
+                Name: App Builder API
                 BinaryMediaTypes:
                   - '*/*'
                 EndpointConfiguration:
