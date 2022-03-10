@@ -12,6 +12,19 @@
   <artifactId>github-actions-builder-github-backend</artifactId>
   <version>0.1.0</version>
 
+  <properties>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+    <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
+    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+  </properties>
+
   <build>
     <finalName>github-actions-builder-github-backend</finalName>
     <plugins>
@@ -93,39 +106,14 @@
       <!--
         Exclude all the netty dependencies
         https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/core/azure-core-http-netty/pom.xml
+
+        Without these exclusions, you'll get errors like this during native compilation:
+
       -->
       <exclusions>
         <exclusion>
           <groupId>io.netty</groupId>
-          <artifactId>netty-handler</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-handler-proxy</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-buffer</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-codec-http</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-codec-http2</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-transport-native-unix-common</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-transport-native-epoll</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-transport-native-kqueue</artifactId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -217,16 +205,4 @@
       </properties>
     </profile>
   </profiles>
-  <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
-    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-  </properties>
 </project>
