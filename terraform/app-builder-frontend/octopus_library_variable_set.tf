@@ -10,7 +10,7 @@ output "frontend_library_variable_set_id" {
 resource "octopusdeploy_variable" "aws_development_account" {
   name = "AWS.Account"
   type = "AmazonWebServicesAccount"
-  description = "The AWS account used to deploy the application. Don't edit these variables directly - update the Terraform files at https://github.com/OctopusSamples/content-team-apps/terraform instead."
+  description = "The AWS account used to deploy the application. Don't edit these variables directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = var.octopus_development_aws_account_id
@@ -65,6 +65,15 @@ resource "octopusdeploy_variable" "aws_s3_directory" {
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+}
+
+resource "octopusdeploy_variable" "webapp_subpath" {
+  name = "WebApp.SubPath"
+  type = "String"
+  description = "The directory holding frontend feature branches."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease}"
 }
 
 resource "octopusdeploy_variable" "webapp_hostname" {

@@ -2,7 +2,7 @@ resource "octopusdeploy_project" "deploy_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the app builder frontend. Don't edit this process directly - update the Terraform files at https://github.com/OctopusSamples/content-team-apps/terraform instead."
+  description                          = "Deploys the app builder frontend. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
@@ -208,7 +208,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Action Workflow Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if Frontend.SubPath}#{Frontend.SubPath}#{/if}#{unless Frontend.SubPath}main#{/unless}\"}]"
+        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Action Workflow Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
         "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.Frontend}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:

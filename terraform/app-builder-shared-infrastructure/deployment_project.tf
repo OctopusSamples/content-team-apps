@@ -2,7 +2,7 @@ resource "octopusdeploy_project" "deploy_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the shared network infrastructure. Don't edit this process directly - update the Terraform files at https://github.com/OctopusSamples/content-team-apps/terraform instead."
+  description                          = "Deploys the shared network infrastructure. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
