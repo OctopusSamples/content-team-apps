@@ -196,9 +196,9 @@ runs:
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
-        api_key: ${{ inputs.octopus_server_url }}
+        api_key: ${{ inputs.octopus_server }}
         project: Deploy App Builder Frontend
-        server: ${{ inputs.octopus_api_token }}
+        server: ${{ inputs.octopus_apikey }}
         deploy_to: Development
         packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
