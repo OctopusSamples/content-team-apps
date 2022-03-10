@@ -654,7 +654,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       package {
         acquisition_location = "Server"
-        feed = var.octopus_built_in_feed_id
+        feed_id = var.octopus_built_in_feed_id
         name = "github-oauth-backend-lambda-sbom"
         package_id = "github-oauth-backend-lambda-sbom"
         extract_during_deployment = true
