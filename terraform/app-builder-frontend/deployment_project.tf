@@ -419,7 +419,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     - Ref: ResourceId
                 RestApiId:
                   Ref: RestApi
-            'Deployment#{Octopus_Deployment.Id | Replace -}':
+            'Deployment#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::ApiGateway::Deployment'
               Properties:
                 RestApiId:
