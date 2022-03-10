@@ -1,0 +1,27 @@
+name: app-builder-frontend
+
+on:
+  push:
+    paths:
+    - 'js/app-generator/**'
+    - '.github/workflows/app-builder-frontend.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./js/app-generator/github
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-west-1
+          run_number: ${{ github.run_number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

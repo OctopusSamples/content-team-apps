@@ -1,0 +1,74 @@
+name: Docker Build and Push
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space:
+    description: 'The Octopus space name'
+    required: true
+  octopus_user_id:
+    description: 'The Octopus user to assign to the space'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+outputs:
+  octopus_space_id:
+    description: "The Octopus space ID"
+    value: ${{ steps.terraform_output.outputs.stdout }}
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %> 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/shared-space
+      shell: bash
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: >
+        terraform apply 
+        -auto-approve 
+        -var="octopus_server=${{ inputs.octopus_server }}" 
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
+        -var="octopus_space=${{ inputs.octopus_space }}"
+        -var="octopus_user_id=${{ inputs.octopus_user_id }}"
+      working-directory: terraform/shared-space
+      shell: bash
+    - name: Terraform Collect Output
+      id: terraform_output
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_space_id
+      working-directory: terraform/shared-space
+      shell: bash

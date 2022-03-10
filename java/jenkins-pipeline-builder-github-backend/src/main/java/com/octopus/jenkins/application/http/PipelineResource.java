@@ -41,7 +41,7 @@ public class PipelineResource {
       @HeaderParam(GlobalConstants.ROUTING_HEADER) final String routingHeaders,
       @HeaderParam(GlobalConstants.DATA_PARTITION) final String dataPartitionHeaders,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final String authHeaders,
-      @CookieParam(PipelineConstants.SESSION_COOKIE) final String auth) {
+      @CookieParam(PipelineConstants.GITHUB_SESSION_COOKIE) final String auth) {
 
     if (StringUtils.isBlank(repo)) {
       throw new BadRequest();

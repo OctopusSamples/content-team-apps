@@ -1,0 +1,226 @@
+name: Terraform Apply
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_project:
+    description: 'The Octopus space and project name'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+  github_username:
+    description: 'The github username'
+    required: true
+outputs:
+  octopus_github_docker_feed_id:
+    description: 'The ID of Github docker feed'
+    value: ${{ steps.octopus_github_docker_feed_id.outputs.stdout }}
+  octopus_dockerhub_feed_id:
+    description: 'The ID of Dockerhub feed'
+    value: ${{ steps.octopus_dockerhub_feed_id.outputs.stdout }}
+  aws_account_id:
+    description: 'The ID of AWS Account'
+    value: ${{ steps.aws_account_id.outputs.stdout }}
+  development_environment_id:
+    description: 'The ID of Development environment'
+    value: ${{ steps.development_environment_id.outputs.stdout }}
+  development_security_environment_id:
+    description: 'The ID of Development Security environment'
+    value: ${{ steps.development_security_environment_id.outputs.stdout }}
+  production_environment_id:
+    description: 'The ID of Production environment'
+    value: ${{ steps.production_environment_id.outputs.stdout }}
+  production_security_environment_id:
+    description: 'The ID of Production Security environment'
+    value: ${{ steps.production_security_environment_id.outputs.stdout }}
+  administration_environment_id:
+    description: 'The ID of Administration environment'
+    value: ${{ steps.administration_environment_id.outputs.stdout }}
+  application_lifecycle_id:
+    description: 'The ID of Application lifecycle'
+    value: ${{ steps.application_lifecycle_id.outputs.stdout }}
+  infrastructure_lifecycle_id:
+    description: 'The ID of Infrastructure lifecycle'
+    value: ${{ steps.infrastructure_lifecycle_id.outputs.stdout }}
+  administration_lifecycle_id:
+    description: 'The ID of Administration lifecycle'
+    value: ${{ steps.administration_lifecycle_id.outputs.stdout }}
+  octopus_library_variable_set_id:
+    description: 'The ID of Octopus library variable set lifecycle'
+    value: ${{ steps.octopus_library_variable_set_id.outputs.stdout }}
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %> 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: >
+        terraform apply 
+        -auto-approve 
+        -var="octopus_server=${{ inputs.octopus_server }}" 
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+        -var="github_feed_token=${{ inputs.github_feed_token }}"
+        -var="aws_access_key=${{ inputs.aws_access_key }}"
+        -var="aws_secret_key=${{ inputs.aws_secret_key }}"
+        -var="aws_region=${{ inputs.aws_region }}"
+        -var="github_repo=${{ inputs.github_repo }}"
+        -var="github_username=${{ inputs.github_username }}"
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect GitHub Feed Id
+      id: octopus_github_docker_feed_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_github_docker_feed_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Dockerhub Feed Id
+      id: octopus_dockerhub_feed_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_dockerhub_feed_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Account Id
+      id: aws_account_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw aws_account_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Development Environment Id
+      id: development_environment_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw development_environment_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Development Security Environment Id
+      id: development_security_environment_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw development_security_environment_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Production Environment Id
+      id: production_environment_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw production_environment_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Production Security Environment Id
+      id: production_security_environment_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw production_security_environment_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Administration Environment Id
+      id: administration_environment_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw administration_environment_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Application Lifecycle Id
+      id: application_lifecycle_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw application_lifecycle_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Infrastructure Lifecycle Id
+      id: infrastructure_lifecycle_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw infrastructure_lifecycle_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Administration Lifecycle Id
+      id: administration_lifecycle_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw administration_lifecycle_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash
+
+    - name: Terraform Collect Octopus Library Variable Set Id
+      id: octopus_library_variable_set_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_library_variable_set_id
+      working-directory: terraform/shared-infrastructure
+      shell: bash

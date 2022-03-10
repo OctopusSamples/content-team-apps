@@ -8,7 +8,6 @@ import com.octopus.githubactions.domain.exceptions.ServerError;
 import com.octopus.githubactions.domain.exceptions.Unauthorized;
 import com.octopus.githubactions.domain.hanlder.SimpleResponse;
 import com.octopus.githubactions.domain.hanlder.TemplateHandler;
-import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -42,7 +41,7 @@ public class PipelineResource {
       @HeaderParam(GlobalConstants.ROUTING_HEADER) final String routingHeaders,
       @HeaderParam(GlobalConstants.DATA_PARTITION) final String dataPartitionHeaders,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final String authHeaders,
-      @CookieParam(PipelineConstants.SESSION_COOKIE) final String auth) {
+      @CookieParam(PipelineConstants.GITHUB_SESSION_COOKIE) final String auth) {
 
     if (StringUtils.isBlank(repo)) {
       throw new BadRequest();

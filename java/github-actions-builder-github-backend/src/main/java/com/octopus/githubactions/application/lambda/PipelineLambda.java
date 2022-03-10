@@ -13,7 +13,6 @@ import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponse;
 import io.quarkus.logging.Log;
-import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -49,7 +48,7 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
 
     final String session = lambdaHttpCookieExtractor.getCookieValue(
             input,
-            PipelineConstants.SESSION_COOKIE).orElse(null);
+            PipelineConstants.GITHUB_SESSION_COOKIE).orElse(null);
 
     final String routingHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,

@@ -1,0 +1,39 @@
+{
+  "basename": "",
+  "title": "App Builder",
+  "octopusOauthEndpoint": "http://localhost:10000/oauth/octopus",
+  "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
+  "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
+  "githubRepoEndpoint": "http://localhost:13000/api/githubrepo",
+  "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
+  "healthEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/health",
+  "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
+  "editorFormat": "yaml",
+  "google": {
+    "tag": ""
+  },
+  "aws": {
+    "cognitoDeveloperGroup": "Developers",
+    "cognitoLogin": "",
+    "jwk": {
+      "keys": [
+        {
+          "alg": "RS256",
+          "e": "AQAB",
+          "kid": "3e6hWRotCd1nqDE5jwzaHW5AELzm2TPl5ADJPM2OOYQ=",
+          "kty": "RSA",
+          "n": "0cripNZ9mj_4zuUGkESqZAw2IU2FvmTGdZHk2IxxoAdzz5ESpkqA5UbSoqVm7avAmNf-8jNWaQfjtCPphHVrsjAKqKgUc_haL4kkO5PS_78wCXnq_Yr7d4OyQexD1hgoiI-Ic89Q8R3px1OE1RVVwA815Fvp5OqfVQJc-rpoPaI1rJM02XrpOlKd-PN_bAqYXbpNtwU-kB85ieeoLt3N4EI1RpBB8ZfzWp0YeLYN5jBTRGalmcplQGBTlXJPtMzjLT76cjEgcRVRNZSMWApma-XrWo7UQDdzGZb56_ba2Nx-cSytLwNVyvXeJIcMkKrnu3Gs2jg_jQ5GQbjf3ohygQ",
+          "use": "sig"
+        },
+        {
+          "alg": "RS256",
+          "e": "AQAB",
+          "kid": "TzkAfSHjD1XItTV3X/XKei6STtUHw0zgjc8NB5g3RxA=",
+          "kty": "RSA",
+          "n": "1KPkC5PA9n9g8uYFOaFdR7QgndxSBMYUxQApjrfh-7TCeKBTcW55uHz8FBa2YD3Kl7ei86Zyx7xdcPndouutZIfqMD5Ff6xbXeZ2Q-OCj-3RgnWU-Ie5DI--VjjslG-NlRZYDLpIDyDqho_bRIQ_tuemxDJc_-jJVFjGHUKKsLC6BYifGylqgyILJWjFYadWOoqr4EWE-pvng8bUnT6a1nZTjNtfGUdabp_pHxvi6LWVAeOKkrswZ0vMlKxThh46v0ZsQwqyjjxeSnRBqh_z9wtSleUXfRAXoLZdBpmfxBWoCk7CiGdeaThVx_Amw6qGYK1uX60vtNjRJRDMqy2d3Q",
+          "use": "sig"
+        }
+      ]
+    }
+  }
+}

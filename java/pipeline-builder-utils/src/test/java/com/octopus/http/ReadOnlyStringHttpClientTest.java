@@ -3,6 +3,7 @@ package com.octopus.http;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
 import org.junit.jupiter.api.Test;
 
 public class ReadOnlyStringHttpClientTest {

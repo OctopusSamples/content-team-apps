@@ -3,7 +3,7 @@ package com.octopus.githuboauth.domain.producer;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.http.CookieDateUtils;
-import com.octopus.http.CookieDateUtilsImpl;
+import com.octopus.http.impl.CookieDateUtilsImpl;
 import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpCookieExtractor;

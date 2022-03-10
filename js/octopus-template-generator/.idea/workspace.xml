@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="Changed default port">
+      <change beforePath="$PROJECT_DIR$/../../.github/workflows/revserse-proxy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.github/workflows/revserse-proxy.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../generator-github-kubernetes-deployment/generators/app/templates/github/kubernetes-deployment/action.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="267UQcRJ0bvq78PSvpeyBs2DSsa" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TF_FMT" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="C:\Code\content-team-apps\js\octopus-template-generator\node_modules\typescript\lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="83b41041-c86c-4196-a25d-dda8e9d03940" name="Changes" comment="" />
+      <created>1646774103650</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1646774103650</updated>
+      <workItem from="1646774106095" duration="15907000" />
+    </task>
+    <task id="LOCAL-00001" summary="Starting work on Yeoman template generator API">
+      <created>1646778356737</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1646778356737</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Will need to use a custom body parser at some point, but assume a JSON object for now">
+      <created>1646779327520</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1646779327520</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Generating a template now">
+      <created>1646779552946</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1646779552946</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fixed up the payhs">
+      <created>1646783194963</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1646783194963</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Template now generates ok">
+      <created>1646786595134</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1646786595134</updated>
+    </task>
+    <task id="LOCAL-00006" summary="finalize is async">
+      <created>1646787111807</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1646787111807</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Only log an error is it exists">
+      <created>1646787217244</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1646787217244</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Changed default port">
+      <created>1646801404833</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1646801404833</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Starting work on Yeoman template generator API" />
+    <MESSAGE value="Will need to use a custom body parser at some point, but assume a JSON object for now" />
+    <MESSAGE value="Generating a template now" />
+    <MESSAGE value="Fixed up the payhs" />
+    <MESSAGE value="Template now generates ok" />
+    <MESSAGE value="finalize is async" />
+    <MESSAGE value="Only log an error is it exists" />
+    <MESSAGE value="Changed default port" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed default port" />
+  </component>
+</project>

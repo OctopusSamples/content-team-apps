@@ -1,0 +1,102 @@
+name: Terraform Apply
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_github_docker_feed_id:
+    description: 'The ID of Github docker feed'
+    required: true
+  octopus_k8s_feed_id:
+    description: 'The ID of feed used to supply the K8s deployment. This can be a plain docker feed, or an ECR feed.'
+    required: true
+  octopus_docker_image:
+    description: 'The image to be deployed'
+    required: true
+  octopus_aws_account_id:
+    description: 'The AWS account id'
+    required: true
+  octopus_dockerhub_feed_id:
+    description: 'The ID of Dockerhub feed'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The ID of Application lifecycle'
+    required: true
+  octopus_infrastructure_lifecycle_id:
+    description: 'The ID of Infrastructure lifecycle'
+    required: true
+  octopus_library_variable_set_id:
+    description: 'The ID of Octopus library variable set'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  repository_owner:
+    description: 'The github organization'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %> 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/kubernetes-deployment
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: >
+        terraform apply 
+        -auto-approve 
+        -var="octopus_server=${{ inputs.octopus_server }}" 
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}"
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+        -var="octopus_github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
+        -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
+        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}"
+        -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
+        -var="octopus_library_variable_set_id=${{ inputs.octopus_library_variable_set_id }}"
+        -var="aws_region=${{ inputs.aws_region }}"
+        -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}"
+        -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
+      working-directory: terraform/kubernetes-deployment
+      shell: bash

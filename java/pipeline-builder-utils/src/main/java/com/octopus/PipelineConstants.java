@@ -5,7 +5,7 @@ package com.octopus;
  */
 public final class PipelineConstants {
   /**
-   * The cookie holding the access token.
+   * The cookie holding the GitHub access token.
    */
-  public static final String SESSION_COOKIE = "UserSession";
+  public static final String GITHUB_SESSION_COOKIE = "GitHubUserSession";
 }

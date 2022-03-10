@@ -15,7 +15,7 @@ import com.octopus.githubactions.builders.PhpComposerBuilder;
 import com.octopus.githubactions.builders.PythonBuilder;
 import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.http.ReadOnlyHttpClient;
-import com.octopus.http.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
 import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
