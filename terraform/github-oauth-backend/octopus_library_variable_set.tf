@@ -51,21 +51,21 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
-  name = "CloudFormation.Frontend"
+  name = "CloudFormation.BackendCodeExchangeStack"
   type = "String"
-  description = "The name of the stack hosting the frontend API Gateway resources."
+  description = "The name of the stack hosting the lambda that converts a code to a token."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "AppBuilderFrontendApiGateway"
+  value = "AppBuilderGitHubOAuthProxyCode"
 }
 
-resource "octopusdeploy_variable" "aws_s3_directory" {
-  name = "S3.Directory"
+resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
+  name = "CloudFormation.BackendLoginStack"
   type = "String"
-  description = "The S3 'directory' that holds the frontend web app files for a given deployment. This directory is based on the package version."
+  description = "The name of the stack hosting the lambda that initiates the OAuth login."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+  value = "AppBuilderGitHubOAuthProxyLogin"
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
