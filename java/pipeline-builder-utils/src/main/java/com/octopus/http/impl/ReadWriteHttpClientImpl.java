@@ -19,8 +19,8 @@ import org.jboss.logging.Logger;
 /**
  * A HTTP client capable of making requests that modify resources.
  */
-public class ReadWriteStringReadOnlyHttpClient extends ReadOnlyStringReadOnlyHttpClient {
-  private static final Logger LOG = Logger.getLogger(ReadWriteStringReadOnlyHttpClient.class.toString());
+public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
+  private static final Logger LOG = Logger.getLogger(ReadWriteHttpClientImpl.class.toString());
 
   /**
    * Performs a HTTP POST request.

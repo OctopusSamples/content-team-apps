@@ -15,13 +15,13 @@ import com.octopus.githubactions.builders.PhpComposerBuilder;
 import com.octopus.githubactions.builders.PythonBuilder;
 import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.http.ReadOnlyHttpClient;
-import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
-import com.octopus.lambda.CaseInsensitiveCookieExtractor;
-import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
-import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveCookieExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
 import java.security.NoSuchAlgorithmException;
@@ -52,7 +52,7 @@ public class PipelineProducer {
   @ApplicationScoped
   @Produces
   public ReadOnlyHttpClient getHttpClient() {
-    return new ReadOnlyStringReadOnlyHttpClient();
+    return new ReadOnlyHttpClientImpl();
   }
 
   /**

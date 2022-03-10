@@ -159,16 +159,16 @@
   <groupId>com.octopus</groupId>
   <modelVersion>4.0.0</modelVersion>
   <modules>
+    <module>pipeline-builder-utils</module>
+    <module>microservice-utils</module>
     <module>jenkins-pipeline-builder-github-backend</module>
     <module>github-actions-builder-github-backend</module>
-    <module>pipeline-builder-utils</module>
     <module>jenkins-pipeline-builder</module>
     <module>github-actions-builder</module>
     <module>github-oauth-backend</module>
     <module>audit-service</module>
     <module>octopus-oauth-backend</module>
     <module>github-repo-creator</module>
-    <module>microservice-utils</module>
   </modules>
 
   <name>jenkins-pipeline-builder-backend</name>

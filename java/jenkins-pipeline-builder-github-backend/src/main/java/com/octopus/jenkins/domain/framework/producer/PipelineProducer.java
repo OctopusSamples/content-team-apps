@@ -14,7 +14,7 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
 import com.octopus.http.ReadOnlyHttpClient;
-import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.lambda.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
@@ -51,7 +51,7 @@ public class PipelineProducer {
   @ApplicationScoped
   @Produces
   public ReadOnlyHttpClient getHttpClient() {
-    return new ReadOnlyStringReadOnlyHttpClient();
+    return new ReadOnlyHttpClientImpl();
   }
 
   /**

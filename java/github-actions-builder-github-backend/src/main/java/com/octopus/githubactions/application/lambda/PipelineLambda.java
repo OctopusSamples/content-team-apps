@@ -3,6 +3,7 @@ package com.octopus.githubactions.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
 import com.octopus.githubactions.GlobalConstants;
@@ -11,7 +12,6 @@ import com.octopus.githubactions.domain.hanlder.TemplateHandler;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
-import com.octopus.lambda.ProxyResponse;
 import io.quarkus.logging.Log;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,7 +20,8 @@ import javax.inject.Named;
  * The AWS Lambda server.
  */
 @Named("generate")
-public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
+public class PipelineLambda implements
+    RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
   @Inject
   LambdaHttpValueExtractor lambdaHttpValueExtractor;
@@ -43,12 +44,12 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
    * @return The Lambda proxy integration response.
    */
   @Override
-  public ProxyResponse handleRequest(final APIGatewayProxyRequestEvent input,
+  public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input,
       final Context context) {
 
     final String session = lambdaHttpCookieExtractor.getCookieValue(
-            input,
-            PipelineConstants.GITHUB_SESSION_COOKIE).orElse(null);
+        input,
+        PipelineConstants.GITHUB_SESSION_COOKIE).orElse(null);
 
     final String routingHeaders = lambdaHttpHeaderExtractor.getFirstHeader(
         input,
@@ -67,10 +68,10 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
         GlobalConstants.AMAZON_TRACE_ID_HEADER).orElse("");
 
     if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
-      return new ProxyResponse(
-          "201",
-          "OK",
-          new ImmutableMap.Builder<String, String>()
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(201)
+          .withBody("OK")
+          .withHeaders(new ImmutableMap.Builder<String, String>()
               .put("Content-Type", "text/plain")
               .build());
     }
@@ -84,20 +85,18 @@ public class PipelineLambda implements RequestHandler<APIGatewayProxyRequestEven
           dataPartitionHeaders,
           authHeaders);
 
-      return new
-          ProxyResponse(
-          String.valueOf(response.getCode()),
-          response.getBody(),
-          new ImmutableMap.Builder<String, String>()
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(response.getCode())
+          .withBody(response.getBody())
+          .withHeaders(new ImmutableMap.Builder<String, String>()
               .put("Content-Type", "text/plain")
               .build());
     } catch (final Exception ex) {
       Log.error(GlobalConstants.MICROSERVICE_NAME + "-General-Error", ex);
-      return new
-          ProxyResponse(
-          "500",
-          "An internal server error was encountered.",
-          new ImmutableMap.Builder<String, String>()
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(500)
+          .withBody("An internal server error was encountered.")
+          .withHeaders(new ImmutableMap.Builder<String, String>()
               .put("Content-Type", "text/plain")
               .build());
     }

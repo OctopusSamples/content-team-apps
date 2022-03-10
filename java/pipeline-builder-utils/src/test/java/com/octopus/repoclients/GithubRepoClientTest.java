@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.octopus.http.ReadOnlyHttpClient;
-import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.repoclients.impl.GithubRepoClient;
 import com.octopus.repoclients.impl.GithubRepoDetails;
 import io.vavr.control.Try;
@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class GithubRepoClientTest {
 
-  private static final ReadOnlyHttpClient HTTP_CLIENT = new ReadOnlyStringReadOnlyHttpClient();
+  private static final ReadOnlyHttpClient HTTP_CLIENT = new ReadOnlyHttpClientImpl();
 
   @ParameterizedTest
   @CsvSource({
