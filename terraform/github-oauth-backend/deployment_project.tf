@@ -108,41 +108,41 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       }
     }
   }
-  step {
-    condition           = "Success"
-    name                = "Upload Frontend"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    action {
-      action_type    = "Octopus.AwsUploadS3"
-      name           = "Upload Frontend"
-      run_on_server  = true
-      worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
-
-      primary_package {
-        acquisition_location = "Server"
-        feed_id = var.octopus_built_in_feed_id
-        package_id = "github-oauth-backend-lambda"
-        properties = {
-          SelectionMode = "immediate"
-        }
-      }
-
-      properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
-        "Octopus.Action.Aws.S3.FileSelections": "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
-        "Octopus.Action.Aws.S3.TargetMode": "FileSelections"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Package.DownloadOnTentacle": "False"
-        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId": "github-oauth-backend-lambda"
-      }
-    }
-  }
+#  step {
+#    condition           = "Success"
+#    name                = "Upload Frontend"
+#    package_requirement = "LetOctopusDecide"
+#    start_trigger       = "StartAfterPrevious"
+#    action {
+#      action_type    = "Octopus.AwsUploadS3"
+#      name           = "Upload Frontend"
+#      run_on_server  = true
+#      worker_pool_id = var.octopus_worker_pool_id
+#      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+#
+#      primary_package {
+#        acquisition_location = "Server"
+#        feed_id = var.octopus_built_in_feed_id
+#        package_id = "github-oauth-backend-lambda"
+#        properties = {
+#          SelectionMode = "immediate"
+#        }
+#      }
+#
+#      properties = {
+#        "Octopus.Action.Aws.AssumeRole": "False"
+#        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+#        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+#        "Octopus.Action.Aws.S3.FileSelections": "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
+#        "Octopus.Action.Aws.S3.TargetMode": "FileSelections"
+#        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+#        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+#        "Octopus.Action.Package.DownloadOnTentacle": "False"
+#        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
+#        "Octopus.Action.Package.PackageId": "github-oauth-backend-lambda"
+#      }
+#    }
+#  }
 #  step {
 #    condition           = "Success"
 #    name                = "Get Stack Outputs"
