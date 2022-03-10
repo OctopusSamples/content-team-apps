@@ -642,12 +642,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Octopus.AwsRunScript"
+    name                = "Check for vulnerabilities"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Octopus.AwsRunScript"
+      name           = "Check for vulnerabilities"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments = [var.octopus_production_security_environment_id, var.octopus_development_security_environment_id]
