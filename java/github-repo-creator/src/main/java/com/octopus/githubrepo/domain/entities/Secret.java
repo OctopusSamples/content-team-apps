@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a secret to be included in a new GitHub repo.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

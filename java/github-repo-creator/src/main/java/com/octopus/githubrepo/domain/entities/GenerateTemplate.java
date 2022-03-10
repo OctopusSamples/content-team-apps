@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a request to generate a GitHub repo.
+ */
 @Type("generatetemplate")
 @Data
 @NoArgsConstructor

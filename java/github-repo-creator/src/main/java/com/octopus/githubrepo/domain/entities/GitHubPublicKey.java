@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * A GitHub public key resource.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

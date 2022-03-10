@@ -178,25 +178,29 @@ public class UtilityProducer {
 
   /**
    * Produces a JsonApiResourceUtils typed for CreateServiceAccount.
+   *
    * @param resourceConverter The JSON api resource converter.
    * @return An instance of JsonApiResourceUtils.
    */
   @ApplicationScoped
   @Produces
   @Named("JsonApiServiceUtilsCreateGithubRepo")
-  public JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo(final ResourceConverter resourceConverter) {
+  public JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo(
+      final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtilsCreateGithubRepo(resourceConverter);
   }
 
   /**
    * Produces a JsonApiResourceUtils typed for CreateServiceAccount.
+   *
    * @param resourceConverter The JSON api resource converter.
    * @return An instance of JsonApiResourceUtils.
    */
   @ApplicationScoped
   @Produces
   @Named("JsonApiServiceUtilsGenerateTemplate")
-  public JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate(final ResourceConverter resourceConverter) {
+  public JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate(
+      final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtilsGenerateTemplate(resourceConverter);
   }
 

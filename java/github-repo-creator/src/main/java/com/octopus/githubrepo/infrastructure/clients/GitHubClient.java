@@ -17,6 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+/**
+ * The REST client to the GitHub API.
+ */
 @Path("/")
 @RegisterRestClient
 public interface GitHubClient {
