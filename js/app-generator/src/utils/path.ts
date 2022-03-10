@@ -1,3 +1,5 @@
+import {RuntimeSettings} from "../config/runtimeConfig";
+
 export const DEFAULT_BRANCH = "main";
 
 export function getHashField(field: string) {
@@ -20,43 +22,6 @@ export function getHashField(field: string) {
 }
 
 /**
- * Get the path from which to load the config.json file.
- */
-export function getBaseUrl() {
-    try {
-        const url = window.location.pathname;
-        if (url.endsWith(".html") || url.endsWith(".htm")) {
-            return url.substr(0, url.lastIndexOf('/'));
-        } else if (url.endsWith("/")) {
-            return url.substring(0, url.length - 1);
-        }
-
-        return url;
-    } catch {
-        return "";
-    }
-}
-
-/**
- * Determines the branch name from the URL.
- */
-export function getBranch() {
-    const baseUrl = getBaseUrl();
-    if (baseUrl === "") {
-        return DEFAULT_BRANCH;
-    }
-
-    const pathElements = baseUrl.split("/");
-
-    if (pathElements.length > 1) {
-        console.log("The branch detection logic assumes the app is using hash based routing rather than paths.")
-        console.log("It looks like you have nested paths in the URL, which likely won't provide the correct result.")
-    }
-
-    return baseUrl.split("/").pop() || "";
-}
-
-/**
  * Converts a branch name into a path. This takes care of the fact that the main branch is on the root path.
  */
 export function getBranchPath(branch: string) {
@@ -67,8 +32,8 @@ export function getBranchPath(branch: string) {
     return "/" + branch + "/";
 }
 
-export function setLoginBranch() {
-    return window.localStorage.setItem("loginbranch", getBranch());
+export function setLoginBranch(settings: RuntimeSettings) {
+    return window.localStorage.setItem("loginbranch", settings.branch);
 }
 
 /**
@@ -90,8 +55,8 @@ export function clearLoginBranch() {
     return window.localStorage.setItem("loginbranch", "");
 }
 
-export function setGitHubLoginBranch() {
-    window.localStorage.setItem("githubloginbranch", getBranch());
+export function setGitHubLoginBranch(settings: RuntimeSettings) {
+    window.localStorage.setItem("githubloginbranch", settings.branch);
 }
 
 export function getGitHubLoginBranch() {

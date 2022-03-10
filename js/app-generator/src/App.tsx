@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet";
 import jwt_decode from 'jwt-decode';
 import {darkTheme, lightTheme} from "./theme/appTheme";
 import {RuntimeSettings} from "./config/runtimeConfig";
-import {DEFAULT_BRANCH, getBranch} from "./utils/path";
+import {DEFAULT_BRANCH} from "./utils/path";
 import {getIdToken} from "./utils/security";
 import Login from "./pages/developer/Login";
 import Layout from "./components/scaffold/Layout";
@@ -54,8 +54,8 @@ function App(settings: RuntimeSettings) {
 
     const keys = settings.aws?.jwk?.keys;
     const developerGroup = settings.aws?.cognitoDeveloperGroup;
-    const branch = getBranch();
-    const idToken = getIdToken(keys);
+    const branch = settings.branch;
+    const idToken = getIdToken(keys, settings);
 
     useEffect(() => {
         if (branch !== DEFAULT_BRANCH) {

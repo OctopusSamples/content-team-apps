@@ -27,7 +27,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 }
             }
         };
-        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint)
+        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
             .then((body: any) => {
                 const populateRepoBody = {
                     "data": {
@@ -60,7 +60,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                     }
                 }
 
-                postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint)
+                postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings)
                     .then(body => {
                         props.machine.send("NEXT")
                     })
