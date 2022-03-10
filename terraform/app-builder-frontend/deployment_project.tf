@@ -457,7 +457,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Content Team (Shared Resource)\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGatewayStage}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
