@@ -14,6 +14,9 @@ public class GitBuilder {
     return """
         # The following workflow provides an opinionated template you can customize for your own needs.
         #
+        # If you are not an Octopus user, the "Push to Octopus", "Generate Octopus Deploy build information",
+        # and "Create Octopus Release" steps can be safely deleted.
+        #
         # To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
         # set the OCTOPUS_SERVER_URL secret to the Octopus URL.
         #
@@ -32,7 +35,7 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the GiotVersion installation step. */
+  /** Build the GitVersion installation step. */
   public Step gitVersionInstallStep() {
     return UsesWith.builder()
         .name("Install GitVersion")
