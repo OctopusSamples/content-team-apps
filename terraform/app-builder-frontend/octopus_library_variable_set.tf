@@ -93,3 +93,12 @@ resource "octopusdeploy_variable" "cloudformation_apigateway" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "AppBuilderApiGateway"
 }
+
+resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
+  name = "CloudFormationName.ApiGatewayStage"
+  type = "String"
+  description = "The Cloudformation stack that created the app builder API gateway stage."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "AppBuilderApiGatewayStage"
+}
