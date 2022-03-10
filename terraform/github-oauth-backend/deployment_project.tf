@@ -123,7 +123,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       primary_package {
         acquisition_location = "Server"
         feed_id = var.octopus_built_in_feed_id
-        package_id = "github-oauth-backend-lambda"
+        package_id = "app-builder-frontend"
         properties = {
           "SelectionMode": "immediate"
         }
@@ -139,7 +139,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.Variable": "AWS.Account"
         "Octopus.Action.Package.DownloadOnTentacle": "False"
         "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId": "github-oauth-backend-lambda"
+        "Octopus.Action.Package.PackageId": "app-builder-frontend"
       }
     }
   }
