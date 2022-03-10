@@ -172,10 +172,6 @@
       <groupId>com.amazonaws</groupId>
       <version>3.11.0</version>
     </dependency>
-    <dependency>
-      <groupId>com.azure</groupId>
-      <artifactId>azure-messaging-servicebus</artifactId>
-    </dependency>
   </dependencies>
   <dependencyManagement>
     <dependencies>

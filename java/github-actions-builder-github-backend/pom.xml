@@ -88,6 +88,54 @@
     </dependency>
 
     <dependency>
+      <groupId>com.azure</groupId>
+      <artifactId>azure-messaging-servicebus</artifactId>
+      <!--
+        Exclude all the netty dependencies
+        https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/core/azure-core-http-netty/pom.xml
+      -->
+      <exclusions>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-handler</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-handler-proxy</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-buffer</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-codec-http</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-codec-http2</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-transport-native-unix-common</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-transport-native-epoll</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>io.netty</artifactId>
+          <groupId>netty-transport-native-kqueue</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-netty</artifactId>
+    </dependency>
+
+    <dependency>
       <artifactId>quarkus-arc</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
