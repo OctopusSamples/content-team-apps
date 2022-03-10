@@ -1,4 +1,4 @@
-name: app-builder-frontend-octopus
+name: app-builder-github-oauth-backend-octopus
 
 on:
   push:
