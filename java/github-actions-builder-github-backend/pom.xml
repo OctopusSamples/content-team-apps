@@ -96,36 +96,36 @@
       -->
       <exclusions>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-handler</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-handler</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-handler-proxy</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-handler-proxy</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-buffer</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-buffer</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-codec-http</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-codec-http</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-codec-http2</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-codec-http2</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-transport-native-unix-common</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-native-unix-common</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-transport-native-epoll</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-native-epoll</artifactId>
         </exclusion>
         <exclusion>
-          <artifactId>io.netty</artifactId>
-          <groupId>netty-transport-native-kqueue</groupId>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-native-kqueue</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
