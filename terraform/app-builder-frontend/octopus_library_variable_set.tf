@@ -43,7 +43,7 @@ resource "octopusdeploy_variable" "aws_region" {
 resource "octopusdeploy_variable" "aws_s3_bucket" {
   name = "CloudFormation.S3Bucket"
   type = "String"
-  description = "The name of the bucket hosting the App Builder frontend web app."
+  description = "The name of the stack creating the App Builder frontend S3 bucket."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "AppBuilderFrontend"

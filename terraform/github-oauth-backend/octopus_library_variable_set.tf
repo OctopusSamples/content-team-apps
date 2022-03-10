@@ -44,13 +44,13 @@ resource "octopusdeploy_variable" "aws_region" {
 resource "octopusdeploy_variable" "aws_s3_bucket" {
   name = "CloudFormation.S3Bucket"
   type = "String"
-  description = "The name of the bucket hosting the App Builder frontend web app."
+  description = "The name of the stack creating the App Builder GitHub OAuth proxy S3 bucket."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "AppBuilderOAuthProxy"
 }
 
-resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
+resource "octopusdeploy_variable" "aws_cloudformation_code" {
   name = "CloudFormation.BackendCodeExchangeStack"
   type = "String"
   description = "The name of the stack hosting the lambda that converts a code to a token."
@@ -59,7 +59,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
   value = "AppBuilderGitHubOAuthProxyCode"
 }
 
-resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
+resource "octopusdeploy_variable" "aws_cloudformation_login" {
   name = "CloudFormation.BackendLoginStack"
   type = "String"
   description = "The name of the stack hosting the lambda that initiates the OAuth login."
