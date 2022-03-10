@@ -40,7 +40,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
@@ -208,7 +208,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Action Workflow Generator Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
+        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
         "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.Frontend}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
