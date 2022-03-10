@@ -181,6 +181,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 logIntoOctopus: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
+                        MOCK: {target: 'loggedIntoOctopus'},
                     },
                     entry: [
                         saveCurrentState("logIntoOctopus"),
@@ -200,6 +201,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 logIntoGitHub: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
+                        MOCK: {target: 'loggedIntoGithub'},
                     },
                     entry: [
                         saveCurrentState("logIntoGitHub"),

@@ -38,12 +38,12 @@ const Book: FC = (): ReactElement => {
 
     useEffect(() => {
         for (const endpoint of endpoints) {
-            ((myEndpoint) => getJson(myEndpoint)
+            ((myEndpoint) => getJson(myEndpoint, context.settings)
                 .then(() => newHealth[myEndpoint] = true)
                 .catch(() => newHealth[myEndpoint] = false)
                 .finally(() => setHealth({...newHealth})))(endpoint);
         }
-    }, [endpoints, setHealth]);
+    }, [endpoints, setHealth, context.settings]);
 
     return (
         <>

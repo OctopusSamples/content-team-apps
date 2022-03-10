@@ -176,13 +176,15 @@ public class UtilityProducer {
 
   /**
    * Produces a JsonApiResourceUtils typed for CreateServiceAccount.
+   *
    * @param resourceConverter The JSON api resource converter.
    * @return An instance of JsonApiResourceUtils.
    */
   @ApplicationScoped
   @Produces
   @Named("JsonApiServiceUtils")
-  public JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils(final ResourceConverter resourceConverter) {
+  public JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils(
+      final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtils(resourceConverter);
   }
 

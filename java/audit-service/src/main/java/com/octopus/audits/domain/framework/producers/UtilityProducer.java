@@ -2,10 +2,10 @@ package com.octopus.audits.domain.framework.producers;
 
 import com.octopus.audits.domain.jsonapi.AcceptHeaderVerifier;
 import com.octopus.audits.domain.jsonapi.impl.VersionOneAcceptHeaderVerifier;
-import com.octopus.lambda.CaseInsensitiveHttpHeaderExtractor;
-import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 

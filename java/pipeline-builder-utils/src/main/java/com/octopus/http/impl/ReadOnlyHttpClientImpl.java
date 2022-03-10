@@ -32,10 +32,10 @@ import org.jboss.logging.Logger;
  * modifications. All GET and HEAD requests are cached to help prevent GitHub API rate limit
  * issues.
  */
-public class ReadOnlyStringReadOnlyHttpClient implements ReadOnlyHttpClient {
+public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
 
   private static final Logger LOG = Logger.getLogger(
-      ReadOnlyStringReadOnlyHttpClient.class.toString());
+      ReadOnlyHttpClientImpl.class.toString());
   private static final Map<String, Boolean> CACHED_BOOLEAN_RESULTS = new ConcurrentHashMap<>();
   private static final Map<String, Try<String>> CACHED_STRING_RESULTS = new ConcurrentHashMap<>();
 

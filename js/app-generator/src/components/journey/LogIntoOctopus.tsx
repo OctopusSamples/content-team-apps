@@ -18,16 +18,21 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
 
     const login = () => {
-        const nonce = crypto.randomUUID().toString().replaceAll("-", "").substr(0, 19);
-        Cookies.set("appBuilderOctopusNonce", nonce);
-        localStorage.setItem("appBuilderState", "loggedIntoOctopus");
-        window.open("https://octopus.com/oauth2/authorize?"
-            + "client_id=855b8e5a-c3c4-4c4d-91b1-fef5dd762ec2&scope=openid%20profile%20email"
-            + "&response_type=code+id_token"
-            + "&response_mode=form_post"
-            + "&nonce=" + nonce
-            + "&redirect_uri=" + context.settings.octopusOauthEndpoint,
-            "_parent");
+        if (context.settings.disableExternalCalls) {
+            // pretend to do a login
+            props.machine.send("MOCK");
+        } else {
+            const nonce = crypto.randomUUID().toString().replaceAll("-", "").substr(0, 19);
+            Cookies.set("appBuilderOctopusNonce", nonce);
+            localStorage.setItem("appBuilderState", "loggedIntoOctopus");
+            window.open("https://octopus.com/oauth2/authorize?"
+                + "client_id=855b8e5a-c3c4-4c4d-91b1-fef5dd762ec2&scope=openid%20profile%20email"
+                + "&response_type=code+id_token"
+                + "&response_mode=form_post"
+                + "&nonce=" + nonce
+                + "&redirect_uri=" + context.settings.octopusOauthEndpoint,
+                "_parent");
+        }
     }
 
     return (

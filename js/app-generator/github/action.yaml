@@ -185,20 +185,20 @@ runs:
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
         octopus_api_key: ${{ inputs.octopus_apikey }}
-        octopus_project: app-builder-frontend
+        octopus_project: Deploy App Builder Frontend
         octopus_server:  ${{ inputs.octopus_server }}
         push_version: ${{ steps.determine_version.outputs.semVer }}
         push_package_ids: app-builder-frontend
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
-        space: "Content Team"
+        octopus_space: "Content Team"
 
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
-        api_key: ${{ inputs.octopus_server_url }}
+        api_key: ${{ inputs.octopus_apikey }}
         project: Deploy App Builder Frontend
-        server: ${{ inputs.octopus_api_token }}
+        server: ${{ inputs.octopus_server }}
         deploy_to: Development
         packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"

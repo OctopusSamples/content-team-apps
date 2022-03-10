@@ -1,7 +1,7 @@
 package com.octopus.octopusclient;
 
 import com.google.common.collect.ImmutableMap;
-import com.octopus.http.impl.ReadWriteStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadWriteHttpClientImpl;
 import io.vavr.control.Try;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OctopusClient {
 
-  private static final ReadWriteStringReadOnlyHttpClient STRING_HTTP_CLIENT = new ReadWriteStringReadOnlyHttpClient();
+  private static final ReadWriteHttpClientImpl STRING_HTTP_CLIENT = new ReadWriteHttpClientImpl();
   private String apiKey;
   private String url;
 

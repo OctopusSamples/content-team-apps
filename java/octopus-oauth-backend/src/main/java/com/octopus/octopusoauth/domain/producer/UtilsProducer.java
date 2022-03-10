@@ -6,10 +6,10 @@ import com.octopus.http.CookieDateUtils;
 import com.octopus.http.impl.CookieDateUtilsImpl;
 import com.octopus.http.FormBodyParser;
 import com.octopus.http.impl.FormBodyParserImpl;
-import com.octopus.lambda.CaseInsensitiveCookieExtractor;
-import com.octopus.lambda.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveCookieExtractor;
+import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 

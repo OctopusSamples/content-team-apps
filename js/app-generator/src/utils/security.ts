@@ -1,7 +1,6 @@
 import {
     clearGitHubLoginBranch,
     clearLoginBranch,
-    getBranch,
     getBranchPath,
     getGitHubLoginBranch,
     getHashField,
@@ -12,7 +11,7 @@ import jwt from 'jsonwebtoken';
 import jwkToPem, {JWK} from 'jwk-to-pem';
 import {JSEncrypt} from "jsencrypt";
 import Cookies from 'js-cookie'
-
+import {RuntimeSettings} from "../config/runtimeConfig";
 
 export function setAccessToken(accessToken: string) {
     window.localStorage.setItem(getLoginBranch() + "-accesstoken", accessToken);
@@ -37,16 +36,16 @@ export function setTokenExpiry(expiry: string) {
  * Gets the saved access token.
  * @param jwk sourced from https://cognito-idp.<region>.amazonaws.com/<pool id>/.well-known/jwks.json
  */
-export function getIdToken(jwk: JWK[]) {
+export function getIdToken(jwk: JWK[], settings: RuntimeSettings) {
     if (!jwk) {
         return "";
     }
 
-    if (isTokenExpired()) {
+    if (isTokenExpired(settings)) {
         return "";
     }
 
-    const idToken = window.localStorage.getItem(getBranch() + "-idtoken") || "";
+    const idToken = window.localStorage.getItem(settings.branch + "-idtoken") || "";
     if (idToken) {
         const anyValidate = jwk.map(j => {
             try {
@@ -68,31 +67,31 @@ export function getIdToken(jwk: JWK[]) {
 /**
  * Gets the saved access token.
  */
-export function getAccessToken() {
-    if (isTokenExpired()) {
+export function getAccessToken(settings: RuntimeSettings) {
+    if (isTokenExpired(settings)) {
         return "";
     }
 
-    return window.localStorage.getItem(getBranch() + "-accesstoken") || "";
+    return window.localStorage.getItem(settings.branch + "-accesstoken") || "";
 }
 
-export function clearTokens() {
-    window.localStorage.setItem(getBranch() + "-accesstoken", "");
-    window.localStorage.setItem(getBranch() + "-idtoken", "");
-    window.localStorage.setItem(getBranch() + "-tokenexpiry", "");
+export function clearTokens(settings: RuntimeSettings) {
+    window.localStorage.setItem(settings.branch + "-accesstoken", "");
+    window.localStorage.setItem(settings.branch + "-idtoken", "");
+    window.localStorage.setItem(settings.branch + "-tokenexpiry", "");
 }
 
-export function login(cognitoLogin: string) {
-    setLoginBranch();
+export function login(cognitoLogin: string, settings: RuntimeSettings) {
+    setLoginBranch(settings);
     window.location.href = cognitoLogin;
 }
 
-export function logout() {
-    clearTokens();
+export function logout(settings: RuntimeSettings) {
+    clearTokens(settings);
 }
 
-export function getTokenTimeLeft() {
-    const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");
+export function getTokenTimeLeft(settings: RuntimeSettings) {
+    const expiry = parseInt(window.localStorage.getItem(settings.branch + "-tokenexpiry") || "");
     if (!isNaN(expiry)) {
         return Math.round((new Date(expiry).getTime() - new Date().getTime()) / 1000 / 60);
     }
@@ -100,9 +99,9 @@ export function getTokenTimeLeft() {
     return 0;
 }
 
-function isTokenExpired() {
+function isTokenExpired(settings: RuntimeSettings) {
     // Check the token expiry
-    const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");
+    const expiry = parseInt(window.localStorage.getItem(settings.branch + "-tokenexpiry") || "");
     if (isNaN(expiry) || new Date(expiry) < new Date()) {
         return true;
     }

@@ -1,8 +1,9 @@
 import {JWK} from "jwk-to-pem";
-import * as H from "history";
 
 export interface RuntimeSettings {
     basename: string;
+    branch: string;
+    disableExternalCalls: boolean;
     octopusOauthEndpoint: string;
     githubOauthEndpoint: string;
     serviceAccountEndpoint: string;

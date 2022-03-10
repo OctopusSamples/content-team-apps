@@ -10,6 +10,7 @@ import lombok.NonNull;
 
 /**
  * An implementation of JsonApiResourceUtils.
+ *
  * @param <T> The JSON API resource type.
  */
 public class JsonApiResourceUtilsImpl<T> implements JsonApiResourceUtils<T> {
@@ -18,6 +19,7 @@ public class JsonApiResourceUtilsImpl<T> implements JsonApiResourceUtils<T> {
 
   /**
    * Constructor.
+   *
    * @param resourceConverter The resource converted used to handle JSON documents.
    */
   public JsonApiResourceUtilsImpl(final ResourceConverter resourceConverter) {

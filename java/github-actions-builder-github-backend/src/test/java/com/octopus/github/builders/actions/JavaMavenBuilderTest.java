@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.octopus.githubactions.builders.JavaMavenBuilder;
-import com.octopus.http.impl.ReadOnlyStringReadOnlyHttpClient;
+import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.repoclients.impl.GithubRepoClient;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class JavaMavenBuilderTest {
     Try.run(() -> Thread.sleep(3000));
     assertFalse(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
         .builder()
-        .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
+        .readOnlyHttpClient(new ReadOnlyHttpClientImpl())
         .repo("https://github.com/OctopusSamples/RandomQuotes")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))
@@ -27,7 +27,7 @@ public class JavaMavenBuilderTest {
     Try.run(() -> Thread.sleep(3000));
     assertTrue(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
         .builder()
-        .readOnlyHttpClient(new ReadOnlyStringReadOnlyHttpClient())
+        .readOnlyHttpClient(new ReadOnlyHttpClientImpl())
         .repo("https://github.com/mcasperson/SampleMavenProject-SpringBoot")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))

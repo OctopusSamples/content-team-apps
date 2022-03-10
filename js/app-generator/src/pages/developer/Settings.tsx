@@ -13,7 +13,7 @@ const Settings: FC = (): ReactElement => {
     const classes = styles();
     const history = useHistory();
     const [partition, setPartition] = useState<string | null>(context.partition);
-    const [accessToken, setAccessToken] = useState<string | null>(getAccessToken());
+    const [accessToken, setAccessToken] = useState<string | null>(getAccessToken(context.settings));
 
     return (
         <>
@@ -54,11 +54,17 @@ const Settings: FC = (): ReactElement => {
                 </Grid>
                 <Grid className={classes.cell} item md={10} sm={12} xs={12}>
                     {accessToken
-                        ? <Button variant={"outlined"} onClick={_ => {logout(); setAccessToken(getAccessToken());}}>Logout</Button>
-                        : <Button variant={"outlined"} onClick={_ => login(context.settings.aws.cognitoLogin)}>Login</Button>}
+                        ? <Button variant={"outlined"}
+                                  onClick={_ => {logout(context.settings); setAccessToken(getAccessToken(context.settings));}}>
+                            Logout
+                          </Button>
+                        : <Button variant={"outlined"}
+                                  onClick={_ => login(context.settings.aws.cognitoLogin, context.settings)}>
+                            Login
+                          </Button>}
                     <span className={classes.helpText}>
                         {accessToken && <p>
-                            Current token is valid for {getTokenTimeLeft()} minutes.
+                            Current token is valid for {getTokenTimeLeft(context.settings)} minutes.
                         </p>}
                         <p>
                             If your account is part of the "Developers" group, you will be granted permissions such as viewing
