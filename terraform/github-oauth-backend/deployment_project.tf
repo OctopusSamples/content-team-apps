@@ -173,7 +173,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
               --output text)
 
-          set_octopusvariable "ApiPipelineResource" ${PIPELINE_RESOURCE_ID}
+          set_octopusvariable "ApiPipelineResource" $${PIPELINE_RESOURCE_ID}
 
           REST_API=$(aws cloudformation \
               describe-stacks \
@@ -181,7 +181,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
-          set_octopusvariable "RestApi" ${REST_API}
+          set_octopusvariable "RestApi" $${REST_API}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
@@ -268,7 +268,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - !Sub >-
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
                 Path: /
-                RoleName: !Sub '${EnvironmentName}-${LambdaName}-role'
+                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
             OauthProxyLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
