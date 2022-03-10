@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
- * Represents an JSONAPI resource requesting the creation of a new Octopus service account.
- * Note this resource encapsulates the details of the cloud instance to create the account in
- * as well as the details of the new account.
+ * Represents an JSONAPI resource requesting the creation of a new Octopus service account. Note
+ * this resource encapsulates the details of the cloud instance to create the account in as well as
+ * the details of the new account.
  */
 @Data
 @SuperBuilder
@@ -18,11 +18,16 @@ import lombok.experimental.SuperBuilder;
 public class CreateServiceAccount extends ServiceAccount {
 
   /**
-   * The octopus server to create the account against
+   * The octopus server to create the account against.
    */
   @NotBlank
   private String octopusServer;
 
+  /**
+   * Convert the service account request into a plain service account resource.
+   *
+   * @return The service account resource.
+   */
   public ServiceAccount convertToServiceAccount() {
     return ServiceAccount.builder()
         .isService(this.isService())

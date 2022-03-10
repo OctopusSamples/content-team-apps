@@ -19,29 +19,32 @@ import lombok.experimental.SuperBuilder;
 public class ServiceAccount {
 
   /**
-   * The service account id
+   * The service account id.
    */
   @Id
   private String id;
 
   /**
-   * The service account name
+   * The service account name.
    */
   @NotBlank
   private String username;
 
   /**
-   * The service account description
+   * The service account description.
    */
   @NotBlank
   private String displayName;
 
   /**
-   * The service account description
+   * The service account description.
    */
   @JsonProperty("isService")
   private boolean isService;
 
+  /**
+   * The API key associated with the service account.
+   */
   @Relationship("apiKey")
   private ApiKey apiKey;
 }
