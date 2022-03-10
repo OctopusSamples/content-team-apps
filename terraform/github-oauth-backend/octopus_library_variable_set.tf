@@ -1,6 +1,6 @@
 resource "octopusdeploy_library_variable_set" "library_variable_set" {
-  name = "App Builder Frontend"
-  description = "Variables used when deploying the App Builder Frontend"
+  name = "App Builder GitHub Oauth Proxy"
+  description = "Variables used when deploying the App Builder GitHub Oauth Proxy"
 }
 
 output "library_variable_set_id" {
