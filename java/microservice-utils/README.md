@@ -1,0 +1,1 @@
+This module contains common utility classes used by microservices.

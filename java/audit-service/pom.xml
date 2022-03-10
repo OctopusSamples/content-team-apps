@@ -173,7 +173,7 @@
     </dependency>
     <dependency>
       <groupId>com.octopus</groupId>
-      <artifactId>pipeline-builder-utils</artifactId>
+      <artifactId>microservice-utils</artifactId>
       <version>1.0</version>
       <scope>compile</scope>
     </dependency>
