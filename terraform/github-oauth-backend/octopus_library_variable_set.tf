@@ -85,3 +85,106 @@ resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "AppBuilderApiGatewayStage"
 }
+
+resource "octopusdeploy_variable" "cloudformation_lambda_login" {
+  name = "Lambda.LoginName"
+  type = "String"
+  description = "The name of the Lambda that redirects users to the GitHub OAuth login."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "OauthProxyLoginRedirect"
+}
+
+resource "octopusdeploy_variable" "cloudformation_lambda_code" {
+  name = "Lambda.TokenExchangeName"
+  type = "String"
+  description = "The name of the Lambda that exchanges the OAuth code for a token and returns to the web app."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "OauthProxyCodeExchange"
+}
+
+resource "octopusdeploy_variable" "cloudformation_code_url" {
+  name = "Client.ClientRedirect"
+  type = "String"
+  description = "The URL that GitHub will call with the OAuth code."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://development.githubactionworkflows.com/oauth/github/code"
+}
+
+resource "octopusdeploy_variable" "cloudformation_login_redirect" {
+  name = "GitHub.LoginRedirect"
+  type = "String"
+  description = "The URL that proxy will send users back to once the OAuth token has been retrieved."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://development.githubactionworkflows.com/"
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
+  name = "Client.EncryptionKey"
+  type = "String"
+  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.github_proxy_encryption_key_production
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
+  name = "Client.EncryptionKey"
+  type = "String"
+  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.github_proxy_encryption_key_production
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_salt_production" {
+  name = "Client.EncryptionSalt"
+  type = "String"
+  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "bMjahk2IHvEVz5XgIaO82SfaHjwGMZQ9"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
+  name = "Client.EncryptionSalt"
+  type = "String"
+  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "95FrLIDR5jFroc3MTD5QBd1EsnYKUh1e"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id" {
+  name = "GitHub.OAuthAppClientId"
+  type = "String"
+  description = "The GitHub OAuth app client ID."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = ""
+}
+
+
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret" {
+  name = "GitHub.OAuthAppClientSecret"
+  type = "String"
+  description = "The GitHub OAuth app client secret."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = ""
+}

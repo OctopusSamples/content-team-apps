@@ -29,12 +29,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   project_id = octopusdeploy_project.deploy_project.id
   step {
     condition           = "Success"
-    name                = "Create S3 Bucket"
+    name                = "Create Bucket"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Create S3 Bucket"
+      name           = "Create Bucket"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
