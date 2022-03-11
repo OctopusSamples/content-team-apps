@@ -140,7 +140,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
   description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = var.github_proxy_encryption_key_production
+  value = var.github_proxy_encryption_key_development
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
