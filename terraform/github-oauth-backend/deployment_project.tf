@@ -40,7 +40,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder GitHub Oauth Proxy\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Resources:
@@ -123,6 +123,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           set_octopusvariable "ApiOAuthGitHub" $${API_OAUTH_RESOURCE}
 
+          echo "OAuth GitHub Resource ID: $${API_OAUTH_RESOURCE}"
+
           REST_API=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.ApiGateway} \
@@ -130,6 +132,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --output text)
 
           set_octopusvariable "RestApi" $${REST_API}
+
+          echo "Rest Api ID: $${REST_API}"
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
