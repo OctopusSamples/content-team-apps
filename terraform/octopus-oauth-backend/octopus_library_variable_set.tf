@@ -125,7 +125,7 @@ resource "octopusdeploy_variable" "cloudformation_login_redirect" {
 resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
   name = "Client.EncryptionKey"
   type = "Sensitive"
-  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  description = "The key used to encrypt the Octopus ID token sent back to the client in a cookie."
   is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.octopus_proxy_encryption_key_production
@@ -137,7 +137,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
 resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
   name = "Client.EncryptionKey"
   type = "Sensitive"
-  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  description = "The key used to encrypt the Octopus ID token sent back to the client in a cookie."
   is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.octopus_proxy_encryption_key_development

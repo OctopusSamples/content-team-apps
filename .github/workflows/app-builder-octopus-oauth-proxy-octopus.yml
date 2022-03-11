@@ -34,5 +34,5 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-west-1
-          octopus_proxy_encryption_key_development: ${{ secrets.APP_BUILDER_OCTOPUS_OAUTH_PROXY_ENCRYPTION_KEY_DEVELOPMENT }}
+          octopus_proxy_encryption_key_development: "ED1WU0ykprm5tdryF3TmP7z9blWJuTcm" #${{ secrets.APP_BUILDER_OCTOPUS_OAUTH_PROXY_ENCRYPTION_KEY_DEVELOPMENT }}
           octopus_proxy_encryption_key_production: ${{ secrets.APP_BUILDER_OCTOPUS_OAUTH_PROXY_ENCRYPTION_KEY_PRODUCTION }}
