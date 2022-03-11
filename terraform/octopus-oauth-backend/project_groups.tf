@@ -1,6 +1,6 @@
 resource "octopusdeploy_project_group" "appbuilder_github_oauth_project_group" {
-  description  = "The App Builder GitHub OAuth Proxy."
-  name         = "App Builder GitHub OAuth Proxy"
+  description  = "The App Builder Octopus OAuth Proxy."
+  name         = "App Builder Octopus OAuth Proxy"
 }
 
 output "appbuilder_github_oauth_project_group_id" {
