@@ -126,7 +126,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
   name = "Client.EncryptionKey"
   type = "Sensitive"
   description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
-  is_sensitive = false
+  is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_encryption_key_production
   scope {
@@ -138,7 +138,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
   name = "Client.EncryptionKey"
   type = "Sensitive"
   description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
-  is_sensitive = false
+  is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_encryption_key_development
   scope {
@@ -187,7 +187,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_dev
   name = "GitHub.OAuthAppClientSecret"
   type = "Sensitive"
   description = "The GitHub OAuth app client secret."
-  is_sensitive = false
+  is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_client_secret_development
   scope {
@@ -212,7 +212,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_pro
   name = "GitHub.OAuthAppClientSecret"
   type = "Sensitive"
   description = "The GitHub OAuth app client secret."
-  is_sensitive = false
+  is_sensitive = true
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_client_secret_production
   scope {
