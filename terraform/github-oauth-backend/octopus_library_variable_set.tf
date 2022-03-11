@@ -170,21 +170,52 @@ resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
   }
 }
 
-resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id" {
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id_development" {
   name = "GitHub.OAuthAppClientId"
   type = "String"
   description = "The GitHub OAuth app client ID."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = ""
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
 }
 
 
-resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret" {
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_development" {
   name = "GitHub.OAuthAppClientSecret"
   type = "String"
   description = "The GitHub OAuth app client secret."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = ""
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id_production" {
+  name = "GitHub.OAuthAppClientId"
+  type = "String"
+  description = "The GitHub OAuth app client ID."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = ""
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+
+resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_production" {
+  name = "GitHub.OAuthAppClientSecret"
+  type = "String"
+  description = "The GitHub OAuth app client secret."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = ""
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
