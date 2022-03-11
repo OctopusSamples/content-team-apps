@@ -6,7 +6,7 @@ on:
     - '.github/workflows/github-oauth-backend.yml'
     - 'java/pom.xml'
     - 'java/github-oauth-backend/**'
-    - 'java/pipeline-builder-utils/**'
+    - 'java/microservice-utils/**'
   workflow_dispatch:
 
 jobs:
