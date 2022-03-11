@@ -99,6 +99,7 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+        TF_INPUT: "0"
       run: terraform init
       working-directory: terraform/github-oauth-backend
       shell: bash
@@ -107,6 +108,7 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+        TF_INPUT: "0"
       run: >
         terraform apply 
         -auto-approve 
