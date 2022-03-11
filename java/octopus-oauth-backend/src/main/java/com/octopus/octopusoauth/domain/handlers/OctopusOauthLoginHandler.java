@@ -27,6 +27,12 @@ public class OctopusOauthLoginHandler {
   @ConfigProperty(name = "octopus.login.redirect")
   String loginRedirect;
 
+  @ConfigProperty(name = "octopus.client.redirect")
+  String clientRedirect;
+
+  @ConfigProperty(name = "octopus.disable.login")
+  boolean disableLogin;
+
   @Inject
   CookieDateUtils cookieDateUtils;
 
@@ -37,6 +43,16 @@ public class OctopusOauthLoginHandler {
    *         layer.
    */
   public SimpleResponse redirectToLogin() {
+    // When login is disabled, we return immediately to the web app
+    if (disableLogin) {
+      return new SimpleResponse(
+          307,
+          null,
+          new ImmutableMap.Builder<String, String>()
+              .put("Location", clientRedirect)
+              .build());
+    }
+
     final String nonce = UUID.randomUUID().toString();
     /*
       Redirect to the GitHub login.
