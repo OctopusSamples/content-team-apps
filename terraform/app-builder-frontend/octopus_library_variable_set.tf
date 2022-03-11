@@ -103,6 +103,15 @@ resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
   value = "AppBuilderApiGatewayStage"
 }
 
+resource "octopusdeploy_variable" "config_json_disableExternalCalls" {
+  name = "disableExternalCalls"
+  type = "String"
+  description = "The flag that enables remote network calls."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "false"
+}
+
 resource "octopusdeploy_variable" "config_json_branch" {
   name = "branch"
   type = "String"
