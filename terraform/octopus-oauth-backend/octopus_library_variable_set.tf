@@ -114,7 +114,7 @@ resource "octopusdeploy_variable" "cloudformation_code_url" {
 }
 
 resource "octopusdeploy_variable" "cloudformation_login_redirect" {
-  name = "GitHub.LoginRedirect"
+  name = "Octopus.LoginRedirect"
   type = "String"
   description = "The URL that proxy will send users back to once the OAuth token has been retrieved."
   is_sensitive = false
