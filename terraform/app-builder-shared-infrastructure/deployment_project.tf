@@ -25,6 +25,24 @@ output "deploy_project_id" {
   value = octopusdeploy_project.deploy_project.id
 }
 
+resource "octopusdeploy_variable" "debug_variable" {
+  name = "OctopusPrintVariables"
+  type = "String"
+  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  is_sensitive = false
+  owner_id = octopusdeploy_project.deploy_project.id
+  value = "False"
+}
+
+resource "octopusdeploy_variable" "debug_evaluated_variable" {
+  name = "OctopusPrintEvaluatedVariables"
+  type = "String"
+  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  is_sensitive = false
+  owner_id = octopusdeploy_project.deploy_project.id
+  value = "False"
+}
+
 resource "octopusdeploy_deployment_process" "deploy_project" {
   project_id = octopusdeploy_project.deploy_project.id
   step {
