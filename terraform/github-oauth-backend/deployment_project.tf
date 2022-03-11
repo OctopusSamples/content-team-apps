@@ -52,8 +52,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Value:
                 Ref: LambdaS3Bucket
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
