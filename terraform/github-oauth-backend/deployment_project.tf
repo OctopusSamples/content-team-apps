@@ -132,11 +132,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
-        "Octopus.Action.Aws.S3.FileSelections": "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
-        "Octopus.Action.Aws.S3.TargetMode": "FileSelections"
+        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+        "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+        "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable": "AWS"
         "Octopus.Action.Package.DownloadOnTentacle": "False"
         "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId": "github-oauth-backend-lambda"
