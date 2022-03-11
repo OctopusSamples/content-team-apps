@@ -43,61 +43,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
-                AWSTemplateFormatVersion: 2010-09-09
-                Parameters:
-                  Hostname:
-                    Type: String
-                Resources:
-                  S3Bucket:
-                    Type: AWS::S3::Bucket
-                    Properties:
-                      AccessControl: PublicRead
-                      WebsiteConfiguration:
-                        IndexDocument: index.html
-                        ErrorDocument: error.html
-                        RoutingRules:
-                        - RoutingRuleCondition:
-                           HttpErrorCodeReturnedEquals: '404'
-                          RedirectRule:
-                            ReplaceKeyWith: index.html
-                            HostName: !Ref Hostname
-                            Protocol: https
-                    DeletionPolicy: Retain
-                  BucketPolicy:
-                    Type: AWS::S3::BucketPolicy
-                    Properties:
-                      PolicyDocument:
-                        Id: MyPolicy
-                        Version: 2012-10-17
-                        Statement:
-                          - Sid: PublicReadForGetBucketObjects
-                            Effect: Allow
-                            Principal: '*'
-                            Action: 's3:GetObject'
-                            Resource: !Join
-                              - ''
-                              - - 'arn:aws:s3:::'
-                                - !Ref S3Bucket
-                                - /*
-                      Bucket: !Ref S3Bucket
-                Outputs:
-                  Bucket:
-                    Value: !Ref S3Bucket
-                    Description: URL for website hosted on S3
-                  WebsiteURL:
-                    Value: !GetAtt
-                      - S3Bucket
-                      - WebsiteURL
-                    Description: URL for website hosted on S3
-                  S3BucketSecureURL:
-                    Value: !Join
-                      - ''
-                      - - 'https://'
-                        - !GetAtt
-                          - S3Bucket
-                          - DomainName
-                    Description: Name of S3 bucket to hold website content
-            EOT
+          Resources:
+            LambdaS3Bucket:
+              Type: 'AWS::S3::Bucket'
+          Outputs:
+            LambdaS3Bucket:
+              Description: The S3 Bucket
+              Value:
+                Ref: LambdaS3Bucket
+        EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
