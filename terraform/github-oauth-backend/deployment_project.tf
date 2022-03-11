@@ -161,19 +161,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
         "Octopus.Action.AwsAccount.Variable": "AWS.Account"
         "Octopus.Action.Script.ScriptBody": <<-EOT
-          aws cloudformation \
+          API_OAUTH_RESOURCE=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.ApiGateway} \
-              --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
-              --output text
-
-          PIPELINE_RESOURCE_ID=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormationName.ApiGateway} \
-              --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
+              --query "Stacks[0].Outputs[?OutputKey=='ApiOAuthGitHub'].OutputValue" \
               --output text)
 
-          set_octopusvariable "ApiPipelineResource" $${PIPELINE_RESOURCE_ID}
+          set_octopusvariable "ApiPipelineResource" $${API_OAUTH_RESOURCE}
 
           REST_API=$(aws cloudformation \
               describe-stacks \

@@ -78,6 +78,18 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   - RestApi
                   - RootResourceId
                 PathPart: oauth
+            ApiOAuthGitHub:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiOAuth
+                PathPart: github
+            ApiOAuthOctopus:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiOAuth
+                PathPart: octopus
           Outputs:
             RestApi:
               Description: The REST API
@@ -96,6 +108,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             ApiOAuth:
               Description: ID of the resource exposing the OAuth proxies
               Value: !Ref ApiOAuth
+            ApiOAuthGitHub:
+              Description: ID of the resource exposing the GitHub OAuth proxies
+              Value: !Ref ApiOAuthGitHub
+            ApiOAuthOctopus:
+              Description: ID of the resource exposing the Octopus OAuth proxies
+              Value: !Ref ApiOAuthOctopus
 
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
