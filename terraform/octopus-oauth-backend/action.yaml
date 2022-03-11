@@ -89,7 +89,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         TF_INPUT: "0"
       run: terraform init
-      working-directory: terraform/github-oauth-backend
+      working-directory: terraform/octopus-oauth-backend
       shell: bash
 
     - name: Terraform Apply
@@ -115,5 +115,5 @@ runs:
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
         -var="octopus_proxy_encryption_key_development=${{ inputs.octopus_proxy_encryption_key_development }}"
         -var="octopus_proxy_encryption_key_production=${{ inputs.octopus_proxy_encryption_key_production }}"
-      working-directory: terraform/github-oauth-backend
+      working-directory: terraform/octopus-oauth-backend
       shell: bash
