@@ -176,7 +176,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id_develop
   description = "The GitHub OAuth app client ID."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = ""
+  value = var.github_proxy_client_id_development
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
@@ -189,7 +189,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_dev
   description = "The GitHub OAuth app client secret."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = ""
+  value = var.github_proxy_client_secret_development
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
@@ -201,7 +201,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_id_product
   description = "The GitHub OAuth app client ID."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = ""
+  value = var.github_proxy_client_id_production
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
@@ -214,7 +214,7 @@ resource "octopusdeploy_variable" "cloudformation_github_oauth_client_secret_pro
   description = "The GitHub OAuth app client secret."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = ""
+  value = var.github_proxy_client_secret_production
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }

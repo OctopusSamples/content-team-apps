@@ -34,3 +34,9 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-west-1
+          github_proxy_encryption_key_development: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_ENCRYPTION_KEY_DEVELOPMENT }}
+          github_proxy_encryption_key_production: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_ENCRYPTION_KEY_PRODUCTION }}
+          github_proxy_client_id_development: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_CLIENT_ID_DEVELOPMENT }}
+          github_proxy_client_id_production: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_CLIENT_ID_PRODUCTION }}
+          github_proxy_client_secret_development: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_CLIENT_SECRET_DEVELOPMENT }}
+          github_proxy_client_secret_production: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_CLIENT_SECRET_PRODUCTION }}

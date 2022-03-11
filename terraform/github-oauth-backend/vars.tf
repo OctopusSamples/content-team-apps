@@ -73,3 +73,25 @@ variable "github_proxy_encryption_key_production" {
   nullable = false
   sensitive = true
 }
+
+variable "github_proxy_client_id_development" {
+  type = string
+  nullable = false
+}
+
+variable "github_proxy_client_id_production" {
+  type = string
+  nullable = false
+}
+
+variable "github_proxy_client_secret_development" {
+  type = string
+  nullable = false
+  sensitive = true
+}
+
+variable "github_proxy_client_secret_production" {
+  type = string
+  nullable = false
+  sensitive = true
+}
