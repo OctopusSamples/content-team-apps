@@ -2,7 +2,6 @@ package com.octopus.octopusoauth.domain.handlers;
 
 import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.JWSObject;
-import com.octopus.PipelineConstants;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.CookieDateUtils;
 import com.octopus.http.FormBodyParser;
@@ -22,7 +21,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * The common logic handling the response from Octofront with the ID token.
  */
 @ApplicationScoped
-public class OctopusOauthHandler {
+public class OctopusOauthRedirectHandler {
 
   @ConfigProperty(name = "octopus.test.idToken")
   Optional<String> testIdToken;
