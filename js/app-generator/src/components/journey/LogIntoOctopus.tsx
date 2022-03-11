@@ -25,7 +25,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
             const nonce = crypto.randomUUID().toString().replaceAll("-", "").substr(0, 19);
             Cookies.set("appBuilderOctopusNonce", nonce);
             localStorage.setItem("appBuilderState", "loggedIntoOctopus");
-            window.open(context.settings.octopusOauthEndpoint, "_parent");
+            window.open(context.settings.octofrontOauthEndpoint, "_parent");
         }
     }
 

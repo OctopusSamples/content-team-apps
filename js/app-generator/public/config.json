@@ -3,7 +3,7 @@
   "branch": "main",
   "disableExternalCalls": true,
   "title": "App Builder",
-  "octopusOauthEndpoint": "http://localhost:10000/oauth/octopus/login",
+  "octofrontOauthEndpoint": "http://localhost:10000/oauth/octopus/login",
   "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
   "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
   "githubRepoEndpoint": "http://localhost:13000/api/githubrepo",

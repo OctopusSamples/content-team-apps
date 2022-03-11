@@ -131,7 +131,7 @@ resource "octopusdeploy_variable" "config_json_githubOauthEndpoint" {
 }
 
 resource "octopusdeploy_variable" "config_json_octopusOauthEndpoint" {
-  name = "octopusOauthEndpoint"
+  name = "octofrontOauthEndpoint"
   type = "String"
   description = "The location of the Octopus login proxy."
   is_sensitive = false
