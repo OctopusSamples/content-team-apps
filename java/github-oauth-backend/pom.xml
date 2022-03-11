@@ -66,6 +66,11 @@
 
   <dependencies>
     <dependency>
+      <artifactId>pipeline-builder-utils</artifactId>
+      <groupId>com.octopus</groupId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
       <artifactId>microservice-utils</artifactId>
       <groupId>com.octopus</groupId>
       <version>1.0</version>
