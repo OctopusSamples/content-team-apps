@@ -129,3 +129,12 @@ resource "octopusdeploy_variable" "config_json_githubOauthEndpoint" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/oauth/github/login"
 }
+
+resource "octopusdeploy_variable" "config_json_octopusOauthEndpoint" {
+  name = "octopusOauthEndpoint"
+  type = "String"
+  description = "The location of the Octopus login proxy."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/#{Octopus.Environment.Name}/oauth/octopus/login"
+}
