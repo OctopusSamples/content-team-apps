@@ -136,7 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
         "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS"
+        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
         "Octopus.Action.Package.DownloadOnTentacle": "False"
         "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId": "github-oauth-backend-lambda"
