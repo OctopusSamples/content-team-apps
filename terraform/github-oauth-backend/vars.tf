@@ -100,3 +100,8 @@ variable "github_proxy_client_secret_production" {
   nullable = false
   sensitive = true
 }
+
+variable "cognito_library_variable_set_id" {
+  type = string
+  nullable = false
+}
