@@ -255,7 +255,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
                 RetentionInDays: 14
-            IamRoleLambdaOneExecution:
+            IamRoleLambdaOneExecutionProxy:
               Type: 'AWS::IAM::Role'
               Properties:
                 AssumeRolePolicyDocument:
@@ -268,7 +268,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       Action:
                         - 'sts:AssumeRole'
                 Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-policy'
+                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-policy'
                     PolicyDocument:
                       Version: 2012-10-17
                       Statement:
@@ -279,7 +279,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
             ProxyLambdaPermissions:
@@ -329,7 +329,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
                 RetentionInDays: 14
-            IamRoleLambdaOneExecutionProxy:
+            IamRoleLambdaOneExecution:
               Type: 'AWS::IAM::Role'
               Properties:
                 AssumeRolePolicyDocument:
@@ -342,7 +342,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       Action:
                         - 'sts:AssumeRole'
                 Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-policy'
+                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-policy'
                     PolicyDocument:
                       Version: 2012-10-17
                       Statement:
@@ -353,7 +353,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
             OauthProxyLambda:
@@ -501,6 +501,80 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             LambdaDescription:
               Type: String
           Resources:
+            AppLogGroupProxy:
+              Type: 'AWS::Logs::LogGroup'
+              Properties:
+                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
+                RetentionInDays: 14
+            IamRoleLambdaOneExecutionProxy:
+              Type: 'AWS::IAM::Role'
+              Properties:
+                AssumeRolePolicyDocument:
+                  Version: 2012-10-17
+                  Statement:
+                    - Effect: Allow
+                      Principal:
+                        Service:
+                          - lambda.amazonaws.com
+                      Action:
+                        - 'sts:AssumeRole'
+                Policies:
+                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-policy'
+                    PolicyDocument:
+                      Version: 2012-10-17
+                      Statement:
+                        - Effect: Allow
+                          Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:CreateLogGroup'
+                            - 'logs:PutLogEvents'
+                          Resource:
+                            - !Sub >-
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
+                Path: /
+                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+            ProxyLambdaPermissions:
+              Type: 'AWS::Lambda::Permission'
+              Properties:
+                FunctionName: !GetAtt
+                  - ProxyLambda
+                  - Arn
+                Action: 'lambda:InvokeFunction'
+                Principal: apigateway.amazonaws.com
+                SourceArn: !Join
+                  - ''
+                  - - 'arn:'
+                    - !Ref 'AWS::Partition'
+                    - ':execute-api:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':'
+                    - !Ref RestApi
+                    - /*/*
+            ProxyLambda:
+              Type: 'AWS::Lambda::Function'
+              Properties:
+                Code:
+                  S3Bucket: !Ref LambdaS3Bucket
+                  S3Key: !Ref ProxyLambdaS3Key
+                Environment:
+                  Variables:
+                    DEFAULT_LAMBDA: !Ref 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
+                    COGNITO_REGION: !Ref CognitoRegion
+                    COGNITO_POOL: !Ref CognitoPool
+                    COGNITO_JWK: !Ref CognitoJwk
+                    COGNITO_REQUIRED_GROUP: !Ref CognitoRequiredGroup
+                Description: !Sub '$${LambdaDescription} Proxy'
+                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
+                Handler: main
+                MemorySize: 128
+                PackageType: Zip
+                Role: !GetAtt
+                  - IamRoleProxyLambdaExecution
+                  - Arn
+                Runtime: go1.x
+                Timeout: 30
             AppLogGroup:
               Type: 'AWS::Logs::LogGroup'
               Properties:
@@ -604,9 +678,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       - ':apigateway:'
                       - !Ref 'AWS::Region'
                       - ':lambda:path/2015-03-31/functions/'
-                      - !GetAtt
-                        - ProxyLambda
-                        - Arn
+                      - !Ref 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
                       - /invocations
                 ResourceId: !Ref ApiPipelineOAuthGitHubLogin
                 RestApiId: !Ref RestApi
