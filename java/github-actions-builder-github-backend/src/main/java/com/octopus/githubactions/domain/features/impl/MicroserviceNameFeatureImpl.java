@@ -10,8 +10,10 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class MicroserviceNameFeatureImpl implements MicroserviceNameFeature {
 
+  private static final String MICROSERVICE_NAME = "GithubActionWorkflowBuilder";
+
   @Override
   public String getMicroserviceName() {
-    return GlobalConstants.MICROSERVICE_NAME;
+    return MICROSERVICE_NAME;
   }
 }

@@ -4,7 +4,7 @@ package com.octopus.githubactions;
  * Constants used by the service.
  */
 public final class GlobalConstants {
-  public static final String MICROSERVICE_NAME = "GithubActionWorkflowBuilder";
+
   public static final String JSONAPI_CONTENT_TYPE = "application/vnd.api+json";
   public static final String JSON_CONTENT_TYPE = "application/json";
   public static final String FROM_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";

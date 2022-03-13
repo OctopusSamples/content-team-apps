@@ -6,6 +6,7 @@ import com.google.common.io.Resources;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.GlobalConstants;
 import com.octopus.githubactions.application.lambda.PipelineLambda;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
@@ -58,6 +59,9 @@ public class TemplateHandler {
 
   @RestClient
   GitHubUser gitHubUser;
+
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
 
   /**
    * Generate a github repo.
@@ -123,7 +127,7 @@ public class TemplateHandler {
         final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
 
         auditGenerator.createAuditEvent(new Audit(
-                GlobalConstants.MICROSERVICE_NAME,
+                microserviceNameFeature.getMicroserviceName(),
                 GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
                 encryptedEmail,
                 true,
@@ -134,7 +138,7 @@ public class TemplateHandler {
             authHeaders);
       }
     } catch (final Exception e) {
-      Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-RecordEmailFailed", e);
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed", e);
     }
   }
 
@@ -154,7 +158,7 @@ public class TemplateHandler {
     // Write an audit message
     builder.ifPresent(b ->
         auditGenerator.createAuditEvent(new Audit(
-                GlobalConstants.MICROSERVICE_NAME,
+                microserviceNameFeature.getMicroserviceName(),
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
                 b.getName()),
             xray,
