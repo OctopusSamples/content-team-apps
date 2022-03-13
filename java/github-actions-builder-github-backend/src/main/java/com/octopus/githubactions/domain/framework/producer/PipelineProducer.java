@@ -1,10 +1,13 @@
 package com.octopus.githubactions.domain.framework.producer;
 
+import com.azure.messaging.servicebus.ServiceBusClientBuilder;
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
+import com.octopus.githubactions.GlobalConstants;
 import com.octopus.githubactions.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.builders.GenericBuilder;
 import com.octopus.githubactions.builders.GoBuilder;
@@ -14,6 +17,7 @@ import com.octopus.githubactions.builders.NodeJsBuilder;
 import com.octopus.githubactions.builders.PhpComposerBuilder;
 import com.octopus.githubactions.builders.PythonBuilder;
 import com.octopus.githubactions.builders.RubyBuilder;
+import com.octopus.githubactions.domain.features.AzureServiceBus;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
@@ -24,11 +28,13 @@ import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
+import io.quarkus.logging.Log;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -43,6 +49,9 @@ public class PipelineProducer {
 
   @ConfigProperty(name = "application.github-client-secret", defaultValue = "")
   Optional<String> clientSecret;
+
+  @Inject
+  AzureServiceBus azureServiceBus;
 
   /**
    * Produces the HTTP client.
@@ -222,5 +231,24 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getGeneric() {
     return new GenericBuilder();
+  }
+
+  /**
+   * Produces an azure service bus sender.
+   *
+   * @return The azure service bus sender, or empty if the configuration is not available.
+   */
+  @ApplicationScoped
+  public Optional<ServiceBusSenderClient> generateAzureServiceBusSender() {
+    if (azureServiceBus.getCredentials().isEmpty() || azureServiceBus.getNamespace().isEmpty()
+        || azureServiceBus.getTopic().isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(new ServiceBusClientBuilder()
+        .credential(azureServiceBus.getNamespace().get(), azureServiceBus.getCredentials().get())
+        .sender()
+        .topicName(azureServiceBus.getTopic().get())
+        .buildClient());
   }
 }
