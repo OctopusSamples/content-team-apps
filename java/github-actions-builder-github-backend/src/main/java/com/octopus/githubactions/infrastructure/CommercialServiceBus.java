@@ -14,7 +14,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A service that sends messages to the commercial team service buss
+ * A service that sends messages to the commercial team service bus.
  */
 @ApplicationScoped
 public class CommercialServiceBus {

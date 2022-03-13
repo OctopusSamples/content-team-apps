@@ -12,7 +12,7 @@ public interface AzureServiceBus {
    * Generate the azure credentials required to access an external service.
    *
    * @return The Azure credentials for a given service, or empty if the credentials are not
-   * available.
+   *         available.
    */
   Optional<TokenCredential> getCredentials();
 
