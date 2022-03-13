@@ -193,8 +193,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --stack-name #{CloudFormation.Cognito} \
               --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
               --output text)
-          echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
-          set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+          echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
+          set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
