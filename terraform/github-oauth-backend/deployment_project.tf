@@ -291,7 +291,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - !Sub >-
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
                 Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -552,7 +552,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - !Sub >-
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
                 Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
