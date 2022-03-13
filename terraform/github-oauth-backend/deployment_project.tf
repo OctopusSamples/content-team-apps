@@ -314,8 +314,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     COGNITO_POOL: !Ref CognitoPool
                     COGNITO_JWK: !Ref CognitoJwk
                     COGNITO_REQUIRED_GROUP: !Ref CognitoRequiredGroup
-                Description: !Sub '${LambdaDescription} Proxy'
-                FunctionName: !Sub '${EnvironmentName}-${LambdaName}-Proxy'
+                Description: !Sub '$${LambdaDescription} Proxy'
+                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
                 Handler: main
                 MemorySize: 128
                 PackageType: Zip
