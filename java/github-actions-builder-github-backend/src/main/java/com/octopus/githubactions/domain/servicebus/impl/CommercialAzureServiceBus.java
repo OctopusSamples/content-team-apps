@@ -1,8 +1,8 @@
-package com.octopus.githubactions.domain.features.impl;
+package com.octopus.githubactions.domain.servicebus.impl;
 
 import com.azure.core.credential.TokenCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
-import com.octopus.githubactions.domain.features.AzureServiceBus;
+import com.octopus.githubactions.domain.servicebus.AzureServiceBus;
 import com.octopus.githubactions.domain.features.MessageBusConfig;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -15,7 +15,7 @@ import javax.inject.Named;
  */
 @Named("CommercialMessageBus")
 @ApplicationScoped
-public class CommercialMessageBusCredentialsFeature implements AzureServiceBus {
+public class CommercialAzureServiceBus implements AzureServiceBus {
 
   @Inject
   MessageBusConfig messageBusConfig;

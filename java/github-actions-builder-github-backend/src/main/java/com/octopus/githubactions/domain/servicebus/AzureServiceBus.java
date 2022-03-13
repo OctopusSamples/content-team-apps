@@ -1,10 +1,10 @@
-package com.octopus.githubactions.domain.features;
+package com.octopus.githubactions.domain.servicebus;
 
 import com.azure.core.credential.TokenCredential;
 import java.util.Optional;
 
 /**
- * A feature that generates azure credentials.
+ * A service that generates azure credentials.
  */
 public interface AzureServiceBus {
 
