@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b98d0888-f9f5-4a21-a77d-de36f31009df" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/terraform.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-oauth-backend/action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/github-oauth-backend/action.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-oauth-backend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/github-oauth-backend/deployment_project.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/github-oauth-backend/vars.tf" beforeDir="false" afterPath="$PROJECT_DIR$/github-oauth-backend/vars.tf" afterDir="false" />
+    <list default="true" id="b98d0888-f9f5-4a21-a77d-de36f31009df" name="Changes" comment="Fixed a log message">
+      <change afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/features/ServiceBusConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/features/MessageBusConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/servicebus/impl/CommercialAzureServiceBus.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/servicebus/impl/CommercialAzureServiceBus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/infrastructure/CommercialMessageBus.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/infrastructure/CommercialServiceBus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +37,7 @@
     "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "TF_FMT": "false",
     "WebServerToolWindowFactoryState": "false",
     "go.import.settings.migrated": "true",
     "node.js.detected.package.eslint": "true",
@@ -69,12 +68,43 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1647210955556</updated>
-      <workItem from="1647210956939" duration="1389000" />
+      <workItem from="1647210956939" duration="1948000" />
     </task>
+    <task id="LOCAL-00001" summary="Added the lambda proxy in front of the github oauth proxy">
+      <created>1647212403823</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1647212403823</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fixed a log message">
+      <created>1647212420831</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1647212420831</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added the lambda proxy in front of the github oauth proxy" />
+    <MESSAGE value="Fixed a log message" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a log message" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>

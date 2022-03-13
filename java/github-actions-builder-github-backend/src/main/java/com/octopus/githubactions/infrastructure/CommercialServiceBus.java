@@ -2,6 +2,7 @@ package com.octopus.githubactions.infrastructure;
 
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
+import com.google.common.base.Preconditions;
 import com.octopus.features.MicroserviceNameFeature;
 import io.quarkus.logging.Log;
 import java.time.Instant;
@@ -9,9 +10,14 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A service that sends messages to the commercial team service buss
+ */
 @ApplicationScoped
-public class CommercialMessageBus {
+public class CommercialServiceBus {
 
   private static final String SOURCE_KEY = "source";
   private static final String CONTEXT_KEY = "context";
@@ -29,7 +35,15 @@ public class CommercialMessageBus {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
-  public void sendUserDetails(final String traceId, final String body) {
+  /**
+   * Send the details of a user that just logged in to the service bus.
+   *
+   * @param traceId A trace ID. Can be left blank.
+   * @param body The message body.
+   */
+  public void sendUserDetails(final String traceId, @NonNull final String body) {
+    Preconditions.checkArgument(StringUtils.isNotBlank(body), "body can not be blank");
+
     if (serviceBusSenderClient.isEmpty()) {
       Log.error(microserviceNameFeature.getMicroserviceName()
           + """
