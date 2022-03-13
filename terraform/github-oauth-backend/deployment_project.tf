@@ -263,7 +263,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
                 RetentionInDays: 14
-            IamRoleLambdaOneExecutionProxy:
+            IamRoleProxyLambdaExecution:
               Type: 'AWS::IAM::Role'
               Properties:
                 AssumeRolePolicyDocument:
@@ -522,7 +522,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
                 RetentionInDays: 14
-            IamRoleLambdaOneExecutionProxy:
+            IamRoleProxyLambdaExecution:
               Type: 'AWS::IAM::Role'
               Properties:
                 AssumeRolePolicyDocument:
