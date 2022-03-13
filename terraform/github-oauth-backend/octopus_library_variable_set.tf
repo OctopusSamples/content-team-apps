@@ -92,7 +92,7 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   description = "The name of the Lambda that redirects users to the GitHub OAuth login."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OauthProxyLoginRedirect"
+  value = "AppBuilderOauthProxyLoginRedirect"
 }
 
 resource "octopusdeploy_variable" "cloudformation_lambda_code" {
@@ -101,7 +101,7 @@ resource "octopusdeploy_variable" "cloudformation_lambda_code" {
   description = "The name of the Lambda that exchanges the OAuth code for a token and returns to the web app."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OauthProxyCodeExchange"
+  value = "AppBuilderOauthProxyCodeExchange"
 }
 
 resource "octopusdeploy_variable" "cloudformation_code_url" {
