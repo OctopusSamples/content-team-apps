@@ -1,6 +1,7 @@
 package com.octopus.octopusoauth.domain.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.nimbusds.jose.JWSObject;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.http.CookieDateUtils;
@@ -33,8 +34,20 @@ public class OctopusOauthLoginHandler {
   @ConfigProperty(name = "octopus.disable.login")
   boolean disableLogin;
 
+  @ConfigProperty(name = "octopus.encryption")
+  String octopusEncryption;
+
+  @ConfigProperty(name = "octopus.salt")
+  String octopusSalt;
+
+  @ConfigProperty(name = "octopus.test.idToken")
+  Optional<String> testIdToken;
+
   @Inject
   CookieDateUtils cookieDateUtils;
+
+  @Inject
+  CryptoUtils cryptoUtils;
 
   /**
    * The common logic handling the OAuth login redirection.
@@ -45,12 +58,7 @@ public class OctopusOauthLoginHandler {
   public SimpleResponse redirectToLogin() {
     // When login is disabled, we return immediately to the web app
     if (disableLogin) {
-      return new SimpleResponse(
-          307,
-          null,
-          new ImmutableMap.Builder<String, String>()
-              .put("Location", clientRedirect)
-              .build());
+      return buildResponse(testIdToken.orElse(null));
     }
 
     final String nonce = UUID.randomUUID().toString();
@@ -73,5 +81,22 @@ public class OctopusOauthLoginHandler {
                 + ";expires=" + cookieDateUtils.getRelativeExpiryDate(1, ChronoUnit.HOURS)
                 + ";HttpOnly;path=/")
             .build());
+  }
+
+  private SimpleResponse buildResponse(final String idToken) {
+    final Builder<String, String> map = new ImmutableMap.Builder<String, String>()
+        .put("Location", clientRedirect);
+
+    if (StringUtils.isNotBlank(idToken)) {
+      map.put("Set-Cookie", OauthBackendConstants.OCTOPUS_SESSION_COOKIE + "="
+          + cryptoUtils.encrypt(
+          idToken,
+          octopusEncryption,
+          octopusSalt)
+          + ";expires=" + cookieDateUtils.getRelativeExpiryDate(2, ChronoUnit.HOURS)
+          + ";path=/");
+    }
+
+    return new SimpleResponse(307, map.build());
   }
 }
