@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b98d0888-f9f5-4a21-a77d-de36f31009df" name="Changes" comment="Fixed a log message">
-      <change afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/features/ServiceBusConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/features/MessageBusConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/servicebus/impl/CommercialAzureServiceBus.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/domain/servicebus/impl/CommercialAzureServiceBus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/infrastructure/CommercialMessageBus.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/java/com/octopus/githubactions/infrastructure/CommercialServiceBus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../java/github-actions-builder-github-backend/src/main/resources/application.properties" afterDir="false" />
+    <list default="true" id="b98d0888-f9f5-4a21-a77d-de36f31009df" name="Changes" comment="Return the test ID token if it is available">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/github-oauth-backend/deployment_project.tf" beforeDir="false" afterPath="$PROJECT_DIR$/github-oauth-backend/deployment_project.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +65,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1647210955556</updated>
-      <workItem from="1647210956939" duration="1948000" />
+      <workItem from="1647210956939" duration="3984000" />
     </task>
     <task id="LOCAL-00001" summary="Added the lambda proxy in front of the github oauth proxy">
       <created>1647212403823</created>
@@ -84,7 +81,56 @@
       <option name="project" value="LOCAL" />
       <updated>1647212420831</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Escaped dollar signs">
+      <created>1647213074352</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1647213074352</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added proxy in front of the code exchange oauth proxy">
+      <created>1647213223287</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1647213223287</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fixing up the YAML and linked in more variables">
+      <created>1647213720120</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1647213720120</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Escaped dollar sign">
+      <created>1647213801824</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1647213801824</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added a cf paramater">
+      <created>1647214001266</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1647214001266</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Fixing a resource name">
+      <created>1647214451948</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1647214451948</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Return the test ID token if it is available">
+      <created>1647214467132</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1647214467132</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -104,7 +150,14 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added the lambda proxy in front of the github oauth proxy" />
     <MESSAGE value="Fixed a log message" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a log message" />
+    <MESSAGE value="Escaped dollar signs" />
+    <MESSAGE value="Added proxy in front of the code exchange oauth proxy" />
+    <MESSAGE value="Fixing up the YAML and linked in more variables" />
+    <MESSAGE value="Escaped dollar sign" />
+    <MESSAGE value="Added a cf paramater" />
+    <MESSAGE value="Fixing a resource name" />
+    <MESSAGE value="Return the test ID token if it is available" />
+    <option name="LAST_COMMIT_MESSAGE" value="Return the test ID token if it is available" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>
