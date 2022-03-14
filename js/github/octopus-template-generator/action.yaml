@@ -1,0 +1,203 @@
+name: Node.js Build
+description: Build the frontend web app
+'on':
+  workflow_dispatch: {}
+  push: {}
+inputs:
+  octopus_server:
+    description: "The Octopus server"
+    required: true
+  octopus_apikey:
+    description: "The Octopus API token"
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The application deployment lifecycle'
+    required: true
+  octopus_development_aws_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_production_aws_account_id:
+    description: 'The production AWS account id'
+    required: true
+  octopus_worker_pool_id:
+    description: 'The worker pool id used for the deployment steps'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  aws_terraform_state_bucket_region:
+    description: 'The AWS terraform state bucket region'
+    required: true
+  run_number:
+    required: true
+    description: 'The GitHub run number'
+  github_token:
+    required: true
+    description: 'The GitHub token'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: '0'
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: lts/*
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+
+    - name: Install Octopus Deploy CLI
+      uses: OctopusDeploy/install-octocli@v1.1.1
+      with:
+        version: latest
+
+    - name: Install Dependencies
+      run: npm install
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: List Dependencies
+      run: npm list --all > dependencies.txt
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: js/octopus-template-generator/dependencies.txt
+
+    - name: List Dependency Updates
+      run: npm outdated > dependencyUpdates.txt || true
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: js/octopus-template-generator/dependencyUpdates.txt
+
+    - name: Test
+      run: npm test || true
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Build
+      run: npm run build
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Package
+      run: |-
+        # This project requires the yeoman generators as dependencies, so copy them into the node_modules directory
+        mkdir build/node_modules
+        cp node_modules/@octopus-content-team build/node_modules
+        SOURCEPATH=build
+        OUTPUTPATH=.
+        octo pack \
+         --basePath ${SOURCEPATH} \
+         --outFolder ${OUTPUTPATH} \
+         --id octopus-template-generator \
+         --version ${{ steps.determine_version.outputs.semVer }} \
+         --format zip \
+         --overwrite \
+         --include '**/*.html' \
+         --include '**/*.htm' \
+         --include '**/*.css' \
+         --include '**/*.js' \
+         --include '**/*.min' \
+         --include '**/*.map' \
+         --include '**/*.sql' \
+         --include '**/*.png' \
+         --include '**/*.jpg' \
+         --include '**/*.jpeg' \
+         --include '**/*.gif' \
+         --include '**/*.json' \
+         --include '**/*.env' \
+         --include '**/*.txt' \
+         --include '**/*.pem' \
+         --include '**/*.Procfile'
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Tag Release
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        custom_tag: ${{ steps.determine_version.outputs.semVer }}
+        github_token: ${{ inputs.github_token }}
+
+    #    - env:
+    #        GITHUB_TOKEN: ${{ inputs.github_token }}
+    #      id: create_release
+    #      name: Create Release
+    #      uses: actions/create-release@v1
+    #      with:
+    #        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ inputs.run_number }}-attempt${{ inputs.run_attempt }}
+    #        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
+    #        draft: 'false'
+    #        prerelease: 'false'
+
+    #    - env:
+    #        GITHUB_TOKEN: ${{ inputs.github_token }}
+    #      name: Upload Release Asset
+    #      uses: actions/upload-release-asset@v1
+    #      with:
+    #        upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #        asset_path: octopus-template-generator.${{ steps.determine_version.outputs.semVer }}.zip
+    #        asset_name: octopus-template-generator.${{ steps.determine_version.outputs.semVer }}.zip
+    #        asset_content_type: application/octet-stream
+
+    - name: Push to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/octopus-template-generator/octopus-template-generator.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ inputs.octopus_apikey }}
+        octopus_project: Deploy App Builder Frontend
+        octopus_server:  ${{ inputs.octopus_server }}
+        push_version: ${{ steps.determine_version.outputs.semVer }}
+        push_package_ids: octopus-template-generator
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+        octopus_space: "Content Team"
+
+    - name: Create Octopus Release
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        project: Deploy App Builder Frontend
+        server: ${{ inputs.octopus_server }}
+        deploy_to: Development
+        packages: octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
+        space: "Content Team"

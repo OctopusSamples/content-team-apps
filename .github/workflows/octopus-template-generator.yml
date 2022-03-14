@@ -1,10 +1,10 @@
-name: app-builder-frontend
+name: octopus-template-generator
 
 on:
   push:
     paths:
-    - 'js/github/app-generator/**'
-    - '.github/workflows/app-builder-frontend.yml'
+    - 'js/github/octopus-template-generator/**'
+    - '.github/workflows/octopus-template-generator.yml'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./js/github/app-generator
+        uses: ./js/github/octopus-template-generator
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
