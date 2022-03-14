@@ -121,7 +121,7 @@ runs:
         octo pack \
          --basePath ${SOURCEPATH} \
          --outFolder ${OUTPUTPATH} \
-         --id octopus-template-generator \
+         --id octopus-template-generator-lambda \
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
@@ -150,6 +150,16 @@ runs:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
 
+    - name: Generate SBOM
+      run: cyclonedx-bom
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Create SBOM zip
+      run: zip pipeline-builder-github-frontend-sbom.0.1.${{ steps.determine_version.outputs.semVer }}.zip bom.xml
+      shell: bash
+      working-directory: js/octopus-template-generator
+
     #    - env:
     #        GITHUB_TOKEN: ${{ inputs.github_token }}
     #      id: create_release
@@ -175,7 +185,16 @@ runs:
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
-        packages: js/octopus-template-generator/octopus-template-generator.${{ steps.determine_version.outputs.semVer }}.zip
+        packages: js/octopus-template-generator/octopus-template-generator-lambda.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
+    - name: Push SBOM to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/octopus-template-generator/pipeline-builder-github-frontend-sbom.0.1.${{ steps.determine_version.outputs.semVer }}
         server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting
