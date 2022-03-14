@@ -54,6 +54,7 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTreeBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.internal.DefaultGitHubConnector;
 import software.pando.crypto.nacl.SecretBox;
 
 /**
@@ -228,7 +229,10 @@ public class GitHubRepoHandler {
       final String path) throws IOException {
     final Path inputPath = Paths.get(path);
 
-    final GitHub gitHub = new GitHubBuilder().withOAuthToken(githubToken).build();
+    final GitHub gitHub = new GitHubBuilder()
+        .withOAuthToken(githubToken)
+        .withConnector(DefaultGitHubConnector.create())
+        .build();
 
     // start with a Repository ref
     final GHRepository repo = gitHub.getRepository(
