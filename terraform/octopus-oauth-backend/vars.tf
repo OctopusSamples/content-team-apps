@@ -37,6 +37,11 @@ variable "octopus_built_in_feed_id" {
   nullable = false
 }
 
+variable "octopus_content_team_maven_feed_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_development_environment_id" {
   type = string
   nullable = false
@@ -72,4 +77,14 @@ variable "octopus_proxy_encryption_key_production" {
   type = string
   nullable = false
   sensitive = true
+}
+
+variable "cognito_library_variable_set_id" {
+  type = string
+  nullable = false
+}
+
+variable "content_team_library_variable_set_id" {
+  type = string
+  nullable = false
 }
