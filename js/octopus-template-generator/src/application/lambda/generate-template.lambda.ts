@@ -1,5 +1,5 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from "aws-lambda";
-import { deserialise } from 'kitsu-core'
+import {deserialise} from 'kitsu-core'
 import {TemplateGenerator} from "../../domain/hanlders/templateGenerator";
 import * as fs from "fs";
 
@@ -7,17 +7,18 @@ const PATH = "/api/generatetemplate";
 
 export async function lambdaHandler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
-    if (event.path === PATH && event.httpMethod.toLowerCase() === "post") {
-        return generateZip(event);
-    }
-
-    return {
-        statusCode: 404,
-        body: "Resource not found"
-    }
+    return await generateZip(event) ??
+        {
+            statusCode: 404,
+            body: "Resource not found"
+        }
 }
 
-async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult | null> {
+    if (event.path !== PATH || event.httpMethod.toLowerCase() !== "post") {
+        return null;
+    }
+
     // Convert the JSONAPI body to a plain object
     const body = deserialise(event.body);
 
