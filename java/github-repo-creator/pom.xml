@@ -35,6 +35,14 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+
+    <dependency>
+      <groupId>org.graalvm.nativeimage</groupId>
+      <artifactId>svm</artifactId>
+      <version>22.0.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>software.pando.crypto</groupId>
       <artifactId>salty-coffee</artifactId>
