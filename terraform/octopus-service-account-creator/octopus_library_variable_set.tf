@@ -133,3 +133,13 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "OctopusCreateAccountServiceLambda"
 }
+
+
+resource "octopusdeploy_variable" "cloudformation_service_disable" {
+  name = "Service.Disable"
+  type = "String"
+  description = "Set to true to disable the service and return an empty value."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "True"
+}
