@@ -1,0 +1,41 @@
+name: github-repo-creator-octopus
+
+on:
+  push:
+    paths:
+    - 'terraform/octopus-service-account-creator/**'
+    - '.github/workflows/octopus-service-account-creator-octopus.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./terraform/github-repo-creator
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: Spaces-882
+          octopus_built_in_feed_id: Feeds-2301
+          octopus_content_team_maven_feed_id: Feeds-2481
+          # WorkerPools-1282 is Hosted Ubuntu
+          octopus_worker_pool_id: WorkerPools-1301           
+          octopus_application_lifecycle_id: Lifecycles-2221
+          octopus_development_environment_id: Environments-3322
+          octopus_development_security_environment_id: Environments-3341
+          octopus_production_environment_id: Environments-3342
+          octopus_production_security_environment_id: Environments-3361
+          octopus_development_aws_account_id: Accounts-581
+          octopus_production_aws_account_id: Accounts-701
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-west-1
+          octopus_proxy_encryption_key_development: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_ENCRYPTION_KEY_DEVELOPMENT }}
+          octopus_proxy_encryption_key_production: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_ENCRYPTION_KEY_PRODUCTION }}
+          cognito_library_variable_set_id: LibraryVariableSets-1262
+          content_team_library_variable_set_id: LibraryVariableSets-1282
