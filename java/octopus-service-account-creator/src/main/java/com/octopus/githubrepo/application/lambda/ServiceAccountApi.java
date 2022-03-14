@@ -33,8 +33,8 @@ import org.apache.commons.lang3.ObjectUtils;
 public class ServiceAccountApi implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-  private static final String API_PATH = "/api/serviceaccount";
-  private static final String HEALTH_PATH = "/health/serviceaccount";
+  private static final String API_PATH = "/api/serviceaccounts";
+  private static final String HEALTH_PATH = "/health/serviceaccounts";
 
   /**
    * A regular expression matching the collection of entities.
