@@ -1,6 +1,6 @@
 import {post, requestBody, Response, RestBindings} from '@loopback/rest';
-import {TemplateGenerator} from '../hanlders/templateGenerator';
-import {GenerateTemplate} from '../models/generate-template';
+import {TemplateGenerator} from '../../domain/hanlders/templateGenerator';
+import {GenerateTemplate} from '../../domain/models/generate-template';
 import {inject} from '@loopback/core';
 
 export class GenerateTemplateController {

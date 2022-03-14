@@ -9,7 +9,7 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {GenerateTemplate} from './models/generate-template';
+import {GenerateTemplate} from './domain/models/generate-template';
 
 export {ApplicationConfig};
 
