@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class AuditApiTest {
-  private static final String API_ENDPOINT = "/api/customers";
-  private static final String HEALTH_ENDPOINT = "/health/customers";
+public class LambdaApiTest {
+  private static final String API_ENDPOINT = "/api/serviceaccounts";
+  private static final String HEALTH_ENDPOINT = "/health/serviceaccounts";
   private static final ServiceAccountApi API = new ServiceAccountApi();
 
   @ParameterizedTest
