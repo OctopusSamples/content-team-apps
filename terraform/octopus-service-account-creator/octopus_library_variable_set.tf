@@ -79,9 +79,9 @@ resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
 
 resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
   name = "Client.EncryptionKey"
-  type = "Sensitive"
+  type = "String"
   description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
-  is_sensitive = true
+  is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_encryption_key_production
   scope {
@@ -91,9 +91,9 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
 
 resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
   name = "Client.EncryptionKey"
-  type = "Sensitive"
+  type = "String"
   description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
-  is_sensitive = true
+  is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.github_proxy_encryption_key_development
   scope {
