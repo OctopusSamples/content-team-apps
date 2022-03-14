@@ -196,6 +196,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             OctopusTestIdToken:
               Type: String
+              NoEcho: true
             OctopusEncryption:
               Type: String
             OctopusSalt:
