@@ -52,10 +52,10 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  octopus_proxy_encryption_key_development:
+  github_proxy_encryption_key_development:
     description: 'The encryption key used in development'
     required: true
-  octopus_proxy_encryption_key_production:
+  github_proxy_encryption_key_production:
     description: 'The encryption key used in production'
     required: true
   cognito_library_variable_set_id:
@@ -123,8 +123,8 @@ runs:
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}"
         -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}"
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
-        -var="octopus_proxy_encryption_key_development=${{ inputs.github_proxy_encryption_key_development }}"
-        -var="octopus_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
+        -var="github_proxy_encryption_key_development=${{ inputs.github_proxy_encryption_key_development }}"
+        -var="github_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
       working-directory: terraform/github-repo-creator
