@@ -147,3 +147,12 @@ resource "octopusdeploy_variable" "config_json_serviceAccountEndpoint" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/api/serviceaccounts"
 }
+
+resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
+  name = "githubRepoEndpoint"
+  type = "String"
+  description = "The location of the GitHub Repo CReator API."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/#{Octopus.Environment.Name}/api/populategithubrepo"
+}
