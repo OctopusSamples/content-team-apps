@@ -231,8 +231,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             LambdaName:
               Type: String
-            LambdaHandler:
-              Type: String
             LambdaDescription:
               Type: String
             CognitoRegion:
