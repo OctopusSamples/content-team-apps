@@ -194,6 +194,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             OctopusDisableLogin:
               Type: String
+            OctopusTestIdToken:
+              Type: String
             OctopusEncryption:
               Type: String
             OctopusSalt:
@@ -252,6 +254,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     OCTOPUS_SALT: !Ref OctopusSalt
                     OCTOPUS_LOGIN_REDIRECT: !Ref OctopusLoginRedirect
                     OCTOPUS_DISABLE_LOGIN: !Ref OctopusDisableLogin
+                    OCTOPUS_TEST_ID_TOKEN: !Ref OctopusTestIdToken
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 128
