@@ -80,10 +80,10 @@ resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
 resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
   name = "Client.EncryptionKey"
   type = "String"
-  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  description = "The key used to encrypt the Octopus ID token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = var.github_proxy_encryption_key_production
+  value = var.octopus_proxy_encryption_key_production
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
@@ -92,10 +92,10 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
 resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
   name = "Client.EncryptionKey"
   type = "String"
-  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  description = "The key used to encrypt the Octopus ID token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = var.github_proxy_encryption_key_development
+  value = var.octopus_proxy_encryption_key_development
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
@@ -104,10 +104,10 @@ resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
 resource "octopusdeploy_variable" "cloudformation_encryption_salt_production" {
   name = "Client.EncryptionSalt"
   type = "String"
-  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  description = "The salt used to when encrypting the Octopus ID token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "bMjahk2IHvEVz5XgIaO82SfaHjwGMZQ9"
+  value = "6gT9QfxE27MJ1tvrQMRsbaKAi3xHLQLD"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
@@ -116,10 +116,10 @@ resource "octopusdeploy_variable" "cloudformation_encryption_salt_production" {
 resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
   name = "Client.EncryptionSalt"
   type = "String"
-  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  description = "The salt used to when encrypting the Octopus ID token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "95FrLIDR5jFroc3MTD5QBd1EsnYKUh1e"
+  value = "Uf5fxS2q7djbvoRRCuwUKbPCcxVDgh49"
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }

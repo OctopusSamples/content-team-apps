@@ -67,13 +67,13 @@ variable "octopus_production_security_environment_id" {
   nullable = false
 }
 
-variable "github_proxy_encryption_key_development" {
+variable "octopus_proxy_encryption_key_development" {
   type = string
   nullable = false
   sensitive = true
 }
 
-variable "github_proxy_encryption_key_production" {
+variable "octopus_proxy_encryption_key_production" {
   type = string
   nullable = false
   sensitive = true
