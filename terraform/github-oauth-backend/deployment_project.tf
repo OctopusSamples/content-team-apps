@@ -437,7 +437,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       - ':apigateway:'
                       - !Ref 'AWS::Region'
                       - ':lambda:path/2015-03-31/functions/'
-                      - !Ref ProxyLambda
+                      - !GetAtt
+                        - ProxyLambda
+                        - Arn
                       - /invocations
                 ResourceId: !Ref ApiPipelineOAuthGitHubLogin
                 RestApiId: !Ref RestApi
@@ -698,7 +700,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       - ':apigateway:'
                       - !Ref 'AWS::Region'
                       - ':lambda:path/2015-03-31/functions/'
-                      - !Ref ProxyLambda
+                      - !GetAtt
+                        - ProxyLambda
+                        - Arn
                       - /invocations
                 ResourceId: !Ref ApiPipelineOAuthGitHubLogin
                 RestApiId: !Ref RestApi
