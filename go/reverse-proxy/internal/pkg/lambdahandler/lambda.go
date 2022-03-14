@@ -425,7 +425,10 @@ func getDestinationUrl(ruleDestination string) (*url.URL, error) {
 
 		// downstream service was not a url, so assume it is a lambda
 		if err == nil {
-			if strings.HasPrefix(trimmedDestination, "http") {
+			// The proxy will not rewrite URLs, so the redirection URL must have an empty or root path.
+			if !(parsedUrl.Path == "" || parsedUrl.Path == "/") {
+				log.Println("ReverseProxy-Url-UrlParseError Path rewriting is not supported, so the redirection URL must have an empty path, or refer to the root path")
+			} else if strings.HasPrefix(trimmedDestination, "http") {
 				return parsedUrl, nil
 			}
 		} else {
