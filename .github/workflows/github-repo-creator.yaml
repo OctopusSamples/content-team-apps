@@ -1,4 +1,4 @@
-name: octopus-service-account-creator
+name: github-repo-creator
 
 on:
   push:
