@@ -371,13 +371,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   Variables:
                     OCTOPUS_DISABLE_TEMPLATE_GENERATION: !Ref OctopusDisableTemplateGeneration
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
-                Handler: not.used.in.provided.runtime
+                Handler: application/lambda/generate-template.lambda.lambdaHandler
                 MemorySize: 128
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
                   - Arn
-                Runtime: provided
+                Runtime: nodejs14.x
                 Timeout: 30
             'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::Lambda::Version'

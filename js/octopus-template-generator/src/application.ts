@@ -9,7 +9,7 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {GenerateTemplate} from './domain/models/generate-template';
+import {GenerateTemplateController} from "./application/controllers";
 
 export {ApplicationConfig};
 
@@ -31,7 +31,7 @@ export class OctopusTemplateGeneratorApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    this.controller(GenerateTemplate);
+    this.controller(GenerateTemplateController);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
