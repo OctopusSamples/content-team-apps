@@ -28,8 +28,7 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         TimestampDeserializer.class,
         Link.class,
         Links.class,
-        OkHttpGitHubConnector.class,
-        RequestBody.class},
+        OkHttpGitHubConnector.class},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
