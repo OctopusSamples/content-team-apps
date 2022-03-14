@@ -98,7 +98,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         TF_INPUT: "0"
       run: terraform init
-      working-directory: terraform/github-oauth-backend
+      working-directory: terraform/octopus-service-account-creator
       shell: bash
 
     - name: Terraform Apply
@@ -127,5 +127,5 @@ runs:
         -var="github_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
-      working-directory: terraform/github-oauth-backend
+      working-directory: terraform/octopus-service-account-creator
       shell: bash
