@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'js/github/octopus-template-generator/**'
+    - 'js/octopus-template-generator/**'
     - '.github/workflows/octopus-template-generator.yml'
   workflow_dispatch:
 
