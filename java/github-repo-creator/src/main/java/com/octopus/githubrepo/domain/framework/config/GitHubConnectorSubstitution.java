@@ -4,7 +4,6 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.InjectAccessors;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.kohsuke.github.connector.GitHubConnector;
-import org.kohsuke.github.internal.DefaultGitHubConnector;
 
 /**
  * The GitHubConnector interface exposes a public static final property called DEFAULT, which in
@@ -12,8 +11,8 @@ import org.kohsuke.github.internal.DefaultGitHubConnector;
  * This results in the native compilation error:
  * No instances of javax.net.ssl.SSLContext are allowed in the image heap as this class should be initialized at image runtime.
  *
- * <p>The solution is to substitute an accessor for this field, which creates the GitHubConnector
- * at runtime.
+ * <p>The solution is to substitute an accessor for this field, which returns null. We then must
+ * set the connector ourselves at runtime when building a GitHubBuilder.
  *
  * <p>See https://stackoverflow.com/questions/63328298/how-do-you-debug-a-no-instances-of-are-allowed-in-the-image-heap-when-buil.
  */
@@ -25,20 +24,11 @@ public final class GitHubConnectorSubstitution {
 
   private static class GitHubConnectorAccessor {
     static GitHubConnector get() {
-      // using https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
-      return GitHubConnectorLazyHolder.DEFAULT;
+      return null;
     }
 
     static void set(GitHubConnector ignored) {
       // a no-op setter
-    }
-  }
-
-  private static class GitHubConnectorLazyHolder {
-    private static final GitHubConnector DEFAULT;
-
-    static {
-      DEFAULT = DefaultGitHubConnector.create();
     }
   }
 }
