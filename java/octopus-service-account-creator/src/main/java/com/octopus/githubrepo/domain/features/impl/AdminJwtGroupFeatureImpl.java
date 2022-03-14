@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.features;
+package com.octopus.githubrepo.domain.features.impl;
 
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;

@@ -12,6 +12,7 @@ import com.octopus.githubrepo.domain.entities.OctopusApiKey;
 import com.octopus.githubrepo.domain.entities.ServiceAccount;
 import com.octopus.githubrepo.domain.entities.User;
 import com.octopus.githubrepo.domain.entities.Users;
+import com.octopus.githubrepo.domain.features.DisableAccountCreationFeature;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.OctopusLoginUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
@@ -59,6 +60,9 @@ public class ServiceAccountHandler {
   JsonApiResourceUtils<CreateServiceAccount> jsonApiServiceUtils;
 
   @Inject
+  DisableAccountCreationFeature disableAccountCreationFeature;
+
+  @Inject
   CryptoUtils cryptoUtils;
 
   /**
@@ -85,6 +89,10 @@ public class ServiceAccountHandler {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
+    }
+
+    if (disableAccountCreationFeature.getDisableAccountCreation()) {
+      return getEmptyResponse();
     }
 
     try {
@@ -165,6 +173,22 @@ public class ServiceAccountHandler {
           + ex.getResponse().readEntity(String.class));
       throw new InvalidInput();
     }
+  }
+
+  private String getEmptyResponse() throws DocumentSerializationException {
+    final CreateServiceAccount combinedResponse = CreateServiceAccount.builder()
+        .apiKey(ApiKey.builder()
+            .id("")
+            .apiKey("")
+            .build())
+        .octopusServer("")
+        .displayName("")
+        .username("")
+        .id("")
+        .isService(false)
+        .build();
+
+    return jsonApiServiceUtils.respondWithResource(combinedResponse);
   }
 
   private OctopusApiKey createApiKey(final URI apiUri, final ApiKey apiKey, final String userId,
