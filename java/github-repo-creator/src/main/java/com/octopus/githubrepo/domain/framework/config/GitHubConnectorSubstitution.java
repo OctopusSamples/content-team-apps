@@ -18,7 +18,7 @@ import org.kohsuke.github.internal.DefaultGitHubConnector;
  * <p>See https://stackoverflow.com/questions/63328298/how-do-you-debug-a-no-instances-of-are-allowed-in-the-image-heap-when-buil.
  */
 @TargetClass(GitHubConnector.class)
-public class GitHubConnectorSubstitution {
+public final class GitHubConnectorSubstitution {
   @Alias
   @InjectAccessors(GitHubConnectorAccessor.class)
   private static GitHubConnector DEFAULT;
