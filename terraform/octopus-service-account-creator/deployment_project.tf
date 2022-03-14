@@ -209,7 +209,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub OAuth Backend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.BackendLoginStack}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.OctopusServiceAccountCreator}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
             EnvironmentName:
