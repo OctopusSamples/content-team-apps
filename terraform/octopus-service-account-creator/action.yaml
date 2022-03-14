@@ -125,10 +125,6 @@ runs:
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
         -var="github_proxy_encryption_key_development=${{ inputs.github_proxy_encryption_key_development }}"
         -var="github_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
-        -var="github_proxy_client_id_development=${{ inputs.github_proxy_client_id_development }}"
-        -var="github_proxy_client_id_production=${{ inputs.github_proxy_client_id_production }}"
-        -var="github_proxy_client_secret_development=${{ inputs.github_proxy_client_secret_development }}"
-        -var="github_proxy_client_secret_production=${{ inputs.github_proxy_client_secret_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
       working-directory: terraform/github-oauth-backend
