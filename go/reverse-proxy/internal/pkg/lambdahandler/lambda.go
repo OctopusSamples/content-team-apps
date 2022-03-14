@@ -62,7 +62,18 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 	if err == nil {
 
 		if upstreamUrl != nil {
-			return httpReverseProxy(upstreamUrl, req)
+			/*
+				This avoids loops where the routing header pointed back to the API Gateway, which in turn
+				forwarded the request to this reverse proxy again.
+
+				If the upstream host is the same as the host that resulted in this proxy being called,
+				we simply let the request go through to the default destination.
+
+				If the hosts are different, we know that this proxy must forward the request to a new destination.
+			*/
+			if upstreamUrl.Host != req.Headers["Host"] {
+				return httpReverseProxy(upstreamUrl, req)
+			}
 		}
 
 		if upstreamLambda != "" {
