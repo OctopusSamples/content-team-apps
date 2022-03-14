@@ -187,6 +187,14 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           set_octopusvariable "RestApi" $${REST_API}
 
           echo "Rest Api ID: $${REST_API}"
+
+          COGNITO_POOL_ID=$(aws cloudformation \
+              describe-stacks \
+              --stack-name #{CloudFormation.Cognito} \
+              --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+              --output text)
+          echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
+          set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"

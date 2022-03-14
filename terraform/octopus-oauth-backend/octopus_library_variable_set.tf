@@ -152,7 +152,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_salt_production" {
   description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "6gT9QfxE27MJ1tvrQMRsbaKAi3xHLQLD"
+  value = "bMjahk2IHvEVz5XgIaO82SfaHjwGMZQ9"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }

@@ -1,6 +1,6 @@
 resource "octopusdeploy_library_variable_set" "library_variable_set" {
-  name = "Octopus Service Account Creator"
-  description = "Variables used when deploying the Octopus Service Account Creator"
+  name = "Octopus GitHub Repo Creator"
+  description = "Variables used when deploying the GitHub Repo Creator"
 }
 
 output "library_variable_set_id" {
@@ -44,10 +44,10 @@ resource "octopusdeploy_variable" "aws_region" {
 resource "octopusdeploy_variable" "aws_s3_bucket" {
   name = "CloudFormation.S3Bucket"
   type = "String"
-  description = "The name of the stack creating the App Builder GitHub OAuth proxy S3 bucket."
+  description = "The name of the stack creating the GitHub Repo Creator proxy S3 bucket."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OctopusServiceAccountCreatorBucket"
+  value = "GitHubRepoCreatorBucket"
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_code" {
@@ -56,7 +56,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_code" {
   description = "The name of the stack hosting lambda."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OctopusServiceAccountCreator"
+  value = "GitHubRepoCreator"
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
@@ -119,7 +119,7 @@ resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
   description = "The salt used to when encrypting the Octopus ID token sent back to the client in a cookie."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "Uf5fxS2q7djbvoRRCuwUKbPCcxVDgh49"
+  value = "95FrLIDR5jFroc3MTD5QBd1EsnYKUh1e"
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
@@ -131,7 +131,7 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   description = "The name of the Lambda."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OctopusCreateAccountServiceLambda"
+  value = "GitHubRepoCreatorLambda"
 }
 
 
