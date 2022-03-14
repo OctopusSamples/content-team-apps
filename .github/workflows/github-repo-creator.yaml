@@ -3,8 +3,8 @@ name: octopus-service-account-creator
 on:
   push:
     paths:
-    - 'java/octopus-service-account-creator/**'
-    - '.github/workflows/octopus-service-account-creator.yml'
+    - 'java/github-repo-creator/**'
+    - '.github/workflows/github-repo-creator.yml'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./java/octopus-service-account-creator/github
+        uses: ./java/github-repo-creator/github
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
