@@ -13,6 +13,7 @@ import com.octopus.githubrepo.domain.entities.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.GithubFile;
 import com.octopus.githubrepo.domain.entities.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
+import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
@@ -105,6 +106,9 @@ public class GitHubRepoHandler {
   @Inject
   JsonApiConverter jsonApiConverter;
 
+  @Inject
+  DisableServiceFeature disableServiceFeature;
+
   /**
    * Creates a new service account in the Octopus cloud instance.
    *
@@ -124,6 +128,15 @@ public class GitHubRepoHandler {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
+    }
+
+    if (disableServiceFeature.getDisableRepoCreation()) {
+      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
+          .builder()
+          .id("")
+          .githubOwner("")
+          .githubRepository("")
+          .build());
     }
 
     try {

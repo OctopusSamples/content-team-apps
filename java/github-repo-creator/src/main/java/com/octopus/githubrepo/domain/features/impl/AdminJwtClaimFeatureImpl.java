@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.features;
+package com.octopus.githubrepo.domain.features.impl;
 
 import com.octopus.features.AdminJwtClaimFeature;
 import java.util.Optional;

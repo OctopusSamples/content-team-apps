@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.features;
+package com.octopus.githubrepo.domain.features.impl;
 
 import com.octopus.features.CognitoJwkBase64Feature;
 import java.util.Optional;
