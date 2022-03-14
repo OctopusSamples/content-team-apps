@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /** WHen this app is run as a web server, this class defines the REST API endpoints. */
-@Path("/api/githubrepo")
+@Path("/api/populategithubrepo")
 @RequestScoped
 public class GitHubRepoResource {
 

@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaUnauthorizedBackendTests extends BaseTest {
 
-  private static final String API_ENDPOINT = "/api/customers";
+  private static final String API_ENDPOINT = "/api/populategithubrepo";
   
   @Inject
   ServiceAccountApi api;

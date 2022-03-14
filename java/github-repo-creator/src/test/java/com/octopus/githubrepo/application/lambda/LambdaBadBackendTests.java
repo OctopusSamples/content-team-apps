@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaBadBackendTests extends BaseTest {
 
-  private static final String API_ENDPOINT = "/api/serviceaccounts";
-  private static final String HEALTH_ENDPOINT = "/health/serviceaccounts";
+  private static final String API_ENDPOINT = "/api/populategithubrepo";
+  private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @Inject
   ServiceAccountApi api;
