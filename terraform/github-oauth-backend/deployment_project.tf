@@ -295,7 +295,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - 'lambda:InvokeFunction'
                           Resource:
                             - !Sub >-
-                              arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
@@ -558,13 +558,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
                         - Effect: Allow
                           Action:
                             - 'lambda:InvokeFunction'
                           Resource:
                             - !Sub >-
-                              arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
