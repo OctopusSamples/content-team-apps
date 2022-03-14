@@ -74,6 +74,11 @@ runs:
       with:
         version: latest
 
+    - name: Install CycloneDX
+      run: npm install -g @cyclonedx/bom
+      shell: bash
+      working-directory: js/octopus-template-generator
+
     - name: Install Dependencies
       run: npm install
       shell: bash

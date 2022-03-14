@@ -1,4 +1,5 @@
 name: 'Pipeline Frontend'
+description: Builds the pipeline generator frontend web app
 inputs:
   octopus_server_url:  
     required: true
