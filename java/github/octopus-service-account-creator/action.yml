@@ -183,29 +183,29 @@ runs:
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
 
-#    - name: Trigger deployment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo create-release
-#        --project "Octopus OAuth Backend"
-#        --deployTo "Development"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --gitRef "main"
-#        --waitForDeployment
-#        --deploymentTimeout 00:30:00
-#      shell: bash
-#
-#    - name: Trigger deployment to security environment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo promote-release
-#        --project "Octopus OAuth Backend"
-#        --from "Development"
-#        --deployTo "Development (Security)"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --latestSuccessful
-#      shell: bash
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Deploy Octopus Service Account Creator"
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --gitRef "main"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
+    - name: Trigger deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo promote-release
+        --project "Deploy Octopus Service Account Creator"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
