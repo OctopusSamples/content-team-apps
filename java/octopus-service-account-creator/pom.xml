@@ -102,7 +102,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>quarkus-microservice</finalName>
+    <finalName>octopus-service-account-creator</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
