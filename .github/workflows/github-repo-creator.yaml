@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./java/github-repo-creator/github
+        uses: ./java/github/github-repo-creator
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
