@@ -118,7 +118,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>quarkus-microservice</finalName>
+    <finalName>github-repo-creator</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
