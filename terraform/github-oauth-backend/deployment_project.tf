@@ -877,11 +877,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               fi
 
               # Push the result to the database
-              aws timestream-write write-records \
-                  --database-name octopusMetrics \
-                  --table-name vulnerabilities \
-                  --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"$${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
-                  --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"DOUBLE\",\"MeasureValue\":\"$${COUNT}\"}]" > /dev/null
+              # This can be useful for tracking vulnerabilities over time.
+              # The AWS managed Grafana service can plot TimeStream values for easy visualizations.
+              #aws timestream-write write-records \
+              #    --database-name octopusMetrics \
+              #    --table-name vulnerabilities \
+              #    --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"$${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
+              #    --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"INT\",\"MeasureValue\":\"$${COUNT}\"}]" > /dev/null
 
               # Print the output stripped of ANSI colour codes
               echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
