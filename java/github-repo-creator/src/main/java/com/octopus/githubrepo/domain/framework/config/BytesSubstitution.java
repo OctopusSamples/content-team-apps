@@ -7,17 +7,25 @@ import java.security.SecureRandom;
 import software.pando.crypto.nacl.Bytes;
 
 /**
- * Random classes must be initialized at runtime to generate a random seed. The encryption library
- * used a static SecureRandom in the Bytes class which must be replaced with a runtime initialized
- * version.
+ * Random classes must be initialized at runtime to generate a unique random seed. The encryption
+ * library used a static SecureRandom in the Bytes class which would have been initialized at
+ * compile time. It must be replaced with a property initialized at runtime.
  */
 @TargetClass(Bytes.class)
 public final class BytesSubstitution {
+
+  /**
+   * This is how we access a private method in the Bytes class.
+   */
   @Alias
   private static SecureRandom getSecureRandomInstance() {
     return null;
   }
 
+  /**
+   * Substitute the secureRandom method with one that initializes SECURE_RANDOM_SOURCE at runtime
+   * when it is first used.
+   */
   @Substitute
   public static byte[] secureRandom(int numBytes) {
     return SecureRandomLazyHolder.SECURE_RANDOM_SOURCE.generateSeed(numBytes);

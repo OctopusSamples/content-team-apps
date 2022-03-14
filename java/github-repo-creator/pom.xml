@@ -53,6 +53,11 @@
       <artifactId>github-api</artifactId>
       <version>1.303</version>
     </dependency>
+    <!--
+      This is used by org.kohsuke:github-api, but marked as optional. Native compilation complains
+      if the OKHTTP client is missing though.
+      https://github.com/hub4j/github-api/blob/main/pom.xml#L40
+    -->
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
