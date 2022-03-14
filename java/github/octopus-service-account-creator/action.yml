@@ -175,7 +175,7 @@ runs:
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
         octopus_api_key: ${{ inputs.octopus_api_token }}
-        octopus_project: GitHub Service Account Creator
+        octopus_project: Deploy Octopus Service Account Creator
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
         push_version: 0.1.${{ inputs.run_number }}
