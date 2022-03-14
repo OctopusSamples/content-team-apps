@@ -249,7 +249,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             CognitoRequiredGroup:
               Type: String
-            OctopusDisableAccountCreation:
+            GitHubDisableRepoCreation:
               Type: String
           Resources:
             AppLogGroupProxy:
