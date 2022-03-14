@@ -73,6 +73,9 @@ inputs:
   cognito_library_variable_set_id:
     description: 'The ID of the variable set containing shared cognito values'
     required: true
+  content_team_library_variable_set_id:
+    description: 'The ID of the variable set containing shared content team values'
+    required: true
 
 runs:
   using: "composite"
@@ -139,5 +142,6 @@ runs:
         -var="github_proxy_client_secret_development=${{ inputs.github_proxy_client_secret_development }}"
         -var="github_proxy_client_secret_production=${{ inputs.github_proxy_client_secret_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
+        -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
       working-directory: terraform/github-oauth-backend
       shell: bash

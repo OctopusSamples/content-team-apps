@@ -105,3 +105,8 @@ variable "cognito_library_variable_set_id" {
   type = string
   nullable = false
 }
+
+variable "content_team_library_variable_set_id" {
+  type = string
+  nullable = false
+}
