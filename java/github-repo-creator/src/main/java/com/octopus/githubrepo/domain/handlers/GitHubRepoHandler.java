@@ -231,6 +231,10 @@ public class GitHubRepoHandler {
 
     final GitHub gitHub = new GitHubBuilder()
         .withOAuthToken(githubToken)
+        /*
+          Note that we must define a connector here, as the GitHubConnectorSubstitution removed
+          the default value from native builds to fix a compilation error.
+         */
         .withConnector(DefaultGitHubConnector.create())
         .build();
 

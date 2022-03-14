@@ -10,6 +10,7 @@ import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
 /**
  * This class is used to configure which other classes must be included in the native image intact.
@@ -25,7 +26,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
         SerializationFeature.class,
         TimestampDeserializer.class,
         Link.class,
-        Links.class},
+        Links.class,
+        OkHttpGitHubConnector.class},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
