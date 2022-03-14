@@ -47,7 +47,7 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   description = "The name of the stack creating the App Builder GitHub OAuth proxy S3 bucket."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OctopusServiceAccountCreator"
+  value = "OctopusServiceAccountCreatorBucket"
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_code" {
@@ -131,5 +131,5 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   description = "The name of the Lambda that redirects users to the GitHub OAuth login."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "OctopusCreateAccountService"
+  value = "OctopusCreateAccountServiceLambda"
 }
