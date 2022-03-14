@@ -138,3 +138,12 @@ resource "octopusdeploy_variable" "config_json_octopusOauthEndpoint" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/oauth/octopus/login"
 }
+
+resource "octopusdeploy_variable" "config_json_serviceAccountEndpoint" {
+  name = "serviceAccountEndpoint"
+  type = "String"
+  description = "The location of the Octopus service creation API."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/#{Octopus.Environment.Name}/api/serviceaccounts"
+}
