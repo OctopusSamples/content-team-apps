@@ -7,7 +7,7 @@ const PATH = "/api/generatetemplate";
 
 export async function lambdaHandler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
-    if (event.path === PATH &&) {
+    if (event.path === PATH && event.httpMethod.toLowerCase() === "post") {
         return generateZip(event);
     }
 
