@@ -3,7 +3,7 @@ name: github-repo-creator-octopus
 on:
   push:
     paths:
-    - 'terraform/github-repo-creator-creator/**'
+    - 'terraform/github-repo-creator/**'
     - '.github/workflows/github-repo-creator-octopus.yml'
   workflow_dispatch:
 
