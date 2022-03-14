@@ -1,4 +1,4 @@
-name: app-builder-frontend-octopus
+name: octopus-template-generator-octopus
 
 on:
   push:

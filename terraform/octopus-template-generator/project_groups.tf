@@ -1,6 +1,6 @@
 resource "octopusdeploy_project_group" "appbuilder_github_oauth_project_group" {
-  description  = "The Octopus Service Account Creator."
-  name         = "Octopus Service Account Creator"
+  description  = "The Octopus Template Generator."
+  name         = "Octopus Template Generator"
 }
 
 output "appbuilder_github_oauth_project_group_id" {
