@@ -403,13 +403,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     - ':'
                     - !Ref RestApi
                     - /*/*
-            ApiServiceAccountsResource:
+            ApiGenerateTemplateResource:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ResourceId
-                PathPart: serviceaccounts
-            ApiServiceAccountsMethod:
+                PathPart: generatetemplate
+            ApiGenerateTemplateMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
                 AuthorizationType: NONE
@@ -429,14 +429,14 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         - ProxyLambda
                         - Arn
                       - /invocations
-                ResourceId: !Ref ApiServiceAccountsResource
+                ResourceId: !Ref ApiGenerateTemplateResource
                 RestApiId: !Ref RestApi
             'Deployment#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::ApiGateway::Deployment'
               Properties:
                 RestApiId: !Ref RestApi
               DependsOn:
-                - ApiServiceAccountsMethod
+                - ApiGenerateTemplateMethod
           Outputs:
             DeploymentId:
               Description: The deployment id
