@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import net.lingala.zip4j.ZipFile;
@@ -224,6 +225,10 @@ public class GitHubRepoHandler {
         new JSONAPIDocument<>(generateTemplate)));
 
     try (final Response response = generateTemplateClient.generateTemplate(body, null, null)) {
+      if (response.getStatus() != 200) {
+        throw new BadRequestException("Call to template generator resulted in status code " + response.getStatus());
+      }
+
       final InputStream inputStream = response.readEntity(InputStream.class);
       final Path targetFile = Files.createTempFile("template", ".zip");
 
