@@ -1,4 +1,5 @@
 name: 'Octopus Service Account Creator'
+description: Build and deploy the Octopus Service Account Creator
 inputs:
   dockerhub_username:
     required: true

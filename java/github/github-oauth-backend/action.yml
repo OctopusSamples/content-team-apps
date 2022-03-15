@@ -1,4 +1,5 @@
 name: 'GitHub OAuth Backend'
+description: Build and deploy the GitHub OAuth Backend
 inputs:
   dockerhub_username:
     required: true

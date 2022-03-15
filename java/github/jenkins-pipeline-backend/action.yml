@@ -1,4 +1,5 @@
 name: 'Jenkins Pipeline Backend'
+description: Build and deploy the Jenkins Pipeline Backend
 inputs:
   dockerhub_username:  
     required: true
