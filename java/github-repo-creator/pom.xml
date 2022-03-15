@@ -81,6 +81,12 @@
       <version>2.0.SP1</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive</artifactId>
@@ -92,10 +98,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-amazon-lambda</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -277,6 +279,23 @@
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+    </profile>
+    <!--
+      Adds the lambda dependencies. This is not used when building a web server.
+    -->
+    <profile>
+      <id>lambda</id>
+      <activation>
+        <property>
+          <name>lambda</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-amazon-lambda</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>
