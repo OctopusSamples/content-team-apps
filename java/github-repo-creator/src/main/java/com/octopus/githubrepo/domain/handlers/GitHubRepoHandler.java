@@ -251,7 +251,6 @@ public class GitHubRepoHandler {
 
       final InputStream inputStream = response.readEntity(InputStream.class);
       final Path targetFile = temp.createTempFile("template", ".zip");
-      targetFile.toFile().deleteOnExit();
       FileUtils.copyInputStreamToFile(inputStream, targetFile.toFile());
       return targetFile;
     }
