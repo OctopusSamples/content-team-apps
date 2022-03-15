@@ -20,7 +20,7 @@ async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     }
 
     const requestBody = event.isBase64Encoded
-        ? new Buffer(event.body ?? "").toString('base64')
+        ? Buffer.from(event.body ?? "").toString('base64')
         : event.body ?? "{}";
 
 
