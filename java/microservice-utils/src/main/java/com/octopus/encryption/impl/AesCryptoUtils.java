@@ -42,6 +42,10 @@ public class AesCryptoUtils implements CryptoUtils {
         throw new IllegalArgumentException("Password or salt can not be blank");
       }
 
+      if (StringUtils.isBlank(value) ) {
+        throw new IllegalArgumentException("Value can not be blank");
+      }
+
       if (password.length() < MIN_PASSWORD_LENGTH  || salt.length() < MIN_PASSWORD_LENGTH) {
         throw new IllegalArgumentException("Password or salt must be at least " + MIN_PASSWORD_LENGTH + "characters");
       }
@@ -67,6 +71,14 @@ public class AesCryptoUtils implements CryptoUtils {
   public String decrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
+      if (StringUtils.isBlank(password) || StringUtils.isBlank(salt)) {
+        throw new IllegalArgumentException("Password or salt can not be blank");
+      }
+
+      if (StringUtils.isBlank(value) ) {
+        throw new IllegalArgumentException("Value can not be blank");
+      }
+
       final ByteBuffer bb = ByteBuffer.wrap(Base64.getDecoder().decode(value));
       final byte[] iv = new byte[IV_LENGTH_BYTE];
       bb.get(iv);
