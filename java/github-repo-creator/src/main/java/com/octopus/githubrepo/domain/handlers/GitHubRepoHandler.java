@@ -239,7 +239,7 @@ public class GitHubRepoHandler {
             service failed. The failure will be in the file that was saved, so we log that.
            */
           Log.error(microserviceNameFeature.getMicroserviceName() + "-Template-ExtractFailed", ex);
-          Log.error(FileUtils.readFileToString(destination.toFile(), StandardCharsets.UTF_8));
+          Log.error(FileUtils.readFileToString(targetFile.toFile(), StandardCharsets.UTF_8));
           throw ex;
         }
       } finally {
