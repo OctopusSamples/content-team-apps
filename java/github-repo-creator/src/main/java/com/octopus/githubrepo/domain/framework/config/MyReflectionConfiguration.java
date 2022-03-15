@@ -13,6 +13,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GitHub;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
 /**
@@ -33,7 +34,8 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         OkHttpGitHubConnector.class,
         GHRepository.class,
         GHBranch.class,
-        GHUser.class},
+        GHUser.class,
+        GitHub.class},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
