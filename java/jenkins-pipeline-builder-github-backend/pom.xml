@@ -101,6 +101,10 @@
       <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
+    <dependency>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+      <groupId>io.quarkus</groupId>
+    </dependency>
 
     <!-- Required to get an Ant path matcher implementation -->
     <dependency>
