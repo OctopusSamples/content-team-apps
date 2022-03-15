@@ -28,14 +28,6 @@ public final class BytesSubstitution {
    */
   @Substitute
   public static byte[] secureRandom(int numBytes) {
-    return SecureRandomLazyHolder.SECURE_RANDOM_SOURCE.generateSeed(numBytes);
-  }
-
-  /**
-   * This idiom allows a static field to be initialized once at runtime when it is first accessed.
-   */
-  private static class SecureRandomLazyHolder {
-
-    private static final SecureRandom SECURE_RANDOM_SOURCE = getSecureRandomInstance();
+    return getSecureRandomInstance().generateSeed(numBytes);
   }
 }
