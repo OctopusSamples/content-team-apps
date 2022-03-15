@@ -14,8 +14,6 @@ import software.pando.crypto.nacl.Bytes;
 @TargetClass(Bytes.class)
 public final class BytesSubstitution {
 
-  private static SecureRandom SECURE_RANDOM_SOURCE;
-
   /**
    * This is how we access a private method in the Bytes class.
    */
@@ -30,9 +28,13 @@ public final class BytesSubstitution {
    */
   @Substitute
   public static byte[] secureRandom(int numBytes) {
-    if (SECURE_RANDOM_SOURCE == null) {
-      SECURE_RANDOM_SOURCE = getSecureRandomInstance();
-    }
-    return SECURE_RANDOM_SOURCE.generateSeed(numBytes);
+    return SecureRandomLazyHolder.SECURE_RANDOM_SOURCE.generateSeed(numBytes);
+  }
+
+  /**
+   * This idiom allows a static field to be initialized once at runtime when it is first accessed.
+   */
+  private static class SecureRandomLazyHolder {
+    private static final SecureRandom SECURE_RANDOM_SOURCE= getSecureRandomInstance();
   }
 }
