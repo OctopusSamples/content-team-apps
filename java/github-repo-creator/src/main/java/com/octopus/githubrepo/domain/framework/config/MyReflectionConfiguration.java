@@ -12,6 +12,7 @@ import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHUser;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
 /**
@@ -31,7 +32,8 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         Links.class,
         OkHttpGitHubConnector.class,
         GHRepository.class,
-        GHBranch.class},
+        GHBranch.class,
+        GHUser.class},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
