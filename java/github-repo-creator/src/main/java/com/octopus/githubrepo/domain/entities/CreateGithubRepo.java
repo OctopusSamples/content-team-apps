@@ -3,6 +3,7 @@ package com.octopus.githubrepo.domain.entities;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -33,6 +34,6 @@ public class CreateGithubRepo  {
 
   private Map<String, String> options;
 
-  private Collection<Secret> secrets;
+  private List<Secret> secrets;
 
 }
