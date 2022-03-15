@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Represents an JSONAPI resource requesting the creation of a new Octopus service account.
@@ -19,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Type("creategithubrepo")
+@Jacksonized
 public class CreateGithubRepo  {
 
   @Id
