@@ -188,7 +188,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy Octopus Service Account Creator"
+        --project "Octopus Service Account Creator"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
@@ -202,7 +202,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
-        --project "Deploy Octopus Service Account Creator"
+        --project "Octopus Service Account Creator"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}

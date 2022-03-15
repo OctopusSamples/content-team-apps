@@ -188,7 +188,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy GitHub Repo Creator"
+        --project "GitHub Repo Creator"
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
@@ -201,7 +201,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
-        --project "Deploy GitHub Repo Creator"
+        --project "GitHub Repo Creator"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
