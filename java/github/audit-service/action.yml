@@ -1,4 +1,5 @@
 name: 'GitHub Actions Backend'
+description: Builds and deploys GitHub Actions Backend
 inputs:
   run_number:
     required: true
