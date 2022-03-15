@@ -68,7 +68,7 @@ runs:
       working-directory: java/github-actions-builder-github-backend
 
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
+      run: mvn --batch-mode package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 

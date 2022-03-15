@@ -27,6 +27,15 @@ import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * The Lambda entry point used to return audit resources.
+ *
+ * <p>Note that Quarkus (at least at 2.7) had issues running both a web server and the mock Lambda
+ * server at the same time. This is solved by not compiling the io.quarkus:quarkus-amazon-lambda
+ * dependency into builds that expose a web server.
+ *
+ * <p>To include the io.quarkus:quarkus-amazon-lambda dependency, enable the "lambda" Maven profile
+ * by running:
+ *
+ * mvn -Pnative -Plambda package
  */
 @Named("ServiceAccounts")
 @ApplicationScoped

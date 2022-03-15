@@ -12,9 +12,13 @@ import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kohsuke.github.GHBlob;
 import org.kohsuke.github.GHBranch;
+import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHPerson;
+import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTree;
+import org.kohsuke.github.GHTreeBuilder;
+import org.kohsuke.github.GHTreeEntry;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
@@ -43,7 +47,11 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         GHUser.class,
         GHBlob.class,
         GHTree.class,
-        GHPerson.class},
+        GHPerson.class,
+        GHCommit.class,
+        GHTreeBuilder.class,
+        GHTreeEntry.class,
+        GHRef.class},
     classNames = {"org.kohsuke.github.GitHubInteractiveObject"},
     ignoreNested = false)
 public class MyReflectionConfiguration {

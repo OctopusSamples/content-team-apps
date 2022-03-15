@@ -68,7 +68,7 @@ runs:
       working-directory: java/octopus-service-account-creator
 
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
+      run: mvn --batch-mode package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/octopus-service-account-creator
 

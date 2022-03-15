@@ -122,8 +122,13 @@
       <artifactId>quarkus-liquibase</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
+    <!--
+      Use quarkus-resteasy-reactive-jackson instead of quarkus-resteasy-reactive to fix
+      NoMethodException in native builds.
+      https://github.com/quarkusio/quarkus/issues/21133
+    -->
     <dependency>
-      <artifactId>quarkus-resteasy-reactive</artifactId>
+      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
       <groupId>io.quarkus</groupId>
     </dependency>
     <dependency>
@@ -139,8 +144,8 @@
       <groupId>io.quarkus</groupId>
     </dependency>
     <dependency>
-      <artifactId>quarkus-amazon-lambda</artifactId>
-      <groupId>io.quarkus</groupId>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
     </dependency>
     <dependency>
       <artifactId>quarkus-hibernate-validator</artifactId>
@@ -226,6 +231,23 @@
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+    </profile>
+    <!--
+      Adds the lambda dependencies. This is not used when building a web server.
+    -->
+    <profile>
+      <id>lambda</id>
+      <activation>
+        <property>
+          <name>lambda</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-amazon-lambda</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
   <properties>
