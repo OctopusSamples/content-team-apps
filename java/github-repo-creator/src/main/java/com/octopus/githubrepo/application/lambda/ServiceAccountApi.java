@@ -35,7 +35,7 @@ import org.apache.commons.lang3.ObjectUtils;
  * <p>To include the io.quarkus:quarkus-amazon-lambda dependency, enable the "lambda" Maven profile
  * by running:
  *
- * mvn -Pnative -Plambda package
+ * <p>mvn -Pnative -Plambda package
  */
 @Named("ServiceAccounts")
 @ApplicationScoped
