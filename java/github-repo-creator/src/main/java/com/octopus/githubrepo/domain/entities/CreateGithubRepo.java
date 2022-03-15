@@ -34,6 +34,6 @@ public class CreateGithubRepo  {
 
   private Map<String, String> options;
 
-  private List<Secret> secrets;
+  private Collection<Secret> secrets;
 
 }
