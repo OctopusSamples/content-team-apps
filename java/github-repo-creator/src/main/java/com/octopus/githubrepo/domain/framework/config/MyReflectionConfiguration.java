@@ -10,6 +10,8 @@ import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.kohsuke.github.GHBranch;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
 /**
@@ -27,7 +29,9 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         TimestampDeserializer.class,
         Link.class,
         Links.class,
-        OkHttpGitHubConnector.class},
+        OkHttpGitHubConnector.class,
+        GHRepository.class,
+        GHBranch.class},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
