@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.domain.framework.config;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
@@ -13,7 +14,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
-import org.kohsuke.github.GitHub;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
 /**
@@ -34,8 +34,8 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         OkHttpGitHubConnector.class,
         GHRepository.class,
         GHBranch.class,
-        GHUser.class,
-        GitHub.class},
+        GHUser.class},
+    classNames = {"org.kohsuke.github.GitHubInteractiveObject"},
     ignoreNested = false)
 public class MyReflectionConfiguration {
 
