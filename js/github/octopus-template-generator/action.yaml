@@ -121,6 +121,7 @@ runs:
         # Copy the node modeules to the dist folder for easy packaging
         mkdir dist/node_modules
         cp -r node_modules dist
+        chmod -R 644 dist
         SOURCEPATH=dist
         OUTPUTPATH=.
         octo pack \
