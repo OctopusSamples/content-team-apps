@@ -118,7 +118,7 @@ runs:
 
     - name: Package
       run: |-
-        # This project requires the yeoman generators as dependencies, so copy them into the node_modules directory
+        # Copy the node modeules to the dist folder for easy packaging
         mkdir dist/node_modules
         cp -r node_modules dist
         SOURCEPATH=dist
