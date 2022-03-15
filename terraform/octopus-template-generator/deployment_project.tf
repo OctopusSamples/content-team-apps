@@ -204,12 +204,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Octopus Service Account Creator"
+    name                = "Deploy Octopus Template Generator"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Octopus Service Account Creator"
+      name           = "Deploy Octopus Template Generator"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
