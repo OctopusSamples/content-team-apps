@@ -14,10 +14,10 @@ import java.util.logging.Logger;
 /**
  * Utility class for tracking and ultimately closing or otherwise disposing
  * a collection of temporary resources.
- * <p>
- * Note that this class is not thread-safe.
  *
- * Source: https://github.com/apache/tika/blob/main/tika-core/src/main/java/org/apache/tika/io/TemporaryResources.java
+ * <p>Note that this class is not thread-safe.
+ *
+ * <p>Source: https://github.com/apache/tika/blob/main/tika-core/src/main/java/org/apache/tika/io/TemporaryResources.java
  */
 public class TemporaryResources implements Closeable {
 
@@ -61,7 +61,7 @@ public class TemporaryResources implements Closeable {
    * the {@link #close()} method is called, returning its path.
    *
    * @return Path to created temporary directory that will be deleted after closing
-   * @throws IOException
+   * @throws IOException Failed to create temporary directory.
    */
   public Path createTempDirectory(final String prefix) throws IOException {
     final Path path = tempFileDir == null ? Files.createTempDirectory(prefix) :
@@ -85,7 +85,7 @@ public class TemporaryResources implements Closeable {
    * deleted when the {@link #close()} method is called.
    *
    * @return Created temporary directory that'll be deleted after closing
-   * @throws IOException
+   * @throws IOException Failed to create temporary directory.
    * @see #createTempDirectory(String)
    */
   public File createTemporaryDir(final String prefix) throws IOException {
@@ -97,7 +97,7 @@ public class TemporaryResources implements Closeable {
    * the {@link #close()} method is called, returning its path.
    *
    * @return Path to created temporary file that will be deleted after closing
-   * @throws IOException
+   * @throws IOException Failed to create temporary file.
    */
   public Path createTempFile(final String prefix, final String suffix) throws IOException {
     final Path path = tempFileDir == null ? Files.createTempFile(prefix, suffix) :
@@ -121,7 +121,7 @@ public class TemporaryResources implements Closeable {
    * deleted when the {@link #close()} method is called.
    *
    * @return Created temporary file that'll be deleted after closing
-   * @throws IOException
+   * @throws IOException Failed to create temporary file.
    * @see #createTempFile(String, String)
    */
   public File createTemporaryFile(final String prefix, final String suffix) throws IOException {
@@ -158,8 +158,8 @@ public class TemporaryResources implements Closeable {
   /**
    * Closes all tracked resources. The resources are closed in reverse order
    * from how they were added.
-   * <p>
-   * Any suppressed exceptions from managed resources are collected and
+   *
+   * <p>Any suppressed exceptions from managed resources are collected and
    * then added to the first thrown exception, which is re-thrown once
    * all the resources have been closed.
    *
