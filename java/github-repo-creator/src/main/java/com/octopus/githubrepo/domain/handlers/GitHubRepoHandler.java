@@ -184,7 +184,7 @@ public class GitHubRepoHandler {
           microserviceNameFeature.getMicroserviceName() + "-Request-Failed " + ex.getMessage());
       throw ex;
     } catch (final Throwable ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure " + ex);
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure " + ex.getMessage());
       throw new InvalidInput();
     }
   }
