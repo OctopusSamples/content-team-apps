@@ -3,7 +3,6 @@ package com.octopus.githubrepo.domain.framework.config;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
-import io.quarkus.logging.Log;
 import java.security.SecureRandom;
 import software.pando.crypto.nacl.Bytes;
 
@@ -22,7 +21,6 @@ public final class BytesSubstitution {
    */
   @Alias
   private static SecureRandom getSecureRandomInstance() {
-    Log.error("This method should not be called");
     return null;
   }
 
