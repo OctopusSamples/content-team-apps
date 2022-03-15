@@ -143,7 +143,7 @@ resource "octopusdeploy_variable" "cloudformation_service_disable" {
   value = "True"
 }
 
-resource "octopusdeploy_variable" "cloudformation_service_disable" {
+resource "octopusdeploy_variable" "cloudformation_externalservice_templategenerator" {
   name = "ExternalService.TemplateGenerator"
   type = "String"
   description = "The URL of the template generation service."
