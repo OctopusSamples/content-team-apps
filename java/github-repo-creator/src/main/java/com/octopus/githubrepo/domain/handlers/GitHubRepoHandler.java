@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.zip.ZipException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -229,8 +230,14 @@ public class GitHubRepoHandler {
       try {
         FileUtils.copyInputStreamToFile(inputStream, targetFile.toFile());
         final Path destination = Files.createTempDirectory("template");
-        new ZipFile(targetFile.toString()).extractAll(destination.toString());
-        return destination.toString();
+        try (final ZipFile zip = new ZipFile(targetFile.toString())) {
+          zip.extractAll(destination.toString());
+          return destination.toString();
+        } catch (final ZipException ex) {
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-Template-ExtractFailed", ex);
+          Log.error(FileUtils.readFileToString(destination.toFile(), StandardCharsets.UTF_8));
+          throw ex;
+        }
       } finally {
         // clean up the zip file once it is extracted
         FileUtils.deleteQuietly(targetFile.toFile());
