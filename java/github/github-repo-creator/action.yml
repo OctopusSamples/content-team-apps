@@ -1,4 +1,5 @@
 name: 'Github Repo Creator'
+description: Build and deploy the GitHub Repo Creator
 inputs:
   dockerhub_username:
     required: true
