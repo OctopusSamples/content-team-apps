@@ -161,7 +161,7 @@ runs:
       working-directory: js/octopus-template-generator
 
     - name: Create SBOM zip
-      run: zip pipeline-builder-github-frontend-lambda-sbom.${{ steps.determine_version.outputs.semVer }}.zip bom.xml
+      run: zip octopus-template-generator-lambda-sbom.${{ steps.determine_version.outputs.semVer }}.zip bom.xml
       shell: bash
       working-directory: js/octopus-template-generator
 
@@ -199,7 +199,7 @@ runs:
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
-        packages: js/octopus-template-generator/pipeline-builder-github-frontend-lambda-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        packages: js/octopus-template-generator/octopus-template-generator-lambda-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting
