@@ -6,6 +6,7 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.files.TemporaryResources;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
@@ -175,7 +176,8 @@ public class GitHubRepoHandler {
       populateInitialFile(decryptedGithubToken, createGithubRepo);
 
       // Download and extract the template zip file
-      final String templateDir = Failsafe.with(RETRY_POLICY).get(() -> downloadTemplate(createGithubRepo));
+      final String templateDir = Failsafe.with(RETRY_POLICY)
+          .get(() -> downloadTemplate(createGithubRepo));
 
       // Commit the files
       commitFiles(decryptedGithubToken, createGithubRepo, templateDir);
@@ -234,33 +236,41 @@ public class GitHubRepoHandler {
     final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(
         new JSONAPIDocument<>(generateTemplate)));
 
+    try (final TemporaryResources temp = new TemporaryResources()) {
+      final Path zipFile = downloadTemplateToTempFile(body, temp);
+      return extractZipToTempDir(zipFile, temp).toString();
+    }
+  }
+
+  private Path downloadTemplateToTempFile(final String body, final TemporaryResources temp) throws IOException {
     try (final Response response = generateTemplateClient.generateTemplate(body, null, null)) {
       if (response.getStatus() != 200) {
-        throw new BadRequestException("Call to template generator resulted in status code " + response.getStatus());
+        throw new BadRequestException(
+            "Call to template generator resulted in status code " + response.getStatus());
       }
 
       final InputStream inputStream = response.readEntity(InputStream.class);
-      final Path targetFile = Files.createTempFile("template", ".zip");
+      final Path targetFile = temp.createTempFile("template", ".zip");
+      targetFile.toFile().deleteOnExit();
+      FileUtils.copyInputStreamToFile(inputStream, targetFile.toFile());
+      return targetFile;
+    }
+  }
 
-      try {
-        FileUtils.copyInputStreamToFile(inputStream, targetFile.toFile());
-        final Path destination = Files.createTempDirectory("template");
-        try (final ZipFile zip = new ZipFile(targetFile.toString())) {
-          zip.extractAll(destination.toString());
-          return destination.toString();
-        } catch (final ZipException ex) {
-          /*
-            If we failed to download the file it is likely that the call to the template generator
-            service failed. The failure will be in the file that was saved, so we log that.
-           */
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-Template-ExtractFailed", ex);
-          Log.error(FileUtils.readFileToString(targetFile.toFile(), StandardCharsets.UTF_8));
-          throw ex;
-        }
-      } finally {
-        // clean up the zip file once it is extracted
-        FileUtils.deleteQuietly(targetFile.toFile());
-      }
+  private Path extractZipToTempDir(final Path targetFile, final TemporaryResources temp)
+      throws IOException {
+    try (final ZipFile zip = new ZipFile(targetFile.toString())) {
+      final Path destination = temp.createTempDirectory("template");
+      zip.extractAll(destination.toString());
+      return destination;
+    } catch (final ZipException ex) {
+      /*
+        If we failed to extract the file it is likely that the call to the template generator
+        service failed. The failure will be in the file that was saved, so we log that.
+       */
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Template-ExtractFailed", ex);
+      Log.error(FileUtils.readFileToString(targetFile.toFile(), StandardCharsets.UTF_8));
+      throw ex;
     }
   }
 
