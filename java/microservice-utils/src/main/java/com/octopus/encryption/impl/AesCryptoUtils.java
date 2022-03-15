@@ -24,7 +24,8 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Use AES to encrypt and decrypt strings. https://mkyong.com/java/java-aes-encryption-and-decryption/
+ * Use AES to encrypt and decrypt strings.
+ * https://mkyong.com/java/java-aes-encryption-and-decryption/
  */
 public class AesCryptoUtils implements CryptoUtils {
 
@@ -34,7 +35,9 @@ public class AesCryptoUtils implements CryptoUtils {
   private static final String ALGORITHM = "AES";
   private static final int MIN_PASSWORD_LENGTH = 32;
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   public String encrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
@@ -42,12 +45,13 @@ public class AesCryptoUtils implements CryptoUtils {
         throw new IllegalArgumentException("Password or salt can not be blank");
       }
 
-      if (StringUtils.isBlank(value) ) {
+      if (StringUtils.isBlank(value)) {
         throw new IllegalArgumentException("Value can not be blank");
       }
 
-      if (password.length() < MIN_PASSWORD_LENGTH  || salt.length() < MIN_PASSWORD_LENGTH) {
-        throw new IllegalArgumentException("Password or salt must be at least " + MIN_PASSWORD_LENGTH + "characters");
+      if (password.length() < MIN_PASSWORD_LENGTH || salt.length() < MIN_PASSWORD_LENGTH) {
+        throw new IllegalArgumentException(
+            "Password or salt must be at least " + MIN_PASSWORD_LENGTH + "characters");
       }
 
       final byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
@@ -62,12 +66,16 @@ public class AesCryptoUtils implements CryptoUtils {
           .put(cipherText)
           .array();
       return Base64.getEncoder().encodeToString(encryptedWithIv);
-    } catch (final NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+    } catch (final NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
+                   | BadPaddingException | InvalidKeySpecException
+                   | InvalidAlgorithmParameterException | InvalidKeyException e) {
       throw new EncryptionException(e);
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   public String decrypt(@NonNull final String value, @NonNull final String password,
       @NonNull final String salt) {
     try {
@@ -75,7 +83,7 @@ public class AesCryptoUtils implements CryptoUtils {
         throw new IllegalArgumentException("Password or salt can not be blank");
       }
 
-      if (StringUtils.isBlank(value) ) {
+      if (StringUtils.isBlank(value)) {
         throw new IllegalArgumentException("Value can not be blank");
       }
 
@@ -90,7 +98,9 @@ public class AesCryptoUtils implements CryptoUtils {
       final Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
       cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
       return new String(cipher.doFinal(cipherText), StandardCharsets.UTF_8);
-    } catch (final NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+    } catch (final NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException
+                   | BadPaddingException | InvalidKeySpecException
+                   | InvalidAlgorithmParameterException | InvalidKeyException e) {
       throw new EncryptionException(e);
     }
   }
