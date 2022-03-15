@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_infrastructure_lifecycle_id
-  name                                 = "Deploy App Builder shared infrastructure"
+  name                                 = "App Builder shared infrastructure"
   project_group_id                     = octopusdeploy_project_group.appbuilder_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id

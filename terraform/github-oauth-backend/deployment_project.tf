@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy App Builder GitHub OAuth Proxy"
+  name                                 = "App Builder GitHub OAuth Proxy"
   project_group_id                     = octopusdeploy_project_group.appbuilder_github_oauth_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id

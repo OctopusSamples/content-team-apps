@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Octopus Service Account Creator"
+  name                                 = "Octopus Service Account Creator"
   project_group_id                     = octopusdeploy_project_group.appbuilder_github_oauth_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
