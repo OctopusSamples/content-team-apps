@@ -120,7 +120,7 @@ runs:
       run: |-
         # This project requires the yeoman generators as dependencies, so copy them into the node_modules directory
         mkdir dist/node_modules
-        cp -r node_modules/@octopus-content-team dist/node_modules
+        cp -r node_modules dist
         SOURCEPATH=dist
         OUTPUTPATH=.
         octo pack \
