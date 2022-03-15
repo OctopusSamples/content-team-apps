@@ -124,7 +124,7 @@ runs:
         find dist -type d -print0 | xargs -0 chmod 755
         find dist -type f -print0 | xargs -0 chmod 644 
         cd dist
-        zip ../octopus-template-generator-lambda.${{ steps.determine_version.outputs.semVer }}.zip *
+        zip -r ../octopus-template-generator-lambda.${{ steps.determine_version.outputs.semVer }}.zip *
       shell: bash
       working-directory: js/octopus-template-generator
 
