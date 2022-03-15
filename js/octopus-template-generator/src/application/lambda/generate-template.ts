@@ -21,10 +21,11 @@ async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
 
     const requestBody = event.isBase64Encoded
         ? new Buffer(event.body ?? "").toString('base64')
-        : event.body;
+        : event.body ?? "{}";
+
 
     // Convert the JSONAPI body to a plain object
-    const body = deserialise(requestBody);
+    const body = deserialise(JSON.parse(requestBody));
 
     console.log(body);
 
