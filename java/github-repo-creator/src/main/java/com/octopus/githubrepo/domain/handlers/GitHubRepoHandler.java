@@ -177,14 +177,14 @@ public class GitHubRepoHandler {
           .build());
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-          + ex.getResponse().readEntity(String.class));
+          + ex.getResponse().readEntity(String.class), ex);
       throw new InvalidInput();
     } catch (final InvalidInput ex) {
       Log.error(
-          microserviceNameFeature.getMicroserviceName() + "-Request-Failed " + ex.getMessage());
+          microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
     } catch (final Throwable ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure " + ex.getMessage());
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
       throw new InvalidInput();
     }
   }
