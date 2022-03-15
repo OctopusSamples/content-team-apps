@@ -1,6 +1,5 @@
 package com.octopus.githubrepo.domain.framework.config;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeserializer;
 import com.github.jasminb.jsonapi.IntegerIdHandler;
@@ -11,8 +10,11 @@ import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.kohsuke.github.GHBlob;
 import org.kohsuke.github.GHBranch;
+import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHTree;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
 
@@ -20,6 +22,10 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
  * This class is used to configure which other classes must be included in the native image intact.
  * Otherwise, the native compilation will strip out unreferenced methods, which can cause issues with
  * reflection.
+ *
+ * <p>If there are any weird null pointer exceptions when working with the GitHub client that only
+ * appear in a native build, there is a good chance the serialization classes involved need to be
+ * listed here.
  */
 @RegisterForReflection(
     targets = {StringIdHandler.class,
@@ -34,7 +40,10 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
         OkHttpGitHubConnector.class,
         GHRepository.class,
         GHBranch.class,
-        GHUser.class},
+        GHUser.class,
+        GHBlob.class,
+        GHTree.class,
+        GHPerson.class},
     classNames = {"org.kohsuke.github.GitHubInteractiveObject"},
     ignoreNested = false)
 public class MyReflectionConfiguration {
