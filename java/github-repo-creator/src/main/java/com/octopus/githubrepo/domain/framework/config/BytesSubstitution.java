@@ -35,6 +35,7 @@ public final class BytesSubstitution {
    * This idiom allows a static field to be initialized once at runtime when it is first accessed.
    */
   private static class SecureRandomLazyHolder {
-    private static final SecureRandom SECURE_RANDOM_SOURCE= getSecureRandomInstance();
+
+    private static final SecureRandom SECURE_RANDOM_SOURCE = getSecureRandomInstance();
   }
 }
