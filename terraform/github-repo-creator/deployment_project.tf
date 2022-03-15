@@ -333,7 +333,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   - IamRoleProxyLambdaExecution
                   - Arn
                 Runtime: go1.x
-                Timeout: 30
+                Timeout: 600
             AppLogGroup:
               Type: 'AWS::Logs::LogGroup'
               Properties:
@@ -387,7 +387,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   - IamRoleLambdaExecution
                   - Arn
                 Runtime: provided
-                Timeout: 30
+                Timeout: 600
             'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::Lambda::Version'
               Properties:
