@@ -19,6 +19,8 @@ import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import io.quarkus.logging.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
@@ -73,6 +76,16 @@ public class GitHubRepoHandler {
    */
   private static final String[] IGNORE_PATHS = {".git", "target", "node_modules"};
 
+  /**
+   * A retry policy used when calling upstream services.
+   */
+  private static final RetryPolicy<String> RETRY_POLICY = RetryPolicy
+      .<String>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(1))
+      .withMaxRetries(3)
+      .build();
+
   @ConfigProperty(name = "github.encryption")
   String githubEncryption;
 
@@ -94,10 +107,6 @@ public class GitHubRepoHandler {
   @Inject
   @Named("JsonApiServiceUtilsCreateGithubRepo")
   JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
-
-  @Inject
-  @Named("JsonApiServiceUtilsGenerateTemplate")
-  JsonApiResourceUtils<GenerateTemplate> jsonApiServiceUtilsGenerateTemplate;
 
   @Inject
   CryptoUtils cryptoUtils;
@@ -165,7 +174,8 @@ public class GitHubRepoHandler {
       // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
       populateInitialFile(decryptedGithubToken, createGithubRepo);
 
-      final String templateDir = downloadTemplate(createGithubRepo);
+      // Download and extract the template zip file
+      final String templateDir = Failsafe.with(RETRY_POLICY).get(() -> downloadTemplate(createGithubRepo));
 
       // Commit the files
       commitFiles(decryptedGithubToken, createGithubRepo, templateDir);
