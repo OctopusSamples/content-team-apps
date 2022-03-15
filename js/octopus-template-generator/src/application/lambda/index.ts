@@ -1,1 +1,1 @@
-export * from './generate-template.lambda';
+export * from './generate-template';
