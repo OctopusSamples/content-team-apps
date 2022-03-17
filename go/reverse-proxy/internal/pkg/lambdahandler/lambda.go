@@ -257,7 +257,7 @@ func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.AP
 	if asyncCall {
 		// async calls can only reply with an empty response
 		return events.APIGatewayProxyResponse{
-			StatusCode:      201,
+			StatusCode:      202,
 			IsBase64Encoded: false,
 		}, nil
 	} else {
