@@ -231,6 +231,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             LambdaS3Bucket:
               Type: String
+            ProxyLambdaS3Key:
+              Type: String
             OctopusClientRedirect:
               Type: String
             OctopusLoginRedirect:
@@ -530,6 +532,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             LambdaS3Key:
               Type: String
             LambdaS3Bucket:
+              Type: String
+            ProxyLambdaS3Key:
               Type: String
             OctopusClientRedirect:
               Type: String
