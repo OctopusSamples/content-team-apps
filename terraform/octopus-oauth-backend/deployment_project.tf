@@ -399,7 +399,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 MemorySize: 128
                 PackageType: Zip
                 Role: !GetAtt
-                  - IamRoleLambdaOneExecution
+                  - IamRoleLambdaExecution
                   - Arn
                 Runtime: provided
                 Timeout: 30
@@ -648,33 +648,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
                 RetentionInDays: 14
-            IamRoleLambdaOneExecution:
-              Type: 'AWS::IAM::Role'
-              Properties:
-                AssumeRolePolicyDocument:
-                  Version: 2012-10-17
-                  Statement:
-                    - Effect: Allow
-                      Principal:
-                        Service:
-                          - lambda.amazonaws.com
-                      Action:
-                        - 'sts:AssumeRole'
-                Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-policy'
-                    PolicyDocument:
-                      Version: 2012-10-17
-                      Statement:
-                        - Effect: Allow
-                          Action:
-                            - 'logs:CreateLogStream'
-                            - 'logs:CreateLogGroup'
-                            - 'logs:PutLogEvents'
-                          Resource:
-                            - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
-                Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
             OauthProxyLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
@@ -694,7 +667,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 MemorySize: 128
                 PackageType: Zip
                 Role: !GetAtt
-                  - IamRoleLambdaOneExecution
+                  - IamRoleLambdaExecution
                   - Arn
                 Runtime: provided
                 Timeout: 30
