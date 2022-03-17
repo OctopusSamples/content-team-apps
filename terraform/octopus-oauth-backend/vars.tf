@@ -91,6 +91,6 @@ variable "content_team_library_variable_set_id" {
 
 variable "octopus_test_id_token" {
   type = string
-  nullable = false
+  nullable = true
   sensitive = true
 }
