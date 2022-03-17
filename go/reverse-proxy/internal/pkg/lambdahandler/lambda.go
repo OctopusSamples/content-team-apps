@@ -254,7 +254,15 @@ func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.AP
 		return events.APIGatewayProxyResponse{}, lambdaErr
 	}
 
-	return convertLambdaProxyResponse(lambdaResponse)
+	if asyncCall {
+		// async calls can only reply with an empty response
+		return events.APIGatewayProxyResponse{
+			StatusCode:      201,
+			IsBase64Encoded: false,
+		}, nil
+	} else {
+		return convertLambdaProxyResponse(lambdaResponse)
+	}
 }
 
 func authorizeRouting(req events.APIGatewayProxyRequest) bool {
