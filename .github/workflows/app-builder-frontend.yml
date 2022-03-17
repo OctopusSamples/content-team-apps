@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'js/github/app-generator/**'
+    - 'js/app-generator/**'
     - '.github/workflows/app-builder-frontend.yml'
   workflow_dispatch:
 
