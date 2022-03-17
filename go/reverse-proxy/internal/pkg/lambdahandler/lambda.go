@@ -509,16 +509,17 @@ func convertLambdaProxyResponse(lambdaResponse *lambda.InvokeOutput) (events.API
 		jsonErr2 := json.Unmarshal(lambdaResponse.Payload, &data2)
 
 		if jsonErr2 != nil {
+			log.Println("ReverseProxy-Lambda-ResponseJsonError Error parsing JSON response " + jsonErr2.Error())
 			return events.APIGatewayProxyResponse{}, jsonErr2
 		}
 
 		return data2, nil
 	}
 
-	apiGatewayProxyResponse, conErr := data.toAPIGatewayProxyResponse()
+	apiGatewayProxyResponse, responseErr := data.toAPIGatewayProxyResponse()
 
-	if conErr != nil {
-		return events.APIGatewayProxyResponse{}, conErr
+	if responseErr != nil {
+		return events.APIGatewayProxyResponse{}, responseErr
 	}
 
 	return apiGatewayProxyResponse, nil
