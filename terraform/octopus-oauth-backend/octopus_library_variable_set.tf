@@ -169,3 +169,12 @@ resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "cloudformation_test_id_token" {
+  name = "Octopus.TestIdToken"
+  type = "String"
+  description = "The test ID token used to mock a return from Octofront."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.octopus_test_id_token
+}

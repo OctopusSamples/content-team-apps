@@ -64,6 +64,9 @@ inputs:
   content_team_library_variable_set_id:
     description: 'The ID of the variable set containing shared content team values'
     required: true
+  octopus_test_id_token:
+    description: 'The test ID token used to mock a return from Octofront'
+    required: false
 
 runs:
   using: "composite"
@@ -127,5 +130,6 @@ runs:
         -var="octopus_proxy_encryption_key_production=${{ inputs.octopus_proxy_encryption_key_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
+        -var="octopus_test_id_token=${{ inputs.octopus_test_id_token }}"
       working-directory: terraform/octopus-oauth-backend
       shell: bash
