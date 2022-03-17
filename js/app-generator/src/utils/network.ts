@@ -45,7 +45,12 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
     })
         .then(response => {
             if (!responseIsError(response.status)) {
-                return response.json();
+                if (response.ok) {
+                    if (response.body) {
+                        return response.json();
+                    }
+                    return response.text();
+                }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
                 /*
@@ -73,7 +78,12 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
     })
         .then(response => {
             if (!responseIsError(response.status)) {
-                return response.json();
+                if (response.ok) {
+                    if (response.body) {
+                        return response.json();
+                    }
+                    return response.text();
+                }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
                 /*
@@ -103,7 +113,12 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
     })
         .then(response => {
             if (!responseIsError(response.status)) {
-                return response.json();
+                if (response.ok) {
+                    if (response.body) {
+                        return response.json();
+                    }
+                    return response.text();
+                }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
                 /*
@@ -133,7 +148,10 @@ export function postJsonApi<T>(resource: string, url: string, settings: RuntimeS
     })
         .then(response => {
             if (response.ok) {
-                return response.json();
+                if (response.body) {
+                    return response.json();
+                }
+                return response.text();
             }
             return Promise.reject(response);
         });
