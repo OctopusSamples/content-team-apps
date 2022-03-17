@@ -3,6 +3,7 @@ import {getAccessToken} from "./security";
 import {RuntimeSettings} from "../config/runtimeConfig";
 
 const GET_RETRIES = 5;
+const JSON_TYPES = ["application/vnd.api+json", "application/json"];
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
@@ -31,6 +32,13 @@ function responseIsClientError(status: number) {
     return status >= 400 && status <= 499;
 }
 
+function responseIsJson(contentType: string | null) {
+    if (contentType) {
+        return JSON_TYPES.indexOf(contentType.toLowerCase()) !== -1;
+    }
+    return false;
+}
+
 export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
@@ -46,10 +54,9 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (response.ok) {
-                    if (response.body) {
-                        return response.json();
-                    }
-                    return response.text();
+                    return responseIsJson(response.headers.get("Content-Type"))
+                        ? response.json()
+                        : response.text();
                 }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -79,10 +86,9 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (response.ok) {
-                    if (response.body) {
-                        return response.json();
-                    }
-                    return response.text();
+                    return responseIsJson(response.headers.get("Content-Type"))
+                        ? response.json()
+                        : response.text();
                 }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -114,10 +120,9 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (response.ok) {
-                    if (response.body) {
-                        return response.json();
-                    }
-                    return response.text();
+                    return responseIsJson(response.headers.get("Content-Type"))
+                        ? response.json()
+                        : response.text();
                 }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -148,10 +153,9 @@ export function postJsonApi<T>(resource: string, url: string, settings: RuntimeS
     })
         .then(response => {
             if (response.ok) {
-                if (response.body) {
-                    return response.json();
-                }
-                return response.text();
+                return responseIsJson(response.headers.get("Content-Type"))
+                    ? response.json()
+                    : response.text();
             }
             return Promise.reject(response);
         });
