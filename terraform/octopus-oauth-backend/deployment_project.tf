@@ -373,11 +373,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
-            AppLogGroupOne:
-              Type: 'AWS::Logs::LogGroup'
-              Properties:
-                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
-                RetentionInDays: 14
             OauthProxyLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
@@ -643,11 +638,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
-            AppLogGroupOne:
-              Type: 'AWS::Logs::LogGroup'
-              Properties:
-                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
-                RetentionInDays: 14
             OauthProxyLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
