@@ -6,7 +6,7 @@ import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
 import com.github.jasminb.jsonapi.StringIdHandler;
-import com.octopus.customers.domain.entities.Customer;
+import com.octopus.customers.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.customers.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -17,7 +17,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @RegisterForReflection(
     targets = {StringIdHandler.class,
-        Customer.class,
+        GithubUserLoggedInForFreeToolsEventV1.class,
         Health.class,
         IntegerIdHandler.class,
         SerializationFeature.class,

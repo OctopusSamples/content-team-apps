@@ -8,7 +8,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.application.Paths;
-import com.octopus.customers.domain.entities.Customer;
+import com.octopus.customers.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import javax.inject.Inject;
@@ -56,28 +56,17 @@ public class HandlerTests extends BaseTest {
           null,
           List.of("testing"),
           null,
+          null,
           null);
     });
 
     assertThrows(NullPointerException.class, () -> {
-      final Customer resource = createResource("subject");
+      final GithubUserLoggedInForFreeToolsEventV1 resource = createResource("a@a.com");
       handler.create(resourceToResourceDocument(resourceConverter, resource),
+          null,
           null,
           null,
           null);
     });
-  }
-
-  @Test
-  @Transactional
-  public void testCreateResource() throws DocumentSerializationException {
-    final Customer resultObject = createResource(handler, resourceConverter, "testing");
-    assertNotNull(resultObject.getId());
-    assertEquals("testing", resultObject.getDataPartition());
-    assertEquals("myname", resultObject.getFirstName());
-    assertEquals("Doe", resultObject.getLastName());
-    assertEquals("1 Octopus St", resultObject.getAddressLine1());
-    assertEquals("Coral Garden", resultObject.getAddressLine2());
-    assertEquals("Brisbane", resultObject.getCity());
   }
 }

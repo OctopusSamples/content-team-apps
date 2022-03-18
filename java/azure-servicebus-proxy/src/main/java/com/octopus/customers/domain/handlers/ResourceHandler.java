@@ -3,16 +3,16 @@ package com.octopus.customers.domain.handlers;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.customers.domain.entities.Customer;
+import com.octopus.customers.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.customers.domain.features.impl.DisableSecurityFeatureImpl;
+import com.octopus.customers.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.exceptions.InvalidInput;
 import com.octopus.exceptions.Unauthorized;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
-import com.octopus.jsonapi.PagedResultsLinksBuilder;
+import com.octopus.json.JsonSerializer;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
-import com.octopus.utilties.PartitionIdentifier;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -44,16 +44,16 @@ public class ResourceHandler {
   ResourceConverter resourceConverter;
 
   @Inject
-  PartitionIdentifier partitionIdentifier;
-
-  @Inject
   JwtInspector jwtInspector;
 
   @Inject
   JwtUtils jwtUtils;
 
   @Inject
-  PagedResultsLinksBuilder pagedResultsLinksBuilder;
+  CommercialServiceBus commercialServiceBus;
+
+  @Inject
+  JsonSerializer jsonSerializer;
 
   /**
    * Creates a new resource.
@@ -64,48 +64,34 @@ public class ResourceHandler {
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
-  public String create(
+  public void create(
       @NonNull final String document,
       @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
-      final String serviceAuthorizationHeader)
+      final String serviceAuthorizationHeader,
+      final String xray)
       throws DocumentSerializationException {
 
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new Unauthorized();
     }
 
-    final Customer resource = getResourceFromDocument(document);
-
-    resource.dataPartition = partitionIdentifier.getPartition(
-        dataPartitionHeaders,
-        jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
-
-    return respondWithResource(resource);
+    final GithubUserLoggedInForFreeToolsEventV1 resource = getResourceFromDocument(document);
+    commercialServiceBus.sendUserDetails(xray, jsonSerializer.toJson(resource));
   }
 
-  private Customer getResourceFromDocument(final String document) {
+  private GithubUserLoggedInForFreeToolsEventV1 getResourceFromDocument(final String document) {
     try {
-      final JSONAPIDocument<Customer> resourceDocument =
-          resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Customer.class);
-      final Customer resource = resourceDocument.get();
-      /*
-       The ID of a resource is determined by the URL, while the partition comes froms
-       the headers. If either of these values was sent by the client, strip them out.
-      */
-      resource.id = null;
-      resource.dataPartition = null;
+      final JSONAPIDocument<GithubUserLoggedInForFreeToolsEventV1> resourceDocument =
+          resourceConverter.readDocument(
+              document.getBytes(StandardCharsets.UTF_8),
+              GithubUserLoggedInForFreeToolsEventV1.class);
+      final GithubUserLoggedInForFreeToolsEventV1 resource = resourceDocument.get();
       return resource;
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.
       throw new InvalidInput();
     }
-  }
-
-  private String respondWithResource(final Customer customer)
-      throws DocumentSerializationException {
-    final JSONAPIDocument<Customer> document = new JSONAPIDocument<Customer>(customer);
-    return new String(resourceConverter.writeDocument(document));
   }
 
   /**

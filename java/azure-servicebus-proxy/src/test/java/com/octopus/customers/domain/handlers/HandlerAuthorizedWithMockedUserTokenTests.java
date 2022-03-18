@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
-import com.octopus.customers.domain.entities.Customer;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
@@ -52,7 +51,6 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final Customer resource = createResource(resourceHandler, resourceConverter, "main");
-    assertEquals("myname", resource.getFirstName());
+    createResource(resourceHandler, resourceConverter, "main");
   }
 }

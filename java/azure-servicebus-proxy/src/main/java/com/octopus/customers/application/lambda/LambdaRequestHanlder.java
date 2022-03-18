@@ -140,18 +140,19 @@ public class LambdaRequestHanlder implements
       final APIGatewayProxyRequestEvent input) {
     try {
       if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
-                .withBody(
-                    resourceHandler.create(
-                        getBody(input),
-                        lambdaHttpHeaderExtractor.getAllHeaders(input,
-                            Constants.DATA_PARTITION_HEADER),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+
+        resourceHandler.create(
+            getBody(input),
+            lambdaHttpHeaderExtractor.getAllHeaders(input,
+                Constants.DATA_PARTITION_HEADER),
+            lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                .orElse(null),
+            lambdaHttpHeaderExtractor.getFirstHeader(input,
+                Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+            lambdaHttpHeaderExtractor.getFirstHeader(input,
+                Constants.AMAZON_TRACE_ID_HEADER).orElse(null));
+
+        return Optional.of(new ApiGatewayProxyResponseEventWithCors().withStatusCode(202));
       }
     } catch (final Unauthorized e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));

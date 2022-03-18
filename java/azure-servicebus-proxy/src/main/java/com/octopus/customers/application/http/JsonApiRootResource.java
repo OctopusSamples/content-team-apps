@@ -53,15 +53,17 @@ public class JsonApiRootResource {
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
+      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
+      @HeaderParam(Constants.AMAZON_TRACE_ID_HEADER) final String xray)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(resourceHandler.create(
-            document,
-            dataPartitionHeaders,
-            authorizationHeader,
-            serviceAuthorizationHeader))
-        .build();
+    resourceHandler.create(
+        document,
+        dataPartitionHeaders,
+        authorizationHeader,
+        serviceAuthorizationHeader,
+        xray);
+    return Response.status(202).build();
   }
 
 }

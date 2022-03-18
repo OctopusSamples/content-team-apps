@@ -7,6 +7,8 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.json.JsonSerializer;
+import com.octopus.json.impl.JacksonJsonSerializerImpl;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jsonapi.impl.PagedResultsLinksBuilderImpl;
@@ -180,5 +182,16 @@ public class UtilityProducer {
         .sender()
         .topicName(azureServiceBus.getTopic().get())
         .buildClient();
+  }
+
+  /**
+   * Produces the JSON serializer.
+   *
+   * @return An implementation of JsonSerializer.
+   */
+  @ApplicationScoped
+  @Produces
+  public JsonSerializer getJsonSerializer() {
+    return new JacksonJsonSerializerImpl();
   }
 }

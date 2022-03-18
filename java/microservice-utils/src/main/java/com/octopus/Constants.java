@@ -20,6 +20,8 @@ public final class Constants {
    */
   public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
 
+  public static final String AMAZON_TRACE_ID_HEADER = "X-Amzn-Trace-Id";
+
   /**
    * Constants relating to JSONAPI.
    */
