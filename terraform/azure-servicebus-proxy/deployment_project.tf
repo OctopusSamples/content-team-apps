@@ -585,8 +585,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       package {
         acquisition_location = "Server"
         feed_id = var.octopus_built_in_feed_id
-        name = "github-repo-creator-lambda-sbom"
-        package_id = "github-repo-creator-lambda-sbom"
+        name = "azure-servicebus-proxy-lambda-sbom"
+        package_id = "azure-servicebus-proxy-lambda-sbom"
         extract_during_deployment = true
         properties = {
           SelectionMode = "immediate"
