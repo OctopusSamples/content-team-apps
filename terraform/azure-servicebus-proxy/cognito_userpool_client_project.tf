@@ -92,7 +92,7 @@ resource "octopusdeploy_deployment_process" "cognito_userpool_client_deploy_proj
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub OAuth Backend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.OctopusServiceAccountCreator}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.AzureServiceBusProxyCognitoUserPool}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           AWSTemplateFormatVersion: "2010-09-09"
           Parameters:
