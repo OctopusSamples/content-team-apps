@@ -16,28 +16,12 @@ public class LambdaRequestHandlerPathMatchingTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-      Paths.HEALTH_ENDPOINT + "/GET", Paths.HEALTH_ENDPOINT + "/POST", Paths.HEALTH_ENDPOINT + "/x/GET"})
+      Paths.HEALTH_ENDPOINT + "/POST"})
   public void testHealthRequestMatching(final String path) {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(path);
     assertTrue(API.requestIsMatch(event, API.HEALTH_RE, Constants.Http.GET_METHOD));
-  }
-
-  @Test
-  public void testRootRequestMatching() {
-    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
-    event.setHttpMethod("GeT");
-    event.setPath(Paths.API_ENDPOINT);
-    assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.GET_METHOD));
-  }
-
-  @Test
-  public void testIndividualRequestMatching() {
-    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
-    event.setHttpMethod("GeT");
-    event.setPath(Paths.API_ENDPOINT + "/1");
-    assertTrue(API.requestIsMatch(event, API.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
