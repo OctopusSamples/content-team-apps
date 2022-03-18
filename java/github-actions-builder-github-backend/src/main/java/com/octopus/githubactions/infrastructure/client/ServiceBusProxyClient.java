@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-/** A REST client to access the service bux proxy service. */
+/** A REST client to access the service bus proxy service. */
 @Path("api")
 @RegisterRestClient
 public interface ServiceBusProxyClient {
@@ -17,7 +17,7 @@ public interface ServiceBusProxyClient {
   @Consumes(GlobalConstants.JSONAPI_CONTENT_TYPE)
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   String createLoginMessage(
-      final String audit,
+      final String loginMessage,
       @HeaderParam(GlobalConstants.AMAZON_TRACE_ID_HEADER) String xray,
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(GlobalConstants.DATA_PARTITION) String dataPartition,
