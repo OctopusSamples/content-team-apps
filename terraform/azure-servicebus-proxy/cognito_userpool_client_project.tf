@@ -43,7 +43,7 @@ resource "octopusdeploy_variable" "cognito_userpool_client_project_debug_evaluat
   value = "False"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_project" {
+resource "octopusdeploy_deployment_process" "cognito_userpool_client_deploy_project" {
   project_id = octopusdeploy_project.cognito_userpool_client_project.id
   step {
     condition           = "Success"
