@@ -57,10 +57,11 @@ public class ResourceHandler {
   /**
    * Creates a new resource.
    *
-   * @param document             The JSONAPI resource to create.
-   * @param dataPartitionHeaders The "Data-Partition" headers.
-   * @param xray                 The "X-Amzn-Trace-Id" headers.
-   * @return The newly created resource
+   * @param document                   The JSONAPI resource to create.
+   * @param dataPartitionHeaders       The "Data-Partition" headers.
+   * @param authorizationHeader        The "Authorization" headers.
+   * @param serviceAuthorizationHeader The "Service-Authorization" headers.
+   * @param xray                       The "X-Amzn-Trace-Id" headers.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
