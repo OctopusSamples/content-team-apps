@@ -96,6 +96,7 @@ public class TemplateHandler {
     final GitHubEmail[] emails = gitHubUser.publicEmails("token " + auth);
 
     auditEmail(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+    recordEmailInOctofront(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
@@ -147,6 +148,27 @@ public class TemplateHandler {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed",
           ex);
+    }
+  }
+
+  /**
+   * Query the users email addresses, encrypt them, and log them to Octofront.
+   *
+   * @param token                The GitHub access token.
+   * @param routingHeaders       The routing headers.
+   * @param dataPartitionHeaders The data-partition headers.
+   * @param authHeaders          The authorization headers.
+   */
+  private void recordEmailInOctofront(final String token,
+      final String xray,
+      final GitHubEmail[] emails,
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
+
+    // We may not have a token to use.
+    if (StringUtils.isEmpty(token)) {
+      return;
     }
 
     // Log second to the Azure service bus proxy service
