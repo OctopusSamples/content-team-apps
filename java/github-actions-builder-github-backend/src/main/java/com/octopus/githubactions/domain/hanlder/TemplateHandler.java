@@ -12,6 +12,8 @@ import com.octopus.githubactions.application.lambda.PipelineLambda;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
 import com.octopus.githubactions.domain.entities.Audit;
 import com.octopus.githubactions.domain.entities.GitHubEmail;
+import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.githubactions.domain.servicebus.ServiceBusMessageGenerator;
 import com.octopus.githubactions.infrastructure.client.GitHubUser;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
@@ -56,6 +58,9 @@ public class TemplateHandler {
   @Inject
   AuditGenerator auditGenerator;
 
+  @Inject
+  ServiceBusMessageGenerator serviceBusMessageGenerator;
+
   @RestClient
   GitHubUser gitHubUser;
 
@@ -65,11 +70,11 @@ public class TemplateHandler {
   /**
    * Generate a github repo.
    *
-   * @param repo The repo URL.
-   * @param sessionCookie The session cookie holding the GitHub access token.
-   * @param routingHeaders The "Routing" headers.
+   * @param repo                 The repo URL.
+   * @param sessionCookie        The session cookie holding the GitHub access token.
+   * @param routingHeaders       The "Routing" headers.
    * @param dataPartitionHeaders The "Data-Partition" headers.
-   * @param authHeaders The "Authorization" headers.
+   * @param authHeaders          The "Authorization" headers.
    * @return The response code and body.
    */
   public SimpleResponse generatePipeline(
@@ -123,6 +128,7 @@ public class TemplateHandler {
       final String publicKey = Base64.getEncoder()
           .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
 
+      // Log first to the audit service
       for (final GitHubEmail email : emails) {
         final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
 
@@ -138,7 +144,28 @@ public class TemplateHandler {
             authHeaders);
       }
     } catch (final Exception ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed", ex);
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed",
+          ex);
+    }
+
+    // Log second to the Azure service bus proxy service
+    try {
+      for (final GitHubEmail email : emails) {
+        serviceBusMessageGenerator.sendLoginMessage(
+            GithubUserLoggedInForFreeToolsEventV1.builder()
+                .emailAddress(email.getEmail())
+                .build(),
+            xray,
+            routingHeaders,
+            dataPartitionHeaders,
+            authHeaders);
+
+      }
+    } catch (final Exception ex) {
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-ServiceBus-RecordLoginFailed",
+          ex);
     }
   }
 
