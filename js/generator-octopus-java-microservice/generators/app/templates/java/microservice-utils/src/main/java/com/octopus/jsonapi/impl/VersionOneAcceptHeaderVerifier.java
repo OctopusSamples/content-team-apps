@@ -6,6 +6,7 @@ import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Checks the "accept" headers match version 1 of the JSONAPI spec.
@@ -25,7 +26,8 @@ public class VersionOneAcceptHeaderVerifier implements AcceptHeaderVerifier {
             .filter(Objects::nonNull)
             .flatMap(h -> Arrays.stream(h.split(",")))
             .map(String::trim)
-            .filter(h -> h.startsWith(Constants.JsonApi.JSONAPI_CONTENT_TYPE)).toList();
+            .filter(h -> h.startsWith(Constants.JsonApi.JSONAPI_CONTENT_TYPE))
+            .collect(Collectors.toList());
 
     if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(Constants.JsonApi.JSONAPI_CONTENT_TYPE)) {
       throw new InvalidAcceptHeaders();
