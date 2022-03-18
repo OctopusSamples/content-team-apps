@@ -79,12 +79,12 @@ resource "octopusdeploy_deployment_process" "cognito_userpool_client_deploy_proj
   }
   step {
     condition           = "Success"
-    name                = "Deploy Azure Service Bux Proxy"
+    name                = "Deploy Azure Service Bus Proxy User Pool Client"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Azure Service Bux Proxy"
+      name           = "Deploy Azure Service Bus Proxy User Pool Client"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
