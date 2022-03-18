@@ -1,0 +1,33 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="mcasperson" id="1">
+        <createTable tableName="customer">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="dataPartition" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstName" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastName" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="addressLine1" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="addressLine2" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
+

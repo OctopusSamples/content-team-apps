@@ -101,29 +101,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.azure</groupId>
-      <artifactId>azure-messaging-servicebus</artifactId>
-      <!--
-        Exclude all the netty dependencies
-        https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/core/azure-core-http-netty/pom.xml
-
-        Without these exclusions, you'll get errors like this during native compilation:
-
-      -->
-      <exclusions>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>com.azure</groupId>
-      <artifactId>azure-identity</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-netty</artifactId>
     </dependency>

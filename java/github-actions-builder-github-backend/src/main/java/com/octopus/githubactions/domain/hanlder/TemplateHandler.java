@@ -12,15 +12,11 @@ import com.octopus.githubactions.application.lambda.PipelineLambda;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
 import com.octopus.githubactions.domain.entities.Audit;
 import com.octopus.githubactions.domain.entities.GitHubEmail;
-import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.infrastructure.client.GitHubUser;
-import com.octopus.githubactions.infrastructure.octofront.CommercialServiceBus;
-import com.octopus.json.JsonSerializer;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -66,12 +62,6 @@ public class TemplateHandler {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
-  @Inject
-  CommercialServiceBus commercialServiceBus;
-
-  @Inject
-  JsonSerializer jsonSerializer;
-
   /**
    * Generate a github repo.
    *
@@ -101,7 +91,6 @@ public class TemplateHandler {
     final GitHubEmail[] emails = gitHubUser.publicEmails("token " + auth);
 
     auditEmail(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
-    sendEmailToOctoFront(xray, emails);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
@@ -150,22 +139,6 @@ public class TemplateHandler {
       }
     } catch (final Exception ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed", ex);
-    }
-  }
-
-  private void sendEmailToOctoFront(final String xray, final GitHubEmail[] emails) {
-    try {
-      for (final GitHubEmail email : emails) {
-        commercialServiceBus.sendUserDetails(
-            xray,
-            jsonSerializer.toJson(
-                GithubUserLoggedInForFreeToolsEventV1.builder()
-                    .emailAddress(email.toString())
-                    .build()
-            ));
-      }
-    } catch (final Exception ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-OctoFront-RecordEmailFailed", ex);
     }
   }
 

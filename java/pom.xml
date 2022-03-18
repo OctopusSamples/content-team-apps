@@ -18,6 +18,7 @@
     <module>octopus-oauth-backend</module>
     <module>github-repo-creator</module>
     <module>octopus-service-account-creator</module>
+    <module>azure-servicebus-proxy</module>
   </modules>
   <name>jenkins-pipeline-builder-backend</name>
   <packaging>pom</packaging>
