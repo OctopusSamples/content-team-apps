@@ -1,10 +1,10 @@
 name: azure-servicebus-proxy-octopus
 
 on:
-#  push:
-#    paths:
-#    - 'terraform/azure-servicebus-proxy/**'
-#    - '.github/workflows/azure-servicebus-proxy-octopus.yml'
+  push:
+    paths:
+    - 'terraform/azure-servicebus-proxy/**'
+    - '.github/workflows/azure-servicebus-proxy-octopus.yml'
   workflow_dispatch:
 
 jobs:
