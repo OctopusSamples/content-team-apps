@@ -22,8 +22,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, and then pass the requests down
- * to repositories.
+ * inputs to POJOs, apply the security rules, and then pass the requests down to repositories.
  */
 @ApplicationScoped
 public class ResourceHandler {
@@ -60,6 +59,7 @@ public class ResourceHandler {
    *
    * @param document             The JSONAPI resource to create.
    * @param dataPartitionHeaders The "Data-Partition" headers.
+   * @param xray                 The "X-Amzn-Trace-Id" headers.
    * @return The newly created resource
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
@@ -124,7 +124,8 @@ public class ResourceHandler {
      */
     if (adminJwtClaimFeature.getAdminClaim().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(
             serviceAuthorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(), cognitoClientId))
+        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(),
+            cognitoClientId))
         .orElse(false)) {
       return true;
     }
@@ -132,8 +133,10 @@ public class ResourceHandler {
     /*
       Anyone assigned to the appropriate group is also granted access.
      */
-    return adminJwtGroupFeature.getAdminGroup().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))
+    return adminJwtGroupFeature.getAdminGroup().isPresent()
+        && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
+        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt,
+            adminJwtGroupFeature.getAdminGroup().get()))
         .orElse(false);
   }
 }
