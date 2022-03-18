@@ -18,6 +18,7 @@ import com.octopus.githubactions.infrastructure.client.GitHubUser;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Base64;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -93,10 +94,24 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    final GitHubEmail[] emails = gitHubUser.publicEmails("token " + auth);
-
-    auditEmail(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
-    recordEmailInOctofront(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+    // Log the users emails details
+    if (StringUtils.isNotBlank(auth)) {
+      Try.of(() -> gitHubUser.publicEmails("token " + auth))
+          .onSuccess(emails -> recordEmailInOctofront(
+              auth,
+              xray,
+              emails,
+              routingHeaders,
+              dataPartitionHeaders,
+              authHeaders))
+          .onSuccess(emails -> auditEmail(
+              auth,
+              xray,
+              emails,
+              routingHeaders,
+              dataPartitionHeaders,
+              authHeaders));
+    }
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
