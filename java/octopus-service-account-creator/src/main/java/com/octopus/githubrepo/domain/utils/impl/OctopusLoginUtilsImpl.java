@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -50,7 +51,7 @@ public class OctopusLoginUtilsImpl implements OctopusLoginUtils {
         .flatMap(e -> e.getValue().stream().map(Object::toString))
         .map(c -> c.split(";")[0])
         .filter(c -> c.split("=")[0].startsWith("Octopus"))
-        .toList();
+        .collect(Collectors.toList());
   }
 
   /**

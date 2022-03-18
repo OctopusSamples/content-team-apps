@@ -165,12 +165,10 @@ public class TemplateHandler {
     return builder
         .map(b -> b.generate(accessor))
         .map(b -> new SimpleResponse(200, b))
-        .orElse(new SimpleResponse(200, """
-            No suitable builders were found.
-            This can happen if no recognised project files were found in the root directory.
-            You may still be able to use one of the sample projects from the main page, and customize it to suit your project.
-            Click the heading in the top left corner to return to the main page.
-            """));
+        .orElse(new SimpleResponse(200, "No suitable builders were found.\n"
+            + "This can happen if no recognised project files were found in the root directory.\n"
+            + "You may still be able to use one of the sample projects from the main page, and customize it to suit your project.\n"
+            + "Click the heading in the top left corner to return to the main page.\n"));
   }
 
   /**

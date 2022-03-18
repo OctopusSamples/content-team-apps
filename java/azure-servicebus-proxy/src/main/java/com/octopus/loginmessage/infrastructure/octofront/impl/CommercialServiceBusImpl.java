@@ -41,13 +41,10 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
 
     if (serviceBusSenderClient == null) {
       Log.error(microserviceNameFeature.getMicroserviceName()
-          + """
-          -DataCollection-AzureMessageBusNotConfigured The Azure service bus credentials or queue
-          are not available, so user details will not be shared with commercial team. To resolve 
-          this issue, ensure the appropriate commercial.messagebus properties are defined in the
-          application.properties file.
-          """
-      );
+          + "-DataCollection-AzureMessageBusNotConfigured The Azure service bus credentials or queue "
+          + "are not available, so user details will not be shared with commercial team. To resolve "
+          + "this issue, ensure the appropriate commercial.messagebus properties are defined in the "
+          + " application.properties file.");
       return;
     }
 

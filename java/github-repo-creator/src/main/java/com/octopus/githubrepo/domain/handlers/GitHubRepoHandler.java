@@ -211,8 +211,11 @@ public class GitHubRepoHandler {
   private void verifyScopes(final String decryptedGithubToken) {
     try (final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken)) {
       final List<String> scopes =
-          Arrays.stream(response.getHeaderString("X-OAuth-Scopes").split(",")).map(String::trim)
-              .toList();
+          Arrays.stream(response
+                  .getHeaderString("X-OAuth-Scopes")
+                  .split(","))
+              .map(String::trim)
+              .collect(Collectors.toList());
 
       if (!scopes.contains("workflow")) {
         throw new InvalidInput("GitHub token did not have the workflow scope");
@@ -242,7 +245,8 @@ public class GitHubRepoHandler {
     }
   }
 
-  private Path downloadTemplateToTempFile(final String body, final TemporaryResources temp) throws IOException {
+  private Path downloadTemplateToTempFile(final String body, final TemporaryResources temp)
+      throws IOException {
     try (final Response response = generateTemplateClient.generateTemplate(body, null, null)) {
       if (response.getStatus() != 200) {
         throw new BadRequestException(
@@ -378,18 +382,15 @@ public class GitHubRepoHandler {
         gitHubClient.createFile(
             GithubFile.builder()
                 .content(Base64.getEncoder().encodeToString(
-                    """
-                          # App Builder
-                          This repo was populated by the Octopus App Builder tool. The directory structure is shown below:
-                          
-                          * `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.
-                          * `github`: Composable GitHub Actions that are called by the workflow files.
-                          * `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.
-                          * `java`: The sample Java application.
-                          * `js`: The sample JavaScript application.
-                          * `dotnet`: The sample DotNET application.
-                        """.getBytes(
-                        StandardCharsets.UTF_8)))
+                    ("# App Builder\n"
+                        + "This repo was populated by the Octopus App Builder tool. The directory structure is shown below:\n\n"
+                        + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
+                        + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
+                        + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
+                        + "* `java`: The sample Java application.\n"
+                        + "* `js`: The sample JavaScript application.\n"
+                        + "* `dotnet`: The sample DotNET application.")
+                        .getBytes(StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
                 .branch("main")
                 .build(),

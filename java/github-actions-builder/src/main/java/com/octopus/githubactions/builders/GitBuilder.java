@@ -11,20 +11,18 @@ import org.apache.commons.lang3.StringUtils;
 public class GitBuilder {
   /** Builds the common top level comments for the workflow. */
   public String getInitialComments() {
-    return """
-        # The following workflow provides an opinionated template you can customize for your own needs.
-        #
-        # If you are not an Octopus user, the "Push to Octopus", "Generate Octopus Deploy build information",
-        # and "Create Octopus Release" steps can be safely deleted.
-        #
-        # To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
-        # set the OCTOPUS_SERVER_URL secret to the Octopus URL.
-        #
-        # Double check the "project" and "deploy_to" properties in the "Create Octopus Release" step
-        # match your Octopus projects and environments.
-        #
-        # Get a trial Octopus instance from https://octopus.com/start
-        """;
+    return "# The following workflow provides an opinionated template you can customize for your own needs.\n"
+        + "#\n"
+        + "# If you are not an Octopus user, the \"Push to Octopus\", \"Generate Octopus Deploy build information\",\n"
+        + "# and \"Create Octopus Release\" steps can be safely deleted.\n"
+        + "#\n"
+        + "# To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and\n"
+        + "# set the OCTOPUS_SERVER_URL secret to the Octopus URL.\n"
+        + "#\n"
+        + "# Double check the \"project\" and \"deploy_to\" properties in the \"Create Octopus Release\" step\n"
+        + "# match your Octopus projects and environments.\n"
+        + "#\n"
+        + "# Get a trial Octopus instance from https://octopus.com/start\n";
   }
 
   /** Build the checkout step. */
