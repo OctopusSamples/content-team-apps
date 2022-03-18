@@ -188,5 +188,5 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   description = "The name of the Lambda."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "GitHubRepoCreatorLambda"
+  value = "AzureServiceBusProxyLambda"
 }
