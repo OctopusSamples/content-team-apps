@@ -21,7 +21,7 @@ public class HealthHandler {
   ResourceConverter resourceConverter;
 
   @Inject
-  CustomersRepository auditRepository;
+  CustomersRepository repository;
 
   /**
    * Get the health check response content.
@@ -36,7 +36,7 @@ public class HealthHandler {
       throws DocumentSerializationException {
 
     // Query for an empty set of results. This validates a connection to the database.
-    auditRepository.findAll(List.of(Constants.DEFAULT_PARTITION), null, "0", "0");
+    repository.findAll(List.of(Constants.DEFAULT_PARTITION), null, "0", "0");
 
     return respondWithHealth(
         Health.builder()

@@ -28,7 +28,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * The Lambda entry point used to return audit resources.
+ * The Lambda entry point used to return resources.
  */
 @Named("Customers")
 @ApplicationScoped
@@ -98,14 +98,14 @@ public class CustomersApi implements
   /**
    * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the
    * API, but with an additional path that indicates the http method. So, for example, a GET request
-   * to /health/audits/GET will return 200 OK if the service responding to /api/audits is able to
-   * service a GET request, and a GET request to /health/audits/1/DELETE will return 200 OK if the
-   * service responding to /api/audits/1 is available to service a DELETE request.
+   * to /health/resources/GET will return 200 OK if the service responding to /api/resources is able to
+   * service a GET request, and a GET request to /health/resources/1/DELETE will return 200 OK if the
+   * service responding to /api/resources/1 is available to service a DELETE request.
    *
    * <p>This approach was taken to support the fact that Lambdas may well have unique services
    * responding to each individual endpoint. For example, you may have a dedicated lambda fetching
-   * resource collections (i.e. /api/audits), and a dedicated lambda fetching individual resources
-   * (i.e. /api/audits/1). The health of these lambdas may be independent of one another.
+   * resource collections (i.e. /api/resources), and a dedicated lambda fetching individual resources
+   * (i.e. /api/resources/1). The health of these lambdas may be independent of one another.
    *
    * <p>This is unlike a traditional web service, where it is usually taken for granted that a
    * single application responds to all these requests, and therefore a single health endpoint can
@@ -145,7 +145,7 @@ public class CustomersApi implements
   }
 
   /**
-   * Get a collection of audits.
+   * Get a collection of resources.
    *
    * @param input The Lambda request.
    * @return The Lambda response.
@@ -186,7 +186,7 @@ public class CustomersApi implements
   }
 
   /**
-   * Return a audit.
+   * Return a resources.
    *
    * @param input The Lambda request.
    * @return The Lambda response.
@@ -225,7 +225,7 @@ public class CustomersApi implements
   }
 
   /**
-   * Create a audit.
+   * Create a resources.
    *
    * @param input The Lambda request.
    * @return The Lambda response.

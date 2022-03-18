@@ -27,7 +27,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
+ * inputs to POJOs, apply the security rules, and then pass the requests down
  * to repositories.
  */
 @ApplicationScoped
@@ -46,7 +46,7 @@ public class CustomersHandler {
   AdminJwtGroupFeature adminJwtGroupFeature;
 
   @Inject
-  CustomersRepository auditRepository;
+  CustomersRepository repository;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -88,16 +88,16 @@ public class CustomersHandler {
             dataPartitionHeaders,
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    final FilteredResultWrapper<Customer> audits =
-        auditRepository.findAll(
+    final FilteredResultWrapper<Customer> resources =
+        repository.findAll(
             List.of(Constants.DEFAULT_PARTITION, partition),
             filterParam,
             pageOffset,
             pageLimit);
     final JSONAPIDocument<List<Customer>> document = new JSONAPIDocument<List<Customer>>(
-        audits.getList());
+        resources.getList());
 
-    pagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, audits);
+    pagedResultsLinksBuilder.generatePageLinks(document, pageLimit, pageOffset, resources, "customers");
 
     final byte[] content = resourceConverter.writeDocumentCollection(document);
     return new String(content);
@@ -129,7 +129,7 @@ public class CustomersHandler {
         dataPartitionHeaders,
         jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    auditRepository.save(customer);
+    repository.save(customer);
 
     return respondWithResource(customer);
   }
@@ -158,7 +158,7 @@ public class CustomersHandler {
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
     try {
-      final Customer customer = auditRepository.findOne(Integer.parseInt(id));
+      final Customer customer = repository.findOne(Integer.parseInt(id));
       if (customer != null
           && (Constants.DEFAULT_PARTITION.equals(customer.getDataPartition())
           || StringUtils.equals(partition, customer.getDataPartition()))) {
@@ -176,7 +176,7 @@ public class CustomersHandler {
           resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Customer.class);
       final Customer customer = resourceDocument.get();
       /*
-       The ID of an audit is determined by the URL, while the partition comes froms
+       The ID of a resource is determined by the URL, while the partition comes froms
        the headers. If either of these values was sent by the client, strip them out.
       */
       customer.id = null;

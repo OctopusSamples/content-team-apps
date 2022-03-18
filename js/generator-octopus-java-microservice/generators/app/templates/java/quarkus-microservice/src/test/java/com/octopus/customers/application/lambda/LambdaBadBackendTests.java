@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
+import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.handlers.CustomersHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
 import io.quarkus.test.junit.QuarkusTest;
@@ -22,9 +23,6 @@ import org.mockito.Mockito;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaBadBackendTests extends BaseTest {
-
-  private static final String API_ENDPOINT = "/api/customers";
-  private static final String HEALTH_ENDPOINT = "/health/customers";
 
   @Inject
   CustomersApi api;
@@ -54,7 +52,7 @@ public class LambdaBadBackendTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());
@@ -71,7 +69,7 @@ public class LambdaBadBackendTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT + "/1");
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/1");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());
@@ -88,7 +86,7 @@ public class LambdaBadBackendTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());
@@ -105,7 +103,7 @@ public class LambdaBadBackendTests extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(HEALTH_ENDPOINT + "/GET");
+    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/GET");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());

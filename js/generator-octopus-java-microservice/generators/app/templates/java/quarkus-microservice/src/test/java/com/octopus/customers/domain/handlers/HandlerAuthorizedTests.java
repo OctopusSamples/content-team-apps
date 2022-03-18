@@ -44,7 +44,7 @@ public class HandlerAuthorizedTests extends BaseTest {
 
   @Test
   @Transactional
-  public void testCreateAudit() {
+  public void testCreateResource() {
     assertThrows(Unauthorized.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new Customer()),
         List.of("main"),
@@ -53,7 +53,7 @@ public class HandlerAuthorizedTests extends BaseTest {
 
   @Test
   @Transactional
-  public void testGetAudit() {
+  public void testGetResource() {
     assertThrows(Unauthorized.class, () -> handler.getOne(
         "1",
         List.of("main"),
@@ -62,7 +62,7 @@ public class HandlerAuthorizedTests extends BaseTest {
 
   @Test
   @Transactional
-  public void testGetAllAudit() {
+  public void testGetAllResource() {
     assertThrows(Unauthorized.class, () -> handler.getAll(
         List.of("main"),
         null, null, null, null, null));

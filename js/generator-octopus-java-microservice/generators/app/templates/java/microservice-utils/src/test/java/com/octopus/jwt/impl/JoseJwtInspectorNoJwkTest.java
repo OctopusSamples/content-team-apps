@@ -28,9 +28,9 @@ public class JoseJwtInspectorNoJwkTest {
 
   @Test
   public void verifyClaimsExtraction() {
-    assertFalse(JOSE_JWT_INSPECTOR_NO_JWK.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertFalse(JOSE_JWT_INSPECTOR_NO_JWK.jwtContainsScope(EXPIRED_M2M_JWT, "customer.content-team/admin",
         M2M_CLIENT_ID));
-    assertFalse(JOSE_JWT_INSPECTOR_EMPTY_JWK.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertFalse(JOSE_JWT_INSPECTOR_EMPTY_JWK.jwtContainsScope(EXPIRED_M2M_JWT, "customer.content-team/admin",
         M2M_CLIENT_ID));
   }
 

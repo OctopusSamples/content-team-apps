@@ -62,25 +62,25 @@ public class JoseJwtInspectorTest {
 
   @Test
   public void verifyClaimsExtraction() {
-    assertTrue(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertTrue(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "customer.content-team/admin",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyClaimsExtractionWhenNotValid() {
-    assertFalse(JWT_INSPECTOR_NOT_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertFalse(JWT_INSPECTOR_NOT_VALID.jwtContainsScope(EXPIRED_M2M_JWT, "customer.content-team/admin",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadJwtClaimsExtraction() {
-    assertFalse(JWT_INSPECTOR.jwtContainsScope("blah", "audit.content-team/admin",
+    assertFalse(JWT_INSPECTOR.jwtContainsScope("blah", "customer.content-team/admin",
         M2M_CLIENT_ID));
   }
 
   @Test
   public void verifyBadClientClaimsExtraction() {
-    assertFalse(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
+    assertFalse(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "customer.content-team/admin",
         "Unknown"));
   }
 
@@ -97,7 +97,7 @@ public class JoseJwtInspectorTest {
   @Test
   public void verifyScopeContains() throws ParseException {
     final List<String> scopes = JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT);
-    assertTrue(JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT).contains("audit.content-team/admin"));
+    assertTrue(JWT_INSPECTOR.extractScope(EXPIRED_M2M_JWT).contains("customer.content-team/admin"));
   }
 
   @Test

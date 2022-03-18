@@ -57,9 +57,9 @@ public class BaseTest {
   }
 
   protected String resourceToResourceDocument(
-      @NonNull final ResourceConverter resourceConverter, @NonNull final Customer audit)
+      @NonNull final ResourceConverter resourceConverter, @NonNull final Customer resource)
       throws DocumentSerializationException {
-    final JSONAPIDocument<Customer> document = new JSONAPIDocument<Customer>(audit);
+    final JSONAPIDocument<Customer> document = new JSONAPIDocument<Customer>(resource);
     return new String(resourceConverter.writeDocument(document));
   }
 }

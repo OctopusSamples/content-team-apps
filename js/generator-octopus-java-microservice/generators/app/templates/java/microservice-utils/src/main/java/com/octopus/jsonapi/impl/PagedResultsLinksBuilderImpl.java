@@ -21,7 +21,8 @@ public class PagedResultsLinksBuilderImpl implements PagedResultsLinksBuilder {
       @NonNull final JSONAPIDocument<List<T>> document,
       final String pageLimit,
       final String pageOffset,
-      @NonNull final FilteredResultWrapper<T> resources) {
+      @NonNull final FilteredResultWrapper<T> resources,
+      @NonNull final String resourceName) {
 
     final int pageLimitParsed = NumberUtils.toInt(pageLimit, Constants.DEFAULT_PAGE_LIMIT);
     final int pageOffsetParsed = NumberUtils.toInt(pageOffset, Constants.DEFAULT_PAGE_OFFSET);
@@ -32,19 +33,19 @@ public class PagedResultsLinksBuilderImpl implements PagedResultsLinksBuilder {
         .put("total",  resources.getCount())
         .build();
 
-    document.addLink("first", new Link("/api/audits?page[offset]=0&page[limit]=" + pageLimitParsed, linkMeta));
-    document.addLink("last", new Link("/api/audits?page[offset]=" + lastOffset + "&page[limit]=" + pageLimitParsed, linkMeta));
+    document.addLink("first", new Link("/api/" + resourceName + "?page[offset]=0&page[limit]=" + pageLimitParsed, linkMeta));
+    document.addLink("last", new Link("/api/" + resourceName + "?page[offset]=" + lastOffset + "&page[limit]=" + pageLimitParsed, linkMeta));
 
     if (lastOffset > pageOffsetParsed) {
       document.addLink("next", new Link(
-          "/api/audits?page[offset]=" + Math.min(resources.getCount() - pageLimitParsed, pageOffsetParsed + pageLimitParsed) + "&page[limit]="
+          "/api/" + resourceName + "?page[offset]=" + Math.min(resources.getCount() - pageLimitParsed, pageOffsetParsed + pageLimitParsed) + "&page[limit]="
               + pageLimit,
           linkMeta));
     }
 
     if (pageOffsetParsed > 0) {
       document.addLink("prev", new Link(
-          "/api/audits?page[offset]=" + Math.max(0, pageOffsetParsed - pageLimitParsed) + "&page[limit]="
+          "/api/" + resourceName + "?page[offset]=" + Math.max(0, pageOffsetParsed - pageLimitParsed) + "&page[limit]="
               + pageLimit,
           linkMeta));
     }

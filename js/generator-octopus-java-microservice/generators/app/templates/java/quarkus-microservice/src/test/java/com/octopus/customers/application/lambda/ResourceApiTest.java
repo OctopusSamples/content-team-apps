@@ -5,17 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.octopus.Constants;
+import com.octopus.customers.application.Paths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class AuditApiTest {
-  private static final String API_ENDPOINT = "/api/customers";
-  private static final String HEALTH_ENDPOINT = "/health/customers";
+public class ResourceApiTest {
+
   private static final CustomersApi API = new CustomersApi();
 
   @ParameterizedTest
-  @ValueSource(strings = {HEALTH_ENDPOINT + "/GET", HEALTH_ENDPOINT + "/POST", HEALTH_ENDPOINT + "/x/GET"})
+  @ValueSource(strings = {
+      Paths.HEALTH_ENDPOINT + "/GET", Paths.HEALTH_ENDPOINT + "/POST", Paths.HEALTH_ENDPOINT + "/x/GET"})
   public void testHealthRequestMatching(final String path) {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
@@ -27,7 +28,7 @@ public class AuditApiTest {
   public void testRootRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
-    event.setPath(API_ENDPOINT);
+    event.setPath(Paths.API_ENDPOINT);
     assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.GET_METHOD));
   }
 
@@ -35,7 +36,7 @@ public class AuditApiTest {
   public void testIndividualRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
-    event.setPath(API_ENDPOINT + "/1");
+    event.setPath(Paths.API_ENDPOINT + "/1");
     assertTrue(API.requestIsMatch(event, API.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
   }
 
@@ -43,7 +44,7 @@ public class AuditApiTest {
   public void testCreateRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
-    event.setPath(API_ENDPOINT);
+    event.setPath(Paths.API_ENDPOINT);
     assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.POST_METHOD));
   }
 

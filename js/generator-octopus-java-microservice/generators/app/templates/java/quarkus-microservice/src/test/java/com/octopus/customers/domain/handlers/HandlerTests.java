@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
+import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import com.octopus.exceptions.EntityNotFound;
@@ -28,8 +29,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HandlerTests extends BaseTest {
-
-  private static final String HEALTH_ENDPOINT = "/health/customers";
   
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
@@ -50,9 +49,9 @@ public class HandlerTests extends BaseTest {
 
   @ParameterizedTest
   @CsvSource({
-      HEALTH_ENDPOINT + ",GET",
-      HEALTH_ENDPOINT + ",POST",
-      HEALTH_ENDPOINT + "/x,GET"
+      Paths.HEALTH_ENDPOINT + ",GET",
+      Paths.HEALTH_ENDPOINT + ",POST",
+      Paths.HEALTH_ENDPOINT + "/x,GET"
   })
   public void testHealth(@NonNull final String path, @NonNull final String method)
       throws DocumentSerializationException {
@@ -67,7 +66,7 @@ public class HandlerTests extends BaseTest {
 
   @Test
   @Transactional
-  public void getAuditTestNull() {
+  public void getResourceTestNull() {
     assertThrows(NullPointerException.class, () -> {
       handler.getAll(
           null,
@@ -81,7 +80,7 @@ public class HandlerTests extends BaseTest {
 
   @Test
   @Transactional
-  public void getOneAuditTestNull() {
+  public void getOneResourceTestNull() {
     assertThrows(NullPointerException.class, () -> {
       handler.getOne(
           null,
@@ -111,8 +110,8 @@ public class HandlerTests extends BaseTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      final Customer audit = createResource("subject");
-      handler.create(resourceToResourceDocument(resourceConverter, audit),
+      final Customer resource = createResource("subject");
+      handler.create(resourceToResourceDocument(resourceConverter, resource),
           null,
           null,
           null);
@@ -134,7 +133,7 @@ public class HandlerTests extends BaseTest {
 
   @Test
   @Transactional
-  public void getAudit() throws DocumentSerializationException {
+  public void getResource() throws DocumentSerializationException {
     final Customer resource = createResource("subject");
     final String result =
         handler.create(
@@ -160,7 +159,7 @@ public class HandlerTests extends BaseTest {
 
   @Test
   @Transactional
-  public void getMissingAudit() {
+  public void getMissingResource() {
     assertThrows(EntityNotFound.class, () ->
       handler.getOne(
           "1000000000000000000",
@@ -178,7 +177,7 @@ public class HandlerTests extends BaseTest {
   @ParameterizedTest
   @Transactional
   @ValueSource(strings = {"testing2", "", " ", "main", " main ", " testing2 "})
-  public void failGetAudit(final String partition) throws DocumentSerializationException {
+  public void failGetResource(final String partition) throws DocumentSerializationException {
     final Customer resource = createResource("subject");
     final String result =
         handler.create(
@@ -202,7 +201,7 @@ public class HandlerTests extends BaseTest {
 
   @Test
   @Transactional
-  public void getAllAudit() throws DocumentSerializationException {
+  public void getAllResource() throws DocumentSerializationException {
     final Customer resource = createResource("subject");
     final String result =
         handler.create(
@@ -240,7 +239,7 @@ public class HandlerTests extends BaseTest {
   @ParameterizedTest
   @Transactional
   @ValueSource(strings = {"testing2", "", " ", "main", " main ", " testing2 "})
-  public void failGetAudits(final String partition) throws DocumentSerializationException {
+  public void failGetResources(final String partition) throws DocumentSerializationException {
     final Customer resource = createResource("subject");
     final String result =
         handler.create(

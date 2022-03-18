@@ -3,6 +3,7 @@ package com.octopus.customers.application.http;
 import static io.restassured.RestAssured.given;
 
 import com.octopus.customers.BaseTest;
+import com.octopus.customers.application.Paths;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;
@@ -17,9 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HttpHealthTest extends BaseTest {
-
-  private static final String HEALTH_ENDPOINT = "/health/customers";
-
+  
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
 
@@ -31,11 +30,11 @@ public class HttpHealthTest extends BaseTest {
   @ParameterizedTest
   @ValueSource(
       strings = {
-          HEALTH_ENDPOINT + "/GET",
-          HEALTH_ENDPOINT + "/POST",
-          HEALTH_ENDPOINT + "/x/GET"
+          Paths.HEALTH_ENDPOINT + "/GET",
+          Paths.HEALTH_ENDPOINT + "/POST",
+          Paths.HEALTH_ENDPOINT + "/x/GET"
       })
-  public void testCreateAndGetAudit(@NonNull final String path) {
+  public void testCreateAndGetResource(@NonNull final String path) {
     given().when().get(path).then().statusCode(200);
   }
 }

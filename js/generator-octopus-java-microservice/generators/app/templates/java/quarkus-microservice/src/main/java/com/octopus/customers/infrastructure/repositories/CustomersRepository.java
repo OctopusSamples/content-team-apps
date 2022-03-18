@@ -125,9 +125,9 @@ public class CustomersRepository {
   }
 
   /**
-   * Saves a new audit in the data store.
+   * Saves a new resource in the data store.
    *
-   * @param customer The audit to save.
+   * @param customer The resource to save.
    * @return The newly created entity.
    */
   public Customer save(@NonNull final Customer customer) {

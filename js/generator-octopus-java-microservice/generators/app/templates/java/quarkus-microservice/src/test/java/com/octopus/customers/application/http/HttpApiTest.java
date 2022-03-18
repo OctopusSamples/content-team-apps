@@ -5,6 +5,7 @@ import static io.restassured.RestAssured.given;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
+import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import com.octopus.features.DisableSecurityFeature;
@@ -25,9 +26,6 @@ import org.mockito.Mockito;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HttpApiTest extends BaseTest {
 
-  private static final String API_ENDPOINT = "/api/customers";
-  private static final String HEALTH_ENDPOINT = "/health/customers";
-
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
 
@@ -47,7 +45,7 @@ public class HttpApiTest extends BaseTest {
   }
 
   @Test
-  public void testCreateAndGetAudit() throws DocumentSerializationException {
+  public void testCreateAndGetResource() throws DocumentSerializationException {
     final ValidatableResponse response =
         given()
             .accept("application/vnd.api+json")
@@ -57,7 +55,7 @@ public class HttpApiTest extends BaseTest {
             .body(
                 resourceToResourceDocument(
                     resourceConverter, createResource("testCreateAndGetResource")))
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(200)
             .body(
@@ -72,7 +70,7 @@ public class HttpApiTest extends BaseTest {
         .accept("application/vnd.api+json")
         .header("data-partition", "main")
         .when()
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -86,7 +84,7 @@ public class HttpApiTest extends BaseTest {
         .accept("application/vnd.api+json")
         .header("data-partition", "main")
         .when()
-        .get(API_ENDPOINT + "/" + created.getId())
+        .get(Paths.API_ENDPOINT + "/" + created.getId())
         .then()
         .statusCode(200)
         .body(
@@ -109,7 +107,7 @@ public class HttpApiTest extends BaseTest {
             .body(
                 resourceToResourceDocument(
                     resourceConverter, createResource("testCreateAndGetResource")))
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(200);
 
@@ -120,7 +118,7 @@ public class HttpApiTest extends BaseTest {
         .accept("application/vnd.api+json")
         .header("data-partition", "testing")
         .when()
-        .get(API_ENDPOINT + "/" + created.getId())
+        .get(Paths.API_ENDPOINT + "/" + created.getId())
         .then()
         .statusCode(404);
   }
@@ -134,7 +132,7 @@ public class HttpApiTest extends BaseTest {
             .body(
                 resourceToResourceDocument(
                     resourceConverter, createResource("testCreateAndGetResource")))
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(415);
   }
@@ -149,7 +147,7 @@ public class HttpApiTest extends BaseTest {
             .body(
                 resourceToResourceDocument(
                     resourceConverter, createResource("testCreateAndGetResource")))
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(406);
   }
@@ -159,7 +157,7 @@ public class HttpApiTest extends BaseTest {
         given()
             .accept("application/vnd.api+json; something")
             .when()
-            .get(API_ENDPOINT + "/1")
+            .get(Paths.API_ENDPOINT + "/1")
             .then()
             .statusCode(406);
   }
@@ -169,7 +167,7 @@ public class HttpApiTest extends BaseTest {
         given()
             .accept("application/vnd.api+json; something")
             .when()
-            .get(API_ENDPOINT)
+            .get(Paths.API_ENDPOINT)
             .then()
             .statusCode(406);
   }
@@ -178,7 +176,7 @@ public class HttpApiTest extends BaseTest {
   public void passWithNoAcceptForGetAll() {
         given()
             .when()
-            .get(API_ENDPOINT)
+            .get(Paths.API_ENDPOINT)
             .then()
             .statusCode(200);
   }
@@ -194,7 +192,7 @@ public class HttpApiTest extends BaseTest {
             .body(
                 resourceToResourceDocument(
                     resourceConverter, createResource("testCreateAndGetResource")))
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(200)
             .body(
@@ -210,7 +208,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "id==" + created.getId())
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -225,7 +223,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "firstName==testCreateAndGetResource")
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -240,7 +238,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "firstName!=blah")
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -255,7 +253,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "firstName==test*")
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -270,7 +268,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "firstName=in=(testCreateAndGetResource)")
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -285,7 +283,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "id<" + (created.getId() + 1))
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(200)
         .body(
@@ -303,7 +301,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .when()
         .queryParam("filter", "&^$*^%#$")
-        .get(API_ENDPOINT)
+        .get(Paths.API_ENDPOINT)
         .then()
         .statusCode(400);
   }
@@ -316,7 +314,7 @@ public class HttpApiTest extends BaseTest {
             .contentType("application/vnd.api+json")
             .when()
             .body("{}")
-            .post(API_ENDPOINT)
+            .post(Paths.API_ENDPOINT)
             .then()
             .statusCode(400);
   }
@@ -328,7 +326,7 @@ public class HttpApiTest extends BaseTest {
         .header("data-partition", "main")
         .contentType("application/vnd.api+json")
         .when()
-        .get(API_ENDPOINT + "/100000000000")
+        .get(Paths.API_ENDPOINT + "/100000000000")
         .then()
         .statusCode(404);
   }
@@ -337,7 +335,7 @@ public class HttpApiTest extends BaseTest {
   public void testHealthGetCollection() {
     given()
         .when()
-        .get(HEALTH_ENDPOINT + "/GET")
+        .get(Paths.HEALTH_ENDPOINT + "/GET")
         .then()
         .statusCode(200);
   }
@@ -346,7 +344,7 @@ public class HttpApiTest extends BaseTest {
   public void testHealthPostItem() {
     given()
         .when()
-        .get(HEALTH_ENDPOINT + "/POST")
+        .get(Paths.HEALTH_ENDPOINT + "/POST")
         .then()
         .statusCode(200);
   }
@@ -355,7 +353,7 @@ public class HttpApiTest extends BaseTest {
   public void testHealthGetItem() {
     given()
         .when()
-        .get(HEALTH_ENDPOINT + "/x/GET")
+        .get(Paths.HEALTH_ENDPOINT + "/x/GET")
         .then()
         .statusCode(200);
   }
