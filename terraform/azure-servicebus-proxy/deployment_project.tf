@@ -393,7 +393,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     COGNITO_CLIENT_ID: !Ref CognitoClientId
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 256
+                MemorySize: 512
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
