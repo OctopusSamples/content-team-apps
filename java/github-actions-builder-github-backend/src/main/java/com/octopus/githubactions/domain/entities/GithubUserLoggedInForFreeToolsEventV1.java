@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @Builder
 public class GithubUserLoggedInForFreeToolsEventV1 {
-  private Map<String, String> UtmParameters;
+  private Map<String, String> utmParameters;
   private String emailAddress;
   private String programmingLanguage;
   private String gitHubUsername;
