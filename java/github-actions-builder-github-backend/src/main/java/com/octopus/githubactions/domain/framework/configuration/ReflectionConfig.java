@@ -12,6 +12,7 @@ import com.octopus.githubactions.builders.dsl.UsesWith;
 import com.octopus.githubactions.builders.dsl.Workflow;
 import com.octopus.githubactions.builders.dsl.WorkflowDispatch;
 import com.octopus.githubactions.domain.entities.Audit;
+import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
@@ -28,6 +29,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     WorkflowDispatch.class,
     TimestampDeserializer.class,
     Audit.class,
+    GithubUserLoggedInForFreeToolsEventV1.class,
     IntegerIdHandler.class,
     StringIdHandler.class})
 public class ReflectionConfig {
