@@ -94,29 +94,34 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    // Log the users emails details
-    if (StringUtils.isNotBlank(auth)) {
-      Try.of(() -> gitHubUser.publicEmails("token " + auth))
-          .onSuccess(emails -> recordEmailInOctofront(
-              auth,
-              xray,
-              emails,
-              routingHeaders,
-              dataPartitionHeaders,
-              authHeaders))
-          .onSuccess(emails -> auditEmail(
-              auth,
-              xray,
-              emails,
-              routingHeaders,
-              dataPartitionHeaders,
-              authHeaders));
-    }
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
         .orElse(buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+  }
+
+  private void logUserDetails(final String token,
+      final String xray,
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
+
+    try {
+      if (StringUtils.isNotBlank(token)) {
+        final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
+
+        recordEmailInOctofront(token, xray, emails, routingHeaders, dataPartitionHeaders,
+            authHeaders);
+
+        auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+      }
+    } catch (final Exception ex) {
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
+          ex);
+    }
   }
 
   /**
