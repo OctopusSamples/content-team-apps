@@ -44,7 +44,7 @@ resource "octopusdeploy_variable" "cognito_userpool_client_project_debug_evaluat
 }
 
 resource "octopusdeploy_deployment_process" "deploy_project" {
-  project_id = octopusdeploy_project.deploy_project.id
+  project_id = octopusdeploy_project.cognito_userpool_client_project.id
   step {
     condition           = "Success"
     name                = "Get Stack Outputs"
