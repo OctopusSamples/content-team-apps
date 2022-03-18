@@ -31,7 +31,7 @@ import org.apache.commons.lang3.ObjectUtils;
 /**
  * The Lambda entry point used to return resources.
  */
-@Named("Customers")
+@Named("ResourceHandler")
 @ApplicationScoped
 public class LambdaRequestHanlder implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
