@@ -52,11 +52,29 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  github_proxy_encryption_key_development:
-    description: 'The encryption key used in development'
+  servicebus_secret_development:
+    description: 'The service bus secret for Development'
     required: true
-  github_proxy_encryption_key_production:
-    description: 'The encryption key used in production'
+  servicebus_secret_production:
+    description: 'The service bus secret for Production'
+    required: true
+  servicebus_tenant_development:
+    description: 'The service bus tenant for Development'
+    required: true
+  servicebus_tenant_production:
+    description: 'The service bus tenant for Production'
+    required: true
+  servicebus_namespace_development:
+    description: 'The service bus namespace for Development'
+    required: true
+  servicebus_namespace_production:
+    description: 'The service bus namespace for Production'
+    required: true
+  servicebus_application_id_development:
+    description: 'The service bus app id for Development'
+    required: true
+  servicebus_application_id_production:
+    description: 'The service bus app id for Production'
     required: true
   cognito_library_variable_set_id:
     description: 'The ID of the variable set containing shared cognito values'
@@ -123,8 +141,14 @@ runs:
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}"
         -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}"
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
-        -var="github_proxy_encryption_key_development=${{ inputs.github_proxy_encryption_key_development }}"
-        -var="github_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
+        -var="servicebus_secret_development=${{ inputs.servicebus_secret_development }}"
+        -var="servicebus_secret_production=${{ inputs.servicebus_secret_production }}"
+        -var="servicebus_tenant_production=${{ inputs.servicebus_tenant_production }}"
+        -var="servicebus_tenant_development=${{ inputs.servicebus_tenant_development }}"
+        -var="servicebus_namespace_production=${{ inputs.servicebus_namespace_production }}"
+        -var="servicebus_namespace_development=${{ inputs.servicebus_namespace_development }}"
+        -var="servicebus_application_id_production=${{ inputs.servicebus_application_id_production }}"
+        -var="servicebus_application_id_development=${{ inputs.servicebus_application_id_development }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
       working-directory: terraform/github-repo-creator
