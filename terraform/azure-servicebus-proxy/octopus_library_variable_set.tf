@@ -65,7 +65,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_cognito_user_pool" {
   description = "The name of the stack hosting lambda."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "AzureServiceBusProxy"
+  value = "AzureServiceBusProxyCognitoUserPool"
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
