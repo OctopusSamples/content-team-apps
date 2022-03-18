@@ -392,13 +392,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     COGNITO_JWK: !Ref CognitoJwk
                     COGNITO_CLIENT_ID: !Ref CognitoClientId
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
-                Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
+                MemorySize: 256
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
                   - Arn
-                Runtime: provided
+                Runtime: java11
                 Timeout: 600
             'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::Lambda::Version'
