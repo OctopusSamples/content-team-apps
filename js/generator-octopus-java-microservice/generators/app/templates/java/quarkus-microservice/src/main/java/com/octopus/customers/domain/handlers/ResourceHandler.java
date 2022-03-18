@@ -5,7 +5,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.domain.Constants;
 import com.octopus.customers.domain.entities.Customer;
-import com.octopus.customers.domain.features.DisableSecurityFeatureImpl;
+import com.octopus.customers.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.customers.infrastructure.repositories.CustomersRepository;
 import com.octopus.exceptions.EntityNotFound;
 import com.octopus.exceptions.InvalidInput;
