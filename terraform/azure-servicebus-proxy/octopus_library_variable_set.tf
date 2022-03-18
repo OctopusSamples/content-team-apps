@@ -51,7 +51,7 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_code" {
-  name = "CloudFormation.OctopusServiceAccountCreator"
+  name = "CloudFormation.AzureServiceBusProxy"
   type = "String"
   description = "The name of the stack hosting lambda."
   is_sensitive = false
