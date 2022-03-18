@@ -8,7 +8,11 @@ public class InvalidInputTest {
   @Test
   public void verifyNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new InvalidInput(null);
+      new InvalidInput((Throwable) null);
+    });
+
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      new InvalidInput((String) null);
     });
   }
 }

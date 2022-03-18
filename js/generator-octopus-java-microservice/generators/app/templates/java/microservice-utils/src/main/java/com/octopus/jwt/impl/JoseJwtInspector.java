@@ -116,6 +116,21 @@ public class JoseJwtInspector implements JwtInspector {
     return false;
   }
 
+  @Override
+  public Optional<String> getClaim(@NonNull final String jwt, @NonNull final String claim) {
+    try {
+      final Map<String, Object> payload = getPayload(jwt);
+      if (payload.containsKey(claim)) {
+        return Optional.of(payload.get(claim).toString());
+      }
+    } catch (ParseException e) {
+      LOGGER.log(Level.SEVERE,
+          microserviceName.getMicroserviceName() + "-Jwt-ClaimExtraction", e);
+    }
+
+    return Optional.empty();
+  }
+
   /**
    * Extracts the claims from the JWT.
    *

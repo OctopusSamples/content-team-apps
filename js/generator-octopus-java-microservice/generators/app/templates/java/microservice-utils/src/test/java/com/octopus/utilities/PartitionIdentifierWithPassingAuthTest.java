@@ -23,6 +23,11 @@ public class PartitionIdentifierWithPassingAuthTest {
         public boolean jwtContainsScope(String jwt, String claim, String clientId) {
           return false;
         }
+
+        @Override
+        public Optional<String> getClaim(String jwt, String claim)  {
+          return Optional.empty();
+        }
       },
       () -> Optional.of("Developers"),
       () -> false

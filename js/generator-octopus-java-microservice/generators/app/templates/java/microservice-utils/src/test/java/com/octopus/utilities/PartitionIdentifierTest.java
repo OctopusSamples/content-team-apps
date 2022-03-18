@@ -38,6 +38,11 @@ public class PartitionIdentifierTest {
         public boolean jwtContainsScope(String jwt, String claim, String clientId) {
           return true;
         }
+
+        @Override
+        public Optional<String> getClaim(String jwt, String claim)  {
+          return Optional.empty();
+        }
       },
       () -> Optional.of("admin"),
       () -> false
@@ -54,6 +59,11 @@ public class PartitionIdentifierTest {
         @Override
         public boolean jwtContainsScope(String jwt, String claim, String clientId) {
           return false;
+        }
+
+        @Override
+        public Optional<String> getClaim(String jwt, String claim)  {
+          return Optional.empty();
         }
       },
       () -> Optional.of("admin"),
