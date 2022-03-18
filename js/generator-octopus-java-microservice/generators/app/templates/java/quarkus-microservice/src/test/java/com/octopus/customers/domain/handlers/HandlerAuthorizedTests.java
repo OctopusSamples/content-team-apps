@@ -28,7 +28,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  CustomersHandler handler;
+  ResourceHandler handler;
 
   @Inject
   ResourceConverter resourceConverter;

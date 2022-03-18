@@ -1,6 +1,7 @@
 package com.octopus.customers.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.handlers.HealthHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -11,9 +12,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /** A resource to respond to health check requests. */
-@Path("/health/customers")
+@Path(Paths.HEALTH_ENDPOINT)
 @RequestScoped
-public class HealthResource {
+public class HealthRootResource {
 
   @Inject HealthHandler healthHandler;
 
@@ -28,7 +29,7 @@ public class HealthResource {
   @Path("GET")
   @Transactional
   public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers", "GET")).build();
+    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "GET")).build();
   }
 
   /**
@@ -42,7 +43,7 @@ public class HealthResource {
   @Path("POST")
   @Transactional
   public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers", "POST")).build();
+    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "POST")).build();
   }
 
   /**
@@ -56,6 +57,6 @@ public class HealthResource {
   @Path("{id}/GET")
   @Transactional
   public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers/" + id, "GET")).build();
+    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT + id, "GET")).build();
   }
 }

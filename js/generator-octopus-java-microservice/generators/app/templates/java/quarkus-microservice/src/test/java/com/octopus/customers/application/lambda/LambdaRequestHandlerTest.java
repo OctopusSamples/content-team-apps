@@ -30,10 +30,10 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaTests extends BaseTest {
+public class LambdaRequestHandlerTest extends BaseTest {
 
   @Inject
-  CustomersApi api;
+  LambdaRequestHanlder api;
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;

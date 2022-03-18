@@ -12,7 +12,6 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
-import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.sql.SQLException;
@@ -48,7 +47,7 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   JwtUtils jwtUtils;
 
   @Inject
-  CustomersHandler handler;
+  ResourceHandler handler;
 
   @Inject
   ResourceConverter resourceConverter;

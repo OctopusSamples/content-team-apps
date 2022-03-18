@@ -6,7 +6,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.customers.domain.handlers.CustomersHandler;
+import com.octopus.customers.application.Paths;
+import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
 import com.octopus.exceptions.EntityNotFound;
 import com.octopus.exceptions.InvalidInput;
@@ -32,28 +33,25 @@ import org.apache.commons.lang3.ObjectUtils;
  */
 @Named("Customers")
 @ApplicationScoped
-public class CustomersApi implements
+public class LambdaRequestHanlder implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-
-  private static final String API_PATH = "/api/customers";
-  private static final String HEALTH_PATH = "/health/customers";
 
   /**
    * A regular expression matching the collection of entities.
    */
-  public static final Pattern ROOT_RE = Pattern.compile(API_PATH + "/?");
+  public static final Pattern ROOT_RE = Pattern.compile(Paths.API_ENDPOINT + "/?");
   /**
    * A regular expression matching a single entity.
    */
-  public static final Pattern INDIVIDUAL_RE = Pattern.compile(API_PATH + "/(?<id>\\d+)");
+  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>\\d+)");
   /**
    * A regular expression matching a health endpoint.
    */
   public static final Pattern HEALTH_RE =
-      Pattern.compile(HEALTH_PATH + "/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
+      Pattern.compile(Paths.HEALTH_ENDPOINT + "/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
 
   @Inject
-  CustomersHandler customersHandler;
+  ResourceHandler resourceHandler;
 
   @Inject
   HealthHandler healthHandler;
@@ -157,7 +155,7 @@ public class CustomersApi implements
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
-                    customersHandler.getAll(
+                    resourceHandler.getAll(
                         lambdaHttpHeaderExtractor.getAllHeaders(input,
                             Constants.DATA_PARTITION_HEADER),
                         lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.FILTER_QUERY_PARAM)
@@ -199,7 +197,7 @@ public class CustomersApi implements
 
         if (id.isPresent()) {
           final String entity =
-              customersHandler.getOne(
+              resourceHandler.getOne(
                   id.get(),
                   lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
                   lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
@@ -238,7 +236,7 @@ public class CustomersApi implements
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
-                    customersHandler.create(
+                    resourceHandler.create(
                         getBody(input),
                         lambdaHttpHeaderExtractor.getAllHeaders(input,
                             Constants.DATA_PARTITION_HEADER),

@@ -34,7 +34,7 @@ public class HandlerTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  CustomersHandler handler;
+  ResourceHandler handler;
 
   @Inject
   HealthHandler healthHandler;

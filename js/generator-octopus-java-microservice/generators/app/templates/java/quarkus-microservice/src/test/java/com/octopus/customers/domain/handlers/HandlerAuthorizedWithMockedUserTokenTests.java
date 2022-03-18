@@ -43,7 +43,7 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   JwtUtils jwtUtils;
 
   @Inject
-  CustomersHandler customersHandler;
+  ResourceHandler resourceHandler;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -59,7 +59,7 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final Customer resource = createResource(customersHandler, resourceConverter, "main");
+    final Customer resource = createResource(resourceHandler, resourceConverter, "main");
     assertEquals("myname", resource.getFirstName());
   }
 }

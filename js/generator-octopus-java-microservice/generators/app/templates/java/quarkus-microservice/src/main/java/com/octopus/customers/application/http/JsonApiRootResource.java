@@ -3,7 +3,8 @@ package com.octopus.customers.application.http;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.customers.domain.handlers.CustomersHandler;
+import com.octopus.customers.application.Paths;
+import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +25,12 @@ import javax.ws.rs.core.Response.Status;
 /**
  * WHen this app is run as a web server, this class defines the REST API endpoints.
  */
-@Path("/api/customers")
+@Path(Paths.API_ENDPOINT)
 @RequestScoped
-public class CustomersResource {
+public class JsonApiRootResource {
 
   @Inject
-  CustomersHandler customersHandler;
+  ResourceHandler resourceHandler;
 
   @Inject
   AcceptHeaderVerifier acceptHeaderVerifier;
@@ -56,7 +57,7 @@ public class CustomersResource {
       @QueryParam(Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(customersHandler.getAll(
+    return Response.ok(resourceHandler.getAll(
             dataPartitionHeaders,
             filter,
             pageOffset,
@@ -87,7 +88,7 @@ public class CustomersResource {
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(customersHandler.create(
+    return Response.ok(resourceHandler.create(
             document,
             dataPartitionHeaders,
             authorizationHeader,
@@ -116,7 +117,7 @@ public class CustomersResource {
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Optional.ofNullable(customersHandler.getOne(
+    return Optional.ofNullable(resourceHandler.getOne(
             id,
             dataPartitionHeaders,
             authorizationHeader,

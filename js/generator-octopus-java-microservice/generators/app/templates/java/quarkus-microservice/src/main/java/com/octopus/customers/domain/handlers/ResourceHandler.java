@@ -31,7 +31,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * to repositories.
  */
 @ApplicationScoped
-public class CustomersHandler {
+public class ResourceHandler {
 
   @Inject
   AdminJwtClaimFeature adminJwtClaimFeature;

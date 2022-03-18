@@ -14,7 +14,7 @@
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <jacoco.minimum.coverage>0.90</jacoco.minimum.coverage>
+    <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
   </properties>
 
   <dependencyManagement>

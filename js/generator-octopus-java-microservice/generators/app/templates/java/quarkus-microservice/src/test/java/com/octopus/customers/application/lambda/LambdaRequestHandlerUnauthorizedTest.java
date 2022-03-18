@@ -9,8 +9,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.application.Paths;
-import com.octopus.customers.domain.handlers.CustomersHandler;
-import com.octopus.customers.domain.handlers.HealthHandler;
+import com.octopus.customers.domain.handlers.ResourceHandler;
+import com.octopus.exceptions.Unauthorized;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -22,27 +22,23 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaBadBackendTests extends BaseTest {
+public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
 
   @Inject
-  CustomersApi api;
+  LambdaRequestHanlder api;
 
   @InjectMock
-  CustomersHandler handler;
-
-  @InjectMock
-  HealthHandler healthHandler;
+  ResourceHandler handler;
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new RuntimeException());
-    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
-    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new RuntimeException());
-    Mockito.when(healthHandler.getHealth(any(), any())).thenThrow(new RuntimeException());
+    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new Unauthorized());
+    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new Unauthorized());
+    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new Unauthorized());
   }
 
   @Test
-  public void testUnexpectedExceptionGetAll() {
+  public void testUnauthorizedGetAll() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -55,11 +51,11 @@ public class LambdaBadBackendTests extends BaseTest {
     apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(500, postResponse.getStatusCode());
+    assertEquals(403, postResponse.getStatusCode());
   }
 
   @Test
-  public void testUnexpectedExceptionGetOne() {
+  public void testUnauthorizedGetOne() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -72,11 +68,11 @@ public class LambdaBadBackendTests extends BaseTest {
     apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/1");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(500, postResponse.getStatusCode());
+    assertEquals(403, postResponse.getStatusCode());
   }
 
   @Test
-  public void testUnexpectedExceptionCreate() {
+  public void testUnauthorizedCreate() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -89,24 +85,6 @@ public class LambdaBadBackendTests extends BaseTest {
     apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(500, postResponse.getStatusCode());
+    assertEquals(403, postResponse.getStatusCode());
   }
-
-  @Test
-  public void testUnexpectedExceptionHealth() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/GET");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(500, postResponse.getStatusCode());
-  }
-
 }

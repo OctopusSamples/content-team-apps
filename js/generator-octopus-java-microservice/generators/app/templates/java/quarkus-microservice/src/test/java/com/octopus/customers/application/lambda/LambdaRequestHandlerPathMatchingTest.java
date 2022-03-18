@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class ResourceApiTest {
+public class LambdaRequestHandlerPathMatchingTest {
 
-  private static final CustomersApi API = new CustomersApi();
+  private static final LambdaRequestHanlder API = new LambdaRequestHanlder();
 
   @ParameterizedTest
   @ValueSource(strings = {

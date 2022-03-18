@@ -4,7 +4,7 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.domain.entities.Customer;
-import com.octopus.customers.domain.handlers.CustomersHandler;
+import com.octopus.customers.domain.handlers.ResourceHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.NonNull;
@@ -25,7 +25,7 @@ public class BaseTest {
   }
 
   protected Customer createResource(
-      @NonNull final CustomersHandler handler,
+      @NonNull final ResourceHandler handler,
       @NonNull final ResourceConverter resourceConverter,
       @NonNull final String partition)
       throws DocumentSerializationException {
