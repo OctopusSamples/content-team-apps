@@ -472,7 +472,8 @@ step "Update Stage" {
                         "StageName": {"Fn::Sub": "${EnvironmentName}"},
                         "Variables": {
                          	"indexPage":  {"Fn::Sub": "/index.html"}
-                        }
+                        },
+                        "TracingEnabled": "True"
                       }
                     }
                   },
