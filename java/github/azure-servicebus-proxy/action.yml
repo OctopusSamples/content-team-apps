@@ -166,7 +166,7 @@ runs:
     - name: Push SBOM Package
       run: >
         octo push 
-        --packageazure-servicebus-proxy-lambda-sbom.0.1.${{ inputs.run_number }}.zip
+        --package azure-servicebus-proxy-lambda-sbom.0.1.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
