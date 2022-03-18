@@ -396,7 +396,9 @@ func getRuleComponents(acceptComponent string) (string, string, string, error) {
 		if strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]") {
 			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
 			pathAndMethod := strings.Split(strippedVersion, ":")
-			return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
+			if len(pathAndMethod) == 2 {
+				return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
+			}
 		}
 	}
 
