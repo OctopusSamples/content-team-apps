@@ -4,23 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.domain.entities.Audit;
 import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.domain.features.ServiceBusCognitoConfig;
 import com.octopus.githubactions.domain.framework.jsonapi.JsonApiConverter;
-import com.octopus.githubactions.infrastructure.client.AuditClient;
 import com.octopus.githubactions.infrastructure.client.CognitoClient;
 import com.octopus.githubactions.infrastructure.client.ServiceBusProxyClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**

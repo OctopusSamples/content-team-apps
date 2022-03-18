@@ -196,6 +196,7 @@ public class TemplateHandler {
       for (final GitHubEmail email : emails) {
         serviceBusMessageGenerator.sendLoginMessage(
             GithubUserLoggedInForFreeToolsEventV1.builder()
+                .id("")
                 .emailAddress(email.getEmail())
                 .build(),
             xray,
