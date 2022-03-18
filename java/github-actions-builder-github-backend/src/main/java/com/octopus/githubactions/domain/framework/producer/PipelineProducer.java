@@ -19,6 +19,8 @@ import com.octopus.githubactions.builders.RubyBuilder;
 import com.octopus.githubactions.domain.servicebus.AzureServiceBus;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
+import com.octopus.json.JsonSerializer;
+import com.octopus.json.impl.JacksonJsonSerializerImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
@@ -229,6 +231,17 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getGeneric() {
     return new GenericBuilder();
+  }
+
+  /**
+   * Produces the JSON serializer.
+   *
+   * @return An implementation of JsonSerializer.
+   */
+  @ApplicationScoped
+  @Produces
+  public JsonSerializer getJsonSerializer() {
+    return new JacksonJsonSerializerImpl();
   }
 
   /**

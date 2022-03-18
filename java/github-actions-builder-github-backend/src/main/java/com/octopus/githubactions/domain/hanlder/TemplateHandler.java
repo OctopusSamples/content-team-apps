@@ -12,7 +12,10 @@ import com.octopus.githubactions.application.lambda.PipelineLambda;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
 import com.octopus.githubactions.domain.entities.Audit;
 import com.octopus.githubactions.domain.entities.GitHubEmail;
+import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.infrastructure.client.GitHubUser;
+import com.octopus.githubactions.infrastructure.octofront.CommercialServiceBus;
+import com.octopus.json.JsonSerializer;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
@@ -63,6 +66,12 @@ public class TemplateHandler {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
+  @Inject
+  CommercialServiceBus commercialServiceBus;
+
+  @Inject
+  JsonSerializer jsonSerializer;
+
   /**
    * Generate a github repo.
    *
@@ -89,7 +98,10 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    auditEmail(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
+    final GitHubEmail[] emails = gitHubUser.publicEmails("token " + auth);
+
+    auditEmail(auth, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+    sendEmailToOctoFront(xray, emails);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
@@ -107,6 +119,7 @@ public class TemplateHandler {
    */
   private void auditEmail(final String token,
       final String xray,
+      final GitHubEmail[] emails,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
@@ -120,8 +133,6 @@ public class TemplateHandler {
 
       final String publicKey = Base64.getEncoder()
           .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
-
-      final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
 
       for (final GitHubEmail email : emails) {
         final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
@@ -137,8 +148,24 @@ public class TemplateHandler {
             dataPartitionHeaders,
             authHeaders);
       }
-    } catch (final Exception e) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed", e);
+    } catch (final Exception ex) {
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed", ex);
+    }
+  }
+
+  private void sendEmailToOctoFront(final String xray, final GitHubEmail[] emails) {
+    try {
+      for (final GitHubEmail email : emails) {
+        commercialServiceBus.sendUserDetails(
+            xray,
+            jsonSerializer.toJson(
+                GithubUserLoggedInForFreeToolsEventV1.builder()
+                    .emailAddress(email.toString())
+                    .build()
+            ));
+      }
+    } catch (final Exception ex) {
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-OctoFront-RecordEmailFailed", ex);
     }
   }
 
