@@ -7,9 +7,9 @@ import com.octopus.customers.domain.Constants;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.customers.infrastructure.repositories.CustomersRepository;
-import com.octopus.exceptions.EntityNotFound;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
@@ -80,7 +80,7 @@ public class ResourceHandler {
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     final String partition = partitionIdentifier
@@ -120,7 +120,7 @@ public class ResourceHandler {
       throws DocumentSerializationException {
 
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     final Customer customer = getResourceFromDocument(document);
@@ -149,7 +149,7 @@ public class ResourceHandler {
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     final String partition = partitionIdentifier
@@ -167,7 +167,7 @@ public class ResourceHandler {
     } catch (final NumberFormatException ex) {
       // ignored, as the supplied id was not an int, and would never find any entities
     }
-    throw new EntityNotFound();
+    throw new EntityNotFoundException();
   }
 
   private Customer getResourceFromDocument(final String document) {
@@ -184,7 +184,7 @@ public class ResourceHandler {
       return customer;
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.
-      throw new InvalidInput();
+      throw new InvalidInputException();
     }
   }
 

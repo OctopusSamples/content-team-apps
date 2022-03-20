@@ -1,7 +1,5 @@
 package com.octopus.exceptions;
 
-import lombok.NonNull;
-
 /**
  * Represents an exception thrown when serializing objects to JSON.
  */
@@ -10,11 +8,11 @@ public class JsonSerializationException extends RuntimeException {
     super();
   }
 
-  public JsonSerializationException(@NonNull final Exception ex) {
+  public JsonSerializationException(final Throwable ex) {
     super(ex);
   }
 
-  public JsonSerializationException(@NonNull final String message) {
+  public JsonSerializationException(final String message) {
     super(message);
   }
 }

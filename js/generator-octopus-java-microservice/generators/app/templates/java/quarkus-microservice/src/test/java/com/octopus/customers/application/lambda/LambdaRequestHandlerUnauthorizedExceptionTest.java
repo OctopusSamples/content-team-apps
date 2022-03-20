@@ -10,7 +10,7 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.handlers.ResourceHandler;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
+public class LambdaRequestHandlerUnauthorizedExceptionTest extends BaseTest {
 
   @Inject
   LambdaRequestHanlder api;
@@ -32,13 +32,13 @@ public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new Unauthorized());
-    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new Unauthorized());
-    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new Unauthorized());
+    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
   }
 
   @Test
-  public void testUnauthorizedGetAll() {
+  public void testUnauthorizedExceptionGetAll() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -55,7 +55,7 @@ public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
   }
 
   @Test
-  public void testUnauthorizedGetOne() {
+  public void testUnauthorizedExceptionGetOne() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(
@@ -72,7 +72,7 @@ public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
   }
 
   @Test
-  public void testUnauthorizedCreate() {
+  public void testUnauthorizedExceptionCreate() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(

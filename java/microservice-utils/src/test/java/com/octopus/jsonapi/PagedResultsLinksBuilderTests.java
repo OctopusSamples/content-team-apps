@@ -20,7 +20,7 @@ public class PagedResultsLinksBuilderTests {
         new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity());
     final JSONAPIDocument<List<TestEntity>> document = new JSONAPIDocument<List<TestEntity>>(resourceList);
     final FilteredResultWrapper results = new FilteredResultWrapper(resourceList, 100l);
-    PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(document, "5", "3", results);
+    PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(document, "5", "3", results, "resource");
 
     assertTrue(document.getLinks().getLinks().entrySet().stream()
         .anyMatch(e -> "first".equals(e.getKey())));
@@ -42,10 +42,10 @@ public class PagedResultsLinksBuilderTests {
     final JSONAPIDocument<List<TestEntity>> document = new JSONAPIDocument<List<TestEntity>>(resourceList);
     final FilteredResultWrapper results = new FilteredResultWrapper(resourceList, 1l);
     assertThrows(NullPointerException.class, () -> {
-      PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(null, "10", "10", results);
+      PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(null, "10", "10", results, "resource");
     });
     assertThrows(NullPointerException.class, () -> {
-      PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(document, "10", "10", null);
+      PAGED_RESULTS_LINKS_BUILDER.generatePageLinks(document, "10", "10", null, "resource");
     });
   }
 

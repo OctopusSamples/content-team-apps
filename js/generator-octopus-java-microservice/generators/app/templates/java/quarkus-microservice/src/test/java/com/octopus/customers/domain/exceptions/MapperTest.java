@@ -3,14 +3,14 @@ package com.octopus.customers.domain.exceptions;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.github.jasminb.jsonapi.exceptions.InvalidJsonApiResourceException;
 import com.octopus.customers.domain.framework.providers.DocumentSerializationExceptionMapper;
-import com.octopus.customers.domain.framework.providers.EntityNotFoundMapper;
-import com.octopus.customers.domain.framework.providers.InvalidAcceptHeadersMapper;
-import com.octopus.customers.domain.framework.providers.InvalidInputExceptionMapper;
+import com.octopus.customers.domain.framework.providers.EntityNotFoundExceptionMapper;
+import com.octopus.customers.domain.framework.providers.InvalidAcceptHeadersExceptionMapper;
+import com.octopus.customers.domain.framework.providers.InvalidInputExceptionExceptionMapper;
 import com.octopus.customers.domain.framework.providers.InvalidJsonApiResourceExceptionMapper;
 import com.octopus.customers.domain.framework.providers.RsqlParserExceptionMapper;
-import com.octopus.exceptions.EntityNotFound;
-import com.octopus.exceptions.InvalidAcceptHeaders;
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidAcceptHeadersException;
+import com.octopus.exceptions.InvalidInputException;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import io.quarkus.test.junit.QuarkusTest;
 import javax.inject.Inject;
@@ -28,42 +28,42 @@ public class MapperTest {
   InvalidJsonApiResourceExceptionMapper invalidJsonApiResourceExceptionMapper;
   
   @Inject
-  InvalidAcceptHeadersMapper invalidAcceptHeadersMapper;
+  InvalidAcceptHeadersExceptionMapper InvalidAcceptHeadersExceptionMapper;
   
   @Inject
-  EntityNotFoundMapper entityNotFoundMapper;
+  EntityNotFoundExceptionMapper EntityNotFoundExceptionMapperException;
 
   @Inject
   RsqlParserExceptionMapper rsqlParserExceptionMapper;
 
   @Inject
-  InvalidInputExceptionMapper invalidInputExceptionMapper;
+  InvalidInputExceptionExceptionMapper InvalidInputExceptionExceptionMapper;
 
   @Test
-  public void verifyInvalidAcceptHeadersMapperNullInputs() {
+  public void verifyInvalidAcceptHeadersExceptionMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      invalidAcceptHeadersMapper.toResponse(null);
+      InvalidAcceptHeadersExceptionMapper.toResponse(null);
     });
   }
 
   @Test
-  public void verifyInvalidAcceptHeadersMapperResponse() {
-    final Response response = invalidAcceptHeadersMapper.toResponse(
-        new InvalidAcceptHeaders());
+  public void verifyInvalidAcceptHeadersExceptionMapperResponse() {
+    final Response response = InvalidAcceptHeadersExceptionMapper.toResponse(
+        new InvalidAcceptHeadersException());
     Assertions.assertEquals(406, response.getStatus());
   }
 
   @Test
-  public void verifyEntityNotFoundMapperNullInputs() {
+  public void verifyEntityNotFoundExceptionMapperExceptionNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      new EntityNotFoundMapper().toResponse(null);
+      new EntityNotFoundExceptionMapper().toResponse(null);
     });
   }
 
   @Test
-  public void verifyEntityNotFoundMapperResponse() {
-    final Response response = entityNotFoundMapper.toResponse(
-        new EntityNotFound());
+  public void verifyEntityNotFoundExceptionMapperExceptionResponse() {
+    final Response response = EntityNotFoundExceptionMapperException.toResponse(
+        new EntityNotFoundException());
     Assertions.assertEquals(404, response.getStatus());
   }
 
@@ -82,16 +82,16 @@ public class MapperTest {
   }
 
   @Test
-  public void verifyInvalidInputExceptionMapperNullInputs() {
+  public void verifyInvalidInputExceptionExceptionMapperNullInputs() {
     Assertions.assertThrows(NullPointerException.class, () -> {
-      invalidInputExceptionMapper.toResponse(null);
+      InvalidInputExceptionExceptionMapper.toResponse(null);
     });
   }
 
   @Test
-  public void verifyInvalidInputExceptionMapperResponse() {
-    final Response response = invalidInputExceptionMapper.toResponse(
-        new InvalidInput());
+  public void verifyInvalidInputExceptionExceptionMapperResponse() {
+    final Response response = InvalidInputExceptionExceptionMapper.toResponse(
+        new InvalidInputException());
     Assertions.assertEquals(400, response.getStatus());
   }
 

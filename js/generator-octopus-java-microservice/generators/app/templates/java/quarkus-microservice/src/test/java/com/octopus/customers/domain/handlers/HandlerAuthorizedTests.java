@@ -6,7 +6,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -45,7 +45,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() {
-    assertThrows(Unauthorized.class, () -> handler.create(
+    assertThrows(UnauthorizedException.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new Customer()),
         List.of("main"),
         null, null));
@@ -54,7 +54,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Test
   @Transactional
   public void testGetResource() {
-    assertThrows(Unauthorized.class, () -> handler.getOne(
+    assertThrows(UnauthorizedException.class, () -> handler.getOne(
         "1",
         List.of("main"),
         null, null));
@@ -63,7 +63,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Test
   @Transactional
   public void testGetAllResource() {
-    assertThrows(Unauthorized.class, () -> handler.getAll(
+    assertThrows(UnauthorizedException.class, () -> handler.getAll(
         List.of("main"),
         null, null, null, null, null));
   }

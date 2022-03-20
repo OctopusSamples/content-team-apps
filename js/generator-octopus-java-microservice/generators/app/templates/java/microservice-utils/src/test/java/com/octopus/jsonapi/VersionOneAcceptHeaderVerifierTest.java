@@ -3,7 +3,7 @@ package com.octopus.jsonapi;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.octopus.Constants;
-import com.octopus.exceptions.InvalidAcceptHeaders;
+import com.octopus.exceptions.InvalidAcceptHeadersException;
 import com.octopus.jsonapi.impl.VersionOneAcceptHeaderVerifier;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class VersionOneAcceptHeaderVerifierTest {
 
   @Test
   public void verifyBadJsonAPIAcceptHeaders() {
-    assertThrows(InvalidAcceptHeaders.class, () -> {
+    assertThrows(InvalidAcceptHeadersException.class, () -> {
       VERSION_ONE_ACCEPT_HEADER_VERIFIER.checkAcceptHeader(
           List.of(Constants.JsonApi.JSONAPI_CONTENT_TYPE + "; version=2"));
     });

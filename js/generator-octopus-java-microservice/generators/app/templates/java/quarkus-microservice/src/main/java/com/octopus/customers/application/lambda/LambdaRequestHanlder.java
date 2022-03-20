@@ -9,9 +9,9 @@ import com.octopus.Constants;
 import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
-import com.octopus.exceptions.EntityNotFound;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
@@ -171,7 +171,7 @@ public class LambdaRequestHanlder implements
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
                             Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
-    } catch (final Unauthorized e) {
+    } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final RSQLParserException e) {
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
@@ -210,9 +210,9 @@ public class LambdaRequestHanlder implements
         }
         return Optional.of(proxyResponseBuilder.buildNotFound());
       }
-    } catch (final Unauthorized e) {
+    } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final EntityNotFound ex) {
+    } catch (final EntityNotFoundException ex) {
       return Optional.of(proxyResponseBuilder.buildNotFound());
     } catch (final Exception e) {
       e.printStackTrace();
@@ -245,9 +245,9 @@ public class LambdaRequestHanlder implements
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
                             Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
-    } catch (final Unauthorized e) {
+    } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInput e) {
+    } catch (final InvalidInputException e) {
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();

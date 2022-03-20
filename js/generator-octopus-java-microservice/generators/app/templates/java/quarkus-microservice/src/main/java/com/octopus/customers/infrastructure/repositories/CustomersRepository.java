@@ -3,7 +3,7 @@ package com.octopus.customers.infrastructure.repositories;
 import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
 import com.octopus.Constants;
 import com.octopus.customers.domain.entities.Customer;
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.InvalidInputException;
 import com.octopus.wrappers.FilteredResultWrapper;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
@@ -146,7 +146,7 @@ public class CustomersRepository {
       return;
     }
 
-    throw new InvalidInput(
+    throw new InvalidInputException(
         violations.stream().map(cv -> cv.getMessage()).collect(Collectors.joining(", ")));
   }
 }

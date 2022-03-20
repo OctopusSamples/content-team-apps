@@ -1,7 +1,7 @@
 package com.octopus.jsonapi.impl;
 
 import com.octopus.Constants;
-import com.octopus.exceptions.InvalidAcceptHeaders;
+import com.octopus.exceptions.InvalidAcceptHeadersException;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ public class VersionOneAcceptHeaderVerifier implements AcceptHeaderVerifier {
             .collect(Collectors.toList());
 
     if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(Constants.JsonApi.JSONAPI_CONTENT_TYPE)) {
-      throw new InvalidAcceptHeaders();
+      throw new InvalidAcceptHeadersException();
     }
   }
 }

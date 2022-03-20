@@ -11,7 +11,7 @@ import com.octopus.customers.BaseTest;
 import com.octopus.customers.application.Paths;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
-import com.octopus.exceptions.EntityNotFound;
+import com.octopus.exceptions.EntityNotFoundException;
 import io.quarkus.test.junit.QuarkusTest;
 import java.sql.SQLException;
 import java.util.List;
@@ -160,7 +160,7 @@ public class HandlerTests extends BaseTest {
   @Test
   @Transactional
   public void getMissingResource() {
-    assertThrows(EntityNotFound.class, () ->
+    assertThrows(EntityNotFoundException.class, () ->
       handler.getOne(
           "1000000000000000000",
           List.of("main"),
@@ -187,7 +187,7 @@ public class HandlerTests extends BaseTest {
     final Customer resultObject = getResourceFromDocument(resourceConverter, result);
 
     assertThrows(
-        EntityNotFound.class,
+        EntityNotFoundException.class,
         () ->
             handler.getOne(
                 resultObject.getId().toString(),
@@ -195,7 +195,7 @@ public class HandlerTests extends BaseTest {
                 null, null));
 
     assertThrows(
-        EntityNotFound.class,
+        EntityNotFoundException.class,
         () -> handler.getOne(resultObject.getId().toString(), List.of(), null, null));
   }
 

@@ -9,8 +9,8 @@ package com.octopus.exceptions;
  * contains the JSON:API media type and all instances of that media type are modified with media
  * type parameters.
  */
-public class InvalidAcceptHeaders extends RuntimeException {
-  public InvalidAcceptHeaders() {
+public class InvalidAcceptHeadersException extends RuntimeException {
+  public InvalidAcceptHeadersException() {
     super();
   }
 }

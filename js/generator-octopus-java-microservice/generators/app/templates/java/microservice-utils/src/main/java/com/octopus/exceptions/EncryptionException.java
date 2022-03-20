@@ -1,7 +1,5 @@
 package com.octopus.exceptions;
 
-import lombok.NonNull;
-
 /**
  * Represents an exception thrown when performing encryption.
  */
@@ -10,11 +8,11 @@ public class EncryptionException extends RuntimeException {
     super();
   }
 
-  public EncryptionException(@NonNull final Exception ex) {
+  public EncryptionException(final Throwable ex) {
     super(ex);
   }
 
-  public EncryptionException(@NonNull final String message) {
+  public EncryptionException(final String message) {
     super(message);
   }
 }

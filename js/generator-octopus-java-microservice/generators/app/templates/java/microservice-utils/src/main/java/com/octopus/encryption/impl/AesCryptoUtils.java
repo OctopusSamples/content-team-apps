@@ -45,10 +45,6 @@ public class AesCryptoUtils implements CryptoUtils {
         throw new IllegalArgumentException("Password or salt can not be blank");
       }
 
-      if (StringUtils.isBlank(value)) {
-        throw new IllegalArgumentException("Value can not be blank");
-      }
-
       if (password.length() < MIN_PASSWORD_LENGTH || salt.length() < MIN_PASSWORD_LENGTH) {
         throw new IllegalArgumentException(
             "Password or salt must be at least " + MIN_PASSWORD_LENGTH + "characters");
