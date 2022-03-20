@@ -1,5 +1,6 @@
 package com.octopus.githubactions.domain.features;
 
+import com.octopus.features.OauthClientCreds;
 import io.smallrye.config.ConfigMapping;
 import java.util.Optional;
 
@@ -7,7 +8,7 @@ import java.util.Optional;
  * Groups together the azure message bus config settings.
  */
 @ConfigMapping(prefix = "cognito.servicebus")
-public interface ServiceBusCognitoConfig {
+public interface ServiceBusCognitoConfig extends OauthClientCreds {
 
   /**
    * The cognito client id.

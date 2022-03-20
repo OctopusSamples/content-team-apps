@@ -9,7 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The entity sent to the commercial team service bus.
+ * The details of the message to send to the commercial service bus. This class is what we expect
+ * to be sent to out API.
  *
  * <p>See https://gist.github.com/archennz/956dd160b175ac77816af6255cb704b5
  */

@@ -5,14 +5,11 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.GlobalConstants;
 import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
-import com.octopus.githubactions.domain.features.ServiceBusCognitoConfig;
 import com.octopus.githubactions.domain.framework.jsonapi.JsonApiConverter;
-import com.octopus.githubactions.infrastructure.client.CognitoClient;
 import com.octopus.githubactions.infrastructure.client.ServiceBusProxyClient;
+import com.octopus.oauth.OauthClientCredsAccessor;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
-import java.util.Base64;
-import java.util.Date;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
@@ -26,23 +23,18 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class ServiceBusMessageGenerator {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  private static long expiry;
-  private static String accessToken;
+
+  @Inject
+  OauthClientCredsAccessor oauthClientCredsAccessor;
 
   @RestClient
   ServiceBusProxyClient serviceBusProxyClient;
-
-  @RestClient
-  CognitoClient cognitoClient;
 
   @Inject
   JsonApiConverter jsonApiConverter;
 
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
-
-  @Inject
-  ServiceBusCognitoConfig serviceBusCognitoConfig;
 
   /**
    * Create an audit event.
@@ -59,7 +51,7 @@ public class ServiceBusMessageGenerator {
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
 
-    getAccessToken()
+    oauthClientCredsAccessor.getAccessToken(GlobalConstants.LOGINMESSAGE_SCOPE)
         .andThenTry(auditAccessToken ->
             serviceBusProxyClient.createLoginMessage(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
@@ -77,31 +69,4 @@ public class ServiceBusMessageGenerator {
           Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(loginMessage)));
         });
   }
-
-  private Try<String> getAccessToken() {
-    if (!StringUtils.isEmpty(accessToken) && new Date().getTime() < expiry) {
-      return Try.of(() -> accessToken);
-    }
-
-    if (serviceBusCognitoConfig.clientId().isPresent() && serviceBusCognitoConfig.clientSecret().isPresent()) {
-      return Try.of(() -> cognitoClient.getToken(
-              "Basic " + Base64.getEncoder()
-                  .encodeToString(
-                      (serviceBusCognitoConfig.clientId().get() + ":" + serviceBusCognitoConfig.clientSecret().get()).getBytes()),
-              GlobalConstants.CLIENT_CREDENTIALS,
-              serviceBusCognitoConfig.clientId().get(),
-              GlobalConstants.LOGINMESSAGE_SCOPE))
-          // We expect to see an access token. Fail if the value is empty.
-          .filter(oauth -> StringUtils.isNotEmpty(oauth.getAccessToken()))
-          // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
-          .mapTry(oauth -> {
-            accessToken = oauth.getAccessToken();
-            expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
-            return accessToken;
-          });
-    }
-
-    return Try.failure(new Exception("Cognito client ID or secret were not set"));
-  }
-
 }

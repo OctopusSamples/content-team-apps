@@ -1,7 +1,8 @@
 package com.octopus.githubactions.infrastructure.client;
 
 import com.octopus.githubactions.GlobalConstants;
-import com.octopus.githubactions.domain.entities.Oauth;
+import com.octopus.oauth.Oauth;
+import com.octopus.oauth.OauthClient;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -13,7 +14,7 @@ import org.jboss.resteasy.reactive.RestForm;
 /** A REST client to access the audits service. */
 @Path("oauth2")
 @RegisterRestClient
-public interface CognitoClient {
+public interface CognitoClient extends OauthClient {
   @Path("token")
   @POST
   @Consumes(GlobalConstants.FROM_ENCODED_CONTENT_TYPE)

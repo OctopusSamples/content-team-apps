@@ -4,6 +4,7 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1Upstream;
 import com.octopus.loginmessage.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.exceptions.InvalidInputException;
@@ -77,7 +78,12 @@ public class ResourceHandler {
       throw new UnauthorizedException();
     }
 
-    final GithubUserLoggedInForFreeToolsEventV1 resource = getResourceFromDocument(document);
+    /*
+      The message we send upstream is a little different from the one our API receives. Notably,
+      the upstream version does not have an ID field.
+     */
+    final GithubUserLoggedInForFreeToolsEventV1Upstream resource =
+        GithubUserLoggedInForFreeToolsEventV1Upstream.fromApi(getResourceFromDocument(document));
     commercialServiceBus.sendUserDetails(xray, jsonSerializer.toJson(resource));
   }
 

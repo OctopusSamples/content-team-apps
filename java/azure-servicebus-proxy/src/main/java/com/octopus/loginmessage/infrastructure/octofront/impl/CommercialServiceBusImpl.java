@@ -3,6 +3,7 @@ package com.octopus.loginmessage.infrastructure.octofront.impl;
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.google.common.base.Preconditions;
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.features.MicroserviceNameFeature;
 import io.quarkus.logging.Log;
@@ -26,7 +27,6 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
   private static final String ACTIVITY_ID_KEY = "activityId";
   private static final String SPEC_VERSION_KEY = "specVersion";
   private static final String CONTEXT = "marketing";
-  private static final String TYPE = "UserSignIn";
   private static final String SPEC_VERSION = "1";
 
   @Inject
@@ -55,7 +55,7 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
     message.getApplicationProperties()
         .put(SOURCE_KEY, microserviceNameFeature.getMicroserviceName());
     message.getApplicationProperties().put(CONTEXT_KEY, CONTEXT);
-    message.getApplicationProperties().put(TYPE_KEY, TYPE);
+    message.getApplicationProperties().put(TYPE_KEY, GithubUserLoggedInForFreeToolsEventV1.class.getName());
     message.getApplicationProperties().put(OCCURRED_TIME_UTC_KEY, Instant.now().toString());
     message.getApplicationProperties().put(ACTIVITY_ID_KEY, traceId);
     message.getApplicationProperties().put(SPEC_VERSION_KEY, SPEC_VERSION);
