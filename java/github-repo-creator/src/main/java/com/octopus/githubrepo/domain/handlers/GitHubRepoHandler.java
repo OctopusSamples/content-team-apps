@@ -2,6 +2,7 @@ package com.octopus.githubrepo.domain.handlers;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
@@ -92,6 +93,9 @@ public class GitHubRepoHandler {
   @ConfigProperty(name = "github.salt")
   String githubSalt;
 
+  @ConfigProperty(name = "client.private-key-base64")
+  String privateKeyBase64;
+
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
@@ -110,6 +114,9 @@ public class GitHubRepoHandler {
 
   @Inject
   CryptoUtils cryptoUtils;
+
+  @Inject
+  AsymmetricDecryptor asymmetricDecryptor;
 
   @Inject
   Validator validator;
@@ -415,10 +422,14 @@ public class GitHubRepoHandler {
           continue;
         }
 
+        final String secretValue = secret.isEncrypted()
+            ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
+            : secret.getValue();
+
         // Create the Sodium secret box
         try (final SecretBox box = SecretBox.encrypt(
             SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
-            StringUtils.defaultIfEmpty(secret.getValue(), ""))) {
+            StringUtils.defaultIfEmpty(secretValue, ""))) {
 
           // extract the encrypted value
           try (var out = new ByteArrayOutputStream()) {

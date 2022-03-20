@@ -64,6 +64,12 @@ inputs:
   content_team_library_variable_set_id:
     description: 'The ID of the variable set containing shared content team values'
     required: true
+  client_private_key_base64_development:
+    description: 'The base 64 copy of the private key matching the public key used by the client to encrypt data'
+    required: true
+  client_private_key_base64_production:
+    description: 'The base 64 copy of the private key matching the public key used by the client to encrypt data'
+    required: true
 
 runs:
   using: "composite"
@@ -127,5 +133,7 @@ runs:
         -var="github_proxy_encryption_key_production=${{ inputs.github_proxy_encryption_key_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
+        -var="client_private_key_base64_development=${{ inputs.client_private_key_base64_development }}"
+        -var="client_private_key_base64_production=${{ inputs.client_private_key_base64_production }}"
       working-directory: terraform/github-repo-creator
       shell: bash

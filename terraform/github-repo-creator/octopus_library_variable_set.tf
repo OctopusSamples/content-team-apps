@@ -151,3 +151,27 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_templategenera
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
 }
+
+resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_production" {
+  name = "Client.ClientPrivateKey"
+  type = "String"
+  description = "The base 64 copy of the private key matching the public key used by the client to encrypt data."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.client_private_key_base64_production
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_development" {
+  name = "Client.ClientPrivateKey"
+  type = "String"
+  description = "The base 64 copy of the private key matching the public key used by the client to encrypt data."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.client_private_key_base64_development
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
