@@ -91,12 +91,12 @@ variable "content_team_library_variable_set_id" {
 
 variable "client_private_key_base64_production" {
   type = string
-  nullable = false,
+  nullable = false
   sensitive = true
 }
 
 variable "client_private_key_base64_development" {
   type = string
-  nullable = false,
+  nullable = false
   sensitive = true
 }
