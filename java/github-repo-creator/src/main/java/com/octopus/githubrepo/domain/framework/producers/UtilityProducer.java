@@ -1,8 +1,10 @@
 package com.octopus.githubrepo.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
+import com.octopus.encryption.impl.RsaCryptoUtilsDecryptor;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -34,6 +36,8 @@ import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import com.octopus.utilties.impl.RegExUtilsImpl;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
@@ -213,5 +217,17 @@ public class UtilityProducer {
   @Produces
   public CryptoUtils getCryptoUtils() {
     return new AesCryptoUtils();
+  }
+
+  /**
+   * Produces the AsymmetricDecryptor utils instance.
+   *
+   * @return An implementation of AsymmetricDecryptor.
+   */
+  @ApplicationScoped
+  @Produces
+  public AsymmetricDecryptor getAsymmetricDecryptor ()
+      throws NoSuchPaddingException, NoSuchAlgorithmException {
+    return new RsaCryptoUtilsDecryptor();
   }
 }
