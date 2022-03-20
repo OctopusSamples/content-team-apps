@@ -223,10 +223,15 @@ public class UtilityProducer {
    * Produces the AsymmetricDecryptor utils instance.
    *
    * @return An implementation of AsymmetricDecryptor.
+   * @throws NoSuchAlgorithmException if the transformer used by RsaCryptoUtilsDecryptor is an
+   *                                  invalid format, or if no {@code Provider} supports a
+   *                                  {@code CipherSpi} implementation for the specified algorithm
+   * @throws NoSuchPaddingException   if the transformer used by RsaCryptoUtilsDecryptor contains a
+   *                                  padding scheme that is not available
    */
   @ApplicationScoped
   @Produces
-  public AsymmetricDecryptor getAsymmetricDecryptor ()
+  public AsymmetricDecryptor getAsymmetricDecryptor()
       throws NoSuchPaddingException, NoSuchAlgorithmException {
     return new RsaCryptoUtilsDecryptor();
   }
