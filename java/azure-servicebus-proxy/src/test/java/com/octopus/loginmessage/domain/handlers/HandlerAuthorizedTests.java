@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -38,7 +38,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() {
-    assertThrows(Unauthorized.class, () -> handler.create(
+    assertThrows(UnauthorizedException.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new GithubUserLoggedInForFreeToolsEventV1()),
         List.of("main"),
         null, null, null));

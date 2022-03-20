@@ -9,8 +9,8 @@ import com.octopus.Constants;
 import com.octopus.loginmessage.application.Paths;
 import com.octopus.loginmessage.domain.handlers.HealthHandler;
 import com.octopus.loginmessage.domain.handlers.ResourceHandler;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
@@ -154,9 +154,9 @@ public class LambdaRequestHanlder implements
 
         return Optional.of(new ApiGatewayProxyResponseEventWithCors().withStatusCode(202));
       }
-    } catch (final Unauthorized e) {
+    } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInput e) {
+    } catch (final InvalidInputException e) {
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();

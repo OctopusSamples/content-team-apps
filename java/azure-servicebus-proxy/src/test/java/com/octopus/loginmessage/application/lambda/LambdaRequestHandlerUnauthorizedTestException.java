@@ -10,7 +10,7 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.application.Paths;
 import com.octopus.loginmessage.domain.handlers.ResourceHandler;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
+public class LambdaRequestHandlerUnauthorizedTestException extends BaseTest {
 
   @Inject
   LambdaRequestHanlder api;
@@ -32,7 +32,7 @@ public class LambdaRequestHandlerUnauthorizedTest extends BaseTest {
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.doThrow(new Unauthorized()).when(handler).create(any(), any(), any(), any(), any());
+    Mockito.doThrow(new UnauthorizedException()).when(handler).create(any(), any(), any(), any(), any());
   }
 
   @Test

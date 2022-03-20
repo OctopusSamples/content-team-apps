@@ -8,9 +8,9 @@ import com.octopus.loginmessage.domain.framework.providers.InvalidAcceptHeadersM
 import com.octopus.loginmessage.domain.framework.providers.InvalidInputExceptionMapper;
 import com.octopus.loginmessage.domain.framework.providers.InvalidJsonApiResourceExceptionMapper;
 import com.octopus.loginmessage.domain.framework.providers.RsqlParserExceptionMapper;
-import com.octopus.exceptions.EntityNotFound;
-import com.octopus.exceptions.InvalidAcceptHeaders;
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidAcceptHeadersException;
+import com.octopus.exceptions.InvalidInputException;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import io.quarkus.test.junit.QuarkusTest;
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class MapperTest {
   @Test
   public void verifyInvalidAcceptHeadersMapperResponse() {
     final Response response = invalidAcceptHeadersMapper.toResponse(
-        new InvalidAcceptHeaders());
+        new InvalidAcceptHeadersException());
     Assertions.assertEquals(406, response.getStatus());
   }
 
@@ -63,7 +63,7 @@ public class MapperTest {
   @Test
   public void verifyEntityNotFoundMapperResponse() {
     final Response response = entityNotFoundMapper.toResponse(
-        new EntityNotFound());
+        new EntityNotFoundException());
     Assertions.assertEquals(404, response.getStatus());
   }
 
@@ -91,7 +91,7 @@ public class MapperTest {
   @Test
   public void verifyInvalidInputExceptionMapperResponse() {
     final Response response = invalidInputExceptionMapper.toResponse(
-        new InvalidInput());
+        new InvalidInputException());
     Assertions.assertEquals(400, response.getStatus());
   }
 

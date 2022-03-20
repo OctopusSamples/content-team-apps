@@ -3,8 +3,8 @@ package com.octopus.githubrepo.domain.handlers;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.files.TemporaryResources;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -139,7 +138,7 @@ public class GitHubRepoHandler {
       throws DocumentSerializationException {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     if (disableServiceFeature.getDisableRepoCreation()) {
@@ -192,14 +191,14 @@ public class GitHubRepoHandler {
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class), ex);
-      throw new InvalidInput();
-    } catch (final InvalidInput ex) {
+      throw new InvalidInputException();
+    } catch (final InvalidInputException ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
-      throw new InvalidInput();
+      throw new InvalidInputException();
     }
   }
 
@@ -218,11 +217,11 @@ public class GitHubRepoHandler {
               .collect(Collectors.toList());
 
       if (!scopes.contains("workflow")) {
-        throw new InvalidInput("GitHub token did not have the workflow scope");
+        throw new InvalidInputException("GitHub token did not have the workflow scope");
       }
 
       if (!scopes.contains("repo")) {
-        throw new InvalidInput("GitHub token did not have the repo scope");
+        throw new InvalidInputException("GitHub token did not have the repo scope");
       }
     }
   }
@@ -451,7 +450,7 @@ public class GitHubRepoHandler {
       return;
     }
 
-    throw new InvalidInput(
+    throw new InvalidInputException(
         violations.stream().map(cv -> cv.getMessage()).collect(Collectors.joining(", ")));
   }
 }

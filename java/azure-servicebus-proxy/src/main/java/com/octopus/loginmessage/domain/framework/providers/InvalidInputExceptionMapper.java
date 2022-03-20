@@ -1,6 +1,6 @@
 package com.octopus.loginmessage.domain.framework.providers;
 
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.InvalidInputException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -11,10 +11,10 @@ import lombok.NonNull;
  * Converts a InvalidInput exception to a HTTP response.
  */
 @Provider
-public class InvalidInputExceptionMapper implements ExceptionMapper<InvalidInput> {
+public class InvalidInputExceptionMapper implements ExceptionMapper<InvalidInputException> {
 
   @Override
-  public Response toResponse(@NonNull final InvalidInput exception) {
+  public Response toResponse(@NonNull final InvalidInputException exception) {
     return Response.status(Status.BAD_REQUEST.getStatusCode(), exception.toString()).build();
   }
 }

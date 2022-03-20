@@ -61,9 +61,23 @@ public class JoseJwtInspectorTest {
   }
 
   @Test
-  public void verifyClaimsExtraction() {
+  public void verifyContainsScopeExtraction() {
     assertTrue(JWT_INSPECTOR.jwtContainsScope(EXPIRED_M2M_JWT, "audit.content-team/admin",
         M2M_CLIENT_ID));
+  }
+
+  @Test
+  public void verifyClaimsExtraction() {
+    assertTrue(M2M_CLIENT_ID.equals(JWT_INSPECTOR.getClaim(EXPIRED_M2M_JWT, "client_id").get()));
+    assertTrue(JWT_INSPECTOR.getClaim(EXPIRED_M2M_JWT, "blah").isEmpty());
+    assertTrue(JWT_INSPECTOR.getClaim("blah", "blah").isEmpty());
+  }
+
+  @Test
+  public void verifyClaimsExtractionNulls() {
+    assertThrows(NullPointerException.class, () -> JWT_INSPECTOR.getClaim(null, null));
+    assertThrows(NullPointerException.class, () -> JWT_INSPECTOR.getClaim(EXPIRED_M2M_JWT, null));
+    assertThrows(NullPointerException.class, () -> JWT_INSPECTOR.getClaim(null, "client_id"));
   }
 
   @Test

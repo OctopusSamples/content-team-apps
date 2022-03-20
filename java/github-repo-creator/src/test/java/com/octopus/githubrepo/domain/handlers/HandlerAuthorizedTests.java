@@ -3,7 +3,7 @@ package com.octopus.githubrepo.domain.handlers;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
@@ -37,7 +37,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateAudit() {
-    assertThrows(Unauthorized.class, () -> handler.create(
+    assertThrows(UnauthorizedException.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new CreateGithubRepo()),
         null, null, null));
   }

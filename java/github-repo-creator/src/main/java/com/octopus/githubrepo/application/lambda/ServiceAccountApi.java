@@ -6,8 +6,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
@@ -166,9 +166,9 @@ public class ServiceAccountApi implements
                         lambdaHttpCookieExtractor.getCookieValue(input,
                             ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
       }
-    } catch (final Unauthorized e) {
+    } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInput e) {
+    } catch (final InvalidInputException e) {
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();

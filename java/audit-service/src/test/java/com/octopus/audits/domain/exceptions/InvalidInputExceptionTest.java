@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class InvalidInputTest {
+public class InvalidInputExceptionTest {
   @Test
   public void verifyNullInputs() {
     assertThrows(NullPointerException.class, () -> {

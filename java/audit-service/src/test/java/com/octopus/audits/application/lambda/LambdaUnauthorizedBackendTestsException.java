@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaUnauthorizedBackendTests extends BaseTest {
+public class LambdaUnauthorizedBackendTestsException extends BaseTest {
 
   @Inject
   AuditApi auditApi;

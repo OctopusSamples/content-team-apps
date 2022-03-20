@@ -2,9 +2,9 @@ package com.octopus.githubrepo.domain.exceptions;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.github.jasminb.jsonapi.exceptions.InvalidJsonApiResourceException;
-import com.octopus.exceptions.EntityNotFound;
-import com.octopus.exceptions.InvalidAcceptHeaders;
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidAcceptHeadersException;
+import com.octopus.exceptions.InvalidInputException;
 import com.octopus.githubrepo.domain.framework.providers.DocumentSerializationExceptionMapper;
 import com.octopus.githubrepo.domain.framework.providers.EntityNotFoundMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidAcceptHeadersMapper;
@@ -44,7 +44,7 @@ public class MapperTest {
   @Test
   public void verifyInvalidAcceptHeadersMapperResponse() {
     final Response response = invalidAcceptHeadersMapper.toResponse(
-        new InvalidAcceptHeaders());
+        new InvalidAcceptHeadersException());
     Assertions.assertEquals(406, response.getStatus());
   }
 
@@ -58,7 +58,7 @@ public class MapperTest {
   @Test
   public void verifyEntityNotFoundMapperResponse() {
     final Response response = entityNotFoundMapper.toResponse(
-        new EntityNotFound());
+        new EntityNotFoundException());
     Assertions.assertEquals(404, response.getStatus());
   }
 
@@ -72,7 +72,7 @@ public class MapperTest {
   @Test
   public void verifyInvalidInputExceptionMapperResponse() {
     final Response response = invalidInputExceptionMapper.toResponse(
-        new InvalidInput());
+        new InvalidInputException());
     Assertions.assertEquals(400, response.getStatus());
   }
 

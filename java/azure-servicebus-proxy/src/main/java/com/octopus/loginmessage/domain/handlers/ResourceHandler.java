@@ -6,8 +6,8 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.loginmessage.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.json.JsonSerializer;
@@ -74,7 +74,7 @@ public class ResourceHandler {
       throws DocumentSerializationException {
 
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     final GithubUserLoggedInForFreeToolsEventV1 resource = getResourceFromDocument(document);
@@ -91,7 +91,7 @@ public class ResourceHandler {
       return resource;
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.
-      throw new InvalidInput();
+      throw new InvalidInputException();
     }
   }
 

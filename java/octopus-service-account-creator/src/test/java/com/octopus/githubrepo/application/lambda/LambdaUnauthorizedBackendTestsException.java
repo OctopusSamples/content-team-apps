@@ -7,9 +7,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.githubrepo.BaseTest;
-import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
+import com.octopus.githubrepo.domain.handlers.ServiceAccountHandler;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -21,19 +21,19 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LambdaUnauthorizedBackendTests extends BaseTest {
+public class LambdaUnauthorizedBackendTestsException extends BaseTest {
 
-  private static final String API_ENDPOINT = "/api/populategithubrepo";
+  private static final String API_ENDPOINT = "/api/customers";
   
   @Inject
   ServiceAccountApi api;
 
   @InjectMock
-  GitHubRepoHandler handler;
+  ServiceAccountHandler handler;
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new Unauthorized());
+    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
   }
 
   @Test

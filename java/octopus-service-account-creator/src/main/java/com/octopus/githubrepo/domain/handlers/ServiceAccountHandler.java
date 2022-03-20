@@ -2,9 +2,9 @@ package com.octopus.githubrepo.domain.handlers;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.exceptions.InvalidClientId;
-import com.octopus.exceptions.InvalidInput;
-import com.octopus.exceptions.Unauthorized;
+import com.octopus.exceptions.InvalidClientIdException;
+import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.domain.entities.ApiKey;
 import com.octopus.githubrepo.domain.entities.CreateServiceAccount;
@@ -88,7 +88,7 @@ public class ServiceAccountHandler {
       throws DocumentSerializationException {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new Unauthorized();
+      throw new UnauthorizedException();
     }
 
     if (disableAccountCreationFeature.getDisableAccountCreation()) {
@@ -171,7 +171,7 @@ public class ServiceAccountHandler {
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class));
-      throw new InvalidInput();
+      throw new InvalidInputException();
     }
   }
 
@@ -225,11 +225,11 @@ public class ServiceAccountHandler {
   private void verifyRequest(final ServiceAccount serviceAccount) {
     // The client must not specify an ID
     if (serviceAccount.getId() != null) {
-      throw new InvalidClientId();
+      throw new InvalidClientIdException();
     }
 
     if (!serviceAccount.isService()) {
-      throw new InvalidInput("The service attribute must be true");
+      throw new InvalidInputException("The service attribute must be true");
     }
   }
 }

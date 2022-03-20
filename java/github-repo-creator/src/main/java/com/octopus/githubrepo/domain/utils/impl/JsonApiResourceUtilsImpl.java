@@ -3,7 +3,7 @@ package com.octopus.githubrepo.domain.utils.impl;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.exceptions.InvalidInput;
+import com.octopus.exceptions.InvalidInputException;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import java.nio.charset.StandardCharsets;
 import lombok.NonNull;
@@ -37,7 +37,7 @@ public class JsonApiResourceUtilsImpl<T> implements JsonApiResourceUtils<T> {
       return resourceDocument.get();
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.
-      throw new InvalidInput(ex);
+      throw new InvalidInputException(ex);
     }
   }
 
