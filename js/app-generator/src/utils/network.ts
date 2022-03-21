@@ -87,15 +87,11 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
             if (!responseIsError(response.status)) {
                 if (response.ok) {
                     if (responseIsJson(response.headers.get("Content-Type"))) {
-                        try {
-                            return response.json()
-                        } catch (e) {
-                            // if we don't care what was returned, ignore a body that is not JSON
-                            if (ignoreReturn) {
-                                return Promise.resolve({})
-                            }
-                            throw e
+                        if (ignoreReturn) {
+                            return Promise.resolve({})
                         }
+
+                        return response.json()
                     }
 
                     return response.text();
@@ -131,15 +127,11 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
             if (!responseIsError(response.status)) {
                 if (response.ok) {
                     if (responseIsJson(response.headers.get("Content-Type"))) {
-                        try {
-                            return response.json()
-                        } catch (e) {
-                            // if we don't care what was returned, ignore a body that is not JSON
-                            if (ignoreReturn) {
-                                return Promise.resolve({})
-                            }
-                            throw e
+                        if (ignoreReturn) {
+                            return Promise.resolve({})
                         }
+
+                        return response.json()
                     }
 
                     return response.text();
@@ -174,15 +166,11 @@ export function postJsonApi<T>(resource: string, url: string, settings: RuntimeS
         .then(response => {
             if (response.ok) {
                 if (responseIsJson(response.headers.get("Content-Type"))) {
-                    try {
-                        return response.json()
-                    } catch (e) {
-                        // if we don't care what was returned, ignore a body that is not JSON
-                        if (ignoreReturn) {
-                            return Promise.resolve({})
-                        }
-                        throw e
+                    if (ignoreReturn) {
+                        return Promise.resolve({})
                     }
+
+                    return response.json()
                 }
 
                 return response.text();
@@ -208,15 +196,11 @@ export function deleteJsonApi(url: string, settings: RuntimeSettings, partition:
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (responseIsJson(response.headers.get("Content-Type"))) {
-                    try {
-                        return response.json()
-                    } catch (e) {
-                        // if we don't care what was returned, ignore a body that is not JSON
-                        if (ignoreReturn) {
-                            return Promise.resolve({})
-                        }
-                        throw e
+                    if (ignoreReturn) {
+                        return Promise.resolve({})
                     }
+
+                    return response.json()
                 }
 
                 return response.text();
