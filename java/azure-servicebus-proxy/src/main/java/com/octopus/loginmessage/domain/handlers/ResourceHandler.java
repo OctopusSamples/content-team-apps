@@ -5,6 +5,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1Upstream;
+import com.octopus.loginmessage.domain.entities.converters.GithubUserLoggedInForFreeToolsEventV1Converter;
 import com.octopus.loginmessage.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.exceptions.InvalidInputException;
@@ -55,6 +56,9 @@ public class ResourceHandler {
   @Inject
   JsonSerializer jsonSerializer;
 
+  @Inject
+  GithubUserLoggedInForFreeToolsEventV1Converter githubUserLoggedInForFreeToolsEventV1Converter;
+
   /**
    * Creates a new resource.
    *
@@ -71,8 +75,7 @@ public class ResourceHandler {
       @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
       final String serviceAuthorizationHeader,
-      final String xray)
-      throws DocumentSerializationException {
+      final String xray) {
 
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
@@ -83,7 +86,7 @@ public class ResourceHandler {
       the upstream version does not have an ID field.
      */
     final GithubUserLoggedInForFreeToolsEventV1Upstream resource =
-        GithubUserLoggedInForFreeToolsEventV1Upstream.fromApi(getResourceFromDocument(document));
+        githubUserLoggedInForFreeToolsEventV1Converter.from(getResourceFromDocument(document));
     commercialServiceBus.sendUserDetails(xray, jsonSerializer.toJson(resource));
   }
 

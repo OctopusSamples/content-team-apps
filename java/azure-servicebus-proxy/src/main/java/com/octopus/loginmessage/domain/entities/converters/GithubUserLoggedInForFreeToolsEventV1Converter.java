@@ -1,0 +1,8 @@
+package com.octopus.loginmessage.domain.entities.converters;
+
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1Upstream;
+
+public interface GithubUserLoggedInForFreeToolsEventV1Converter {
+  GithubUserLoggedInForFreeToolsEventV1Upstream from(GithubUserLoggedInForFreeToolsEventV1 api);
+}
