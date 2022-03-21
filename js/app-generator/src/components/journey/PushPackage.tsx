@@ -76,7 +76,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         }
                     }
 
-                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, () => {
+                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true,() => {
                         // Call this endpoint async
                         const headers = new Headers();
                         headers.set("Invocation-Type", "Event");

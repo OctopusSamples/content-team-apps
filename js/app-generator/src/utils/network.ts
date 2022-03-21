@@ -70,7 +70,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
         });
 }
 
-export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number): Promise<T> {
+export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -86,9 +86,19 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (response.ok) {
-                    return responseIsJson(response.headers.get("Content-Type"))
-                        ? response.json()
-                        : response.text();
+                    if (responseIsJson(response.headers.get("Content-Type"))) {
+                        try {
+                            return response.json()
+                        } catch (e) {
+                            // if we don't care what was returned, ignore a body that is not JSON
+                            if (ignoreReturn) {
+                                return Promise.resolve({})
+                            }
+                            throw e
+                        }
+                    }
+
+                    return response.text();
                 }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -96,13 +106,13 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return getJsonApi<T>(url, settings, partition, (retryCount || 0) + 1);
+                return getJsonApi<T>(url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
         });
 }
 
-export function patchJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number): Promise<T> {
+export function patchJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -120,9 +130,19 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
         .then(response => {
             if (!responseIsError(response.status)) {
                 if (response.ok) {
-                    return responseIsJson(response.headers.get("Content-Type"))
-                        ? response.json()
-                        : response.text();
+                    if (responseIsJson(response.headers.get("Content-Type"))) {
+                        try {
+                            return response.json()
+                        } catch (e) {
+                            // if we don't care what was returned, ignore a body that is not JSON
+                            if (ignoreReturn) {
+                                return Promise.resolve({})
+                            }
+                            throw e
+                        }
+                    }
+
+                    return response.text();
                 }
             }
             if ((retryCount || 0) <= GET_RETRIES) {
@@ -130,13 +150,13 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return patchJsonApi<T>(resource, url, settings, partition, (retryCount || 0) + 1);
+                return patchJsonApi<T>(resource, url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
         });
 }
 
-export function postJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, getHeaders?: () => Headers): Promise<T> {
+export function postJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, ignoreReturn?: boolean, getHeaders?: () => Headers): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = getHeaders ? getHeaders() : new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -153,15 +173,25 @@ export function postJsonApi<T>(resource: string, url: string, settings: RuntimeS
     })
         .then(response => {
             if (response.ok) {
-                return responseIsJson(response.headers.get("Content-Type"))
-                    ? response.json()
-                    : response.text();
+                if (responseIsJson(response.headers.get("Content-Type"))) {
+                    try {
+                        return response.json()
+                    } catch (e) {
+                        // if we don't care what was returned, ignore a body that is not JSON
+                        if (ignoreReturn) {
+                            return Promise.resolve({})
+                        }
+                        throw e
+                    }
+                }
+
+                return response.text();
             }
             return Promise.reject(response);
         });
 }
 
-export function deleteJsonApi(url: string, settings: RuntimeSettings, partition: string | null, retryCount?: number): Promise<Response> {
+export function deleteJsonApi(url: string, settings: RuntimeSettings, partition: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<Response> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -177,14 +207,26 @@ export function deleteJsonApi(url: string, settings: RuntimeSettings, partition:
     })
         .then(response => {
             if (!responseIsError(response.status)) {
-                return Promise.resolve(response);
+                if (responseIsJson(response.headers.get("Content-Type"))) {
+                    try {
+                        return response.json()
+                    } catch (e) {
+                        // if we don't care what was returned, ignore a body that is not JSON
+                        if (ignoreReturn) {
+                            return Promise.resolve({})
+                        }
+                        throw e
+                    }
+                }
+
+                return response.text();
             }
             if ((retryCount || 0) <= GET_RETRIES) {
                 /*
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return deleteJsonApi(url, settings, partition, (retryCount || 0) + 1);
+                return deleteJsonApi(url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
         });
