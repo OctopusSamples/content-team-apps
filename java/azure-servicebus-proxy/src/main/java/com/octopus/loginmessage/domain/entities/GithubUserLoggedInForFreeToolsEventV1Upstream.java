@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * The entity sent to the commercial team service bus. This entity has no ID field, and serilizes
+ * The entity sent to the commercial team service bus. This entity has no ID field, and serializes
  * to PascalCase.
  *
  * <p>See https://gist.github.com/archennz/956dd160b175ac77816af6255cb704b5

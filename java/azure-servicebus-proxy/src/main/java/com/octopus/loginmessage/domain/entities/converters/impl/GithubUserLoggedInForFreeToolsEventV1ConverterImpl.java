@@ -5,6 +5,10 @@ import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEv
 import com.octopus.loginmessage.domain.entities.converters.GithubUserLoggedInForFreeToolsEventV1Converter;
 import javax.enterprise.context.ApplicationScoped;
 
+/**
+ * An implementation of GithubUserLoggedInForFreeToolsEventV1Converter to convert API and upstream
+ * messages.
+ */
 @ApplicationScoped
 public class GithubUserLoggedInForFreeToolsEventV1ConverterImpl implements
     GithubUserLoggedInForFreeToolsEventV1Converter {

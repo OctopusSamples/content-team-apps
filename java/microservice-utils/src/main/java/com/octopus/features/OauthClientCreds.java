@@ -7,19 +7,17 @@ import java.util.Optional;
  */
 public interface OauthClientCreds {
 
-    /**
-     * The cognito client id.
-     *
-     * @return The cognito client id..
-     */
-    Optional<String> clientId();
+  /**
+   * The cognito client id.
+   *
+   * @return The cognito client id..
+   */
+  Optional<String> clientId();
 
-    /**
-     * The cognito client secret.
-     *
-     * @return The cognito client secret.
-     */
-    Optional<String> clientSecret();
-
-
+  /**
+   * The cognito client secret.
+   *
+   * @return The cognito client secret.
+   */
+  Optional<String> clientSecret();
 }
