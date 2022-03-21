@@ -74,13 +74,15 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                     "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
                                     "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
                                     "awsRegion": "us-west-1",
-                                    "octopusUserId": "Users-984"
+                                    "octopusUserId": "Users-984",
+                                    "framework": props.machine.state.context.developmentFramework,
+                                    "platform": props.machine.state.context.targetPlatform
                                 }
                             }
                         }
                     }
 
-                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true,() => {
+                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true, () => {
                         // Call this endpoint async
                         const headers = new Headers();
                         headers.set("Invocation-Type", "Event");
