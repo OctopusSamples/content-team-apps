@@ -13,6 +13,15 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -109,9 +118,33 @@ runs:
         fi
       shell: bash
 
+    - name: Generate SBOM
+      run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
+      shell: bash
+      working-directory: java
+
+    - name: Build SBOM package
+      run: >
+        octo pack
+        --id github-repo-creator-lambda-sbom
+        --version 0.1.${{ inputs.run_number }}
+        --format zip
+        --include **/bom.xml
+      shell: bash
+      working-directory: java/quarkus-microservice
+
+    - name: Push SBOM Package
+      run: >
+        octo push --package quarkus-microservice-sbom.0.1.${{ inputs.run_number }}.0.1.${{ github.run_number }}.zip
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "App Builder"
+      shell: bash
+      working-directory: java/quarkus-microservice
+
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }} .
+        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}-0.1.${{ github.run_number }} .
         docker push ${{ inputs.image_tag }}
       shell: bash
       working-directory: java/quarkus-microservice
