@@ -1,16 +1,17 @@
 package com.octopus.loginmessage.domain.handlers;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.loginmessage.BaseTest;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
@@ -30,7 +31,7 @@ import org.mockito.Mockito;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(CommercialAzureServiceBusTestProfile.class)
-public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
+public class HandlerAuthorizedWithMockedServiceTokenTests2 extends BaseTest {
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -56,17 +57,18 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   @BeforeAll
   public void setup() {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
-    Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
+    Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.empty());
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
-    Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
+    Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.empty());
     Mockito.doNothing().when(commercialServiceBus).sendUserDetails(any(), any());
   }
 
   @Test
   @Transactional
   public void testCreateResource() {
-    assertDoesNotThrow(
+    assertThrows(
+        UnauthorizedException.class,
         () -> createResource(handler, resourceConverter, "main"),
-        "Should be authorized because JwtInspector.jwtContainsScope returns true");
+        "Should be unauthorized because AdminJwtClaimFeature.getAdminClaim returned an empty optional");
   }
 }
