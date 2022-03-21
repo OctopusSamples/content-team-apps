@@ -1,7 +1,6 @@
 package com.octopus.loginmessage.domain.features;
 
 import io.smallrye.config.ConfigMapping;
-import java.util.Optional;
 
 /**
  * Groups together the azure message bus config settings.
@@ -14,33 +13,33 @@ public interface ServiceBusConfig {
    *
    * @return The service bus topic.
    */
-  Optional<String> topic();
+  String topic();
 
   /**
    * The service bus topic namespace.
    *
    * @return The service bus namespace.
    */
-  Optional<String> namespace();
+  String namespace();
 
   /**
    * The service bus topic auth secret.
    *
    * @return The service bus auth secret.
    */
-  Optional<String> secret();
+  String secret();
 
   /**
    * The service bus topic auth tenant.
    *
    * @return The service bus auth tenant.
    */
-  Optional<String> tenant();
+  String tenant();
 
   /**
    * The service bus topic auth application id.
    *
    * @return The service bus auth application id.
    */
-  Optional<String> appId();
+  String appId();
 }

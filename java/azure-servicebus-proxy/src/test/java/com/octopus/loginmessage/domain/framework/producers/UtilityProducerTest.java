@@ -12,6 +12,7 @@ import com.octopus.jwt.JwtValidator;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import io.quarkus.test.junit.QuarkusTest;

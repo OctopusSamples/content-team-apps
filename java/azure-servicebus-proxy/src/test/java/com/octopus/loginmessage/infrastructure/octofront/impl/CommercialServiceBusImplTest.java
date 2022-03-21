@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.azure.messaging.servicebus.ServiceBusMessage;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
@@ -15,13 +16,11 @@ import org.junit.jupiter.api.TestInstance;
 
 /**
  * This test ensures the message generated for the service bus has the required properties as documented
- * in https://github.com/OctopusDeploy/Architecture/blob/main/OctopusHQ/Strategy.md. However, the
- * service does not send a message because the settings are not defined that allow a
- * ServiceBusSenderClient to be created.
+ * in https://github.com/OctopusDeploy/Architecture/blob/main/OctopusHQ/Strategy.md.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestProfile(CommercialAzureServiceBusEmptyTestProfile.class)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class CommercialServiceBusImplTest {
 
   @Inject

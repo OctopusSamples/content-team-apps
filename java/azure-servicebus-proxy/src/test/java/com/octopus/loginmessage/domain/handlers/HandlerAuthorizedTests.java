@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.loginmessage.BaseTest;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.List;
 import javax.inject.Inject;
@@ -19,6 +21,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class HandlerAuthorizedTests extends BaseTest {
 
   @Inject

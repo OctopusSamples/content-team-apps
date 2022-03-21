@@ -2,6 +2,7 @@ package com.octopus.loginmessage.domain.exceptions;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.github.jasminb.jsonapi.exceptions.InvalidJsonApiResourceException;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.domain.framework.providers.DocumentSerializationExceptionMapper;
 import com.octopus.loginmessage.domain.framework.providers.EntityNotFoundMapper;
 import com.octopus.loginmessage.domain.framework.providers.InvalidAcceptHeadersMapper;
@@ -13,12 +14,14 @@ import com.octopus.exceptions.InvalidAcceptHeadersException;
 import com.octopus.exceptions.InvalidInputException;
 import cz.jirutka.rsql.parser.RSQLParserException;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class MapperTest {
 
   @Inject

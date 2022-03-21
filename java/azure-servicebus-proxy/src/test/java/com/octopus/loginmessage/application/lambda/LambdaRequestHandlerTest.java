@@ -8,9 +8,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.loginmessage.BaseTest;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.application.Paths;
 import com.octopus.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class LambdaRequestHandlerTest extends BaseTest {
 
   @Inject

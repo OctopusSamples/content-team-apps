@@ -43,19 +43,6 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
   public void sendUserDetails(final String traceId, @NonNull final String body) {
     Preconditions.checkArgument(StringUtils.isNotBlank(body), "body can not be blank");
 
-    if (serviceBusSenderClient == null) {
-      Log.error(microserviceNameFeature.getMicroserviceName()
-          + "-DataCollection-AzureMessageBusNotConfigured The Azure service bus credentials or queue "
-          + "are not available, so user details will not be shared with commercial team. To resolve "
-          + "this issue, ensure the appropriate commercial.messagebus properties are defined in the "
-          + " application.properties file.");
-      return;
-    }
-
-    sendMessage(traceId, body);
-  }
-
-  void sendMessage(final String traceId, final String body) {
     if (!disableServiceBus.disabled()) {
       serviceBusSenderClient.sendMessage(generateMessage(traceId, body));
     }

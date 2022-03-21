@@ -10,8 +10,10 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -26,6 +28,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
 
   @InjectMock

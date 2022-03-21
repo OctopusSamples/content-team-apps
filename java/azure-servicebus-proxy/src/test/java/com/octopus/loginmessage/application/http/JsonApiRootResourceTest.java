@@ -5,9 +5,11 @@ import static io.restassured.RestAssured.given;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.BaseTest;
+import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
 import com.octopus.loginmessage.application.Paths;
 import com.octopus.features.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class JsonApiRootResourceTest extends BaseTest {
 
   @Inject ResourceConverter resourceConverter;

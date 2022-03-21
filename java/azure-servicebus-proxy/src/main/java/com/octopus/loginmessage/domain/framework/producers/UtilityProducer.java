@@ -173,18 +173,10 @@ public class UtilityProducer {
    */
   @Produces
   public ServiceBusSenderClient generateAzureServiceBusSender() {
-    if (azureServiceBus.getCredentials().isEmpty()
-        || azureServiceBus.getNamespace().isEmpty()
-        || StringUtils.isBlank(azureServiceBus.getNamespace().get())
-        || azureServiceBus.getTopic().isEmpty()
-        || StringUtils.isBlank(azureServiceBus.getTopic().get())) {
-      return null;
-    }
-
     return new ServiceBusClientBuilder()
-        .credential(azureServiceBus.getNamespace().get(), azureServiceBus.getCredentials().get())
+        .credential(azureServiceBus.getNamespace(), azureServiceBus.getCredentials())
         .sender()
-        .topicName(azureServiceBus.getTopic().get())
+        .topicName(azureServiceBus.getTopic())
         .buildClient();
   }
 

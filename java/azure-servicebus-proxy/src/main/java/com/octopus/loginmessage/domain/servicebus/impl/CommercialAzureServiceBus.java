@@ -22,29 +22,20 @@ public class CommercialAzureServiceBus implements AzureServiceBus {
   ServiceBusConfig serviceBusConfig;
 
   @Override
-  public Optional<TokenCredential> getCredentials() {
-    if (serviceBusConfig.appId().isEmpty()
-        || StringUtils.isBlank(serviceBusConfig.appId().get())
-        || serviceBusConfig.secret().isEmpty()
-        || StringUtils.isBlank(serviceBusConfig.secret().get())
-        || serviceBusConfig.tenant().isEmpty()
-        || StringUtils.isBlank(serviceBusConfig.tenant().get())) {
-      return Optional.empty();
-    }
-
-    return Optional.of(new ClientSecretCredentialBuilder()
-        .clientId(serviceBusConfig.appId().get())
-        .clientSecret(serviceBusConfig.secret().get())
-        .tenantId(serviceBusConfig.tenant().get())
-        .build());
+  public TokenCredential getCredentials() {
+    return new ClientSecretCredentialBuilder()
+        .clientId(serviceBusConfig.appId())
+        .clientSecret(serviceBusConfig.secret())
+        .tenantId(serviceBusConfig.tenant())
+        .build();
   }
 
   @Override
-  public Optional<String> getNamespace() {
+  public String getNamespace() {
     return serviceBusConfig.namespace();
   }
 
-  public Optional<String> getTopic() {
+  public String getTopic() {
     return serviceBusConfig.topic();
   }
 }
