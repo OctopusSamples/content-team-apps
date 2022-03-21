@@ -165,41 +165,41 @@ runs:
       shell: bash
       working-directory: java
 
-#    - name: Generate Octopus Deploy build information
-#      uses: xo-energy/action-octopus-build-information@v1.1.2
-#      with:
-#        octopus_api_key: ${{ inputs.octopus_api_token }}
-#        octopus_project: GitHub OAuth Backend
-#        octopus_server: ${{ inputs.octopus_server_url }}
-#        octopus_space: Content Team
-#        push_version: 0.1.${{ inputs.run_number }}
-#        push_package_ids: github-oauth-backend-lambda
-#        push_overwrite_mode: OverwriteExisting
-#        output_path: octopus
-#
-#    - name: Trigger deployment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo create-release
-#        --project "GitHub OAuth Backend"
-#        --deployTo "Development"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --gitRef "main"
-#        --waitForDeployment
-#        --deploymentTimeout 00:30:00
-#      shell: bash
-#
-#    - name: Trigger deployment to security environment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo promote-release
-#        --project "GitHub OAuth Backend"
-#        --from "Development"
-#        --deployTo "Development (Security)"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --latestSuccessful
-#      shell: bash
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ inputs.octopus_api_token }}
+        octopus_project: GitHub Actions Azure Service Bus Proxy
+        octopus_server: ${{ inputs.octopus_server_url }}
+        octopus_space: Content Team
+        push_version: 0.1.${{ inputs.run_number }}
+        push_package_ids: github-oauth-backend-lambda
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "GitHub Actions Azure Service Bus Proxy"
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --gitRef "main"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
+    - name: Trigger deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo promote-release
+        --project "GitHub Actions Azure Service Bus Proxy"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
