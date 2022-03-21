@@ -47,18 +47,18 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }} 2>/dev/null
+        aws s3api head-bucket --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }}
+          aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }}
           sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
     - uses: danielr1996/envsubst-action@1.1.0
       env:
-        TERRAFORM_BUCKET_SUFFIX: ${{ input.terraform_bucket_suffix }}
-        TERRAFORM_BUCKET_REGION: ${{ input.terraform_bucket_region }}
+        TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
       with:
         input: terraform/shared-space/backend.tf
         output: terraform/shared-space/backend.tf
