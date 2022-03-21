@@ -1,10 +1,13 @@
 package com.octopus.loginmessage.infrastructure.octofront.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
 import org.apache.maven.shared.utils.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -16,11 +19,11 @@ import org.junit.jupiter.api.TestInstance;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(CommercialAzureServiceBusTestProfile.class)
 public class CommercialServiceBusImplTest {
 
   @Inject
   CommercialServiceBusImpl commercialServiceBus;
-
 
   @Test
   public void testSendMessage() {
@@ -32,5 +35,18 @@ public class CommercialServiceBusImplTest {
     assertEquals("body", message.getBody().toString());
     assertEquals("trace", message.getApplicationProperties().get("activityId").toString());
     assertEquals("1", message.getApplicationProperties().get("specVersion").toString());
+  }
+
+  @Test
+  public void testArgs() {
+    assertThrows(NullPointerException.class, () -> commercialServiceBus.sendUserDetails("", null));
+    assertThrows(IllegalArgumentException.class, () -> commercialServiceBus.sendUserDetails("", ""));
+  }
+
+  @Test
+  public void testSend() {
+    assertDoesNotThrow(() -> commercialServiceBus.sendUserDetails("", "body"));
+    assertDoesNotThrow(() -> commercialServiceBus.sendUserDetails(null, "body"));
+    assertDoesNotThrow(() -> commercialServiceBus.sendUserDetails("traceid", "body"));
   }
 }

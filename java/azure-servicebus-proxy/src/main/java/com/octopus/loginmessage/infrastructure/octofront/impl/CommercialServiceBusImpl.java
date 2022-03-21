@@ -4,6 +4,7 @@ import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.google.common.base.Preconditions;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.loginmessage.domain.features.DisableServiceBus;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.features.MicroserviceNameFeature;
 import io.quarkus.logging.Log;
@@ -35,6 +36,9 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
+  @Inject
+  DisableServiceBus disableServiceBus;
+
   @Override
   public void sendUserDetails(final String traceId, @NonNull final String body) {
     Preconditions.checkArgument(StringUtils.isNotBlank(body), "body can not be blank");
@@ -48,7 +52,13 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
       return;
     }
 
-    serviceBusSenderClient.sendMessage(generateMessage(traceId, body));
+    sendMessage(traceId, body);
+  }
+
+  void sendMessage(final String traceId, final String body) {
+    if (!disableServiceBus.disabled()) {
+      serviceBusSenderClient.sendMessage(generateMessage(traceId, body));
+    }
   }
 
   ServiceBusMessage generateMessage(final String traceId, final String body) {
