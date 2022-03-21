@@ -2,7 +2,6 @@ import {FC, ReactElement} from "react";
 import {Button, Grid} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import {encryptAndSaveInCookie} from "../../utils/security";
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
