@@ -24,6 +24,7 @@ import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -425,19 +426,8 @@ public class GitHubRepoHandler {
           continue;
         }
 
-        // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
-        if (secret.isPreserveExistingSecret()) {
-          try {
-            if (gitHubClient.getSecret(
-                "token " + decryptedGithubToken,
-                createGithubRepo.getGithubOwner(),
-                createGithubRepo.getGithubRepository(),
-                secret.getName()).getStatus() == 200) {
-              continue;
-            }
-          } catch (final Exception ex) {
-            // Assume the inability to get the existing secret means we can overwrite it.
-          }
+        if (!needToCreateSecret(secret, createGithubRepo, decryptedGithubToken)) {
+          continue;
         }
 
         final String secretValue = secret.isEncrypted()
@@ -468,6 +458,22 @@ public class GitHubRepoHandler {
         }
       }
     }
+  }
+
+  private boolean needToCreateSecret(final Secret secret, final CreateGithubRepo createGithubRepo,
+      final String decryptedGithubToken) {
+    // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
+    if (secret.isPreserveExistingSecret()) {
+      return Try.of(() -> gitHubClient.getSecret(
+              "token " + decryptedGithubToken,
+              createGithubRepo.getGithubOwner(),
+              createGithubRepo.getGithubRepository(),
+              secret.getName()))
+          .map(r -> r.getStatus() != 200)
+          .getOrElse(true);
+    }
+
+    return true;
   }
 
   /**
