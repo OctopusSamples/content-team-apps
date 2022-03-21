@@ -14,6 +14,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     const [loading, setLoading] = useState<boolean>(false);
 
+    function createRepoName() {
+        return "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework;
+    }
+
     const pushPackage = () => {
         if (context.settings.disableExternalCalls) {
             // pretend to populate the repo
@@ -38,7 +42,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             "type": "creategithubrepo",
                             "attributes": {
                                 githubOwner: "mcasperson",
-                                githubRepository: "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework,
+                                githubRepository: createRepoName(),
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                                 secrets: [
                                     {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},

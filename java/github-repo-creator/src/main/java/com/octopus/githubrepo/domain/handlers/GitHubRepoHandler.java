@@ -72,6 +72,8 @@ import software.pando.crypto.nacl.SecretBox;
 @ApplicationScoped
 public class GitHubRepoHandler {
 
+  private static final String DEFAULT_BRANCH = "main";
+
   /**
    * A list of directories we know we don't want to commit to a new repo.
    */
@@ -305,7 +307,7 @@ public class GitHubRepoHandler {
     //   GHBranch, GHCommit, GHTree, etc...
 
     // for this example, we'll start from the main branch
-    final GHBranch masterBranch = repo.getBranch("main");
+    final GHBranch masterBranch = repo.getBranch(DEFAULT_BRANCH);
 
     // get a tree builder object to build up into the commit.
     // the base of the tree will be the master branch
@@ -425,12 +427,16 @@ public class GitHubRepoHandler {
 
         // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
         if (secret.isPreserveExistingSecret()) {
-          if (gitHubClient.getSecret(
-              "token " + decryptedGithubToken,
-              createGithubRepo.getGithubOwner(),
-              createGithubRepo.getGithubRepository(),
-              secret.getName()).getStatus() != 404) {
-            continue;
+          try {
+            if (gitHubClient.getSecret(
+                "token " + decryptedGithubToken,
+                createGithubRepo.getGithubOwner(),
+                createGithubRepo.getGithubRepository(),
+                secret.getName()).getStatus() == 200) {
+              continue;
+            }
+          } catch (final Exception ex) {
+            // Assume the inability to get the existing secret means we can overwrite it.
           }
         }
 
