@@ -5,12 +5,6 @@ terraform {
       version = "~> 0.7.68"
     }
   }
-
-  backend "s3" {
-    bucket = "app-builder-<%= s3_bucket_suffix %>"
-    key    = "appbuilder-kubernetes-project"
-    region = "<%= aws_state_bucket_region %>"
-  }
 }
 
 provider "octopusdeploy" {

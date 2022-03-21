@@ -38,7 +38,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             "type": "creategithubrepo",
                             "attributes": {
                                 githubOwner: "mcasperson",
-                                githubRepository: "AppBuilder",
+                                githubRepository: "App Builder " + props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework,
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                                 secrets: [
                                     {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
@@ -55,8 +55,20 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                         value: Cookies.get("awsSecretKey"),
                                         encrypted: true
                                     },
+                                    {
+                                        name: "TERRAFORM_BUCKET_SUFFIX",
+                                        value: crypto.randomUUID(),
+                                        preserveExistingSecret: true
+                                    },
+                                    {
+                                        name: "TERRAFORM_BUCKET_REGION",
+                                        value: "us-west-1",
+                                        preserveExistingSecret: true
+                                    },
                                 ],
                                 options: {
+                                    "aws_state_bucket_region": "$TERRAFORM_BUCKET_REGION",
+                                    "s3_bucket_suffix": "$TERRAFORM_BUCKET_SUFFIX",
                                     "awsRegion": "us-west-1",
                                     "octopusUserId": "Users-984"
                                 }

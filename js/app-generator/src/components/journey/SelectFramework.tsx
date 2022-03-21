@@ -6,6 +6,13 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    const next = (state: string) => {
+        if (props.machine.state) {
+            props.machine.state.context.developmentFramework = state;
+        }
+        props.machine.send(state);
+    }
+
     return (
         <>
             <Grid
@@ -24,19 +31,19 @@ const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Select the framework for the sample application you wish to deploy.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("QUARKUS")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("QUARKUS")}>
                             {"Java - Quarkus"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("SPRING")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("SPRING")}>
                             {"Java - Spring"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("DOTNET")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("DOTNET")}>
                             {"DotNET Core"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("NODEJS")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("NODEJS")}>
                             {"Node.js"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("GO")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("GO")}>
                             {"Go"}
                         </Button>
                     </Grid>

@@ -1,4 +1,5 @@
 name: Docker Build and Push
+description: Build and publish the Docker image
 inputs:
   octopus_server:
     description: 'Octopus cloud URL'
@@ -18,6 +19,12 @@ inputs:
   aws_secret_key:
     description: 'The AWS secret key'
     required: true
+  terraform_bucket_suffix:
+    description: 'The unique suffix applied to the Terraform state S3 bucket'
+    required: true
+  terraform_bucket_region:
+    description: 'The region in which the Terraform state bucket resides'
+    required: true
 outputs:
   octopus_space_id:
     description: "The Octopus space ID"
@@ -27,23 +34,35 @@ runs:
   steps:
     - name: Clone code repo
       uses: actions/checkout@v2
+
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v1
+
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
+
     - name: Create Terraform state S3 bucket
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %> 2>/dev/null
+        aws s3api head-bucket --bucket app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          aws s3 mb s3://app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }}
           sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        TERRAFORM_BUCKET_SUFFIX: ${{ input.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ input.terraform_bucket_region }}
+      with:
+        input: terraform/shared-space/backend.tf
+        output: terraform/shared-space/backend.tf
+
     - name: Terraform Init
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
@@ -51,6 +70,7 @@ runs:
       run: terraform init
       working-directory: terraform/shared-space
       shell: bash
+
     - name: Terraform Apply
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
@@ -64,6 +84,7 @@ runs:
         -var="octopus_user_id=${{ inputs.octopus_user_id }}"
       working-directory: terraform/shared-space
       shell: bash
+
     - name: Terraform Collect Output
       id: terraform_output
       env:

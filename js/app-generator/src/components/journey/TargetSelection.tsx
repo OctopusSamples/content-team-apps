@@ -2,9 +2,17 @@ import {FC, ReactElement} from "react";
 import {Button, Grid} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import {encryptAndSaveInCookie} from "../../utils/security";
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const next = (state: string) => {
+        if (props.machine.state) {
+            props.machine.state.context.targetPlatform = state;
+        }
+        props.machine.send(state);
+    }
 
     return (
         <>
@@ -24,16 +32,16 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                             Select the platform that you wish to deploy the sample microservice application to using
                             Octopus. If you only want to download the application code, select the last option.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("EKS")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("ECS")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("ECS")}>
                             {"AWS Elastic Compute Service (ECS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("LAMBDA")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("LAMBDA")}>
                             {"AWS Lambda"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("STANDALONE")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("STANDALONE")}>
                             {"Download the code with no CI/CD configuration"}
                         </Button>
                     </Grid>

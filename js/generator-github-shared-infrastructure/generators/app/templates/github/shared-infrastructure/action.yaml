@@ -1,4 +1,5 @@
 name: Terraform Apply
+description: Create the shared Octopus infrastructure like environments, feeds, accounts etc
 inputs:
   octopus_server:
     description: 'Octopus cloud URL'
@@ -26,6 +27,12 @@ inputs:
     required: true
   github_username:
     description: 'The github username'
+    required: true
+  terraform_bucket_suffix:
+    description: 'The unique suffix applied to the Terraform state S3 bucket'
+    required: true
+  terraform_bucket_region:
+    description: 'The region in which the Terraform state bucket resides'
     required: true
 outputs:
   octopus_github_docker_feed_id:
@@ -82,13 +89,21 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %> 2>/dev/null
+        aws s3api head-bucket --bucket app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-<%= s3_bucket_suffix %> --region <%= aws_state_bucket_region %>
+          aws s3 mb s3://app-builder-${{ input.terraform_bucket_suffix }} --region ${{ input.terraform_bucket_region }}
           sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        TERRAFORM_BUCKET_SUFFIX: ${{ input.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ input.terraform_bucket_region }}
+      with:
+        input: terraform/shared-infrastructure/backend.tf
+        output: terraform/shared-infrastructure/backend.tf
 
     - name: Terraform Init
       env:

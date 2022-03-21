@@ -1,4 +1,5 @@
 name: Docker Build and Push
+description: Build the Java microservice
 inputs:
   image_tag:
     description: 'The ECR Docker image tag'

@@ -34,7 +34,9 @@ function getInitialStateContext() {
             form: TargetSelection,              // This doesn't matter too much, as the state entry functions override it anyway.
             standAlone: !!state.standAlone,
             awsAccessKey: state.awsAccessKey,
-            awsRegion: state.awsRegion
+            awsRegion: state.awsRegion,
+            targetPlatform: state.targetPlatform,
+            developmentFramework: state.developmentFramework
         }
     }
 
@@ -42,7 +44,9 @@ function getInitialStateContext() {
         form: TargetSelection,
         standAlone: false,
         awsAccessKey: "",
-        awsRegion: ""
+        awsRegion: "",
+        targetPlatform: "",
+        developmentFramework: ""
     }
 }
 
@@ -111,7 +115,15 @@ export interface StateContext {
     /**
      * The AWS region
      */
-    awsRegion: string
+    awsRegion: string,
+    /**
+     * The target platform to deploy to
+     */
+    targetPlatform: string,
+    /**
+     * The development framework
+     */
+    developmentFramework: string
 }
 
 /**
