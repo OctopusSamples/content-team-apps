@@ -187,7 +187,7 @@ runs:
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
         octopus_api_key: ${{ inputs.octopus_apikey }}
-        octopus_project: Deploy Octopus Template Generator
+        octopus_project: Octopus Template Generator
         octopus_server:  ${{ inputs.octopus_server }}
         push_version: ${{ steps.determine_version.outputs.semVer }}
         push_package_ids: octopus-template-generator
@@ -199,7 +199,7 @@ runs:
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
-        project: Deploy Octopus Template Generator
+        project: Octopus Template Generator
         server: ${{ inputs.octopus_server }}
         deploy_to: Development
         packages: octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
