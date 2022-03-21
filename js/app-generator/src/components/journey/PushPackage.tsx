@@ -38,7 +38,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             "type": "creategithubrepo",
                             "attributes": {
                                 githubOwner: "mcasperson",
-                                githubRepository: "App Builder " + props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework,
+                                githubRepository: "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework,
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                                 secrets: [
                                     {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
