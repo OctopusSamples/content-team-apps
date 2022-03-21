@@ -32,6 +32,7 @@ import com.octopus.utilties.impl.RegExUtilsImpl;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Produces a number of objects for injection.
@@ -172,8 +173,11 @@ public class UtilityProducer {
    */
   @Produces
   public ServiceBusSenderClient generateAzureServiceBusSender() {
-    if (azureServiceBus.getCredentials().isEmpty() || azureServiceBus.getNamespace().isEmpty()
-        || azureServiceBus.getTopic().isEmpty()) {
+    if (azureServiceBus.getCredentials().isEmpty()
+        || azureServiceBus.getNamespace().isEmpty()
+        || StringUtils.isBlank(azureServiceBus.getNamespace().get())
+        || azureServiceBus.getTopic().isEmpty()
+        || StringUtils.isBlank(azureServiceBus.getTopic().get())) {
       return null;
     }
 

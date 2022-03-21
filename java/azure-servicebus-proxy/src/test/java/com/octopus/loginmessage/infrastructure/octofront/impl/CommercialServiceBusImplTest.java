@@ -15,18 +15,20 @@ import org.junit.jupiter.api.TestInstance;
 
 /**
  * This test ensures the message generated for the service bus has the required properties as documented
- * in https://github.com/OctopusDeploy/Architecture/blob/main/OctopusHQ/Strategy.md.
+ * in https://github.com/OctopusDeploy/Architecture/blob/main/OctopusHQ/Strategy.md. However, the
+ * service does not send a message because the settings are not defined that allow a
+ * ServiceBusSenderClient to be created.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestProfile(CommercialAzureServiceBusTestProfile.class)
+@TestProfile(CommercialAzureServiceBusEmptyTestProfile.class)
 public class CommercialServiceBusImplTest {
 
   @Inject
   CommercialServiceBusImpl commercialServiceBus;
 
   @Test
-  public void testSendMessage() {
+  public void testGenerateMessage() {
     final ServiceBusMessage message = commercialServiceBus.generateMessage("trace", "body");
     assertTrue(StringUtils.isNotBlank(message.getApplicationProperties().get("context").toString()));
     assertTrue(StringUtils.isNotBlank(message.getApplicationProperties().get("source").toString()));
@@ -38,7 +40,7 @@ public class CommercialServiceBusImplTest {
   }
 
   @Test
-  public void testArgs() {
+  public void testInvalidArgs() {
     assertThrows(NullPointerException.class, () -> commercialServiceBus.sendUserDetails("", null));
     assertThrows(IllegalArgumentException.class, () -> commercialServiceBus.sendUserDetails("", ""));
   }

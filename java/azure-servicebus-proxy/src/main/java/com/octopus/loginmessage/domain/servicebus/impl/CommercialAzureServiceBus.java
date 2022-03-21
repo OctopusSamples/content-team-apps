@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A feature that builds the azure credentials required to post user details to the commercial
@@ -23,8 +24,11 @@ public class CommercialAzureServiceBus implements AzureServiceBus {
   @Override
   public Optional<TokenCredential> getCredentials() {
     if (serviceBusConfig.appId().isEmpty()
+        || StringUtils.isBlank(serviceBusConfig.appId().get())
         || serviceBusConfig.secret().isEmpty()
-        || serviceBusConfig.tenant().isEmpty()) {
+        || StringUtils.isBlank(serviceBusConfig.secret().get())
+        || serviceBusConfig.tenant().isEmpty()
+        || StringUtils.isBlank(serviceBusConfig.tenant().get())) {
       return Optional.empty();
     }
 
