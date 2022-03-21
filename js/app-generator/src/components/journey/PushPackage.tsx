@@ -67,8 +67,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                     },
                                 ],
                                 options: {
-                                    "aws_state_bucket_region": "$TERRAFORM_BUCKET_REGION",
-                                    "s3_bucket_suffix": "$TERRAFORM_BUCKET_SUFFIX",
+                                    "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
+                                    "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
                                     "awsRegion": "us-west-1",
                                     "octopusUserId": "Users-984"
                                 }
