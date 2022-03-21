@@ -48,6 +48,10 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
       return;
     }
 
+    serviceBusSenderClient.sendMessage(generateMessage(traceId, body));
+  }
+
+  ServiceBusMessage generateMessage(final String traceId, final String body) {
     final ServiceBusMessage message = new ServiceBusMessage(body);
     message.setMessageId(UUID.randomUUID().toString());
     message.setCorrelationId(traceId);
@@ -59,7 +63,6 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
     message.getApplicationProperties().put(OCCURRED_TIME_UTC_KEY, Instant.now().toString());
     message.getApplicationProperties().put(ACTIVITY_ID_KEY, traceId);
     message.getApplicationProperties().put(SPEC_VERSION_KEY, SPEC_VERSION);
-
-    serviceBusSenderClient.sendMessage(message);
+    return message;
   }
 }
