@@ -259,6 +259,7 @@ func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.AP
 		return events.APIGatewayProxyResponse{
 			StatusCode:      202,
 			IsBase64Encoded: false,
+			Body:            "{\"data\":{\"type\": \"asyncresponse\",\"attributes\":{\"status\":\"accepted\"}}}",
 		}, nil
 	} else {
 		return convertLambdaProxyResponse(lambdaResponse)
