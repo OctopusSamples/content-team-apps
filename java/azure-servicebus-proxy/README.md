@@ -1,3 +1,5 @@
+![Coverage](.github/badges/azure-servicebus-proxy-coverage.svg) ![Branches](.github/badges/azure-servicebus-proxy-branches.svg)
+
 This project exists to provide a HTTP endpoint over the Azure service bus.
 
 Unfortunately the Azure dependencies just don't work with GraalVM native compilation. There are

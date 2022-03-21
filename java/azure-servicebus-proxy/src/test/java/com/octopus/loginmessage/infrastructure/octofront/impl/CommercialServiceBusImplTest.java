@@ -13,7 +13,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import javax.inject.Inject;
 import org.apache.maven.shared.utils.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
