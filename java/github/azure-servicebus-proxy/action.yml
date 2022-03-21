@@ -3,16 +3,22 @@ description: Build and deploy the GitHub OAuth Backend
 inputs:
   dockerhub_username:
     required: true
+    description: The DockerHub username
   dockerhub_password:
     required: true
+    description: The DockerHub password
   github_token:
     required: true
+    description: The GitHub token
   octopus_server_url:
     required: true
+    description: The Octopus server
   octopus_api_token:
     required: true
+    description: The Octopus API key
   run_number:
     required: true
+    description: The GitHub Actions run number
 runs:
   using: "composite"
   steps:
