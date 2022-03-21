@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.application.lambda;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,6 +22,24 @@ public class ApiTest {
     event.setHttpMethod("GeT");
     event.setPath(path);
     assertTrue(API.requestIsMatch(event, API.HEALTH_RE, Constants.Http.GET_METHOD));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {HEALTH_ENDPOINT + "/POST"})
+  public void testInvalidMethodHealthRequestMatching(final String path) {
+    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
+    event.setHttpMethod("POST");
+    event.setPath(path);
+    assertFalse(API.requestIsMatch(event, API.HEALTH_RE, Constants.Http.GET_METHOD));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {HEALTH_ENDPOINT + "/Invalid"})
+  public void testInvalidPathHealthRequestMatching(final String path) {
+    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
+    event.setHttpMethod("GET");
+    event.setPath(path);
+    assertFalse(API.requestIsMatch(event, API.HEALTH_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
