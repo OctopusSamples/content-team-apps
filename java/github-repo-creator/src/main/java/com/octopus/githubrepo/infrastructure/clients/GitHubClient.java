@@ -83,4 +83,14 @@ public interface GitHubClient {
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
       @PathParam("secret_name") final String secretName);
+
+  @GET
+  @Path("/repos/{owner}/{repo}/actions/secrets/{secret_name}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  Response getSecret(
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @PathParam("secret_name") final String secretName);
 }

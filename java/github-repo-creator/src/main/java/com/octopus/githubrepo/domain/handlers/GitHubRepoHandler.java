@@ -422,6 +422,17 @@ public class GitHubRepoHandler {
           continue;
         }
 
+        // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
+        if (secret.isPreserveExistingSecret()) {
+          if (gitHubClient.getSecret(
+              "token " + decryptedGithubToken,
+              createGithubRepo.getGithubOwner(),
+              createGithubRepo.getGithubRepository(),
+              secret.getName()).getStatus() != 404) {
+            continue;
+          }
+        }
+
         final String secretValue = secret.isEncrypted()
             ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
             : secret.getValue();

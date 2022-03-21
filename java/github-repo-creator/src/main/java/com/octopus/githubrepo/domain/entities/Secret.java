@@ -18,4 +18,5 @@ public class Secret {
   private String name;
   private String value;
   private boolean encrypted;
+  private boolean preserveExistingSecret;
 }
