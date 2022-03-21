@@ -367,6 +367,7 @@ public class GitHubRepoHandler {
             GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
             "token " + decryptedGithubToken);
       } else {
+        Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-GeneralError", ex);
         throw ex;
       }
     }
