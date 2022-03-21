@@ -21,7 +21,10 @@ public class CommercialAzureServiceBus implements AzureServiceBus {
   ServiceBusConfig serviceBusConfig;
 
   @Override
-  public Optional<TokenCredential> getCredentials() {if (serviceBusConfig.appId().isEmpty() || serviceBusConfig.secret().isEmpty() || serviceBusConfig.tenant().isEmpty()) {
+  public Optional<TokenCredential> getCredentials() {
+    if (serviceBusConfig.appId().isEmpty()
+        || serviceBusConfig.secret().isEmpty()
+        || serviceBusConfig.tenant().isEmpty()) {
       return Optional.empty();
     }
 
