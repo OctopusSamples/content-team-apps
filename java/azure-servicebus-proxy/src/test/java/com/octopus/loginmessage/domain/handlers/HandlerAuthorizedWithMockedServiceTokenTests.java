@@ -10,6 +10,7 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.Optional;
@@ -45,12 +46,16 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   @Inject
   ResourceConverter resourceConverter;
 
+  @InjectMock
+  CommercialServiceBus commercialServiceBus;
+
   @BeforeAll
   public void setup() {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
     Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
+    Mockito.doNothing().when(commercialServiceBus).sendUserDetails(any(), any());
   }
 
   @Test

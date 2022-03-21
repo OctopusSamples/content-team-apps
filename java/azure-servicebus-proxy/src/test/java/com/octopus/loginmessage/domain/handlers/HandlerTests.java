@@ -1,27 +1,49 @@
 package com.octopus.loginmessage.domain.handlers;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.exceptions.UnauthorizedException;
+import com.octopus.features.DisableSecurityFeature;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.application.Paths;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import lombok.NonNull;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HandlerTests extends BaseTest {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  private static final List<String> ALLOWED_KEYS = List.of(
+      "UtmParameters",
+      "EmailAddress",
+      "ProgrammingLanguage",
+      "GitHubUsername",
+      "FirstName",
+      "LastName");
 
   @Inject
   ResourceHandler handler;
@@ -32,6 +54,31 @@ public class HandlerTests extends BaseTest {
   @Inject
   ResourceConverter resourceConverter;
 
+  @InjectMock
+  CommercialServiceBus commercialServiceBus;
+
+  @InjectMock
+  DisableSecurityFeature cognitoDisableAuth;
+
+  @BeforeAll
+  public void setup() {
+    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+    Mockito.doAnswer(invocation  -> {
+      final String traceId = invocation.getArgument(0, String.class);
+      final String body = invocation.getArgument(1, String.class);
+
+      final Map<String, Object> bodyObject = OBJECT_MAPPER.readValue(body, Map.class);
+
+      // We must use PascalCase, so the first character must be uppercase
+      bodyObject.keySet().forEach(k -> assertEquals(
+          k.substring(0, 1).toUpperCase(Locale.ROOT),
+          k.substring(0, 1)));
+      // The body must only contain known keys
+      bodyObject.keySet().forEach(k -> assertTrue(ALLOWED_KEYS.contains(k)));
+
+      return null;
+    }).when(commercialServiceBus).sendUserDetails(any(), any());
+  }
 
   @ParameterizedTest
   @CsvSource({
@@ -68,5 +115,14 @@ public class HandlerTests extends BaseTest {
           null,
           null);
     });
+  }
+
+  @Test
+  @Transactional
+  public void testCreateResource() {
+    assertDoesNotThrow(() -> handler.create(
+        resourceToResourceDocument(resourceConverter, new GithubUserLoggedInForFreeToolsEventV1()),
+        List.of("main"),
+        null, null, null));
   }
 }
