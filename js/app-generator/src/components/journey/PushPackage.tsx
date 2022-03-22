@@ -49,7 +49,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 secrets: [
                                     {
                                         name: "OCTOPUS_SERVER",
-                                        value: "main.testoctopus.app",
+                                        value: "https://main.testoctopus.app",
                                         preserveExistingSecret: true
                                     },
                                     {
