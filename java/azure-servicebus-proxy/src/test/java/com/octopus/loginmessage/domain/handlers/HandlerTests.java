@@ -33,6 +33,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
+/**
+ * Tests that validate the messages being sent to the upstream service bus and of the health checks.
+ * Authorization is disabled.
+ */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(CommercialAzureServiceBusTestProfile.class)
