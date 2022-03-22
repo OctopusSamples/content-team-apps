@@ -152,8 +152,8 @@ runs:
     - name: Push SBOM Package
       run: >
         octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
       shell: bash
       working-directory: java/quarkus-microservice
