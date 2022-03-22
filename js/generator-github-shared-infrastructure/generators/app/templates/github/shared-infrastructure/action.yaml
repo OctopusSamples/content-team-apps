@@ -123,7 +123,6 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="github_feed_token=${{ inputs.github_feed_token }}"
         -var="aws_access_key=${{ inputs.aws_access_key }}"
         -var="aws_secret_key=${{ inputs.aws_secret_key }}"
         -var="aws_region=${{ inputs.aws_region }}"
