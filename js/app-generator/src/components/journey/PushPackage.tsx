@@ -53,7 +53,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                         value: body.included
                                             .filter((i: any) => i.type === "apikey")
                                             .map((i: any) => i.attributes?.apiKey)
-                                            .pop()
+                                            .pop(),
+                                        preserveExistingSecret: true
                                     },
                                     {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
                                     {
