@@ -152,7 +152,7 @@ runs:
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}-0.1.${{ github.run_number }} .
+        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
         docker push ${{ inputs.image_tag }}
       shell: bash
       working-directory: java/quarkus-microservice
