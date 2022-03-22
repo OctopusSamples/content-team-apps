@@ -10,6 +10,9 @@ inputs:
   octopus_space_id:
     description: 'The ID of the app builder space'
     required: true
+  octopus_space:
+    description: 'The name of the app builder space'
+    required: true
   octopus_github_docker_feed_id:
     description: 'The ID of Github docker feed'
     required: true
@@ -63,6 +66,11 @@ runs:
 
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
 
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
@@ -124,4 +132,16 @@ runs:
         -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
       working-directory: terraform/kubernetes-deployment
+      shell: bash
+
+    - name: Create the cluster
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Deploy EKS Cluster"
+        --deployTo "Development"
+        --waitForDeployment
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
       shell: bash
