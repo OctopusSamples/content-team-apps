@@ -131,15 +131,6 @@ runs:
       working-directory: terraform/shared-infrastructure
       shell: bash
 
-    - name: Terraform Collect GitHub Feed Id
-      id: octopus_github_docker_feed_id
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: terraform output -raw octopus_github_docker_feed_id
-      working-directory: terraform/shared-infrastructure
-      shell: bash
-
     - name: Terraform Collect Dockerhub Feed Id
       id: octopus_dockerhub_feed_id
       env:
