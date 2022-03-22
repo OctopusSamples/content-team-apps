@@ -47,7 +47,11 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 githubRepository: createRepoName(),
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                                 secrets: [
-                                    {name: "OCTOPUS_SERVER", value: "main.testoctopus.app"},
+                                    {
+                                        name: "OCTOPUS_SERVER",
+                                        value: "main.testoctopus.app",
+                                        preserveExistingSecret: true
+                                    },
                                     {
                                         name: "OCTOPUS_APIKEY",
                                         value: body.included
