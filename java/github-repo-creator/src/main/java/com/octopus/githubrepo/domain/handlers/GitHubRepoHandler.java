@@ -455,7 +455,7 @@ public class GitHubRepoHandler {
                 Base64.getEncoder().encodeToString(out.toByteArray());
 
             Log.info("Adding secret " + secret.getName()
-                + " with encrypted value " + base64EncryptedSecret + " using key " + publicKey.getKey());
+                + " with encrypted value " + base64EncryptedSecret + " using key " + publicKey.getKey() + " with id " + publicKey.getKeyId());
 
             // send the encrypted value
             gitHubClient.createSecret(
