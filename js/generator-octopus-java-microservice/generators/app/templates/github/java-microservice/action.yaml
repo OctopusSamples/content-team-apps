@@ -138,7 +138,7 @@ runs:
     - name: Build SBOM package
       run: >
         octo pack
-        --id github-repo-creator-sbom
+        --id quarkus-microservice-sbom
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
         --include **/bom.xml
