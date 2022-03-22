@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-octopus-java-microservice",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "A Yeoman generator to create a sample Java Quarkus microservice suitable for containers and Lambdas.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [
