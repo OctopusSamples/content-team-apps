@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Base64;
@@ -63,6 +65,7 @@ import org.kohsuke.github.GHTreeBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.internal.DefaultGitHubConnector;
+import software.pando.crypto.nacl.CryptoBox;
 import software.pando.crypto.nacl.SecretBox;
 
 /**
@@ -441,9 +444,16 @@ public class GitHubRepoHandler {
           Log.warn(secret.getName() + " has an blank value");
         }
 
+        // random private key
+        final KeyPair keyPair = CryptoBox.keyPair();
+
+        // GitHub public key
+        final PublicKey githubPublicKey = CryptoBox.publicKey(Base64.getDecoder().decode(publicKey.getKey()));
+
         // Create the Sodium secret box
-        try (final SecretBox box = SecretBox.encrypt(
-            SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
+        try (final CryptoBox box = CryptoBox.encrypt(
+            keyPair.getPrivate(),
+            githubPublicKey,
             StringUtils.defaultIfEmpty(secretValue, ""))) {
 
           // extract the encrypted value
