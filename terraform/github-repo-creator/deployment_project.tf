@@ -383,13 +383,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     TEMPLATE_GENERATOR: !Ref TemplateGenerator
                     CLIENT_PRIVATE_KEY: !Ref ClientPrivateKey
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
-                Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
+                MemorySize: 512
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
                   - Arn
-                Runtime: provided
+                Runtime: java11
                 Timeout: 600
             'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::Lambda::Version'
