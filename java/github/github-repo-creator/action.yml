@@ -71,7 +71,7 @@ runs:
     # io.quarkus:quarkus-amazon-lambda dependency is included. See the pom.xml file for details
     # on the lambda profile.
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+      run: mvn --batch-mode package --file pom.xml -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/github-repo-creator
 
