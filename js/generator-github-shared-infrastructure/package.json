@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-shared-infrastructure",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "A Yeoman generator to populate a sample Octopus space with environments, feeds, targets, lifecycles, and accounts.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [
