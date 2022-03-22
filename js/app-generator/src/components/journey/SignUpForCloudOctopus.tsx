@@ -1,10 +1,12 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
 const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     return (
         <>
@@ -30,7 +32,10 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={buttonStyle} variant="outlined" onClick={() => window.open("https://octopus.com/start/cloud")}>
                             {"Signup"}
                         </Button>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
+                            setButtonDisabled(true);
+                            props.machine.send("NEXT");
+                        }}>
                             {"Next >"}
                         </Button>
                     </Grid>

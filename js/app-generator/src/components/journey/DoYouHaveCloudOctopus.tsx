@@ -1,10 +1,12 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
 const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     return (
         <>
@@ -33,10 +35,16 @@ const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                             If you do not have an existing cloud Octopus instance, select the No option, and you will
                             be able to create a free trial in the next screen.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("YES")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
+                            setButtonDisabled(true);
+                            props.machine.send("YES");
+                        }}>
                             {"Yes"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => props.machine.send("NO")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
+                            setButtonDisabled(true);
+                            props.machine.send("NO");
+                        }}>
                             {"No"}
                         </Button>
                     </Grid>

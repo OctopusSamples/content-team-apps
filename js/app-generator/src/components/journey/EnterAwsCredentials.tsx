@@ -11,8 +11,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
     const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "");
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? "**************" : "");
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     const next = () => {
+        setButtonDisabled(true);
         // Asymmetrically encrypt the secret so the browser can not read it again.
         encryptAndSaveInCookie(secretKey, "awsSecretKey", 1)
             .then(() => {
@@ -70,7 +72,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 <TextField sx={formElements} value={region} onChange={(event) => setRegion(event.target.value)}/>
                             </Grid>
                         </Grid>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={next}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={next}>
                             {"Next >"}
                         </Button>
                     </Grid>

@@ -1,4 +1,4 @@
-import {FC, ReactElement, useContext} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
@@ -17,7 +17,10 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
 
     const context = useContext(AppContext);
 
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
     const login = () => {
+        setButtonDisabled(true);
         if (context.settings.disableExternalCalls) {
             // pretend to do a login
             props.machine.send("MOCK");
@@ -52,7 +55,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             Click the login button to be taken to the Octopus login page. You will be returned to this
                             page once you have successfully logged in.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={login}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
                             {"Next >"}
                         </Button>
                     </Grid>

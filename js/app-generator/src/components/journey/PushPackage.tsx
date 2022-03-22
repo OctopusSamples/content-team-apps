@@ -13,12 +13,14 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
 
     const [loading, setLoading] = useState<boolean>(false);
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     function createRepoName() {
         return "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework;
     }
 
     const pushPackage = () => {
+        setButtonDisabled(true);
         if (context.settings.disableExternalCalls) {
             // pretend to populate the repo
             props.machine.send("NEXT");
@@ -126,7 +128,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Click the next button to configure your CI/CD pipeline.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={pushPackage}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={pushPackage}>
                             {"Next >"}
                         </Button>
                     </Grid>

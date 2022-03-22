@@ -1,4 +1,4 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
@@ -6,7 +6,10 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
     const next = (state: string) => {
+        setButtonDisabled(true);
         if (props.machine.state) {
             props.machine.state.context.developmentFramework = state;
         }
@@ -31,19 +34,19 @@ const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Select the framework for the sample application you wish to deploy.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("QUARKUS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("QUARKUS")}>
                             {"Java - Quarkus"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("SPRING")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("SPRING")}>
                             {"Java - Spring"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("DOTNET")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("DOTNET")}>
                             {"DotNET Core"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("NODEJS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("NODEJS")}>
                             {"Node.js"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => next("GO")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("GO")}>
                             {"Go"}
                         </Button>
                     </Grid>

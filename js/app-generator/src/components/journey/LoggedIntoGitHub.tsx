@@ -1,10 +1,12 @@
-import {FC, ReactElement} from "react";
+import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
 const LoggedIntoGithub: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     return (
         <>
@@ -24,7 +26,10 @@ const LoggedIntoGithub: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             You have successfully authorized access to GitHub.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" onClick={() => props.machine.send("NEXT")}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
+                            setButtonDisabled(true);
+                            props.machine.send("NEXT");
+                        }}>
                             {"Next >"}
                         </Button>
                     </Grid>
