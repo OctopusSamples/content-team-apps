@@ -13,9 +13,6 @@ inputs:
   octopus_space:
     description: 'The name of the app builder space'
     required: true
-  octopus_github_docker_feed_id:
-    description: 'The ID of Github docker feed'
-    required: true
   octopus_k8s_feed_id:
     description: 'The ID of feed used to supply the K8s deployment. This can be a plain docker feed, or an ECR feed.'
     required: true
@@ -103,6 +100,11 @@ runs:
         input: terraform/kubernetes-deployment/backend.tf
         output: terraform/kubernetes-deployment/backend.tf
 
+    - name: Find the Built-In Feed ID
+      run: |
+          curl -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)"
+      shell: bash
+
     - name: Terraform Init
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
@@ -121,8 +123,8 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
-        -var="octopus_github_docker_feed_id=${{ inputs.octopus_github_docker_feed_id }}"
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
+        -var="octopus_built_in_feed_id=${{ inputs.octopus_built_in_feed_id }}"
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
         -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}"
         -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"

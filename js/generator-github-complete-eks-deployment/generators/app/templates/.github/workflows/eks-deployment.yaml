@@ -82,7 +82,6 @@ jobs:
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
           octopus_space: "<%= octopus_space %>"
-          octopus_github_docker_feed_id: ${{ steps.shared_resources.outputs.octopus_github_docker_feed_id }}
           octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
           octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}

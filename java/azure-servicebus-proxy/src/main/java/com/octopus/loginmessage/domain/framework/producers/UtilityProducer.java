@@ -29,6 +29,8 @@ import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import com.octopus.utilties.impl.RegExUtilsImpl;
+import com.octopus.xray.AwsXrayParser;
+import com.octopus.xray.impl.AwsXrayParserImpl;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -189,5 +191,16 @@ public class UtilityProducer {
   @Produces
   public JsonSerializer getJsonSerializer() {
     return new JacksonJsonSerializerImpl();
+  }
+
+  /**
+   * Produces the XRay parser.
+   *
+   * @return An implementation of AwsXrayParser.
+   */
+  @ApplicationScoped
+  @Produces
+  public AwsXrayParser getAwsXrayParser() {
+    return new AwsXrayParserImpl();
   }
 }

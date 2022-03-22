@@ -15,6 +15,7 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.json.JsonSerializer;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import com.octopus.xray.AwsXrayParser;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -59,6 +60,9 @@ public class ResourceHandler {
   @Inject
   GithubUserLoggedInForFreeToolsEventV1Converter githubUserLoggedInForFreeToolsEventV1Converter;
 
+  @Inject
+  AwsXrayParser awsXrayParser;
+
   /**
    * Creates a new resource.
    *
@@ -87,7 +91,9 @@ public class ResourceHandler {
      */
     final GithubUserLoggedInForFreeToolsEventV1Upstream resource =
         githubUserLoggedInForFreeToolsEventV1Converter.from(getResourceFromDocument(document));
-    commercialServiceBus.sendUserDetails(xray, jsonSerializer.toJson(resource));
+    commercialServiceBus.sendUserDetails(
+        awsXrayParser.getSelf(xray).orElse(""),
+        jsonSerializer.toJson(resource));
   }
 
   private GithubUserLoggedInForFreeToolsEventV1 getResourceFromDocument(final String document) {

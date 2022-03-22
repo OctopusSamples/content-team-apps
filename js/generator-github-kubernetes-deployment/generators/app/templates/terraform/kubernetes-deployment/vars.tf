@@ -13,17 +13,17 @@ variable "octopus_space_id" {
   nullable = false
 }
 
-variable "octopus_github_docker_feed_id" {
-  type = string
-  nullable = false
-}
-
 variable "octopus_dockerhub_feed_id" {
   type = string
   nullable = false
 }
 
 variable "octopus_k8s_feed_id" {
+  type = string
+  nullable = false
+}
+
+variable "octopus_built_in_feed_id" {
   type = string
   nullable = false
 }

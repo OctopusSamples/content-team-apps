@@ -36,9 +36,6 @@ inputs:
     required: true
 
 outputs:
-  octopus_github_docker_feed_id:
-    description: 'The ID of Github docker feed'
-    value: ${{ steps.octopus_github_docker_feed_id.outputs.stdout }}
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
     value: ${{ steps.octopus_dockerhub_feed_id.outputs.stdout }}
