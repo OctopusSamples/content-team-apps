@@ -427,8 +427,11 @@ public class GitHubRepoHandler {
         }
 
         if (!needToCreateSecret(secret, createGithubRepo, decryptedGithubToken)) {
+          Log.info("Skipping existing secret " + secret.getName());
           continue;
         }
+
+        Log.info("Adding secret " + secret.getName());
 
         final String secretValue = secret.isEncrypted()
             ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
