@@ -131,8 +131,8 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: java/github-repo-creator/target/github-repo-creator-runner
-        asset_name: github-repo-creator-runner
+        asset_path: java/github-repo-creator/target/github-repo-creator-runner.jar
+        asset_name: github-repo-creator-runner.jar
         asset_content_type: application/octet-stream
 
     - name: Rename zip
