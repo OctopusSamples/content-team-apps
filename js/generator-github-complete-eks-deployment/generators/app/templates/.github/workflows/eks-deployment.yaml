@@ -65,6 +65,7 @@ jobs:
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
           run_number: ${{ github.run_number }}
+          octopus_space: "<%= octopus_space %>"
 
       - name: Create Kubernetes Deployment Project
         uses: ./github/kubernetes-deployment

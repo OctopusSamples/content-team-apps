@@ -25,6 +25,10 @@ inputs:
   run_number:
     required: true
     description: The GitHub Actions Workflow run number
+  octopus_space:
+    description: 'The Octopus space name'
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -146,7 +150,7 @@ runs:
         octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
-        --space "App Builder"
+        --space ${{ inputs.octopus_space }}
       shell: bash
       working-directory: java/quarkus-microservice
 
