@@ -150,7 +150,7 @@ runs:
         octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
-        --space ${{ inputs.octopus_space }}
+        --space "${{ inputs.octopus_space }}"
       shell: bash
       working-directory: java/quarkus-microservice
 
