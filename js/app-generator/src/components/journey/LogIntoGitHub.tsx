@@ -1,4 +1,4 @@
-import {FC, ReactElement, SyntheticEvent, useContext, useState} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
