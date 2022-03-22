@@ -2,6 +2,13 @@ package com.octopus.githubrepo.domain.handlers;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.goterl.lazysodium.LazySodium;
+import com.goterl.lazysodium.LazySodiumJava;
+import com.goterl.lazysodium.SodiumJava;
+import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.Base64MessageEncoder;
+import com.goterl.lazysodium.utils.Key;
+import com.goterl.lazysodium.utils.LibraryLoader.Mode;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInputException;
@@ -25,15 +32,12 @@ import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyPair;
-import java.security.PublicKey;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Base64;
@@ -65,8 +69,6 @@ import org.kohsuke.github.GHTreeBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.internal.DefaultGitHubConnector;
-import software.pando.crypto.nacl.CryptoBox;
-import software.pando.crypto.nacl.SecretBox;
 
 /**
  * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
@@ -418,11 +420,20 @@ public class GitHubRepoHandler {
 
   private void createSecrets(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) throws IOException {
-    // Create the sodium key.
+
+    // Create the github public key.
     final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
         "token " + decryptedGithubToken,
         createGithubRepo.getGithubOwner(),
         createGithubRepo.getGithubRepository());
+
+    // Create a sodium instance
+    final LazySodium lazySodium = new LazySodiumJava(
+        new SodiumJava(Mode.BUNDLED_ONLY),
+        new Base64MessageEncoder());
+
+    // Create the sodium public key
+    final Key githubKey = Key.fromBase64String(publicKey.getKey());
 
     // Add the repository secrets.
     if (createGithubRepo.getSecrets() != null) {
@@ -444,40 +455,22 @@ public class GitHubRepoHandler {
           Log.warn(secret.getName() + " has an blank value");
         }
 
-        // random private key
-        final KeyPair keyPair = CryptoBox.keyPair();
+        try {
+          final String base64EncryptedSecret = lazySodium.cryptoBoxSealEasy(secretValue, githubKey);
 
-        // GitHub public key
-        final PublicKey githubPublicKey = CryptoBox.publicKey(Base64.getDecoder().decode(publicKey.getKey()));
-
-        // Create the Sodium secret box
-        try (final CryptoBox box = CryptoBox.encrypt(
-            keyPair.getPrivate(),
-            githubPublicKey,
-            StringUtils.defaultIfEmpty(secretValue, ""))) {
-
-          // extract the encrypted value
-          try (var out = new ByteArrayOutputStream()) {
-            box.writeTo(out);
-            out.flush();
-
-            final String base64EncryptedSecret =
-                Base64.getEncoder().encodeToString(out.toByteArray());
-
-            Log.info("Adding secret " + secret.getName()
-                + " with encrypted value " + base64EncryptedSecret + " using key " + publicKey.getKey() + " with id " + publicKey.getKeyId());
-
-            // send the encrypted value
-            gitHubClient.createSecret(
-                GitHubSecret.builder()
-                    .encryptedValue(base64EncryptedSecret)
-                    .keyId(publicKey.getKeyId())
-                    .build(),
-                "token " + decryptedGithubToken,
-                createGithubRepo.getGithubOwner(),
-                createGithubRepo.getGithubRepository(),
-                secret.getName());
-          }
+          // send the encrypted value
+          gitHubClient.createSecret(
+              GitHubSecret.builder()
+                  .encryptedValue(base64EncryptedSecret)
+                  .keyId(publicKey.getKeyId())
+                  .build(),
+              "token " + decryptedGithubToken,
+              createGithubRepo.getGithubOwner(),
+              createGithubRepo.getGithubRepository(),
+              secret.getName());
+        } catch (final SodiumException ex) {
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateSecret-GeneralError", ex);
+          throw new RuntimeException(ex);
         }
       }
     }

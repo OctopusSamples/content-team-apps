@@ -44,10 +44,11 @@
     </dependency>
 
     <dependency>
-      <groupId>software.pando.crypto</groupId>
-      <artifactId>salty-coffee</artifactId>
-      <version>1.0.4</version>
+      <groupId>com.goterl</groupId>
+      <artifactId>lazysodium-java</artifactId>
+      <version>5.1.1</version>
     </dependency>
+
     <dependency>
       <groupId>org.kohsuke</groupId>
       <artifactId>github-api</artifactId>
