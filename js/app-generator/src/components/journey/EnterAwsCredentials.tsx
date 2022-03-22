@@ -20,7 +20,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
         if (secretKey !== mask) {
             // Asymmetrically encrypt the secret so the browser can not read it again.
-            encryptAndSaveInCookie(secretKey, "awsSecretKey", 1)
+            encryptAndSaveInCookie(secretKey.trim(), "awsSecretKey", 1)
                 .then(nextState)
         } else {
             nextState()
@@ -30,8 +30,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const nextState = () => {
         setSecretKey("");
         if (props.machine.state) {
-            props.machine.state.context.awsAccessKey = accessKey;
-            props.machine.state.context.awsRegion = region;
+            props.machine.state.context.awsAccessKey = accessKey.trim();
+            props.machine.state.context.awsRegion = region.trim();
         }
         props.machine.send("NEXT");
     }
