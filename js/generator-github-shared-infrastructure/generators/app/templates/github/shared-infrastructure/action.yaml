@@ -34,6 +34,7 @@ inputs:
   terraform_bucket_region:
     description: 'The region in which the Terraform state bucket resides'
     required: true
+
 outputs:
   octopus_github_docker_feed_id:
     description: 'The ID of Github docker feed'

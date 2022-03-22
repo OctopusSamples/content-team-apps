@@ -1,5 +1,5 @@
 resource "octopusdeploy_lifecycle" "application_lifecycle" {
-  description = "The application lifecycle."
+  description = "The application lifecycle. This resource is created and managed by the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs). The Terraform files can be found in the [GitHub repo](https://github.com/${var.github_repo})."
   name        = "Application"
 
   release_retention_policy {

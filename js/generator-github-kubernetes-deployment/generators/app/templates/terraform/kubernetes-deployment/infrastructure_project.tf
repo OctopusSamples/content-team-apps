@@ -2,7 +2,7 @@ resource "octopusdeploy_project" "deploy_infrastructure_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the EKS cluster."
+  description                          = "Deploys the EKS cluster using eksctl. This project is created and managed by the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs). The Terraform files can be found in the [GitHub repo](https://github.com/${var.github_repo})."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false

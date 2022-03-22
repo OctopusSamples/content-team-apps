@@ -18,3 +18,8 @@ variable "octopus_user_id" {
   type = string
   nullable = false
 }
+
+variable "github_repo" {
+  type = string
+  nullable = false
+}

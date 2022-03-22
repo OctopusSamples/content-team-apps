@@ -29,6 +29,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.github.repository }}
 
       - name: Create Shared Resources
         id: shared_resources
@@ -58,6 +59,7 @@ jobs:
           aws_ecr_repository_name: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>"
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.github.repository }}
 
       - name: Build Java Microservice
         uses: ./github/java-microservice
@@ -71,6 +73,7 @@ jobs:
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
           run_number: ${{ github.run_number }}
           octopus_space: "<%= octopus_space %>"
+          github_repo: ${{ github.github.repository }}
 
       - name: Create Kubernetes Deployment Project
         uses: ./github/kubernetes-deployment
@@ -92,3 +95,4 @@ jobs:
           octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.github.repository }}

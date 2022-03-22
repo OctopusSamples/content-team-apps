@@ -28,6 +28,9 @@ inputs:
   octopus_space:
     description: 'The Octopus space name'
     required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
 
 runs:
   using: "composite"

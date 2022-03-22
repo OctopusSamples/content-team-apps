@@ -28,6 +28,9 @@ inputs:
   terraform_bucket_region:
     description: 'The region in which the Terraform state bucket resides'
     required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
 
 outputs:
   aws_ecr_repository_url:

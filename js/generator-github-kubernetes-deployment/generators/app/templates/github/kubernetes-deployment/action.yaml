@@ -52,6 +52,9 @@ inputs:
   terraform_bucket_region:
     description: 'The region in which the Terraform state bucket resides'
     required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -119,5 +122,6 @@ runs:
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}"
         -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
+        -var="github_repo=${{ inputs.github_repo }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash

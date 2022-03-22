@@ -25,10 +25,15 @@ inputs:
   terraform_bucket_region:
     description: 'The region in which the Terraform state bucket resides'
     required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+
 outputs:
   octopus_space_id:
     description: "The Octopus space ID"
     value: ${{ steps.terraform_output.outputs.stdout }}
+
 runs:
   using: "composite"
   steps:
@@ -88,6 +93,7 @@ runs:
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space=${{ inputs.octopus_space }}"
         -var="octopus_user_id=${{ inputs.octopus_user_id }}"
+        -var="github_repo=${{ inputs.github_repo }}"
       working-directory: terraform/shared-space
       shell: bash
 

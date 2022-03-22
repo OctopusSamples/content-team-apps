@@ -1,6 +1,6 @@
 resource "octopusdeploy_library_variable_set" "octopus_library_variable_set" {
   name = "Octopus Variables"
-  description = "Variables that relate to working with Octopus itself, such as API keys"
+  description = "Variables that relate to working with Octopus itself, such as API keys. This resource is created and managed by the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs). The Terraform files can be found in the [GitHub repo](https://github.com/${var.github_repo})."
 }
 
 output "octopus_library_variable_set_id" {
