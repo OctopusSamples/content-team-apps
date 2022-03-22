@@ -5,27 +5,35 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
 
+const mask =  "**************";
+
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
     const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "");
-    const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? "**************" : "");
+    const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? mask : "");
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     const next = () => {
         setButtonDisabled(true);
-        // Asymmetrically encrypt the secret so the browser can not read it again.
-        encryptAndSaveInCookie(secretKey, "awsSecretKey", 1)
-            .then(() => {
-                setSecretKey("");
-                if (props.machine.state) {
-                    props.machine.state.context.awsAccessKey = accessKey;
-                    props.machine.state.context.awsRegion = region;
-                }
-                props.machine.send("NEXT");
-            })
 
+        if (secretKey !== mask) {
+            // Asymmetrically encrypt the secret so the browser can not read it again.
+            encryptAndSaveInCookie(secretKey, "awsSecretKey", 1)
+                .then(nextState)
+        } else {
+            nextState()
+        }
+    }
+
+    const nextState = () => {
+        setSecretKey("");
+        if (props.machine.state) {
+            props.machine.state.context.awsAccessKey = accessKey;
+            props.machine.state.context.awsRegion = region;
+        }
+        props.machine.send("NEXT");
     }
 
     return (
