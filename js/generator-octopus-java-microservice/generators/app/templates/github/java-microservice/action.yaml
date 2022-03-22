@@ -135,7 +135,7 @@ runs:
       run: >
         octo pack
         --id github-repo-creator-lambda-sbom
-        --version 0.1.${{ inputs.run_number }}
+        --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
         --include **/bom.xml
       shell: bash
@@ -143,7 +143,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package quarkus-microservice-sbom.0.1.${{ inputs.run_number }}.0.1.${{ github.run_number }}.zip
+        octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "App Builder"
