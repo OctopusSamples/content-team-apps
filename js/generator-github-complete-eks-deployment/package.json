@@ -10,7 +10,7 @@
   ],
   "dependencies": {
     "yeoman-generator": "^5.6.1",
-    "@octopus-content-team/generator-octopus-java-microservice": "0.1.36",
+    "@octopus-content-team/generator-octopus-java-microservice": "0.1.37",
     "@octopus-content-team/generator-github-shared-space": "0.1.4",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.14",
     "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.13",

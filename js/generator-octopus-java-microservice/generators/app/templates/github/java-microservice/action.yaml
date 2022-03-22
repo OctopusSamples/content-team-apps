@@ -134,7 +134,7 @@ runs:
     - name: Build SBOM package
       run: >
         octo pack
-        --id github-repo-creator-lambda-sbom
+        --id github-repo-creator-sbom
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
         --include **/bom.xml
