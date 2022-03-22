@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      # This main workflow file implements each stage through composable actions -
+      # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+      # This allows us to mix and match build and deployment steps, which is important for a platform engineering tool
+      # like the App Builder.
+
       - name: Create Initial Space
         id: shared_space
         uses: ./github/shared-space

@@ -41,6 +41,8 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
+    # CLI tooling to create a unique bucket before Terraform is run.
     - name: Create Terraform state S3 bucket
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
@@ -55,6 +57,10 @@ runs:
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
     - uses: danielr1996/envsubst-action@1.1.0
       env:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
@@ -85,6 +91,9 @@ runs:
       working-directory: terraform/shared-space
       shell: bash
 
+    # We share the Terraform output variables between actions by saving the raw Terraform variable value to
+    # GitHub Actions output inside a step with a unique ID. The composite step then saves the value
+    # from this step's stdout as an output variable with the syntax ${{ steps.terraform_output.outputs.stdout }}.
     - name: Terraform Collect Output
       id: terraform_output
       env:
