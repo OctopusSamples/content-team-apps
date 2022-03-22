@@ -67,8 +67,8 @@ runs:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
       with:
-        input: terraform/shared-space/backend.tf
-        output: terraform/shared-space/backend.tf
+        input: terraform/aws-ecr/backend.tf
+        output: terraform/aws-ecr/backend.tf
 
     - name: Terraform Init
       env:
