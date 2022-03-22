@@ -416,8 +416,10 @@ public class GitHubRepoHandler {
   private void createSecrets(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) throws IOException {
     // Create the sodium key.
-    final GitHubPublicKey publicKey = gitHubClient.getPublicKey("token " + decryptedGithubToken,
-        createGithubRepo.getGithubOwner(), createGithubRepo.getGithubRepository());
+    final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
+        "token " + decryptedGithubToken,
+        createGithubRepo.getGithubOwner(),
+        createGithubRepo.getGithubRepository());
 
     // Add the repository secrets.
     if (createGithubRepo.getSecrets() != null) {
@@ -435,6 +437,10 @@ public class GitHubRepoHandler {
             ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
             : secret.getValue();
 
+        if (StringUtils.isBlank(secretValue)) {
+          Log.warn(secret.getName() + " has an blank value");
+        }
+
         // Create the Sodium secret box
         try (final SecretBox box = SecretBox.encrypt(
             SecretBox.key(Base64.getDecoder().decode(publicKey.getKey())),
@@ -445,9 +451,11 @@ public class GitHubRepoHandler {
             box.writeTo(out);
             out.flush();
 
-            final String base64EncryptedSecret = Base64.getEncoder().encodeToString(out.toByteArray());
+            final String base64EncryptedSecret =
+                Base64.getEncoder().encodeToString(out.toByteArray());
 
-            Log.info("Adding secret " + secret.getName() + " with encrypted value " + base64EncryptedSecret);
+            Log.info("Adding secret " + secret.getName()
+                + " with encrypted value " + base64EncryptedSecret);
 
             // send the encrypted value
             gitHubClient.createSecret(
