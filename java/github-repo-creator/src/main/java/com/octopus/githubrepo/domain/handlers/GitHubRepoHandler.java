@@ -431,8 +431,6 @@ public class GitHubRepoHandler {
           continue;
         }
 
-        Log.info("Adding secret " + secret.getName());
-
         final String secretValue = secret.isEncrypted()
             ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
             : secret.getValue();
@@ -447,10 +445,14 @@ public class GitHubRepoHandler {
             box.writeTo(out);
             out.flush();
 
+            final String base64EncryptedSecret = Base64.getEncoder().encodeToString(out.toByteArray());
+
+            Log.info("Adding secret " + secret.getName() + " with encrypted value " + base64EncryptedSecret);
+
             // send the encrypted value
             gitHubClient.createSecret(
                 GitHubSecret.builder()
-                    .encryptedValue(Base64.getEncoder().encodeToString(out.toByteArray()))
+                    .encryptedValue(base64EncryptedSecret)
                     .keyId(publicKey.getKeyId())
                     .build(),
                 "token " + decryptedGithubToken,
