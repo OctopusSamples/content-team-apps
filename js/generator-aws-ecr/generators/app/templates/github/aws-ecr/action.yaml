@@ -28,6 +28,7 @@ inputs:
   terraform_bucket_region:
     description: 'The region in which the Terraform state bucket resides'
     required: true
+
 outputs:
   aws_ecr_repository_url:
     description: 'The ECR URL'

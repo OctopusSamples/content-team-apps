@@ -47,7 +47,9 @@ module.exports = class extends Generator {
                 octopus_space: platform + " " + framework,
                 octopus_user_id: this.options["octopusUserId"],
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
-                aws_region: this.options["awsRegion"]
+                aws_region: this.options["awsRegion"],
+                framework,
+                platform
             }
         );
     }
