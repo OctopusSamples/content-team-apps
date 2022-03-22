@@ -54,6 +54,18 @@ jobs:
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
+      - name: Build Java Microservice
+        uses: ./github/java-microservice
+        with:
+          image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          run_number: ${{ github.run_number }}
+
       - name: Create Kubernetes Deployment Project
         uses: ./github/kubernetes-deployment
         with:
@@ -65,7 +77,7 @@ jobs:
           octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
           octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
-          octopus_docker_image: "octopus-java-microservice"
+          octopus_docker_image: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>"
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -74,14 +86,3 @@ jobs:
           octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
-
-      - name: Build Java Microservice
-        uses: ./github/java-microservice
-        with:
-          image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: "<%= aws_region %>"
-          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
-          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
-          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}

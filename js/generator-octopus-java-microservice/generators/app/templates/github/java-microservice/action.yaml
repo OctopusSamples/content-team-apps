@@ -22,6 +22,9 @@ inputs:
   octopus_space_id:
     description: 'The ID of the app builder space'
     required: true
+  run_number:
+    required: true
+    description: The GitHub Actions Workflow run number
 runs:
   using: "composite"
   steps:
