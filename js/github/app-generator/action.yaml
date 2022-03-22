@@ -202,3 +202,4 @@ runs:
         deploy_to: Development
         packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
+        wait_for_deployment: true
