@@ -130,11 +130,14 @@ runs:
         fi
       shell: bash
 
+    # This step generates a Source Bill of Materials (SBOM) package that captures all the dependencies compiled
+    # into the application.
     - name: Generate SBOM
       run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
       shell: bash
       working-directory: java
 
+    # We capture the SBOM, which is found in the file bom.xml, as a versioned ZIP package.
     - name: Build SBOM package
       run: >
         octo pack
@@ -145,6 +148,7 @@ runs:
       shell: bash
       working-directory: java/quarkus-microservice
 
+    # The SBOM package is pushed to the Octopus built-in feed.
     - name: Push SBOM Package
       run: >
         octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
@@ -154,6 +158,8 @@ runs:
       shell: bash
       working-directory: java/quarkus-microservice
 
+    # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
+    # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
       run: |
         docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
