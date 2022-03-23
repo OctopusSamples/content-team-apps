@@ -84,6 +84,11 @@ variable "cognito_library_variable_set_id" {
   nullable = false
 }
 
+variable "content_team_library_variable_set_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_test_api_key" {
   type = string
   nullable = false
