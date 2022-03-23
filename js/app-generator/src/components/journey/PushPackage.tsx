@@ -19,7 +19,17 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         return "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework;
     }
 
+    function getOctopusServer() {
+        try {
+            const url = new URL(props.machine.state.context.octopusServer);
+            return "https://" + url.hostname;
+        } catch {
+            return "https://" + props.machine.state.context.octopusServer.split("/")[0];
+        }
+    }
+
     const pushPackage = () => {
+
         setButtonDisabled(true);
         if (context.settings.disableExternalCalls) {
             // pretend to populate the repo
@@ -33,7 +43,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "username": "AppBuilder",
                         "displayName": "App Builder Service Account",
                         "isService": true,
-                        "octopusServer": "https://main.testoctopus.app"
+                        "octopusServer": getOctopusServer()
                     }
                 }
             };

@@ -8,6 +8,12 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
+
+    const next = () => {
+        setButtonDisabled(true);
+        props.machine.send("NEXT");
+    }
+
     return (
         <>
             <Grid
@@ -24,12 +30,10 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Octopus cloud login successful.</h2>
                         <p>
-                            You have successfully logged into your Octopus cloud instance.
+                            You have successfully logged into your Octopus account.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
-                            setButtonDisabled(true);
-                            props.machine.send("NEXT");
-                        }}>
+
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled}  onClick={next}>
                             {"Next >"}
                         </Button>
                     </Grid>

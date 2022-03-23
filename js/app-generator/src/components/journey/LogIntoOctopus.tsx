@@ -1,5 +1,5 @@
 import {FC, ReactElement, useContext, useState} from "react";
-import {Button, Grid, Link} from "@mui/material";
+import {Button, Grid, Link, TextField} from "@mui/material";
 import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
@@ -18,9 +18,15 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+    const [octopusServer, setOctopusServer] = useState<string>("main.testoctopus.app");
 
     const login = () => {
         setButtonDisabled(true);
+
+        if (props.machine.state) {
+            props.machine.state.context.octopusServer = octopusServer;
+        }
+
         if (context.settings.disableExternalCalls) {
             // pretend to do a login
             props.machine.send("MOCK");
@@ -52,11 +58,12 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             application deployment process.
                         </p>
                         <p>
-                            Click the login button to be taken to the Octopus login page. You will be returned to this
-                            page once you have successfully logged in.
+                            Please enter the name of the Octopus Cloud instance that you which to populate with the
+                            sample deployment project and click the login button to be taken to the Octopus login page.
                         </p>
+                        <TextField disabled={true} value={octopusServer} onChange={event => setOctopusServer(event.target.value)}/>
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
-                            {"Next >"}
+                            {"Login >"}
                         </Button>
                     </Grid>
                 </Grid>

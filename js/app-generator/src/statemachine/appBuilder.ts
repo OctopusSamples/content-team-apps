@@ -36,7 +36,8 @@ function getInitialStateContext() {
             awsAccessKey: state.awsAccessKey,
             awsRegion: state.awsRegion,
             targetPlatform: state.targetPlatform,
-            developmentFramework: state.developmentFramework
+            developmentFramework: state.developmentFramework,
+            octopusServer: state.octopusServer
         }
     }
 
@@ -46,7 +47,8 @@ function getInitialStateContext() {
         awsAccessKey: "",
         awsRegion: "",
         targetPlatform: "",
-        developmentFramework: ""
+        developmentFramework: "",
+        octopusServer: ""
     }
 }
 
@@ -123,7 +125,11 @@ export interface StateContext {
     /**
      * The development framework
      */
-    developmentFramework: string
+    developmentFramework: string,
+    /**
+     * The Octopus Server we will be populating
+     */
+    octopusServer: string,
 }
 
 /**
