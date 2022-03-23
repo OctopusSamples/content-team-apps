@@ -17,6 +17,7 @@ public class GithubUserLoggedInForFreeToolsEventV1ConverterImpl implements
   public GithubUserLoggedInForFreeToolsEventV1Upstream from(
       GithubUserLoggedInForFreeToolsEventV1 api) {
     return GithubUserLoggedInForFreeToolsEventV1Upstream.builder()
+        .emailAddress(api.getEmailAddress())
         .utmParameters(api.getUtmParameters())
         .programmingLanguage(api.getProgrammingLanguage())
         .gitHubUsername(api.getGitHubUsername())
