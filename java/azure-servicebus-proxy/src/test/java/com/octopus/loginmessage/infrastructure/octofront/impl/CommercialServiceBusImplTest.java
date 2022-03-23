@@ -53,6 +53,7 @@ public class CommercialServiceBusImplTest {
     assertEquals("trace", message.getApplicationProperties().get("activityId").toString());
     assertEquals("marketing", message.getApplicationProperties().get("context").toString());
     assertEquals("1", message.getApplicationProperties().get("specVersion").toString());
+    assertEquals("GithubUserLoggedInForFreeToolsEventV1", message.getApplicationProperties().get("type").toString());
   }
 
   @Test
