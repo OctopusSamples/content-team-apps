@@ -33,11 +33,11 @@ function getInitialStateContext() {
         return {
             form: TargetSelection,              // This doesn't matter too much, as the state entry functions override it anyway.
             standAlone: !!state.standAlone,
-            awsAccessKey: state.awsAccessKey,
-            awsRegion: state.awsRegion,
-            targetPlatform: state.targetPlatform,
-            developmentFramework: state.developmentFramework,
-            octopusServer: state.octopusServer
+            awsAccessKey: state.awsAccessKey || "",
+            awsRegion: state.awsRegion || "",
+            targetPlatform: state.targetPlatform || "",
+            developmentFramework: state.developmentFramework || "",
+            octopusServer: state.octopusServer || ""
         }
     }
 

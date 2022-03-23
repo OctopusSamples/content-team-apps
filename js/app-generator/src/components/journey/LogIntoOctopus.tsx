@@ -23,9 +23,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const login = () => {
         setButtonDisabled(true);
 
-        if (props.machine.state) {
-            props.machine.state.context.octopusServer = octopusServer;
-        }
+        props.machine.state.context.octopusServer = octopusServer;
 
         if (context.settings.disableExternalCalls) {
             // pretend to do a login
