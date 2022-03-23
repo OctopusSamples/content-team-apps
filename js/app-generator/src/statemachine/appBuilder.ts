@@ -65,7 +65,7 @@ function getInitialState() {
  *
  * @param stateName The name of the current state.
  */
-function saveCurrentState(stateName: string) {
+export function saveCurrentState(stateName: string) {
     return (context: StateContext, event: AnyEventObject) => {
         if (event.type !== "xstate.init") {
             localStorage.setItem("appBuilderStateContext", JSON.stringify({...context, form: null}))
