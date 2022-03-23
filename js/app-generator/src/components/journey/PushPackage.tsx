@@ -33,7 +33,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "username": "AppBuilder",
                         "displayName": "App Builder Service Account",
                         "isService": true,
-                        "octopusServer": "main.testoctopus.app"
+                        "octopusServer": "https://main.testoctopus.app"
                     }
                 }
             };

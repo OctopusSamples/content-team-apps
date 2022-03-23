@@ -107,7 +107,7 @@ public class ServiceAccountHandler {
       verifyRequest(serviceAccount);
 
       // extract the URL of the cloud instance the service account will be created in.
-      final URI octopusServerUri = URI.create("https://" + createServiceAccount.getOctopusServer());
+      final URI octopusServerUri = URI.create(createServiceAccount.getOctopusServer());
 
       final String decryptedIdToken = cryptoUtils.decrypt(
           idToken,
