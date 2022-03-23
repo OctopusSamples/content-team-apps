@@ -143,11 +143,20 @@ resource "octopusdeploy_variable" "cloudformation_service_disable" {
   value = "True"
 }
 
-resource "octopusdeploy_variable" "cloudformation_service_disable" {
+resource "octopusdeploy_variable" "octopus_test_api_key" {
   name = "Octopus.TestApiKey"
   type = "String"
-  description = "Set to true to disable the service and return an empty value."
+  description = "The test api key to return when account creation is disabled."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "True"
+  value = var.octopus_test_api_key
+}
+
+resource "octopusdeploy_variable" "octopus_test_server" {
+  name = "Octopus.TestServer"
+  type = "String"
+  description = "The test server to return when account creation is disabled."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.octopus_test_server
 }

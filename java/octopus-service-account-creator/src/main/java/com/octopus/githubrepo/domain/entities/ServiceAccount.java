@@ -37,7 +37,7 @@ public class ServiceAccount {
   private String displayName;
 
   /**
-   * The service account description.
+   * Whether the acocunt is a service account.
    */
   @JsonProperty("isService")
   private boolean isService;
