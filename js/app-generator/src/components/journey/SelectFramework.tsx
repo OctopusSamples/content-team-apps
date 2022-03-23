@@ -34,16 +34,16 @@ const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Select the framework for the sample application you wish to deploy.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("QUARKUS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("QRKS")}>
                             {"Java - Quarkus"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("SPRING")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("SPNG")}>
                             {"Java - Spring"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("DOTNET")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("DNET")}>
                             {"DotNET Core"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("NODEJS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("NODE")}>
                             {"Node.js"}
                         </Button>
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("GO")}>
