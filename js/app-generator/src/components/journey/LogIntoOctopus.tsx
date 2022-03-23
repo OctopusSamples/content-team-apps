@@ -23,13 +23,15 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
     const login = () => {
         setButtonDisabled(true);
 
-        props.machine.state.context.octopusServer = octopusServer;
+        if (props.machine.state) {
+            props.machine.state.context.octopusServer = octopusServer.trim();
+        }
 
         if (context.settings.disableExternalCalls) {
             // pretend to do a login
             props.machine.send("MOCK");
         } else {
-            const nonce = crypto.randomUUID().toString().replaceAll("-", "").substr(0, 19);
+            const nonce = crypto.randomUUID().toString().replaceAll("-", "").substring(0, 19);
             Cookies.set("appBuilderOctopusNonce", nonce);
             localStorage.setItem("appBuilderState", "loggedIntoOctopus");
             window.open(context.settings.octofrontOauthEndpoint, "_parent");
