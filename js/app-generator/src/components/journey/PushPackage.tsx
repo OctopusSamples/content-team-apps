@@ -63,7 +63,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 secrets: [
                                     {
                                         name: "OCTOPUS_SERVER",
-                                        value: body.attributes.octopusServer
+                                        value: body.data.attributes.octopusServer
                                     },
                                     {
                                         name: "OCTOPUS_APIKEY",
