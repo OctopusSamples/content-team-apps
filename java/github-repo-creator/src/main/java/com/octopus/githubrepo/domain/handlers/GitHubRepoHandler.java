@@ -379,10 +379,10 @@ public class GitHubRepoHandler {
             "token " + decryptedGithubToken);
 
         if (response.getStatus() == 200) {
-         /*
-          If the response is 200, assume the repo exists, and we need to keep looping to find
-          a unique repo name.
-         */
+          /*
+            If the response is 200, assume the repo exists, and we need to keep looping to find
+            a unique repo name.
+          */
           ++count;
           repoName = createGithubRepo.getGithubRepository() + " " + count;
         } else {
