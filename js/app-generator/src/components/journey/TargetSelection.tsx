@@ -8,10 +8,10 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
-    const next = (state: string) => {
+    const next = (state: string, platform: string) => {
         setButtonDisabled(true);
         if (props.machine.state) {
-            props.machine.state.context.targetPlatform = state;
+            props.machine.state.context.targetPlatform = platform;
         }
         props.machine.send(state);
     }
@@ -34,16 +34,16 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                             Select the platform that you wish to deploy the sample microservice application to using
                             Octopus. If you only want to download the application code, select the last option.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("ECS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("ECS", "ECS")}>
                             {"AWS Elastic Compute Service (ECS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("LAM")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("LAMBDA", "LAM")}>
                             {"AWS Lambda"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("STANDALONE")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("STANDALONE", "STANDALONE")}>
                             {"Download the code with no CI/CD configuration"}
                         </Button>
                     </Grid>
