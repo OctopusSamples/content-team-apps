@@ -483,7 +483,7 @@ public class GitHubRepoHandler {
 
         final String secretValue = secret.isEncrypted()
             ? asymmetricDecryptor.decrypt(secret.getValue(), privateKeyBase64)
-            : secret.getValue();
+            : StringUtils.defaultString(secret.getValue(), "");
 
         if (StringUtils.isBlank(secretValue)) {
           Log.warn(secret.getName() + " has an blank value");
