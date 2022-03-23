@@ -44,6 +44,10 @@ public class HandlerTests extends BaseTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+  private static final String XRAY = "Self=1-62382f80-7bb0215908d69e92762eda43;Root=1-62382f7f-11fd455f1b8a116b3047ae73";
+
+  private static final String XRAY_SELF = "1-62382f80-7bb0215908d69e92762eda43";
+
   private static final List<String> ALLOWED_KEYS = List.of(
       "UtmParameters",
       "EmailAddress",
@@ -73,6 +77,8 @@ public class HandlerTests extends BaseTest {
     Mockito.doAnswer(invocation  -> {
       final String traceId = invocation.getArgument(0, String.class);
       final String body = invocation.getArgument(1, String.class);
+
+      assertEquals(XRAY_SELF, traceId);
 
       final Map<String, Object> bodyObject = OBJECT_MAPPER.readValue(body, Map.class);
 
@@ -130,6 +136,7 @@ public class HandlerTests extends BaseTest {
     assertDoesNotThrow(() -> handler.create(
         resourceToResourceDocument(resourceConverter, new GithubUserLoggedInForFreeToolsEventV1()),
         List.of("main"),
-        null, null, null));
+        null, null,
+        XRAY));
   }
 }
