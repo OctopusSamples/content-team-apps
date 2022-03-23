@@ -64,6 +64,12 @@ inputs:
   content_team_library_variable_set_id:
     description: 'The ID of the variable set containing shared content team values'
     required: true
+  octopus_test_api_key:
+    description: 'The test API key to return if account creation is disabled'
+    required: false
+  octopus_test_server:
+    description: 'The test server to return if account creation is disabled'
+    required: false
 
 runs:
   using: "composite"
@@ -127,5 +133,7 @@ runs:
         -var="octopus_proxy_encryption_key_production=${{ inputs.octopus_proxy_encryption_key_production }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
+        -var="octopus_test_server=${{ inputs.octopus_test_server }}"
+        -var="octopus_test_api_key=${{ inputs.octopus_test_api_key }}"
       working-directory: terraform/octopus-service-account-creator
       shell: bash
