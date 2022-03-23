@@ -18,7 +18,9 @@ import com.octopus.githubrepo.domain.utils.OctopusLoginUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.OctopusClient;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -104,7 +106,7 @@ public class ServiceAccountHandler {
       final ServiceAccount serviceAccount = createServiceAccount.convertToServiceAccount();
 
       // Ensure the validity of the request.
-      verifyRequest(serviceAccount);
+      verifyRequest(createServiceAccount);
 
       // extract the URL of the cloud instance the service account will be created in.
       final URI octopusServerUri = URI.create(createServiceAccount.getOctopusServer());
@@ -222,7 +224,7 @@ public class ServiceAccountHandler {
   /**
    * Ensure the service account being created has the correct values.
    */
-  private void verifyRequest(final ServiceAccount serviceAccount) {
+  private void verifyRequest(final CreateServiceAccount serviceAccount) {
     // The client must not specify an ID
     if (serviceAccount.getId() != null) {
       throw new InvalidClientIdException();
@@ -230,6 +232,10 @@ public class ServiceAccountHandler {
 
     if (!serviceAccount.isService()) {
       throw new InvalidInputException("The service attribute must be true");
+    }
+
+    if (Try.of(() -> new URL(serviceAccount.getOctopusServer())).isFailure()) {
+      throw new InvalidInputException("The octopus server URL was not valid");
     }
   }
 }
