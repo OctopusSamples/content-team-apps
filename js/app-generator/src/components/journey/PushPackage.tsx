@@ -20,12 +20,16 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     }
 
     function getOctopusServer() {
-        try {
-            const url = new URL(props.machine.state.context.octopusServer);
-            return "https://" + url.hostname;
-        } catch {
-            return "https://" + props.machine.state.context.octopusServer.split("/")[0];
+        if (props.machine.state.context.octopusServer) {
+            try {
+                const url = new URL(props.machine.state.context.octopusServer);
+                return "https://" + url.hostname;
+            } catch {
+                return "https://" + props.machine.state.context.octopusServer.split("/")[0];
+            }
         }
+        // Let the service return an error in its response code, and handle the response as usual.
+        return "";
     }
 
     const pushPackage = () => {
