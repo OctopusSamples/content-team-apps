@@ -180,28 +180,28 @@ public class GitHubRepoHandler {
       // Ensure we have the required scopes
       verifyScopes(decryptedGithubToken);
 
-      // Get the existing repo, or create a new one.
-      createRepo(decryptedGithubToken, createGithubRepo);
+      // Create a new, unique repo
+      final String repoName = createRepo(decryptedGithubToken, createGithubRepo);
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, createGithubRepo);
+      createSecrets(decryptedGithubToken, createGithubRepo, repoName);
 
       // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
-      populateInitialFile(decryptedGithubToken, createGithubRepo);
+      populateInitialFile(decryptedGithubToken, createGithubRepo, repoName);
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
           .get(() -> downloadTemplate(createGithubRepo));
 
       // Commit the files
-      commitFiles(decryptedGithubToken, createGithubRepo, templateDir);
+      commitFiles(decryptedGithubToken, createGithubRepo, repoName, templateDir);
 
       // return the details of the new repo
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
           .builder()
-          .id(createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository())
+          .id(createGithubRepo.getGithubOwner() + "/" + repoName)
           .githubOwner(createGithubRepo.getGithubOwner())
-          .githubRepository(createGithubRepo.getGithubRepository())
+          .githubRepository(repoName)
           .build());
     } catch (final ClientWebApplicationException ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
@@ -292,7 +292,7 @@ public class GitHubRepoHandler {
   }
 
   private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo,
-      final String path) throws IOException {
+      final String repoName, final String path) throws IOException {
     final Path inputPath = Paths.get(path);
 
     final GitHub gitHub = new GitHubBuilder()
@@ -306,7 +306,7 @@ public class GitHubRepoHandler {
 
     // start with a Repository ref
     final GHRepository repo = gitHub.getRepository(
-        createGithubRepo.getGithubOwner() + "/" + createGithubRepo.getGithubRepository());
+        createGithubRepo.getGithubOwner() + "/" + repoName);
 
     // get a sha to represent the root branch to start your commit from.
     // this can come from any number of classes:
@@ -364,33 +364,67 @@ public class GitHubRepoHandler {
         .anyMatch(p -> ArrayUtils.indexOf(IGNORE_PATHS, p) != -1);
   }
 
-  private void createRepo(final String decryptedGithubToken,
+  private String createRepo(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) {
-    try {
-      gitHubClient.getRepo(createGithubRepo.getGithubOwner(),
-          createGithubRepo.getGithubRepository(), "token " + decryptedGithubToken);
-    } catch (ClientWebApplicationException ex) {
-      if (ex.getResponse().getStatus() == 404) {
-        gitHubClient.createRepo(
-            GithubRepo.builder().name(createGithubRepo.getGithubRepository()).build(),
+
+    int count = 0;
+    String repoName = createGithubRepo.getGithubRepository();
+    boolean findingUniqueName = true;
+
+    while (findingUniqueName) {
+      try {
+        final Response response = gitHubClient.getRepo(
+            createGithubRepo.getGithubOwner(),
+            repoName,
             "token " + decryptedGithubToken);
-      } else {
-        Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-GeneralError", ex);
-        throw ex;
+
+        if (response.getStatus() == 200) {
+         /*
+          If the response is 200, assume the repo exists, and we need to keep looping to find
+          a unique repo name.
+         */
+          ++count;
+          repoName = createGithubRepo.getGithubRepository() + " " + count;
+        } else {
+          /*
+            Otherwise, we have found a unique repo name.
+           */
+          findingUniqueName = false;
+        }
+
+      } catch (ClientWebApplicationException ex) {
+        if (ex.getResponse().getStatus() == 404) {
+          /*
+            Catch a 404 and assume we have found a unique repo name.
+           */
+          findingUniqueName = false;
+        } else {
+          /*
+            Anything else was unexpected, and will result in an error.
+           */
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-GeneralError", ex);
+          throw ex;
+        }
       }
     }
+
+    gitHubClient.createRepo(
+        GithubRepo.builder().name(repoName).build(),
+        "token " + decryptedGithubToken);
+
+    return repoName;
   }
 
   /**
    * We need to create an initial file in the repo to then allow the Git client to upload the rest.
    */
   private void populateInitialFile(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo) {
+      final CreateGithubRepo createGithubRepo, final String repoName) {
     try {
       gitHubClient.getFile(
           "token " + decryptedGithubToken,
           createGithubRepo.getGithubOwner(),
-          createGithubRepo.getGithubRepository(),
+          repoName,
           "README.md");
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
@@ -411,7 +445,7 @@ public class GitHubRepoHandler {
                 .build(),
             "token " + decryptedGithubToken,
             createGithubRepo.getGithubOwner(),
-            createGithubRepo.getGithubRepository(),
+            repoName,
             "README.md"
         );
       }
@@ -419,13 +453,13 @@ public class GitHubRepoHandler {
   }
 
   private void createSecrets(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo) throws IOException {
+      final CreateGithubRepo createGithubRepo, final String repoName) throws IOException {
 
     // Create the github public key.
     final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
         "token " + decryptedGithubToken,
         createGithubRepo.getGithubOwner(),
-        createGithubRepo.getGithubRepository());
+        repoName);
 
     // Create a sodium instance
     final LazySodium lazySodium = new LazySodiumJava(
@@ -442,7 +476,7 @@ public class GitHubRepoHandler {
           continue;
         }
 
-        if (!needToCreateSecret(secret, createGithubRepo, decryptedGithubToken)) {
+        if (!needToCreateSecret(secret, createGithubRepo, decryptedGithubToken, repoName)) {
           Log.info("Skipping existing secret " + secret.getName());
           continue;
         }
@@ -466,10 +500,11 @@ public class GitHubRepoHandler {
                   .build(),
               "token " + decryptedGithubToken,
               createGithubRepo.getGithubOwner(),
-              createGithubRepo.getGithubRepository(),
+              repoName,
               secret.getName());
         } catch (final SodiumException ex) {
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateSecret-GeneralError", ex);
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateSecret-GeneralError",
+              ex);
           throw new RuntimeException(ex);
         }
       }
@@ -477,13 +512,13 @@ public class GitHubRepoHandler {
   }
 
   private boolean needToCreateSecret(final Secret secret, final CreateGithubRepo createGithubRepo,
-      final String decryptedGithubToken) {
+      final String decryptedGithubToken, final String repoName) {
     // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
     if (secret.isPreserveExistingSecret()) {
       return Try.of(() -> gitHubClient.getSecret(
               "token " + decryptedGithubToken,
               createGithubRepo.getGithubOwner(),
-              createGithubRepo.getGithubRepository(),
+              repoName,
               secret.getName()))
           .map(r -> r.getStatus() != 200)
           .getOrElse(true);

@@ -27,7 +27,7 @@ public interface GitHubClient {
   @GET
   @Path("/repos/{owner}/{repo}")
   @Produces(MediaType.APPLICATION_JSON)
-  void getRepo(
+  Response getRepo(
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
