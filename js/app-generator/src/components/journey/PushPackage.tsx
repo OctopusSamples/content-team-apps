@@ -49,16 +49,14 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 secrets: [
                                     {
                                         name: "OCTOPUS_SERVER",
-                                        value: "https://main.testoctopus.app",
-                                        preserveExistingSecret: true
+                                        value: body.octopusServer
                                     },
                                     {
                                         name: "OCTOPUS_APIKEY",
                                         value: body.included
                                             .filter((i: any) => i.type === "apikey")
                                             .map((i: any) => i.attributes?.apiKey)
-                                            .pop(),
-                                        preserveExistingSecret: true
+                                            .pop()
                                     },
                                     {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
                                     {
