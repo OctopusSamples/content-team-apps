@@ -28,6 +28,7 @@ import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
+import com.octopus.githubrepo.domain.utils.LinksHeaderParsing;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
@@ -138,6 +139,9 @@ public class GitHubRepoHandler {
 
   @Inject
   DisableServiceFeature disableServiceFeature;
+
+  @Inject
+  LinksHeaderParsing linksHeaderParsing;
 
   /**
    * Creates a new service account in the Octopus cloud instance.
@@ -518,7 +522,7 @@ public class GitHubRepoHandler {
 
     // get the last page from the header
     if (linkHeader != null) {
-      final Optional<String> lastPage = getLastPage(linkHeader);
+      final Optional<String> lastPage = linksHeaderParsing.getLastPage(linkHeader);
       final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
           repoName,
           1,
@@ -541,36 +545,6 @@ public class GitHubRepoHandler {
     }
 
     return Optional.empty();
-  }
-
-  private Optional<String> getLastPage(final String link) {
-    // Start with <https://api.github.com/repositories/473410322/commits?per_page=1&page=2>; rel="next", <https://api.github.com/repositories/473410322/commits?per_page=1&page=3>; rel="last"
-
-    // split on commas
-    return Arrays.stream(link.split(","))
-        .map(String::trim)
-        // split on semi colons
-        .map(l -> l.split(";"))
-        // We expect to find a link and a relationship
-        .filter(a -> a.length == 2)
-        // The relationship we are looking for is called "last"
-        .filter(a -> a[1].trim().endsWith("\"last\""))
-        // get the link
-        .map(a -> a[0])
-        // remove the angle brackets
-        .map(l -> l.replace("<", "").replace(">", ""))
-        // split on query params
-        .flatMap(l -> Arrays.stream(l.split("&|\\?")))
-        // find the param that starts with page
-        .filter(q -> q.startsWith("page="))
-        // split that param on the equals
-        .map(q -> q.split("="))
-        // We expect to find two components
-        .filter(a -> a.length == 2)
-        // Get the last component
-        .map(a -> a[1])
-        // That is the last page
-        .findFirst();
   }
 
   private void createBranch(
