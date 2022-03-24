@@ -38,4 +38,5 @@ public class CreateGithubRepo  {
 
   private Collection<Secret> secrets;
 
+  private boolean createNewRepo;
 }

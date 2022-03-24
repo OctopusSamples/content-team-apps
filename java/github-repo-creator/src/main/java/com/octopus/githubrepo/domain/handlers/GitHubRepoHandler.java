@@ -371,7 +371,8 @@ public class GitHubRepoHandler {
     String repoName = createGithubRepo.getGithubRepository();
     boolean findingUniqueName = true;
 
-    while (findingUniqueName) {
+    // If we want to create a fresh repo every time, add a counter to the end of the repo name
+    while (findingUniqueName && createGithubRepo.isCreateNewRepo()) {
       // Don't loop forever
       if (count > 100) {
         break;
