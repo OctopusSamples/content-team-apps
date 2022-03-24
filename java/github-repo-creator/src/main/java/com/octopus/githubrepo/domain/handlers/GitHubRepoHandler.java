@@ -557,6 +557,8 @@ public class GitHubRepoHandler {
         .filter(a -> a[1].trim().endsWith("\"last\""))
         // get the link
         .map(a -> a[0])
+        // remove the angle brackets
+        .map(l -> l.replace("<", "").replace(">", ""))
         // split on query params
         .flatMap(l -> Arrays.stream(l.split("&|\\?")))
         // find the param that starts with page
