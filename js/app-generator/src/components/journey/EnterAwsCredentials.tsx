@@ -1,10 +1,9 @@
 import {FC, ReactElement, useState} from "react";
 import {Button, FormControl, FormHelperText, FormLabel, Grid, Link, TextField} from "@mui/material";
-import {formContainer, formElements, journeyContainer, nextButtonStyle, validationError} from "../../utils/styles";
+import {formContainer, formElements, journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
-import {Label} from "@mui/icons-material";
 
 const mask =  "**************";
 
@@ -90,8 +89,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             as well as an Octopus AWS account in your hosted instance.
                         </p>
                         <p>
-                            For your security, once the secret key is supplied, it is encrypted with a one-way algorithm,
-                            and the original value is discarded by the app builder.
+                            You can find more information about creating access keys in the
+                            &nbsp;<a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
                         </p>
                         <Grid container={true} className={classes.row} sx={formContainer}>
                             <Grid md={3} xs={12} container={true}>
