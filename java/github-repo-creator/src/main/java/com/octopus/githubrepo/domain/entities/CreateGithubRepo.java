@@ -27,9 +27,6 @@ public class CreateGithubRepo  {
   private String id;
 
   @NotBlank
-  private String githubOwner;
-
-  @NotBlank
   private String githubRepository;
 
   private String generator;

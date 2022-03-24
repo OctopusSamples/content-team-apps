@@ -35,6 +35,9 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const pushPackage = () => {
 
         setButtonDisabled(true);
+
+        props.machine.state.context.githubRepo = createRepoName();
+
         if (context.settings.disableExternalCalls) {
             // pretend to populate the repo
             props.machine.send("NEXT");
@@ -57,7 +60,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "data": {
                             "type": "creategithubrepo",
                             "attributes": {
-                                githubOwner: "mcasperson",
                                 githubRepository: createRepoName(),
                                 createNewRepo: false,
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",

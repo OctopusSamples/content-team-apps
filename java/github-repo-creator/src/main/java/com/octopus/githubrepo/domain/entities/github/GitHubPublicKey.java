@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.entities;
+package com.octopus.githubrepo.domain.entities.github;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

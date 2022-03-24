@@ -37,7 +37,8 @@ function getInitialStateContext() {
             awsRegion: state.awsRegion || "",
             targetPlatform: state.targetPlatform || "",
             developmentFramework: state.developmentFramework || "",
-            octopusServer: state.octopusServer || ""
+            octopusServer: state.octopusServer || "",
+            githubRepo: state.githubRepo || ""
         }
     }
 
@@ -48,7 +49,8 @@ function getInitialStateContext() {
         awsRegion: "",
         targetPlatform: "",
         developmentFramework: "",
-        octopusServer: ""
+        octopusServer: "",
+        githubRepo: ""
     }
 }
 
@@ -130,6 +132,10 @@ export interface StateContext {
      * The Octopus Server we will be populating
      */
     octopusServer: string,
+    /**
+     * The github repository that was just populated
+     */
+    githubRepo: string
 }
 
 /**

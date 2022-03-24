@@ -1,10 +1,23 @@
 import {FC, ReactElement} from "react";
-import {Grid} from "@mui/material";
-import {journeyContainer} from "../../utils/styles";
+import {Button, Grid} from "@mui/material";
+import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+
+    function getOctopusServer() {
+        if (props.machine.state.context.octopusServer) {
+            try {
+                const url = new URL(props.machine.state.context.octopusServer);
+                return "https://" + url.hostname;
+            } catch {
+                return "https://" + props.machine.state.context.octopusServer.split("/")[0];
+            }
+        }
+        // Let the service return an error in its response code, and handle the response as usual.
+        return "";
+    }
 
     return (
         <>
@@ -21,20 +34,26 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                     >
                         <h2>You're all done.</h2>
                         <p>
-                            The sample application has been pushed to GitHub. The CI workflow can be viewed here.
+                            The sample application has been pushed to <a href={"https://github.com/"}>GitHub</a> in a
+                            repository called <strong>{props.machine.state.context.githubRepo}</strong>.
                         </p>
                         <p>
-                            It will take a few minutes for the initial deployment to complete. In addition to building
-                            the application source code, the GitHub Actions workflow also configures the following
-                            resources in your Octopus instance:
+                            It will take a few minutes for the initial GitHub Actions workflow to complete.
                         </p>
-                        <ul>
-                            <li>Environments</li>
-                            <li>Feeds</li>
-                            <li>Targets</li>
-                            <li>Deployment projects</li>
-                            <li>Supporting runbooks</li>
-                        </ul>
+                        <p>
+
+                            Once the GitHub Actions workflow has completed, the space starting with the
+                            name <strong>{props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework}</strong> and
+                            ending with your GitHub account name (or as many characters of your GitHub account name as we could fit in the space
+                            name) in your <a href={getOctopusServer()}>Octopus instance</a> will be populated with a
+                            sample project and all other associated resources to complete a deployment.
+                        </p>
+                        <Button
+                            sx={nextButtonStyle}
+                            variant="outlined"
+                            onClick={() => window.open(getOctopusServer(), "_parent")}>
+                            {"Open Octopus >"}
+                        </Button>
                     </Grid>
                 </Grid>
                 <Grid item md={3} xs={0}/>

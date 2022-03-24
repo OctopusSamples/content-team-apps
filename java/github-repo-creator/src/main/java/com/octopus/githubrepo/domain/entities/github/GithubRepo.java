@@ -1,5 +1,6 @@
-package com.octopus.githubrepo.domain.entities;
+package com.octopus.githubrepo.domain.entities.github;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,15 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * Represents a github file.
+ * Represents a new repository to be created in GitHub.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Jacksonized
-public class GithubFile {
-  private String message;
-  private String content;
-  private String branch;
+public class GithubRepo {
+  @NotBlank
+  private String name;
 }

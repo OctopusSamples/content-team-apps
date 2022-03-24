@@ -17,10 +17,11 @@ import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.files.TemporaryResources;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
-import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
-import com.octopus.githubrepo.domain.entities.GitHubSecret;
-import com.octopus.githubrepo.domain.entities.GithubFile;
-import com.octopus.githubrepo.domain.entities.GithubRepo;
+import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
+import com.octopus.githubrepo.domain.entities.github.GitHubSecret;
+import com.octopus.githubrepo.domain.entities.github.GitHubUser;
+import com.octopus.githubrepo.domain.entities.github.GithubFile;
+import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
@@ -160,7 +161,6 @@ public class GitHubRepoHandler {
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
           .builder()
           .id("")
-          .githubOwner("")
           .githubRepository("")
           .build());
     }
@@ -180,32 +180,39 @@ public class GitHubRepoHandler {
       // Ensure we have the required scopes
       verifyScopes(decryptedGithubToken);
 
+      // Get the GitHub login name
+      final GitHubUser user = gitHubClient.getUser(decryptedGithubToken);
+
       // Get the destination repo name
       final String repoName = createGithubRepo.isCreateNewRepo()
-          ? getUniqueRepoName(decryptedGithubToken, createGithubRepo)
+          ? getUniqueRepoName(decryptedGithubToken, createGithubRepo, user)
           : createGithubRepo.getGithubRepository();
 
-      // Create a new, unique repo
-      final boolean repoCreated = createRepo(decryptedGithubToken, createGithubRepo, repoName);
+      /*
+       Create a new, unique repo, or reuse an existing repo.
+       If a new repo is created, we populate main. If an existing repo is reused, we populate
+       app-builder-update.
+       */
+      final String branch = createRepo(decryptedGithubToken, createGithubRepo, user, repoName)
+          ? "main" : "app-builder-update";
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, createGithubRepo, repoName);
+      createSecrets(decryptedGithubToken, createGithubRepo, user, repoName);
 
       // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
-      populateInitialFile(decryptedGithubToken, createGithubRepo, repoName);
+      populateInitialFile(decryptedGithubToken, createGithubRepo, user, repoName, branch);
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
           .get(() -> downloadTemplate(createGithubRepo));
 
       // Commit the files
-      commitFiles(decryptedGithubToken, createGithubRepo, repoName, templateDir, repoCreated);
+      commitFiles(decryptedGithubToken, user, repoName, templateDir, branch);
 
       // return the details of the new repo
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
           .builder()
-          .id(createGithubRepo.getGithubOwner() + "/" + repoName)
-          .githubOwner(createGithubRepo.getGithubOwner())
+          .id(user.getLogin() + "/" + repoName)
           .githubRepository(repoName)
           .build());
     } catch (final ClientWebApplicationException ex) {
@@ -296,8 +303,12 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo,
-      final String repoName, final String path, final boolean repoCreated) throws IOException {
+  private void commitFiles(
+      final String githubToken,
+      final GitHubUser user,
+      final String repoName,
+      final String path,
+      final String branch) throws IOException {
     final Path inputPath = Paths.get(path);
 
     final GitHub gitHub = new GitHubBuilder()
@@ -311,7 +322,7 @@ public class GitHubRepoHandler {
 
     // start with a Repository ref
     final GHRepository repo = gitHub.getRepository(
-        createGithubRepo.getGithubOwner() + "/" + repoName);
+        user.getLogin() + "/" + repoName);
 
     // get a sha to represent the root branch to start your commit from.
     // this can come from any number of classes:
@@ -355,14 +366,7 @@ public class GitHubRepoHandler {
         .message("App Builder repo population")
         .create();
 
-
-    if (repoCreated) {
-      // update the main branch in a newly created repo
-      repo.getRef("heads/main").updateTo(commit.getSHA1());
-    } else {
-      // update the app-builder-update branch in an existing repo
-      repo.getRef("heads/app-builder-update").updateTo(commit.getSHA1());
-    }
+    repo.getRef("heads/" + branch).updateTo(commit.getSHA1());
   }
 
   private boolean fileIsExecutable(final File file) {
@@ -377,6 +381,7 @@ public class GitHubRepoHandler {
 
   private boolean createRepo(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo,
+      final GitHubUser user,
       final String repoName) {
 
     /*
@@ -384,7 +389,7 @@ public class GitHubRepoHandler {
      create a new GitHub repo.
      */
     if (createGithubRepo.isCreateNewRepo()
-        || !doesRepoExist(decryptedGithubToken, createGithubRepo, repoName)) {
+        || !doesRepoExist(decryptedGithubToken, user, repoName)) {
       gitHubClient.createRepo(
           GithubRepo.builder().name(repoName).build(),
           "token " + decryptedGithubToken);
@@ -394,14 +399,16 @@ public class GitHubRepoHandler {
     return false;
   }
 
-  private String getUniqueRepoName(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo) {
+  private String getUniqueRepoName(
+      final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo,
+      final GitHubUser user) {
     String repoName = createGithubRepo.getGithubRepository();
 
     // If we want to create a fresh repo every time, add a counter to the end of the repo name
     for (int i = 1; i <= 100; ++i) {
 
-      if (doesRepoExist(decryptedGithubToken, createGithubRepo, repoName)) {
+      if (doesRepoExist(decryptedGithubToken, user, repoName)) {
         repoName = createGithubRepo.getGithubRepository() + i;
       } else {
         break;
@@ -411,12 +418,13 @@ public class GitHubRepoHandler {
     return repoName;
   }
 
-  private boolean doesRepoExist(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo,
+  private boolean doesRepoExist(
+      final String decryptedGithubToken,
+      final GitHubUser user,
       final String repoName) {
     try {
       final Response response = gitHubClient.getRepo(
-          createGithubRepo.getGithubOwner(),
+          user.getLogin(),
           repoName,
           "token " + decryptedGithubToken);
 
@@ -439,14 +447,20 @@ public class GitHubRepoHandler {
   /**
    * We need to create an initial file in the repo to then allow the Git client to upload the rest.
    */
-  private void populateInitialFile(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo, final String repoName) {
+  private void populateInitialFile(
+      final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo,
+      final GitHubUser user,
+      final String repoName,
+      final String branch) {
+
     try {
       gitHubClient.getFile(
           "token " + decryptedGithubToken,
-          createGithubRepo.getGithubOwner(),
+          user.getLogin(),
           repoName,
-          "README.md");
+          "README.md",
+          branch);
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
         gitHubClient.createFile(
@@ -470,10 +484,10 @@ public class GitHubRepoHandler {
 
                         .getBytes(StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
-                .branch("main")
+                .branch(branch)
                 .build(),
             "token " + decryptedGithubToken,
-            createGithubRepo.getGithubOwner(),
+            user.getLogin(),
             repoName,
             "README.md"
         );
@@ -481,13 +495,16 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void createSecrets(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo, final String repoName) throws IOException {
+  private void createSecrets(
+      final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo,
+      final GitHubUser user,
+      final String repoName) {
 
     // Create the github public key.
     final GitHubPublicKey publicKey = gitHubClient.getPublicKey(
         "token " + decryptedGithubToken,
-        createGithubRepo.getGithubOwner(),
+        user.getLogin(),
         repoName);
 
     // Create a sodium instance
@@ -505,7 +522,7 @@ public class GitHubRepoHandler {
           continue;
         }
 
-        if (!needToCreateSecret(secret, createGithubRepo, decryptedGithubToken, repoName)) {
+        if (!needToCreateSecret(secret, user, decryptedGithubToken, repoName)) {
           Log.info("Skipping existing secret " + secret.getName());
           continue;
         }
@@ -528,7 +545,7 @@ public class GitHubRepoHandler {
                   .keyId(publicKey.getKeyId())
                   .build(),
               "token " + decryptedGithubToken,
-              createGithubRepo.getGithubOwner(),
+              user.getLogin(),
               repoName,
               secret.getName());
         } catch (final SodiumException ex) {
@@ -540,13 +557,15 @@ public class GitHubRepoHandler {
     }
   }
 
-  private boolean needToCreateSecret(final Secret secret, final CreateGithubRepo createGithubRepo,
+  private boolean needToCreateSecret(
+      final Secret secret,
+      final GitHubUser user,
       final String decryptedGithubToken, final String repoName) {
     // Some secrets we don't update. Check for the existing secret, and if it exists, move on.
     if (secret.isPreserveExistingSecret()) {
       return Try.of(() -> gitHubClient.getSecret(
               "token " + decryptedGithubToken,
-              createGithubRepo.getGithubOwner(),
+              user.getLogin(),
               repoName,
               secret.getName()))
           .map(r -> r.getStatus() != 200)

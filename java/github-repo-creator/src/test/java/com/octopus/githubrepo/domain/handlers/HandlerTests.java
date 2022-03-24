@@ -60,7 +60,7 @@ public class HandlerTests extends BaseTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      final CreateGithubRepo audit = createResource("subject");
+      final CreateGithubRepo audit = createResource();
       handler.create(resourceToResourceDocument(resourceConverter, audit),
           null,
           null,
@@ -72,7 +72,6 @@ public class HandlerTests extends BaseTest {
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
     final CreateGithubRepo resultObject = createResource(handler, resourceConverter);
-    assertEquals("myname", resultObject.getGithubOwner());
     assertEquals("myrepo", resultObject.getGithubRepository());
   }
 }

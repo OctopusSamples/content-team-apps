@@ -58,6 +58,6 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseTest {
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
     final CreateGithubRepo resource = createResource(handler, resourceConverter);
-    assertEquals("myname", resource.getGithubOwner());
+    assertEquals("myrepo", resource.getGithubRepository());
   }
 }

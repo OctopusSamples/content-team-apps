@@ -1,9 +1,10 @@
 package com.octopus.githubrepo.infrastructure.clients;
 
-import com.octopus.githubrepo.domain.entities.GitHubPublicKey;
-import com.octopus.githubrepo.domain.entities.GitHubSecret;
-import com.octopus.githubrepo.domain.entities.GithubFile;
-import com.octopus.githubrepo.domain.entities.GithubRepo;
+import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
+import com.octopus.githubrepo.domain.entities.github.GitHubSecret;
+import com.octopus.githubrepo.domain.entities.github.GitHubUser;
+import com.octopus.githubrepo.domain.entities.github.GithubFile;
+import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -12,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,6 +25,12 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Path("/")
 @RegisterRestClient
 public interface GitHubClient {
+
+  @GET
+  @Path("/user")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  GitHubUser getUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
   @GET
   @Path("/repos/{owner}/{repo}")
@@ -58,7 +66,8 @@ public interface GitHubClient {
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
-      @PathParam("file") final String file);
+      @PathParam("file") final String file,
+      @QueryParam("ref") final String ref);
 
   @GET
   @Path("/repos/{owner}/{repo}/actions/secrets/public-key")

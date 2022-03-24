@@ -10,9 +10,8 @@ import java.util.List;
 import lombok.NonNull;
 
 public class BaseTest {
-  protected CreateGithubRepo createResource(@NonNull final String name) {
+  protected CreateGithubRepo createResource() {
     final CreateGithubRepo resource = new CreateGithubRepo();
-    resource.setGithubOwner(name);
     resource.setGithubRepository("myrepo");
     return resource;
   }
@@ -21,7 +20,7 @@ public class BaseTest {
       @NonNull final GitHubRepoHandler handler,
       @NonNull final ResourceConverter resourceConverter)
       throws DocumentSerializationException {
-    final CreateGithubRepo resource = createResource("myname");
+    final CreateGithubRepo resource = createResource();
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),

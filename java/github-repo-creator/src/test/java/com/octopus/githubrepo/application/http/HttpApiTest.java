@@ -39,7 +39,7 @@ public class HttpApiTest extends BaseTest {
             .when()
             .body(
                 resourceToResourceDocument(
-                    resourceConverter, createResource("testCreateAndGetResource")))
+                    resourceConverter, createResource()))
             .post(API_ENDPOINT)
             .then()
             .statusCode(415);
@@ -54,7 +54,7 @@ public class HttpApiTest extends BaseTest {
             .when()
             .body(
                 resourceToResourceDocument(
-                    resourceConverter, createResource("testCreateAndGetResource")))
+                    resourceConverter, createResource()))
             .post(API_ENDPOINT)
             .then()
             .statusCode(406);
