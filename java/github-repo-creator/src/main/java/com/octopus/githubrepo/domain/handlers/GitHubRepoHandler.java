@@ -352,11 +352,11 @@ public class GitHubRepoHandler {
     //   GHBranch, GHCommit, GHTree, etc...
 
     // for this example, we'll start from the main branch
-    final GHBranch masterBranch = repo.getBranch(DEFAULT_BRANCH);
+    final GHBranch targetBranch = repo.getBranch(branch);
 
     // get a tree builder object to build up into the commit.
     // the base of the tree will be the master branch
-    GHTreeBuilder treeBuilder = repo.createTree().baseTree(masterBranch.getSHA1());
+    GHTreeBuilder treeBuilder = repo.createTree().baseTree(targetBranch.getSHA1());
 
     // loop over all the files and add them to the treebuilder.
     Collection<File> files = FileUtils.listFiles(new File(path), null, true);
@@ -385,7 +385,7 @@ public class GitHubRepoHandler {
         // base the commit on the tree we built
         .tree(treeBuilder.create().getSha())
         // set the parent of the commit as the master branch
-        .parent(masterBranch.getSHA1())
+        .parent(targetBranch.getSHA1())
         .message("App Builder repo population")
         .create();
 
