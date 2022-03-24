@@ -46,12 +46,13 @@ public class ServiceAccountResource {
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
-      @CookieParam(ServiceConstants.OCTOPUS_SESSION_COOKIE) final String idToken)
+      @CookieParam(ServiceConstants.OCTOPUS_SESSION_COOKIE) final String idToken,
+      @HeaderParam(HttpHeaders.HOST) final String host)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(
             serviceAccountHandler.create(
-                document, authorizationHeader, serviceAuthorizationHeader, idToken))
+                document, authorizationHeader, serviceAuthorizationHeader, idToken, host))
         .build();
   }
 }

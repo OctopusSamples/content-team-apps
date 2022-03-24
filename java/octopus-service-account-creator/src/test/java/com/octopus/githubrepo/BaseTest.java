@@ -25,7 +25,7 @@ public class BaseTest {
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
-            null, null, null);
+            null, null, null, "");
     final ServiceAccount resultObject = getResourceFromDocument(resourceConverter, result);
     return resultObject;
   }

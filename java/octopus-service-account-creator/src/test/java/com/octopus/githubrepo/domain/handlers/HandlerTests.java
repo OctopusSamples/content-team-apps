@@ -55,7 +55,8 @@ public class HandlerTests extends BaseTest {
           null,
           null,
           null,
-          null);
+          null,
+          "");
     });
 
     assertThrows(NullPointerException.class, () -> {
@@ -63,6 +64,16 @@ public class HandlerTests extends BaseTest {
       handler.create(resourceToResourceDocument(resourceConverter, audit),
           null,
           null,
+          null,
+          "");
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      final ServiceAccount audit = createResource("subject");
+      handler.create(resourceToResourceDocument(resourceConverter, audit),
+          null,
+          null,
+          "",
           null);
     });
   }

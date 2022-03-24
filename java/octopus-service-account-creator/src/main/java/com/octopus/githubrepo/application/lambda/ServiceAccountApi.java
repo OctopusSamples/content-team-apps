@@ -155,7 +155,9 @@ public class ServiceAccountApi implements
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
                             Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
                         lambdaHttpCookieExtractor.getCookieValue(input,
-                            ServiceConstants.OCTOPUS_SESSION_COOKIE).orElse(""))));
+                            ServiceConstants.OCTOPUS_SESSION_COOKIE).orElse(""),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input,
+                            HttpHeaders.HOST).orElse(""))));
       }
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));

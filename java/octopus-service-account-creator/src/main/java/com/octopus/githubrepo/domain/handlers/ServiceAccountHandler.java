@@ -86,7 +86,8 @@ public class ServiceAccountHandler {
       @NonNull final String document,
       final String authorizationHeader,
       final String serviceAuthorizationHeader,
-      @NonNull final String idToken)
+      @NonNull final String idToken,
+      @NonNull final String host)
       throws DocumentSerializationException {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
@@ -94,7 +95,7 @@ public class ServiceAccountHandler {
     }
 
     if (disableAccountCreationFeature.getDisableAccountCreation()) {
-      return getEmptyResponse();
+      return getEmptyResponse(host);
     }
 
     try {
@@ -177,13 +178,13 @@ public class ServiceAccountHandler {
     }
   }
 
-  private String getEmptyResponse() throws DocumentSerializationException {
+  private String getEmptyResponse(final String host) throws DocumentSerializationException {
     final CreateServiceAccount combinedResponse = CreateServiceAccount.builder()
         .apiKey(ApiKey.builder()
             .id("")
-            .apiKey(disableAccountCreationFeature.getTestApiKey().orElse(""))
+            .apiKey(getTestApiKey(host))
             .build())
-        .octopusServer(disableAccountCreationFeature.getTestServer().orElse(""))
+        .octopusServer(getTestServer(host))
         .displayName("")
         .username("")
         .id("")
@@ -191,6 +192,30 @@ public class ServiceAccountHandler {
         .build();
 
     return jsonApiServiceUtils.respondWithResource(combinedResponse);
+  }
+
+  /**
+   * Gets the test API key, making sure that we only use it when testing locally.
+   *
+   * @param host The host of this service.
+   * @return The test api key for local testing, or an empty string otherwise.
+   */
+  private String getTestApiKey(final String host) {
+    return "localhost".equals(host)
+        ? disableAccountCreationFeature.getTestApiKey().orElse("")
+        : "";
+  }
+
+  /**
+   * Gets the test server, making sure that we only use it when testing locally.
+   *
+   * @param host The host of this service.
+   * @return The test server for local testing, or an empty string otherwise.
+   */
+  private String getTestServer(final String host) {
+    return "localhost".equals(host)
+        ? disableAccountCreationFeature.getTestServer().orElse("")
+        : "";
   }
 
   private OctopusApiKey createApiKey(final URI apiUri, final ApiKey apiKey, final String userId,
