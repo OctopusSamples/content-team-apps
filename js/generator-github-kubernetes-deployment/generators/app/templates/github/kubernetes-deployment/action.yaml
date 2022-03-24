@@ -61,6 +61,8 @@ runs:
     - name: Clone code repo
       uses: actions/checkout@v2
 
+    - uses: nelonoel/branch-name@v1.0.1
+
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v1
 

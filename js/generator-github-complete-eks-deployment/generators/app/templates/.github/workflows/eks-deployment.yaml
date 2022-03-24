@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - uses: nelonoel/branch-name@v1.0.1
+
       # This main workflow file implements each stage through composable actions -
       # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
       # This allows us to mix and match build and deployment steps, which is important for a platform engineering tool
@@ -19,6 +21,17 @@ jobs:
 
       - name: Create Initial Space
         id: shared_space
+        # The App Builder will update an existing repo by placing the new code in the branch called app-builder-update.
+        # We don't trigger any builds from this branch, as it is up to the end user to merge any required changes
+        # into main.
+        # To overwrite the main branch with app-builder-update, use the "ours" merge strategy. See
+        # https://stackoverflow.com/a/2862938/157605 for more information:
+        #
+        # git checkout app-builder-update
+        # git merge -s ours main
+        # git checkout main
+        # git merge app-builder-update
+        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -34,6 +47,7 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
+        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -49,6 +63,7 @@ jobs:
 
       - name: Create the ECR repository and feed
         id: ecr_resources
+        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/aws-ecr
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -63,6 +78,7 @@ jobs:
           github_repo: ${{ github.repository }}
 
       - name: Build Java Microservice
+        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/java-microservice
         with:
           image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
@@ -77,6 +93,7 @@ jobs:
           github_repo: ${{ github.repository }}
 
       - name: Create Kubernetes Deployment Project
+        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/kubernetes-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
