@@ -168,8 +168,12 @@ public class GitHubRepoHandler {
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
    *                                        resource.
    */
-  public String create(@NonNull final String document, final String authorizationHeader,
-      final String serviceAuthorizationHeader, @NonNull final String githubToken)
+  public String create(
+      @NonNull final String document,
+      final String authorizationHeader,
+      final String serviceAuthorizationHeader,
+      final String routingHeader,
+      @NonNull final String githubToken)
       throws DocumentSerializationException {
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
@@ -227,7 +231,11 @@ public class GitHubRepoHandler {
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
-          .get(() -> downloadTemplate(createGithubRepo));
+          .get(() -> downloadTemplate(
+              createGithubRepo,
+              authorizationHeader,
+              null,
+              routingHeader));
 
       // Commit the files
       commitFiles(decryptedGithubToken, user, repoName, templateDir, branch);
@@ -276,7 +284,11 @@ public class GitHubRepoHandler {
     }
   }
 
-  private String downloadTemplate(final CreateGithubRepo createGithubRepo)
+  private String downloadTemplate(
+      final CreateGithubRepo createGithubRepo,
+      final String authHeader,
+      final String serviceAuthHeader,
+      final String routingHeader)
       throws DocumentSerializationException, IOException {
 
     final GenerateTemplate generateTemplate = GenerateTemplate.builder()
@@ -289,14 +301,21 @@ public class GitHubRepoHandler {
         new JSONAPIDocument<>(generateTemplate)));
 
     try (final TemporaryResources temp = new TemporaryResources()) {
-      final Path zipFile = downloadTemplateToTempFile(body, temp);
+      final Path zipFile = downloadTemplateToTempFile(
+          body, temp, authHeader, serviceAuthHeader, routingHeader);
       return extractZipToTempDir(zipFile, temp).toString();
     }
   }
 
-  private Path downloadTemplateToTempFile(final String body, final TemporaryResources temp)
+  private Path downloadTemplateToTempFile(
+      final String body,
+      final TemporaryResources temp,
+      final String authHeader,
+      final String serviceAuthHeader,
+      final String routingHeader)
       throws IOException {
-    try (final Response response = generateTemplateClient.generateTemplate(body, null, null)) {
+    try (final Response response = generateTemplateClient.generateTemplate(
+        body, routingHeader, authHeader, serviceAuthHeader)) {
       if (response.getStatus() != 200) {
         throw new BadRequestException(
             "Call to template generator resulted in status code " + response.getStatus());

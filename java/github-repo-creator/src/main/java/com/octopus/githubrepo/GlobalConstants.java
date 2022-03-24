@@ -5,4 +5,6 @@ package com.octopus.githubrepo;
  */
 public final class GlobalConstants {
   public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
+
+  public static final String ROUTING_HEADER = "Routing";
 }

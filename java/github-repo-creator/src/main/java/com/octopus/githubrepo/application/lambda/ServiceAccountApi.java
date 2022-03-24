@@ -163,6 +163,8 @@ public class ServiceAccountApi implements
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
                             Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input,
+                            Constants.ROUTING_HEADER).orElse(null),
                         lambdaHttpCookieExtractor.getCookieValue(input,
                             ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
       }

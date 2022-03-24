@@ -23,6 +23,7 @@ public interface GenerateTemplateClient {
   @Consumes(MediaType.APPLICATION_JSON)
   Response generateTemplate(
       String generateTemplate,
+      @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
       @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth);
 }

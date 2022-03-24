@@ -47,12 +47,17 @@ public class GitHubRepoResource {
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader,
+      @HeaderParam(Constants.ROUTING_HEADER) final String routingHeader,
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(
             gitHubRepoHandler.create(
-                document, authorizationHeader, serviceAuthorizationHeader, githubToken))
+                document,
+                authorizationHeader,
+                serviceAuthorizationHeader,
+                routingHeader,
+                githubToken))
         .build();
   }
 }
