@@ -25,7 +25,7 @@ output "cognito_project_id" {
   value = octopusdeploy_project.cognito_project.id
 }
 
-resource "octopusdeploy_variable" "debug_variable" {
+resource "octopusdeploy_variable" "cognito_debug_variable" {
   name = "OctopusPrintVariables"
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -34,7 +34,7 @@ resource "octopusdeploy_variable" "debug_variable" {
   value = "False"
 }
 
-resource "octopusdeploy_variable" "debug_evaluated_variable" {
+resource "octopusdeploy_variable" "cognito_debug_evaluated_variable" {
   name = "OctopusPrintEvaluatedVariables"
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
