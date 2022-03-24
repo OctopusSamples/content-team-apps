@@ -26,10 +26,10 @@ export function getHashField(field: string) {
  */
 export function getBranchPath(branch: string) {
     if (branch === DEFAULT_BRANCH) {
-        return "/";
+        return "";
     }
 
-    return "/" + branch + "/";
+    return branch + "/";
 }
 
 export function setLoginBranch(settings: RuntimeSettings) {
