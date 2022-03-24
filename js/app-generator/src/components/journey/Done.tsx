@@ -48,7 +48,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             sample project and all other associated resources to complete a deployment.
                         </p>
                         <p>
-                            If you would like to leave some feedback about the App Builder, feel free to leave a comment
+                            If you would like to share some feedback about the App Builder, feel free to leave a comment
                             on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"}>this GitHub issue</a>.
                         </p>
                         <Button
