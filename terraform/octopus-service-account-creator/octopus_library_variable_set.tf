@@ -149,7 +149,10 @@ resource "octopusdeploy_variable" "octopus_test_api_key" {
   description = "The test api key to return when account creation is disabled."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = var.octopus_test_api_key
+  value = ""
+  # Set the value to the variable below to have the service creator return a fixed api key.
+  # Beware that this will essentially leak an API key into the GitHub repos.
+  # value = var.octopus_test_api_key
 }
 
 resource "octopusdeploy_variable" "octopus_test_server" {
