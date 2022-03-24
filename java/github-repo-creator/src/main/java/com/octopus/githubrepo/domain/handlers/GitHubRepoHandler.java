@@ -180,8 +180,13 @@ public class GitHubRepoHandler {
       // Ensure we have the required scopes
       verifyScopes(decryptedGithubToken);
 
+      // Get the destination repo name
+      final String repoName = createGithubRepo.isCreateNewRepo()
+          ? getUniqueRepoName(decryptedGithubToken, createGithubRepo)
+          : createGithubRepo.getGithubRepository();
+
       // Create a new, unique repo
-      final String repoName = createRepo(decryptedGithubToken, createGithubRepo);
+      final boolean repoCreated = createRepo(decryptedGithubToken, createGithubRepo, repoName);
 
       // Create the secrets
       createSecrets(decryptedGithubToken, createGithubRepo, repoName);
@@ -194,7 +199,7 @@ public class GitHubRepoHandler {
           .get(() -> downloadTemplate(createGithubRepo));
 
       // Commit the files
-      commitFiles(decryptedGithubToken, createGithubRepo, repoName, templateDir);
+      commitFiles(decryptedGithubToken, createGithubRepo, repoName, templateDir, repoCreated);
 
       // return the details of the new repo
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
@@ -292,7 +297,7 @@ public class GitHubRepoHandler {
   }
 
   private void commitFiles(final String githubToken, final CreateGithubRepo createGithubRepo,
-      final String repoName, final String path) throws IOException {
+      final String repoName, final String path, final boolean repoCreated) throws IOException {
     final Path inputPath = Paths.get(path);
 
     final GitHub gitHub = new GitHubBuilder()
@@ -350,8 +355,14 @@ public class GitHubRepoHandler {
         .message("App Builder repo population")
         .create();
 
-    // update the main branch
-    repo.getRef("heads/main").updateTo(commit.getSHA1());
+
+    if (repoCreated) {
+      // update the main branch in a newly created repo
+      repo.getRef("heads/main").updateTo(commit.getSHA1());
+    } else {
+      // update the app-builder-update branch in an existing repo
+      repo.getRef("heads/app-builder-update").updateTo(commit.getSHA1());
+    }
   }
 
   private boolean fileIsExecutable(final File file) {
@@ -364,12 +375,9 @@ public class GitHubRepoHandler {
         .anyMatch(p -> ArrayUtils.indexOf(IGNORE_PATHS, p) != -1);
   }
 
-  private String createRepo(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo) {
-
-    final String repoName = createGithubRepo.isCreateNewRepo()
-        ? getUniqueRepoName(decryptedGithubToken, createGithubRepo)
-        : createGithubRepo.getGithubRepository();
+  private boolean createRepo(final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo,
+      final String repoName) {
 
     /*
      If we are creating a unique repo name, or creating a new common repo, go ahead and
@@ -380,9 +388,10 @@ public class GitHubRepoHandler {
       gitHubClient.createRepo(
           GithubRepo.builder().name(repoName).build(),
           "token " + decryptedGithubToken);
+      return true;
     }
 
-    return repoName;
+    return false;
   }
 
   private String getUniqueRepoName(final String decryptedGithubToken,
@@ -450,7 +459,15 @@ public class GitHubRepoHandler {
                         + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
                         + "* `java`: The sample Java application.\n"
                         + "* `js`: The sample JavaScript application.\n"
-                        + "* `dotnet`: The sample DotNET application.")
+                        + "* `dotnet`: The sample DotNET application.\n\n"
+                        + "If you have run the App Builder for a second time, the files are placed in the app-builder-update branch.\n"
+                        + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
+                        + "To \"replace\" the main branch with the app-builder-update branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
+                        + "1. `git checkout app-builder-update`\n"
+                        + "2. `git merge -s ours main`\n"
+                        + "3. `git checkout main`\n"
+                        + "4. `git checkout app-builder-update`\n")
+
                         .getBytes(StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
                 .branch("main")
