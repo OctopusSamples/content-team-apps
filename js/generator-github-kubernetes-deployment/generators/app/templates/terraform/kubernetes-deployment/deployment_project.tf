@@ -112,7 +112,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
       }
-      script_body                        = <<-EOT
+      script_body   = <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
           for x in **/bom.xml; do
@@ -154,6 +154,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           exit 0
         EOT
-      run_on_server                      = true
+      run_on_server = true
     }
   }
+}

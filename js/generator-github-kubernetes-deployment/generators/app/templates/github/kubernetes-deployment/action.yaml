@@ -106,9 +106,12 @@ runs:
         input: terraform/kubernetes-deployment/backend.tf
         output: terraform/kubernetes-deployment/backend.tf
 
+    # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
+    # we need to manually query the new space for the built-in feed ID.
     - name: Find the Built-In Feed ID
+      id: octopus_builtin_feed_id
       run: |
-          curl -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)"
+          curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)" | jq -r '.Items[0].Id'
       shell: bash
 
     - name: Terraform Init
@@ -130,7 +133,6 @@ runs:
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
-        -var="octopus_built_in_feed_id=${{ inputs.octopus_built_in_feed_id }}"
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
         -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}"
         -var="octopus_docker_image=${{ inputs.octopus_docker_image }}"
@@ -140,6 +142,7 @@ runs:
         -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
         -var="github_repo_owner=${{ inputs.github_repo_owner }}"
+        -var="octopus_built_in_feed_id=${{ steps.application_lifecycle_id.outputs.stdout }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
 
