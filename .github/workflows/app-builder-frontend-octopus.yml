@@ -34,3 +34,5 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-west-1
+          cognito_library_variable_set_id: LibraryVariableSets-1262
+          content_team_library_variable_set_id: LibraryVariableSets-1282

@@ -49,6 +49,12 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
+  cognito_library_variable_set_id:
+    description: 'The ID of the variable set containing shared cognito values'
+    required: true
+  content_team_library_variable_set_id:
+    description: 'The ID of the variable set containing shared content team values'
+    required: true
 
 runs:
   using: "composite"
