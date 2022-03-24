@@ -75,3 +75,7 @@ export const formElements: SxProps<Theme> = {
     paddingTop: "8px",
     width: "100%"
 }
+
+export const validationError: SxProps<Theme> = {
+    color: "red"
+}

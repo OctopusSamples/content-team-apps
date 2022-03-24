@@ -1,9 +1,10 @@
 import {FC, ReactElement, useState} from "react";
-import {Button, FormLabel, Grid, Link, TextField} from "@mui/material";
-import {formContainer, formElements, journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {Button, FormControl, FormHelperText, FormLabel, Grid, Link, TextField} from "@mui/material";
+import {formContainer, formElements, journeyContainer, nextButtonStyle, validationError} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
+import {Label} from "@mui/icons-material";
 
 const mask =  "**************";
 
@@ -11,19 +12,51 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
+    const [accessKeyError, setAccessKeyError] = useState<string | null>(null);
     const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "");
+    const [regionError, setRegionError] = useState<string | null>(null);
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? mask : "");
+    const [secretKeyError, setSecretKeyError] = useState<string | null>(null);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
-    const next = () => {
-        setButtonDisabled(true);
+    const validate = () => {
+        var error = false;
 
-        if (secretKey !== mask) {
-            // Asymmetrically encrypt the secret so the browser can not read it again.
-            encryptAndSaveInCookie(secretKey.trim(), "awsSecretKey", 1)
-                .then(nextState)
+        if (!accessKey.trim()) {
+            setAccessKeyError("The Access Key is a required field.");
+            error = true;
         } else {
-            nextState()
+            setAccessKeyError(null)
+        }
+
+        if (!secretKey.trim()) {
+            setSecretKeyError("The Secret Key is a required field.");
+            error = true;
+        } else {
+            setSecretKeyError(null)
+        }
+
+        if (!region.trim()) {
+            setRegionError("The Region is a required field.");
+            error = true;
+        } else {
+            setRegionError(null)
+        }
+
+        return !error;
+    }
+
+    const next = () => {
+        if (validate()) {
+            setButtonDisabled(true);
+
+            if (secretKey !== mask) {
+                // Asymmetrically encrypt the secret so the browser can not read it again.
+                encryptAndSaveInCookie(secretKey.trim(), "awsSecretKey", 1)
+                    .then(nextState)
+            } else {
+                nextState()
+            }
         }
     }
 
@@ -65,19 +98,39 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 <FormLabel sx={formElements}>Access Key</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} value={accessKey} onChange={(event) => setAccessKey(event.target.value)}/>
+                                <FormControl error variant="standard" sx={formElements}>
+                                    <TextField
+                                        value={accessKey}
+                                        onChange={(event) => setAccessKey(event.target.value)}
+                                        aria-describedby="access-key-error-text"/>
+                                    {accessKeyError && <FormHelperText id="access-key-error-text">{accessKeyError}</FormHelperText>}
+                                </FormControl>
                             </Grid>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Secret Key</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} value={secretKey} type="password" autoComplete="new-password" onChange={(event) => setSecretKey(event.target.value)}/>
+                                <FormControl error variant="standard" sx={formElements}>
+                                    <TextField
+                                           value={secretKey}
+                                           type="password"
+                                           autoComplete="new-password"
+                                           onChange={(event) => setSecretKey(event.target.value)}
+                                           aria-describedby="secret-key-error-text"/>
+                                    {secretKeyError && <FormHelperText id="secret-key-error-text">{secretKeyError}</FormHelperText>}
+                                </FormControl>
                             </Grid>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Region</FormLabel>
                             </Grid>
                             <Grid md={9} xs={12} container={true}>
-                                <TextField sx={formElements} value={region} onChange={(event) => setRegion(event.target.value)}/>
+                                <FormControl error variant="standard" sx={formElements}>
+                                    <TextField
+                                        value={region}
+                                        onChange={(event) => setRegion(event.target.value)}
+                                        aria-describedby="region-error-text"/>
+                                    {regionError && <FormHelperText id="region-error-text">{regionError}</FormHelperText>}
+                                </FormControl>
                             </Grid>
                         </Grid>
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={next}>
