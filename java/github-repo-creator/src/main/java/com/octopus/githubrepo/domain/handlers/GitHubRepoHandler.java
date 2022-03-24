@@ -17,10 +17,12 @@ import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.files.TemporaryResources;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
+import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
 import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.github.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubFile;
+import com.octopus.githubrepo.domain.entities.github.GithubRef;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
@@ -44,6 +46,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -463,6 +466,12 @@ public class GitHubRepoHandler {
           branch);
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
+
+        // Ensure the non-default branch exists before we start populating it.
+        if (!"main".equals(branch)) {
+          createBranch(decryptedGithubToken, user, repoName, branch);
+        }
+
         gitHubClient.createFile(
             GithubFile.builder()
                 .content(Base64.getEncoder().encodeToString(
@@ -491,6 +500,116 @@ public class GitHubRepoHandler {
             repoName,
             "README.md"
         );
+      }
+    }
+  }
+
+  private Optional<String> getFirstSha(final String decryptedGithubToken,
+      final GitHubUser user,
+      final String repoName) {
+    final Response response = gitHubClient.getCommitsRaw(
+        user.getLogin(),
+        repoName,
+        1,
+        "token " + decryptedGithubToken
+    );
+
+    final String linkHeader = response.getHeaderString("Link");
+
+    // get the last page from the header
+    if (linkHeader != null) {
+      final Optional<String> lastPage = getLastPage(linkHeader);
+      final List<GitHubCommit> commits = gitHubClient.getCommits( user.getLogin(),
+          repoName,
+          1,
+          Integer.parseInt(lastPage.orElse("1")),
+          "token " + decryptedGithubToken);
+      if (commits.size() > 1) {
+        return Optional.of(commits.get(0).getSha());
+      }
+    }
+
+    // If there is no links header, just get the first commit
+    final List<GitHubCommit> commits = gitHubClient.getCommits( user.getLogin(),
+        repoName,
+        1,
+        1,
+        "token " + decryptedGithubToken);
+
+    if (commits.size() > 1) {
+      return Optional.of(commits.get(0).getSha());
+    }
+
+    return Optional.empty();
+  }
+
+  private Optional<String> getLastPage(final String link) {
+    // Start with <https://api.github.com/repositories/473410322/commits?per_page=1&page=2>; rel="next", <https://api.github.com/repositories/473410322/commits?per_page=1&page=3>; rel="last"
+
+    // split on commas
+    return Arrays.stream(link.split(","))
+        .map(String::trim)
+        // split on semi colons
+        .map(l -> l.split(";"))
+        // We expect to find a link and a relationship
+        .filter(a -> a.length == 2)
+        // The relationship we are looking for is called "last"
+        .filter(a -> a[1].trim().endsWith("\"last\""))
+        // get the link
+        .map(a -> a[0])
+        // split on query params
+        .flatMap(l -> Arrays.stream(l.split("&|\\?")))
+        // find the param that starts with page
+        .filter(q -> q.startsWith("page="))
+        // split that param on the equals
+        .map(q -> q.split("="))
+        // We expect to find two components
+        .filter(a -> a.length == 2)
+        // Get the last component
+        .map(a -> a[1])
+        // That is the last page
+        .findFirst();
+  }
+
+  private void createBranch(
+      final String decryptedGithubToken,
+      final GitHubUser user,
+      final String repoName,
+      final String branch) {
+    try {
+      /**
+       * First check to see if we have the branch already.
+       */
+      gitHubClient.getBranch(
+          user.getLogin(),
+          repoName,
+          "refs/heads/" + branch,
+          "token " + decryptedGithubToken);
+    } catch (ClientWebApplicationException ex) {
+      if (ex.getResponse().getStatus() == 404) {
+
+        /*
+          Get the first sha for the default branch. Our new branches assume they forked the
+          main repo from day one. This allows the end user to distinguish their changes
+          from ours.
+         */
+        final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
+
+        if (sha.isPresent()) {
+          // create a new branch based on the first commit
+          gitHubClient.createBranch(
+              GithubRef.builder()
+                  .ref("refs/heads/" + branch)
+                  .sha(sha.get())
+                  .build(),
+              user.getLogin(),
+              repoName,
+              "token " + decryptedGithubToken);
+        } else {
+          // We shouldn't get here, but you never know...
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
+          throw new RuntimeException("Failed to find the first SHA");
+        }
       }
     }
   }

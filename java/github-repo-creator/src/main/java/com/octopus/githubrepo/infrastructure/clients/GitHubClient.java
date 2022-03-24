@@ -1,10 +1,13 @@
 package com.octopus.githubrepo.infrastructure.clients;
 
+import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
 import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.github.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubFile;
+import com.octopus.githubrepo.domain.entities.github.GithubRef;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -30,6 +33,44 @@ public interface GitHubClient {
   @Path("/user")
   @Produces(MediaType.APPLICATION_JSON)
   GitHubUser getUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
+  @GET
+  @Path("/repos/{owner}/{repo}/commits")
+  @Produces(MediaType.APPLICATION_JSON)
+  List<GitHubCommit> getCommits(
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @QueryParam("per_page") final int perPage,
+      @QueryParam("page") final int page,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
+  @GET
+  @Path("/repos/{owner}/{repo}/commits")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response getCommitsRaw(
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @QueryParam("per_page") final int perPage,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
+  @GET
+  @Path("/repos/{owner}/{repo}/git/{ref}")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response getBranch(
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @PathParam("ref") final String ref,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
+
+  @POST
+  @Path("/repos/{owner}/{repo}/git/refs")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  GitHubUser createBranch(
+      final GithubRef body,
+      @PathParam("owner") final String owner,
+      @PathParam("repo") final String repo,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
   @GET
   @Path("/repos/{owner}/{repo}")
