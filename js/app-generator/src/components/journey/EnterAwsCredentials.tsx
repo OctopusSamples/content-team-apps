@@ -35,7 +35,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             setSecretKeyError("The Secret Key is a required field.");
             error = true;
         } else if (secretKey.trim().length !== 40 && secretKey.trim() !== mask) {
-            setSecretKeyError("The Access Key must be 40 characters long.");
+            setSecretKeyError("The Secret Key must be 40 characters long.");
             error = true;
         } else {
             setSecretKeyError(null)
