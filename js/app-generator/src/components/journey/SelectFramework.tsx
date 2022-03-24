@@ -37,17 +37,17 @@ const SelectFramework: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("QUARKUS", "QRKS")}>
                             {"Java - Quarkus"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("SPRING", "SPNG")}>
-                            {"Java - Spring"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("SPRING", "SPNG")}>
+                            {"Java - Spring (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("DOTNET", "DNET")}>
-                            {"DotNET Core"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("DOTNET", "DNET")}>
+                            {"DotNET Core (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("NODEJS", "NODE")}>
-                            {"Node.js"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("NODEJS", "NODE")}>
+                            {"Node.js (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("GO", "GO")}>
-                            {"Go"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("GO", "GO")}>
+                            {"Go (Coming soon)"}
                         </Button>
                     </Grid>
                 </Grid>

@@ -37,14 +37,14 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("ECS", "ECS")}>
-                            {"AWS Elastic Compute Service (ECS)"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("ECS", "ECS")}>
+                            {"AWS Elastic Compute Service (ECS) (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("LAMBDA", "LAM")}>
-                            {"AWS Lambda"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("LAMBDA", "LAM")}>
+                            {"AWS Lambda (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("STANDALONE", "STANDALONE")}>
-                            {"Download the code with no CI/CD configuration"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("STANDALONE", "STANDALONE")}>
+                            {"Download the code with no CI/CD configuration (Coming soon)"}
                         </Button>
                     </Grid>
                 </Grid>
