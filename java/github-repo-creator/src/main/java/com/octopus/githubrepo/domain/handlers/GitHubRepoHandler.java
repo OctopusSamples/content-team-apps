@@ -384,7 +384,7 @@ public class GitHubRepoHandler {
             a unique repo name.
           */
           ++count;
-          repoName = createGithubRepo.getGithubRepository() + " " + count;
+          repoName = createGithubRepo.getGithubRepository() + count;
         } else {
           /*
             Otherwise, we have found a unique repo name.
