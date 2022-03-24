@@ -73,7 +73,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
 
           REST_API_ID=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormation.ApiGateway} \
+              --stack-name AppBuilderApiGateway \
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
           echo "REST API ID: $${REST_API_ID}"
