@@ -207,8 +207,12 @@ public class GitHubRepoHandler {
       // Create the secrets
       createSecrets(decryptedGithubToken, createGithubRepo, user, repoName);
 
-      // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
-      populateInitialFile(decryptedGithubToken, createGithubRepo, user, repoName, branch);
+      if (!"main".equals(branch)) {
+        createBranch(decryptedGithubToken, user, repoName, branch);
+      } else {
+        // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
+        populateInitialFile(decryptedGithubToken, createGithubRepo, user, repoName);
+      }
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
@@ -459,8 +463,7 @@ public class GitHubRepoHandler {
       final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo,
       final GitHubUser user,
-      final String repoName,
-      final String branch) {
+      final String repoName) {
 
     try {
       gitHubClient.getFile(
@@ -468,14 +471,9 @@ public class GitHubRepoHandler {
           user.getLogin(),
           repoName,
           "README.md",
-          branch);
+          "main");
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
-
-        // Ensure the non-default branch exists before we start populating it.
-        if (!"main".equals(branch)) {
-          createBranch(decryptedGithubToken, user, repoName, branch);
-        }
 
         gitHubClient.createFile(
             GithubFile.builder()
@@ -498,7 +496,7 @@ public class GitHubRepoHandler {
 
                         .getBytes(StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
-                .branch(branch)
+                .branch("main")
                 .build(),
             "token " + decryptedGithubToken,
             user.getLogin(),
