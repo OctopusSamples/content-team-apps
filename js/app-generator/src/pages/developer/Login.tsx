@@ -42,6 +42,7 @@ const Login: FC = (): ReactElement => {
                 <Grid item md={4} sm={false} xs={false}/>
                 <Grid item md={4} sm={12} xs={12}>
                     <Button variant={"contained"}
+                            disabled={!context.settings.aws.cognitoLogin?.trim()}
                             onClick={_ => login(context.settings.aws.cognitoLogin, context.settings)}>
                         Login
                     </Button>
