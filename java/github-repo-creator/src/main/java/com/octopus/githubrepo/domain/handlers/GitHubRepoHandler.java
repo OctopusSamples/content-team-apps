@@ -84,7 +84,18 @@ import org.kohsuke.github.internal.DefaultGitHubConnector;
 @ApplicationScoped
 public class GitHubRepoHandler {
 
+  /**
+   * The default branch.
+   */
   private static final String DEFAULT_BRANCH = "main";
+
+  /**
+   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't
+   * overwrite any updates users may have made between running the app-builder. The workflows
+   * are also configured to not run on this branch, so any manual updates made to Octopus
+   * won't be reverted.
+   */
+  private static final String UPDATE_BRANCH = "app-builder-update";
 
   /**
    * A list of directories we know we don't want to commit to a new repo.
@@ -202,12 +213,12 @@ public class GitHubRepoHandler {
        app-builder-update.
        */
       final String branch = createRepo(decryptedGithubToken, createGithubRepo, user, repoName)
-          ? "main" : "app-builder-update";
+          ? DEFAULT_BRANCH : UPDATE_BRANCH;
 
       // Create the secrets
       createSecrets(decryptedGithubToken, createGithubRepo, user, repoName);
 
-      if (!"main".equals(branch)) {
+      if (!DEFAULT_BRANCH.equals(branch)) {
         createBranch(decryptedGithubToken, user, repoName, branch);
       } else {
         // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
@@ -471,7 +482,7 @@ public class GitHubRepoHandler {
           user.getLogin(),
           repoName,
           "README.md",
-          "main");
+          DEFAULT_BRANCH);
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
 
@@ -496,7 +507,7 @@ public class GitHubRepoHandler {
 
                         .getBytes(StandardCharsets.UTF_8)))
                 .message("Adding the initial marker file")
-                .branch("main")
+                .branch(DEFAULT_BRANCH)
                 .build(),
             "token " + decryptedGithubToken,
             user.getLogin(),
