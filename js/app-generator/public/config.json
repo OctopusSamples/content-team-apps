@@ -16,7 +16,7 @@
   },
   "aws": {
     "cognitoDeveloperGroup": "Developers",
-    "cognitoLogin": "",
+    "cognitoLogin": "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=68sn92d4lgqotokg7oo082ildj&response_type=token&scope=email+openid+profile&redirect_uri=https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/",
     "jwk": {
       "keys": [
         {
