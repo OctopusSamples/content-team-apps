@@ -577,9 +577,7 @@ public class GitHubRepoHandler {
       final String repoName,
       final String branch) {
     try {
-      /**
-       * First check to see if we have the branch already.
-       */
+      // First check to see if we have the branch already.
       gitHubClient.getBranch(
           user.getLogin(),
           repoName,
