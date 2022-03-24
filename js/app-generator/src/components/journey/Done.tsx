@@ -42,11 +42,14 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             workflow to complete.
                         </p>
                         <p>
-
                             Once the GitHub Actions workflow has completed, the space named <strong>{props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework}</strong> and
                             ending with your GitHub account name (or as many characters of your GitHub account name as we could fit in the space
                             name) in your <a href={getOctopusServer()}>Octopus instance</a> will be populated with a
                             sample project and all other associated resources to complete a deployment.
+                        </p>
+                        <p>
+                            If you would like to leave some feedback about the App Builder, feel free to leave a comment
+                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"}>This GitHub issue</a>.
                         </p>
                         <Button
                             sx={nextButtonStyle}
