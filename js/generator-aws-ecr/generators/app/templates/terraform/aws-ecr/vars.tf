@@ -32,3 +32,8 @@ variable "aws_ecr_repository_name" {
   type = string
   nullable = false
 }
+
+variable "github_repo_owner" {
+  type = string
+  nullable = false
+}

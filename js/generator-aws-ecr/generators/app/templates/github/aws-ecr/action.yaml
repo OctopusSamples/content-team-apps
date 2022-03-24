@@ -31,6 +31,9 @@ inputs:
   github_repo:
     description: 'The github repo'
     required: true
+  github_repo_owner:
+    description: 'The github repo owner'
+    required: true
 
 outputs:
   aws_ecr_repository_url:
@@ -98,6 +101,7 @@ runs:
         -var="aws_region=${{ inputs.aws_region }}"
         -var="aws_region=${{ inputs.aws_region }}"
         -var="aws_ecr_repository_name=${{ inputs.aws_ecr_repository_name }}"
+        -var="github_repo_owner=${{ inputs.github_repo_owner }}"
       working-directory: terraform/aws-ecr
       shell: bash
 
