@@ -59,7 +59,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_frontend" {
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_cognito" {
-  name = "CloudFormation.Cognito"
+  name = "CloudFormation.CognitoUserPool"
   type = "String"
   description = "The name of the stack hosting the frontend API Gateway resources."
   is_sensitive = false

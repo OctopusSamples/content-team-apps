@@ -100,7 +100,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"main\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.Cognito}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.CognitoUserPool}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           AWSTemplateFormatVersion: "2010-09-09"
           Parameters:
