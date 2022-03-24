@@ -372,6 +372,11 @@ public class GitHubRepoHandler {
     boolean findingUniqueName = true;
 
     while (findingUniqueName) {
+      // Don't loop forever
+      if (count > 100) {
+        break;
+      }
+
       try {
         final Response response = gitHubClient.getRepo(
             createGithubRepo.getGithubOwner(),
