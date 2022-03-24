@@ -46,7 +46,7 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
 
             if (octopusApiKey !== mask) {
                 // Asymmetrically encrypt the secret so the browser can not read it again.
-                encryptAndSaveInCookie(octopusApiKey.trim(), "octopusApiKey", 1)
+                encryptAndSaveInCookie(octopusApiKey.trim(), "octopusApiKey", 14)
                     .then(nextState)
             } else {
                 nextState()
