@@ -387,19 +387,13 @@ public class GitHubRepoHandler {
 
   private String getUniqueRepoName(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) {
-    int count = 0;
     String repoName = createGithubRepo.getGithubRepository();
 
     // If we want to create a fresh repo every time, add a counter to the end of the repo name
-    while (true) {
-      // Don't loop forever
-      if (count > 100) {
-        break;
-      }
+    for (int i = 1; i <= 100; ++i) {
 
       if (doesRepoExist(decryptedGithubToken, createGithubRepo, repoName)) {
-        ++count;
-        repoName = createGithubRepo.getGithubRepository() + count;
+        repoName = createGithubRepo.getGithubRepository() + i;
       } else {
         break;
       }
@@ -422,9 +416,9 @@ public class GitHubRepoHandler {
       }
     } catch (ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() != 404) {
-          /*
-            Anything else was unexpected, and will result in an error.
-           */
+        /*
+          Anything else was unexpected, and will result in an error.
+         */
         Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-FindRepoError", ex);
         throw ex;
       }
