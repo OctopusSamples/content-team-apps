@@ -181,7 +181,7 @@ public class GitHubRepoHandler {
       verifyScopes(decryptedGithubToken);
 
       // Get the GitHub login name
-      final GitHubUser user = gitHubClient.getUser(decryptedGithubToken);
+      final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
 
       // Get the destination repo name
       final String repoName = createGithubRepo.isCreateNewRepo()
