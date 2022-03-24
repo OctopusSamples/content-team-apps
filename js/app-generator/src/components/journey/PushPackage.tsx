@@ -92,14 +92,14 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         },
                         {
                             name: "TERRAFORM_BUCKET_REGION",
-                            value: "us-west-1",
+                            value: props.machine.state.context.awsRegion,
                             preserveExistingSecret: true
                         },
                     ],
                     options: {
                         "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
                         "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
-                        "awsRegion": "us-west-1",
+                        "awsRegion": props.machine.state.context.awsRegion,
                         "octopusUserId": "Users-984",
                         "framework": props.machine.state.context.developmentFramework,
                         "platform": props.machine.state.context.targetPlatform
