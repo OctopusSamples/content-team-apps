@@ -25,6 +25,7 @@ import com.octopus.githubrepo.domain.entities.github.GithubFile;
 import com.octopus.githubrepo.domain.entities.github.GithubRef;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
+import com.octopus.githubrepo.domain.exceptions.GitHubException;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
@@ -511,6 +512,11 @@ public class GitHubRepoHandler {
   private Optional<String> getFirstSha(final String decryptedGithubToken,
       final GitHubUser user,
       final String repoName) {
+
+    /*
+     First step is to do a HTTP call where we get the raw response back. This allows us to get
+     access to the response headers.
+     */
     final Response response = gitHubClient.getCommitsRaw(
         user.getLogin(),
         repoName,
@@ -518,22 +524,27 @@ public class GitHubRepoHandler {
         "token " + decryptedGithubToken
     );
 
+    // One of those headers may be Links, which will allow us to jump to the last page of results.
     final String linkHeader = response.getHeaderString("Link");
 
     // get the last page from the header
     if (linkHeader != null) {
       final Optional<String> lastPage = linksHeaderParsing.getLastPage(linkHeader);
+
+      // Get the very first commit, which is actually the very last result from the list of commits.
       final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
           repoName,
           1,
           Integer.parseInt(lastPage.orElse("1")),
           "token " + decryptedGithubToken);
+
+      // Return the first commit SHA.
       if (commits.size() > 1) {
         return Optional.of(commits.get(0).getSha());
       }
     }
 
-    // If there is no links header, just get the first commit
+    // If there is no Links header, just get the first commit
     final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
         repoName,
         1,
@@ -544,6 +555,7 @@ public class GitHubRepoHandler {
       return Optional.of(commits.get(0).getSha());
     }
 
+    // We couldn't find the first SHA.
     return Optional.empty();
   }
 
@@ -560,8 +572,8 @@ public class GitHubRepoHandler {
           "refs/heads/" + branch,
           "token " + decryptedGithubToken);
     } catch (ClientWebApplicationException ex) {
+      // 404 means the branch does not exist.
       if (ex.getResponse().getStatus() == 404) {
-
         /*
           Get the first sha for the default branch. Our new branches assume they forked the
           main repo from day one. This allows the end user to distinguish their changes
@@ -583,7 +595,7 @@ public class GitHubRepoHandler {
           // We shouldn't get here, but you never know...
           Log.error(microserviceNameFeature.getMicroserviceName()
               + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
-          throw new RuntimeException("Failed to find the first SHA");
+          throw new GitHubException("Failed to find the first SHA");
         }
       }
     }
