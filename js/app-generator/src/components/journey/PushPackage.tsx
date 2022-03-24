@@ -59,6 +59,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             "attributes": {
                                 githubOwner: "mcasperson",
                                 githubRepository: createRepoName(),
+                                createNewRepo: true,
                                 generator: "@octopus-content-team/generator-github-complete-eks-deployment",
                                 secrets: [
                                     {
