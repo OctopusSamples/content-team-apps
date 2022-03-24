@@ -18,6 +18,7 @@ import com.octopus.githubrepo.domain.utils.OctopusLoginUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.OctopusClient;
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.configuration.ProfileManager;
 import io.vavr.control.Try;
 import java.net.URI;
 import java.net.URL;
@@ -201,7 +202,7 @@ public class ServiceAccountHandler {
    * @return The test api key for local testing, or an empty string otherwise.
    */
   private String getTestApiKey(final String host) {
-    return "localhost".equals(host)
+    return "localhost".equals(host) && !ProfileManager.getActiveProfile().equals("prod")
         ? disableAccountCreationFeature.getTestApiKey().orElse("")
         : "";
   }
@@ -213,7 +214,7 @@ public class ServiceAccountHandler {
    * @return The test server for local testing, or an empty string otherwise.
    */
   private String getTestServer(final String host) {
-    return "localhost".equals(host)
+    return "localhost".equals(host) && !ProfileManager.getActiveProfile().equals("prod")
         ? disableAccountCreationFeature.getTestServer().orElse("")
         : "";
   }
