@@ -29,7 +29,6 @@ public interface GitHubClient {
   @GET
   @Path("/user")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   GitHubUser getUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
   @GET
