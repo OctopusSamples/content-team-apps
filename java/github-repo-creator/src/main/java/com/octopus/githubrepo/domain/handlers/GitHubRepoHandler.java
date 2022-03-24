@@ -367,58 +367,70 @@ public class GitHubRepoHandler {
   private String createRepo(final String decryptedGithubToken,
       final CreateGithubRepo createGithubRepo) {
 
+    final String repoName = createGithubRepo.isCreateNewRepo()
+        ? getUniqueRepoName(decryptedGithubToken, createGithubRepo)
+        : createGithubRepo.getGithubRepository();
+
+    /*
+     If we are creating a unique repo name, or creating a new common repo, go ahead and
+     create a new GitHub repo.
+     */
+    if (createGithubRepo.isCreateNewRepo()
+        || !doesRepoExist(decryptedGithubToken, createGithubRepo, repoName)) {
+      gitHubClient.createRepo(
+          GithubRepo.builder().name(repoName).build(),
+          "token " + decryptedGithubToken);
+    }
+
+    return repoName;
+  }
+
+  private String getUniqueRepoName(final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo) {
     int count = 0;
     String repoName = createGithubRepo.getGithubRepository();
-    boolean findingUniqueName = true;
 
     // If we want to create a fresh repo every time, add a counter to the end of the repo name
-    while (findingUniqueName && createGithubRepo.isCreateNewRepo()) {
+    while (true) {
       // Don't loop forever
       if (count > 100) {
         break;
       }
 
-      try {
-        final Response response = gitHubClient.getRepo(
-            createGithubRepo.getGithubOwner(),
-            repoName,
-            "token " + decryptedGithubToken);
-
-        if (response.getStatus() == 200) {
-          /*
-            If the response is 200, assume the repo exists, and we need to keep looping to find
-            a unique repo name.
-          */
-          ++count;
-          repoName = createGithubRepo.getGithubRepository() + count;
-        } else {
-          /*
-            Otherwise, we have found a unique repo name.
-           */
-          findingUniqueName = false;
-        }
-
-      } catch (ClientWebApplicationException ex) {
-        if (ex.getResponse().getStatus() == 404) {
-          /*
-            Catch a 404 and assume we have found a unique repo name.
-           */
-          findingUniqueName = false;
-        } else {
-          /*
-            Anything else was unexpected, and will result in an error.
-           */
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-GeneralError", ex);
-          throw ex;
-        }
+      if (doesRepoExist(decryptedGithubToken, createGithubRepo, repoName)) {
+        ++count;
+        repoName = createGithubRepo.getGithubRepository() + count;
+      } else {
+        break;
       }
     }
 
-    gitHubClient.createRepo(
-        GithubRepo.builder().name(repoName).build(),
-        "token " + decryptedGithubToken);
-
     return repoName;
+  }
+
+  private boolean doesRepoExist(final String decryptedGithubToken,
+      final CreateGithubRepo createGithubRepo,
+      final String repoName) {
+    try {
+      final Response response = gitHubClient.getRepo(
+          createGithubRepo.getGithubOwner(),
+          repoName,
+          "token " + decryptedGithubToken);
+
+      if (response.getStatus() == 200) {
+        return true;
+      }
+    } catch (ClientWebApplicationException ex) {
+      if (ex.getResponse().getStatus() != 404) {
+          /*
+            Anything else was unexpected, and will result in an error.
+           */
+        Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-FindRepoError", ex);
+        throw ex;
+      }
+    }
+
+    return false;
   }
 
   /**
