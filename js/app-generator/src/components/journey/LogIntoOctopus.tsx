@@ -95,6 +95,11 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
                                 {"Login >"}
                             </Button>
+                            <p style={{marginTop: "80px", color: "grey"}}>
+                                Octonauts - If you don't have a hosted instance, use <strong>main.testoctopus.app</strong>.
+                                Ping the team in #secops-requests to get access to this instance if you don't already
+                                have it.
+                            </p>
                         </Grid>
                     </Grid>
                     <Grid item md={3} xs={0}/>
