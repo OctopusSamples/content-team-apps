@@ -165,21 +165,3 @@ resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/api/populategithubrepo"
 }
-
-resource "octopusdeploy_variable" "config_cognito_domain" {
-  name = "Cognito.Domain"
-  type = "String"
-  description = "The Cognito domain."
-  is_sensitive = false
-  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "content-team-octopus"
-}
-
-resource "octopusdeploy_variable" "config_cognito_region" {
-  name = "Cognito.Region"
-  type = "String"
-  description = "The Cognito region."
-  is_sensitive = false
-  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "us-west-1"
-}
