@@ -62,3 +62,8 @@ variable "github_repo" {
   type = string
   nullable = false
 }
+
+variable "github_repo_owner" {
+  type = string
+  nullable = false
+}

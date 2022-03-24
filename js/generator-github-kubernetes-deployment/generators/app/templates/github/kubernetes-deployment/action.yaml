@@ -55,6 +55,9 @@ inputs:
   github_repo:
     description: 'The github repo'
     required: true
+  github_repo_owner:
+    description: 'The github repo owner'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -136,6 +139,7 @@ runs:
         -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}"
         -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
+        -var="github_repo_owner=${{ inputs.github_repo_owner }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
 
