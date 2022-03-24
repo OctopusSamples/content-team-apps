@@ -100,7 +100,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
                         "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
                         "awsRegion": props.machine.state.context.awsRegion,
-                        "octopusUserId": "Users-984",
                         "framework": props.machine.state.context.developmentFramework,
                         "platform": props.machine.state.context.targetPlatform
                     }
