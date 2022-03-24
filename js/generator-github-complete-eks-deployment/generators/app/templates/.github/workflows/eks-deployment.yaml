@@ -30,6 +30,7 @@ jobs:
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
           github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
 
       - name: Create Shared Resources
         id: shared_resources
@@ -72,7 +73,7 @@ jobs:
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
           run_number: ${{ github.run_number }}
-          octopus_space: "<%= octopus_space %>"
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
           github_repo: ${{ github.repository }}
 
       - name: Create Kubernetes Deployment Project
@@ -81,7 +82,7 @@ jobs:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
-          octopus_space: "<%= octopus_space %>"
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
           octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
           octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}

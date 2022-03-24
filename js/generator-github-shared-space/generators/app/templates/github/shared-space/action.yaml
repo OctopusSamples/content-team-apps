@@ -28,11 +28,17 @@ inputs:
   github_repo:
     description: 'The github repo'
     required: true
+  github_repo_owner:
+    description: 'The github repo owner'
+    required: true
 
 outputs:
   octopus_space_id:
     description: "The Octopus space ID"
-    value: ${{ steps.terraform_output.outputs.stdout }}
+    value: ${{ steps.octopus_space_id.outputs.stdout }}
+  octopus_space_name:
+    description: "The Octopus space name"
+    value: ${{ steps.octopus_space_name.outputs.stdout }}
 
 runs:
   using: "composite"
@@ -95,6 +101,7 @@ runs:
         -var="octopus_space=${{ inputs.octopus_space }}"
         -var="octopus_user_id=${{ inputs.octopus_user_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
+        -var="github_repo_owner=${{ inputs.github_repo_owner }}"
       working-directory: terraform/shared-space
       shell: bash
 
@@ -102,10 +109,19 @@ runs:
     # GitHub Actions output inside a step with a unique ID. The composite step then saves the value
     # from this step's stdout as an output variable with the syntax ${{ steps.terraform_output.outputs.stdout }}.
     - name: Terraform Collect Output
-      id: terraform_output
+      id: octopus_space_id
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw octopus_space_id
+      working-directory: terraform/shared-space
+      shell: bash
+
+    - name: Terraform Collect Output
+      id: octopus_space_name
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw octopus_space_name
       working-directory: terraform/shared-space
       shell: bash
