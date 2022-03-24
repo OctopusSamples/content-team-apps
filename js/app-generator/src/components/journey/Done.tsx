@@ -49,7 +49,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         </p>
                         <p>
                             If you would like to leave some feedback about the App Builder, feel free to leave a comment
-                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"}>This GitHub issue</a>.
+                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"}>this GitHub issue</a>.
                         </p>
                         <Button
                             sx={nextButtonStyle}
