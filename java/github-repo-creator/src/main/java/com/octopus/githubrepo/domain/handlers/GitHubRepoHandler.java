@@ -519,7 +519,7 @@ public class GitHubRepoHandler {
     // get the last page from the header
     if (linkHeader != null) {
       final Optional<String> lastPage = getLastPage(linkHeader);
-      final List<GitHubCommit> commits = gitHubClient.getCommits( user.getLogin(),
+      final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
           repoName,
           1,
           Integer.parseInt(lastPage.orElse("1")),
@@ -530,7 +530,7 @@ public class GitHubRepoHandler {
     }
 
     // If there is no links header, just get the first commit
-    final List<GitHubCommit> commits = gitHubClient.getCommits( user.getLogin(),
+    final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
         repoName,
         1,
         1,
@@ -607,7 +607,8 @@ public class GitHubRepoHandler {
               "token " + decryptedGithubToken);
         } else {
           // We shouldn't get here, but you never know...
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
+          Log.error(microserviceNameFeature.getMicroserviceName()
+              + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
           throw new RuntimeException("Failed to find the first SHA");
         }
       }
