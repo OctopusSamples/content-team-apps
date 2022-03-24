@@ -41,7 +41,7 @@ resource "octopusdeploy_variable" "aws_region" {
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
-  name = "CloudFormationName.ApiGateway"
+  name = "CloudFormationName.AppBuilderApiGateway"
   type = "String"
   description = "The Cloudformation stack that created the app builder API gateway."
   is_sensitive = false

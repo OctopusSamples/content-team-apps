@@ -60,7 +60,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_code" {
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
-  name = "CloudFormationName.ApiGateway"
+  name = "CloudFormationName.AppBuilderApiGateway"
   type = "String"
   description = "The Cloudformation stack that created the app builder API gateway."
   is_sensitive = false
@@ -69,7 +69,7 @@ resource "octopusdeploy_variable" "cloudformation_apigateway" {
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway_stage" {
-  name = "CloudFormationName.ApiGatewayStage"
+  name = "CloudFormationName.AppBuilderApiGatewayStage"
   type = "String"
   description = "The Cloudformation stack that created the app builder API gateway stage."
   is_sensitive = false

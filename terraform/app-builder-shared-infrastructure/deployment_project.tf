@@ -59,7 +59,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub Actions Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGateway}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.AppBuilderApiGateway}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Resources:
             RestApi:

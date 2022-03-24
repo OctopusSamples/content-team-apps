@@ -170,7 +170,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody": <<-EOT
           API_OAUTH_RESOURCE=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.ApiGateway} \
+              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
               --query "Stacks[0].Outputs[?OutputKey=='ApiOAuthOctopus'].OutputValue" \
               --output text)
 
@@ -180,7 +180,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           REST_API=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.ApiGateway} \
+              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
@@ -750,7 +750,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.AppBuilderApiGatewayStage}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
             EnvironmentName:
@@ -818,7 +818,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody": <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.ApiGatewayStage} \
+              --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
               --output text)
 
