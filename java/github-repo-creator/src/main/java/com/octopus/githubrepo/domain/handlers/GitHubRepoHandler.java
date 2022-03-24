@@ -531,6 +531,8 @@ public class GitHubRepoHandler {
     if (linkHeader != null) {
       final Optional<String> lastPage = linksHeaderParsing.getLastPage(linkHeader);
 
+      Log.info("Getting last SHA from page " + lastPage.orElse("1"));
+
       // Get the very first commit, which is actually the very last result from the list of commits.
       final List<GitHubCommit> commits = gitHubClient.getCommits(user.getLogin(),
           repoName,
