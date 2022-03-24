@@ -81,6 +81,9 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                                 Please enter the hostname of the Octopus Cloud instance that you which to populate with the
                                 sample deployment project and click the login button to be taken to the Octopus login page.
                             </p>
+                            <p>
+                                <strong>This field is currently locked to main.testoctopus.app for testing.</strong>
+                            </p>
                             <FormControl error variant="standard" sx={formElements}>
                                 <TextField
                                     disabled={true}
