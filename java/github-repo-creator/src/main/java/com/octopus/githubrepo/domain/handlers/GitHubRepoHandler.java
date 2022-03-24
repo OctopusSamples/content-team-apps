@@ -541,7 +541,7 @@ public class GitHubRepoHandler {
           "token " + decryptedGithubToken);
 
       // Return the first commit SHA.
-      if (commits.size() > 1) {
+      if (commits.size() > 0) {
         return Optional.of(commits.get(0).getSha());
       }
     }
@@ -553,7 +553,7 @@ public class GitHubRepoHandler {
         1,
         "token " + decryptedGithubToken);
 
-    if (commits.size() > 1) {
+    if (commits.size() > 0) {
       return Optional.of(commits.get(0).getSha());
     }
 
