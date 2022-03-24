@@ -5,6 +5,8 @@ name: EKS Deployment
     paths:
       - '**/*'
       - '!.github/badges/*'
+    branches-ignore:
+      - 'app-builder-update'
 
 jobs:
   build:
@@ -31,7 +33,6 @@ jobs:
         # git merge -s ours main
         # git checkout main
         # git merge app-builder-update
-        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -47,7 +48,6 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
-        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -63,7 +63,6 @@ jobs:
 
       - name: Create the ECR repository and feed
         id: ecr_resources
-        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/aws-ecr
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -79,7 +78,6 @@ jobs:
           github_repo_owner: ${{ github.repository_owner }}
 
       - name: Build Java Microservice
-        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/java-microservice
         with:
           image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
@@ -94,7 +92,6 @@ jobs:
           github_repo: ${{ github.repository }}
 
       - name: Create Kubernetes Deployment Project
-        if: ${{ env.BRANCH_NAME == 'app-builder-update' }}
         uses: ./github/kubernetes-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
