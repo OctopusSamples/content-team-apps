@@ -22,6 +22,7 @@ import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
 import Error from "../components/journey/Error";
+import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentials";
 
 /**
  * Return the state context from local storage.
@@ -38,7 +39,8 @@ function getInitialStateContext() {
             targetPlatform: state.targetPlatform || "",
             developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
-            githubRepo: state.githubRepo || ""
+            githubRepo: state.githubRepo || "",
+            octopusApiKey: state.octopusApiKey || ""
         }
     }
 
@@ -50,7 +52,8 @@ function getInitialStateContext() {
         targetPlatform: "",
         developmentFramework: "",
         octopusServer: "",
-        githubRepo: ""
+        githubRepo: "",
+        octopusApiKey: ""
     }
 }
 
@@ -135,7 +138,11 @@ export interface StateContext {
     /**
      * The github repository that was just populated
      */
-    githubRepo: string
+    githubRepo: string,
+    /**
+     * The Octopus server API key
+     */
+    octopusApiKey: string
 }
 
 /**
@@ -194,7 +201,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 signUpForCloudOctopus: {
                     on: {
-                        NEXT: {target: 'logIntoOctopus'},
+                        NEXT: {target: 'enterOctopusCredentials'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
                     entry: [
@@ -205,11 +212,22 @@ export const appBuilderMachine = createMachine<StateContext>({
                 logIntoOctopus: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
+                        APIKEY: {target: 'enterOctopusCredentials'},
                         MOCK: {target: 'loggedIntoOctopus'},
                     },
                     entry: [
                         saveCurrentState("logIntoOctopus"),
                         assignForm(LogIntoOctopus)
+                    ]
+                },
+                enterOctopusCredentials: {
+                    on: {
+                        BACK: {target: 'doYouHaveCloudOctopus'},
+                        NEXT: {target: 'logIntoGitHub'}
+                    },
+                    entry: [
+                        saveCurrentState("enterOctopusCredentials"),
+                        assignForm(EnterOctopusCredentials)
                     ]
                 },
                 loggedIntoOctopus: {

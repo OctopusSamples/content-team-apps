@@ -47,10 +47,15 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                 saveCurrentState("doYouHaveCloudOctopus");
             }
 
-            if (context.settings.disableExternalCalls) {
+            if (context.settings.disableOctofrontLogin) {
+                props.machine.send("APIKEY");
+            } else if (context.settings.disableExternalCalls) {
                 // pretend to do a login
                 props.machine.send("MOCK");
             } else {
+                // Clear the manually entered API key
+                Cookies.set("octopusApiKey", "");
+
                 const nonce = crypto.randomUUID().toString().replaceAll("-", "").substring(0, 19);
                 Cookies.set("appBuilderOctopusNonce", nonce);
                 localStorage.setItem("appBuilderState", "loggedIntoOctopus");
@@ -81,12 +86,9 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                                 Please enter the hostname of the Octopus Cloud instance that you which to populate with the
                                 sample deployment project and click the login button to be taken to the Octopus login page.
                             </p>
-                            <p>
-                                <strong>This field is currently locked to main.testoctopus.app for testing.</strong>
-                            </p>
                             <FormControl error variant="standard" sx={formElements}>
                                 <TextField
-                                    disabled={true}
+                                    disabled={buttonDisabled}
                                     value={octopusServer}
                                     onChange={(event) => setOctopusServer(event.target.value)}
                                     helperText="Enter the Octopus server hostname, e.g. myinstance.octopus.app"
@@ -96,7 +98,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             </FormControl>
 
                             <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
-                                {"Login >"}
+                                {context.settings.disableOctofrontLogin ? "Next >" : "Login >"}
                             </Button>
                             <p style={{marginTop: "80px", color: "grey"}}>
                                 Octonauts - If you don't have a hosted instance, use <strong>main.testoctopus.app</strong>.

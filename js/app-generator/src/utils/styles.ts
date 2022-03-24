@@ -63,7 +63,7 @@ export const backButtonStyle: SxProps<Theme> = {
 export const nextButtonStyle: SxProps<Theme> = {
     width: '192px',
     minHeight: '64px',
-    marginTop: '8px'
+    marginTop: '32px'
 }
 
 export const formContainer: SxProps<Theme> = {

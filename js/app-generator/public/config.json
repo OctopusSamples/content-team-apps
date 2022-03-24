@@ -1,6 +1,7 @@
 {
   "basename": "",
   "branch": "main",
+  "disableOctofrontLogin": true,
   "disableExternalCalls": true,
   "title": "App Builder",
   "octofrontOauthEndpoint": "http://localhost:10000/oauth/octopus/login",

@@ -4,6 +4,7 @@ export interface RuntimeSettings {
     basename: string;
     branch: string;
     disableExternalCalls: boolean;
+    disableOctofrontLogin: boolean;
     octofrontOauthEndpoint: string;
     githubOauthEndpoint: string;
     serviceAccountEndpoint: string;

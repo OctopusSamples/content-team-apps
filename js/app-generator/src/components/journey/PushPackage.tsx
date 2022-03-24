@@ -32,6 +32,97 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         return "";
     }
 
+    const createServiceAccount = (callback: (apiKey: string, apiKeyEncrypted: boolean, server: string) => void) => {
+        const body = {
+            "data": {
+                "type": "createserviceaccount",
+                "attributes": {
+                    "username": "AppBuilder",
+                    "displayName": "App Builder Service Account",
+                    "isService": true,
+                    "octopusServer": getOctopusServer()
+                }
+            }
+        };
+        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
+            .then(body => {
+                const bodyObject = body as any;
+                callback(
+                    bodyObject.included
+                        .filter((i: any) => i.type === "apikey")
+                        .map((i: any) => i.attributes?.apiKey)
+                        .pop(),
+                    false,
+                    bodyObject.data.attributes.octopusServer);
+            })
+            .catch(() => {
+                setLoading(false);
+                window.alert("DOH!")
+            });
+    }
+
+    const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
+        const populateRepoBody = {
+            "data": {
+                "type": "creategithubrepo",
+                "attributes": {
+                    githubRepository: createRepoName(),
+                    createNewRepo: false,
+                    generator: "@octopus-content-team/generator-github-complete-eks-deployment",
+                    secrets: [
+                        {
+                            name: "OCTOPUS_SERVER",
+                            value: server
+                        },
+                        {
+                            name: "OCTOPUS_APIKEY",
+                            value: apiKey,
+                            encrypted: apiKeyEncrypted
+                        },
+                        {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
+                        {
+                            name: "AWS_SECRET_ACCESS_KEY",
+                            value: Cookies.get("awsSecretKey"),
+                            encrypted: true
+                        },
+                        {
+                            name: "TERRAFORM_BUCKET_SUFFIX",
+                            value: crypto.randomUUID(),
+                            preserveExistingSecret: true
+                        },
+                        {
+                            name: "TERRAFORM_BUCKET_REGION",
+                            value: "us-west-1",
+                            preserveExistingSecret: true
+                        },
+                    ],
+                    options: {
+                        "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
+                        "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
+                        "awsRegion": "us-west-1",
+                        "octopusUserId": "Users-984",
+                        "framework": props.machine.state.context.developmentFramework,
+                        "platform": props.machine.state.context.targetPlatform
+                    }
+                }
+            }
+        }
+
+        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true, () => {
+            // Call this endpoint async
+            const headers = new Headers();
+            headers.set("Invocation-Type", "Event");
+            return headers;
+        })
+            .then(body => {
+                props.machine.send("NEXT")
+            })
+            .catch(() => {
+                setLoading(false);
+                window.alert("DOH!")
+            });
+    }
+
     const pushPackage = () => {
 
         setButtonDisabled(true);
@@ -43,85 +134,18 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             props.machine.send("NEXT");
         } else {
             setLoading(true);
-            const body = {
-                "data": {
-                    "type": "createserviceaccount",
-                    "attributes": {
-                        "username": "AppBuilder",
-                        "displayName": "App Builder Service Account",
-                        "isService": true,
-                        "octopusServer": getOctopusServer()
-                    }
-                }
-            };
-            postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
-                .then((body: any) => {
-                    const populateRepoBody = {
-                        "data": {
-                            "type": "creategithubrepo",
-                            "attributes": {
-                                githubRepository: createRepoName(),
-                                createNewRepo: false,
-                                generator: "@octopus-content-team/generator-github-complete-eks-deployment",
-                                secrets: [
-                                    {
-                                        name: "OCTOPUS_SERVER",
-                                        value: body.data.attributes.octopusServer
-                                    },
-                                    {
-                                        name: "OCTOPUS_APIKEY",
-                                        value: body.included
-                                            .filter((i: any) => i.type === "apikey")
-                                            .map((i: any) => i.attributes?.apiKey)
-                                            .pop()
-                                    },
-                                    {name: "AWS_ACCESS_KEY_ID", value: props.machine.state.context.awsAccessKey},
-                                    {
-                                        name: "AWS_SECRET_ACCESS_KEY",
-                                        value: Cookies.get("awsSecretKey"),
-                                        encrypted: true
-                                    },
-                                    {
-                                        name: "TERRAFORM_BUCKET_SUFFIX",
-                                        value: crypto.randomUUID(),
-                                        preserveExistingSecret: true
-                                    },
-                                    {
-                                        name: "TERRAFORM_BUCKET_REGION",
-                                        value: "us-west-1",
-                                        preserveExistingSecret: true
-                                    },
-                                ],
-                                options: {
-                                    "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
-                                    "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
-                                    "awsRegion": "us-west-1",
-                                    "octopusUserId": "Users-984",
-                                    "framework": props.machine.state.context.developmentFramework,
-                                    "platform": props.machine.state.context.targetPlatform
-                                }
-                            }
-                        }
-                    }
+            const manuallyEnteredApiKey = Cookies.get("octopusApiKey");
 
-                    postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true, () => {
-                        // Call this endpoint async
-                        const headers = new Headers();
-                        headers.set("Invocation-Type", "Event");
-                        return headers;
-                    })
-                        .then(body => {
-                            props.machine.send("NEXT")
-                        })
-                        .catch(() => {
-                            setLoading(false);
-                            window.alert("DOH!")
-                        });
-                })
-                .catch(() => {
-                    setLoading(false);
-                    window.alert("DOH!")
-                })
+            /*
+                If we manually enter the API key, create the GitHub repo with the entered credentials.
+                If there is no manually entered API key, assume the service account is to be created using the ID token
+                from an octofront login.
+             */
+            if (manuallyEnteredApiKey) {
+                populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer());
+            } else {
+                createServiceAccount(populateGitHubRepo);
+            }
         }
     }
 
