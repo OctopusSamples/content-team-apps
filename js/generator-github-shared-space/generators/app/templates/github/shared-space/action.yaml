@@ -10,9 +10,6 @@ inputs:
   octopus_space:
     description: 'The Octopus space name'
     required: true
-  octopus_user_id:
-    description: 'The Octopus user to assign to the space'
-    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -99,7 +96,6 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space=${{ inputs.octopus_space }}"
-        -var="octopus_user_id=${{ inputs.octopus_user_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
         -var="github_repo_owner=${{ inputs.github_repo_owner }}"
       working-directory: terraform/shared-space

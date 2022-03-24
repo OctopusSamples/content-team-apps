@@ -38,7 +38,6 @@ jobs:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space: "<%= octopus_space %>"
-          octopus_user_id: "<%= octopus_user_id %>"
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}

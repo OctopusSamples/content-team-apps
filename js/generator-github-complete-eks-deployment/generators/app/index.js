@@ -9,7 +9,6 @@ module.exports = class extends Generator {
         this.option("aws_state_bucket_region", {type: String});
         this.option("platform", {type: String});
         this.option("framework", {type: String});
-        this.option("octopus_user_id", {type: String});
         this.option("s3_bucket_suffix", {type: String, default: crypto.randomUUID()});
     }
 
@@ -45,7 +44,6 @@ module.exports = class extends Generator {
             this.destinationPath('.github/workflows/eks-deployment.yaml'),
             {
                 octopus_space: platform + " " + framework,
-                octopus_user_id: this.options["octopusUserId"],
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"],
                 framework,
