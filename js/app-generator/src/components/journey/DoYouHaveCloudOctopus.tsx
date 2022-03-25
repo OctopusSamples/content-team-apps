@@ -26,7 +26,7 @@ const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             The app builder configures cloud Octopus instances for you. You can identify a cloud Octopus
                             instance by the URL you use to access it, which will be something like
-                            instancename.octopus.app.
+                            myinstance.octopus.app.
                         </p>
                         <p>
                             The app builder can not configure self hosted Octopus instances.

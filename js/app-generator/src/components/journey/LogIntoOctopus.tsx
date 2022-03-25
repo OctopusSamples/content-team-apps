@@ -18,7 +18,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
         const context = useContext(AppContext);
 
         const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
-        const [octopusServer, setOctopusServer] = useState<string>("main.testoctopus.app");
+        const [octopusServer, setOctopusServer] = useState<string>(props.machine.state && props.machine.state.context.octopusServer || "");
         const [octopusServerError, setOctopusServerError] = useState<string | null>(null);
 
         const validate = () => {
