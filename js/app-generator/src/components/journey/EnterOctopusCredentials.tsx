@@ -20,9 +20,6 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
             } else if (!octopusApiKey.trim()) {
                 setOctopusApiKeyError("The Octopus API key is a required field.");
                 return false;
-            } else if (octopusApiKey.trim().length !== 30) {
-                setOctopusApiKeyError("The Octopus API key must be at least 30 characters long.");
-                return false;
             } else if (!octopusApiKey.trim().startsWith("API-")) {
                 setOctopusApiKeyError("The Octopus API must start with \"API-\".");
                 return false;
