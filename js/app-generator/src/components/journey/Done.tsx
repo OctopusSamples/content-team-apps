@@ -51,7 +51,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework}</strong> and
                             ending with your GitHub account name (or as many characters of your GitHub account name as we could fit in the space
-                            name) in your <a href={getOctopusServer()}>Octopus instance</a> will be populated with a
+                            name) in your <a href={getOctopusServer() + "/app#/configuration/spaces"}>Octopus instance</a> will be populated with a
                             sample project and all other associated resources to complete a deployment.
                         </p>
                         <p>
@@ -61,7 +61,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <Button
                             sx={nextButtonStyle}
                             variant="outlined"
-                            onClick={() => window.open(getOctopusServer(), "_blank")}>
+                            onClick={() => window.open(getOctopusServer() + "/app#/configuration/spaces", "_blank")}>
                             {"Open Octopus >"}
                         </Button>
                     </Grid>
