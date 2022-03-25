@@ -54,7 +54,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <Button
                             sx={nextButtonStyle}
                             variant="outlined"
-                            onClick={() => window.open(getOctopusServer(), "_parent")}>
+                            onClick={() => window.open(getOctopusServer(), "_blank")}>
                             {"Open Octopus >"}
                         </Button>
                     </Grid>
