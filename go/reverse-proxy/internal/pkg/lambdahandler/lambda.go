@@ -407,8 +407,14 @@ func getRuleComponents(acceptComponent string) (string, string, string, error) {
 			pathAndMethod := strings.Split(strippedVersion, ":")
 			if len(pathAndMethod) == 2 {
 				return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
+			} else {
+				log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a path and a HTTP method. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
 			}
+		} else {
+			log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not lead with the route[] statement. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
 		}
+	} else {
+		log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a route and an upstream component separated by an equals. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
 	}
 
 	return "", "", "", errors.New("component was not a valid rule")
