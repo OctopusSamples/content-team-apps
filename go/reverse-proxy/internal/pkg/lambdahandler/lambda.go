@@ -374,7 +374,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 		}
 	}
 
-	log.Println("Failed to find upstream service. Ensure the route is in the format route[/api/path:METHOD]=dest[upstream name]")
+	log.Println("Failed to find upstream service. Ensure the route is in the format route[/api/path:METHOD]=dest[upstream name], where \"dest\" is \"url\", \"lambda\", or \"sqs\".")
 	return nil, "", "", errors.New("failed to find upstream service")
 }
 
