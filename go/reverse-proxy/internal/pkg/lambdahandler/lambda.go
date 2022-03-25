@@ -329,12 +329,17 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 		return nil, "", "", errors.New("routing header is required")
 	}
 
+	// Log the headers for debugging
+	for _, routingheader := range getComponentsFromHeader(routingAll) {
+		log.Println("Routing header: " + routingheader)
+	}
+
 	if !authorizeRouting(req) {
 		return nil, "", "", errors.New("user is not authorized to route requests")
 	}
 
-	for _, acceptComponent := range getComponentsFromHeader(routingAll) {
-		path, method, destination, err := getRuleComponents(acceptComponent)
+	for _, routing := range getComponentsFromHeader(routingAll) {
+		path, method, destination, err := getRuleComponents(routing)
 		if err == nil {
 			if pathAndMethodIsMatch(path, method, req) {
 
