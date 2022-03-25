@@ -335,6 +335,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 	}
 
 	if !authorizeRouting(req) {
+		log.Println("User is not authorized to route requests")
 		return nil, "", "", errors.New("user is not authorized to route requests")
 	}
 
