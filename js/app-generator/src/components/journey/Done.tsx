@@ -6,6 +6,13 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
 
+    // Make sure people don't exit away unexpectedly
+    window.addEventListener("beforeunload", (ev) =>
+    {
+        ev.preventDefault();
+        return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the App Builder.';
+    });
+
     function getOctopusServer() {
         if (props.machine.state.context.octopusServer) {
             try {
