@@ -326,6 +326,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 	routingAll, err := getHeader(req.Headers, req.MultiValueHeaders, routingHeader)
 
 	if err != nil {
+		log.Println("Routing header was not defined")
 		return nil, "", "", errors.New("routing header is required")
 	}
 
