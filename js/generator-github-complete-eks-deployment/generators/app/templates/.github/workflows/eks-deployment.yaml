@@ -76,6 +76,29 @@ jobs:
           github_repo: ${{ github.repository }}
           github_repo_owner: ${{ github.repository_owner }}
 
+      - name: Create Kubernetes Deployment Project
+        uses: ./github/kubernetes-deployment
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
+          octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
+          octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
+          octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
+          octopus_docker_image: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>-${{ github.repository_owner }}"
+          octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          repository_owner: ${{ github.repository_owner }}
+          octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
       - name: Build Java Microservice
         uses: ./github/java-microservice
         with:
@@ -89,26 +112,3 @@ jobs:
           run_number: ${{ github.run_number }}
           octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
           github_repo: ${{ github.repository }}
-
-      - name: Create Kubernetes Deployment Project
-        uses: ./github/kubernetes-deployment
-        with:
-          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
-          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
-          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
-          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
-          octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
-          octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
-          octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
-          octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
-          octopus_docker_image: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>"
-          octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: "<%= aws_region %>"
-          repository_owner: ${{ github.repository_owner }}
-          octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
-          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
-          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
-          github_repo: ${{ github.repository }}
-          github_repo_owner: ${{ github.repository_owner }}

@@ -110,8 +110,7 @@ runs:
     # we need to manually query the new space for the built-in feed ID.
     - name: Find the Built-In Feed ID
       id: octopus_builtin_feed_id
-      run: |
-          curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)" | jq -r '.Items[0].Id'
+      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)' | jq -r '.Items[0].Id')\""
       shell: bash
 
     - name: Terraform Init
@@ -142,7 +141,7 @@ runs:
         -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}"
         -var="github_repo=${{ inputs.github_repo }}"
         -var="github_repo_owner=${{ inputs.github_repo_owner }}"
-        -var="octopus_built_in_feed_id=${{ steps.application_lifecycle_id.outputs.stdout }}"
+        -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}"
       working-directory: terraform/kubernetes-deployment
       shell: bash
 
