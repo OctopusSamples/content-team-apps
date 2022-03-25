@@ -374,7 +374,8 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 		}
 	}
 
-	return nil, "", "", errors.New("failed to find downstream service")
+	log.Println("Failed to find upstream service")
+	return nil, "", "", errors.New("failed to find upstream service")
 }
 
 func getComponentsFromHeader(header string) []string {
