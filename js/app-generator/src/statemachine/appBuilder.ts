@@ -201,7 +201,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 signUpForCloudOctopus: {
                     on: {
-                        NEXT: {target: 'enterOctopusCredentials'},
+                        NEXT: {target: 'logIntoOctopus'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
                     entry: [
