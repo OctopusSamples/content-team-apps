@@ -53,7 +53,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.Aws.AssumeRole" : "False",
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
-        "Octopus.Action.Aws.Region" : "${var.aws_region}",
+        "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody": <<-EOT
           # Get the containers
           echo "Downloading Docker images"
@@ -84,7 +84,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           kind: ClusterConfig
 
           metadata:
-            name: app-builder-mcasperson
+            name: app-builder-${var.github_repo_owner}
             region: ${var.aws_region}
 
           nodeGroups:
@@ -133,8 +133,71 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.Aws.AssumeRole" : "False",
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
-        "Octopus.Action.Aws.Region" : "${var.aws_region}",
-        "Octopus.Action.Script.ScriptBody" : "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \ndocker pull weaveworks/eksctl 2>&1 \ndocker pull jshimko/kube-tools-aws 2>&1\necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias eksctl=\"docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl\"\nalias kubectl=\"docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY jshimko/kube-tools-aws kubectl\"\nalias jq=\"docker run --rm -i imega/jq\"\n\n# Extract the current AWS account\nACCOUNT=$(aws sts get-caller-identity --query \"Account\" --output text)\n\necho \"Installing ALB Ingress Controller\"\necho \"##octopus[stdout-verbose]\"\n# https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html\ncurl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.1/docs/install/iam_policy.json 2>&1\n\nPOLICY_EXISTS=$(aws iam list-policies | jq '.Policies[] | select (.PolicyName == \"AWSLoadBalancerControllerIAMPolicy\")')\n\nif [[ -z $POLICY_EXISTS ]]; then\n  aws iam create-policy \\\n      --policy-name AWSLoadBalancerControllerIAMPolicy \\\n      --policy-document file:///build/iam_policy.json\nfi      \n    \neksctl utils associate-iam-oidc-provider \\\n\t--region=${var.aws_region} \\\n    --cluster=app-builder-${var.github_repo_owner} \\\n    --approve\n    \neksctl create iamserviceaccount \\\n  --cluster=app-builder-${var.github_repo_owner} \\\n  --region=${var.aws_region} \\\n  --namespace=kube-system \\\n  --name=aws-load-balancer-controller \\\n  --attach-policy-arn=arn:aws:iam::$${ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy \\\n  --override-existing-serviceaccounts \\\n  --approve\n  \naws\teks update-kubeconfig --name app-builder-${var.github_repo_owner} --kubeconfig /build/kubeconfig\n\nkubectl apply \\\n\t--kubeconfig=/build/kubeconfig \\\n    --validate=false \\\n    -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml 2>&1\n\n# The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.\ncurl -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1\n\nkubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml\necho \"##octopus[stdout-default]\"\n\necho \"Displaying the aws-load-balancer-controller deployment\"\nkubectl --kubeconfig=/build/kubeconfig get deployment -n kube-system aws-load-balancer-controller\n",
+        "Octopus.Action.Aws.Region" : var.aws_region,
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          # Get the containers
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull amazon/aws-cli 2>&1
+          docker pull imega/jq 2>&1
+          docker pull weaveworks/eksctl 2>&1
+          docker pull jshimko/kube-tools-aws 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+          alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
+          alias kubectl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY jshimko/kube-tools-aws kubectl"
+          alias jq="docker run --rm -i imega/jq"
+
+          # Extract the current AWS account
+          ACCOUNT=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Installing ALB Ingress Controller"
+          echo "##octopus[stdout-verbose]"
+          # https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+          curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.1/docs/install/iam_policy.json 2>&1
+
+          POLICY_EXISTS=$(aws iam list-policies | jq '.Policies[] | select (.PolicyName == "AWSLoadBalancerControllerIAMPolicy")')
+
+          if [[ -z $POLICY_EXISTS ]]; then
+            aws iam create-policy \
+                --policy-name AWSLoadBalancerControllerIAMPolicy \
+                --policy-document file:///build/iam_policy.json
+          fi
+
+          eksctl utils associate-iam-oidc-provider \
+              --region=${var.aws_region} \
+              --cluster=app-builder-${var.github_repo_owner} \
+              --approve
+
+          eksctl create iamserviceaccount \
+            --cluster=app-builder-${var.github_repo_owner} \
+            --region=${var.aws_region} \
+            --namespace=kube-system \
+            --name=aws-load-balancer-controller \
+            --attach-policy-arn=arn:aws:iam::${ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy \
+            --override-existing-serviceaccounts \
+            --approve
+
+          aws	eks update-kubeconfig --name app-builder-${var.github_repo_owner} --kubeconfig /build/kubeconfig
+
+          kubectl apply \
+              --kubeconfig=/build/kubeconfig \
+              --validate=false \
+              -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+
+          # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
+          curl -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1
+
+          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml
+          echo "##octopus[stdout-default]"
+
+          echo "Displaying the aws-load-balancer-controller deployment"
+          kubectl --kubeconfig=/build/kubeconfig get deployment -n kube-system aws-load-balancer-controller
+
+        EOT
       }
     }
   }
@@ -157,7 +220,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.Aws.AssumeRole" : "False",
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
-        "Octopus.Action.Aws.Region" : "${var.aws_region}",
+        "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias jq=\"docker run --rm -i imega/jq\"\n\naws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json\n\necho \"##octopus[create-kubernetestarget \\\n  name=\\\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\\\" \\\n  octopusRoles=\\\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\\\" \\\n  clusterName=\\\"$(encode_servicemessagevalue \"app-builder-${var.github_repo_owner}\")\\\" \\\n  clusterUrl=\\\"$(encode_servicemessagevalue \"$(cat clusterdetails.json | jq -r '.cluster.endpoint')\")\\\" \\\n  octopusAccountIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_aws_account_id}\")\\\" \\\n  namespace=\\\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\\\" \\\n  octopusDefaultWorkerPoolIdOrName=\\\"$(encode_servicemessagevalue \"${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}\")\\\" \\\n  updateIfExisting=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  skipTlsVerification=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  healthCheckContainerImageFeedIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_dockerhub_feed_id}\")\\\" \\\n  healthCheckContainerImage=\\\"$(encode_servicemessagevalue \"octopusdeploy/worker-tools:3-ubuntu.18.04\")\\\"]\"",
       }
     }
