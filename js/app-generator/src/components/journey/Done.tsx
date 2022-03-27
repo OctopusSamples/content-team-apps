@@ -41,7 +41,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                     >
                         <h2>You're all done.</h2>
                         <p>
-                            The sample application is being pushed to <a href={"https://github.com/"}>GitHub</a> in a
+                            The sample application is being pushed to <a href={"https://github.com/"} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
                             repository called <strong>{props.machine.state.context.githubRepo}</strong>.
                         </p>
                         <p>
@@ -51,12 +51,12 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework}</strong> and
                             ending with your GitHub account name (or as many characters of your GitHub account name as we could fit in the space
-                            name) in your <a href={getOctopusServer() + "/app#/configuration/spaces"}>Octopus instance</a> will be populated with a
+                            name) in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will be populated with a
                             sample project and all other associated resources to complete a deployment.
                         </p>
                         <p>
                             If you would like to share some feedback about the App Builder, feel free to leave a comment
-                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"}>this GitHub issue</a>.
+                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"} target={"_blank"} rel={"noreferrer"}>this GitHub issue</a>.
                         </p>
                         <Button
                             sx={nextButtonStyle}
