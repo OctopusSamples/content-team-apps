@@ -95,17 +95,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
-        terraform apply \ 
-        -auto-approve \
-        -var="octopus_server=${{ inputs.octopus_server }}" \ 
-        -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
-        -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
-        -var="aws_access_key=${{ inputs.aws_access_key }}" \
-        -var="aws_secret_key=${{ inputs.aws_secret_key }}" \
-        -var="aws_region=${{ inputs.aws_region }}" \
-        -var="aws_region=${{ inputs.aws_region }}" \
-        -var="aws_ecr_repository_name=${{ inputs.aws_ecr_repository_name }}" \
-        -var="github_repo_owner=${{ inputs.github_repo_owner }}"
+        terraform apply -auto-approve -var="octopus_server=${{ inputs.octopus_server }}" -var="octopus_apikey=${{ inputs.octopus_apikey }}" -var="octopus_space_id=${{ inputs.octopus_space_id }}" -var="aws_access_key=${{ inputs.aws_access_key }}" -var="aws_secret_key=${{ inputs.aws_secret_key }}" -var="aws_region=${{ inputs.aws_region }}" -var="aws_region=${{ inputs.aws_region }}" -var="aws_ecr_repository_name=${{ inputs.aws_ecr_repository_name }}" -var="github_repo_owner=${{ inputs.github_repo_owner }}"
         
         if [[ $? -ne 0 ]]; then
           echo "AppBuilder-Infrastructure-ECRFailed The build script failed to create an ECR instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfailed for more information."
