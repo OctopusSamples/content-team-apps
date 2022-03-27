@@ -15,7 +15,8 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
         const [octopusApiKeyError, setOctopusApiKeyError] = useState<string | null>(null);
 
         const validate = () => {
-            if (octopusApiKey === mask) {
+            if (octopusApiKey.trim() === mask) {
+                setOctopusApiKeyError(null);
                 return true;
             } else if (!octopusApiKey.trim()) {
                 setOctopusApiKeyError("The Octopus API key is a required field.");
@@ -41,7 +42,7 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
 
             setButtonDisabled(true);
 
-            if (octopusApiKey !== mask) {
+            if (octopusApiKey.trim() !== mask) {
                 // Asymmetrically encrypt the secret so the browser can not read it again.
                 encryptAndSaveInCookie(octopusApiKey.trim(), "octopusApiKey", 14)
                     .then(nextState)
