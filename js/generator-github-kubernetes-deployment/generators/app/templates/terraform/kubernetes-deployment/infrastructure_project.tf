@@ -181,7 +181,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             --override-existing-serviceaccounts \
             --approve
 
-          aws	eks update-kubeconfig --name app-builder-${var.github_repo_owner} --kubeconfig /build/kubeconfig
+          aws eks update-kubeconfig --name app-builder-${var.github_repo_owner} --kubeconfig /build/kubeconfig
 
           kubectl apply \
               --kubeconfig=/build/kubeconfig \
@@ -221,7 +221,35 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
-        "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias jq=\"docker run --rm -i imega/jq\"\n\naws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json\n\necho \"##octopus[create-kubernetestarget \\\n  name=\\\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\\\" \\\n  octopusRoles=\\\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\\\" \\\n  clusterName=\\\"$(encode_servicemessagevalue \"app-builder-${var.github_repo_owner}\")\\\" \\\n  clusterUrl=\\\"$(encode_servicemessagevalue \"$(cat clusterdetails.json | jq -r '.cluster.endpoint')\")\\\" \\\n  octopusAccountIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_aws_account_id}\")\\\" \\\n  namespace=\\\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\\\" \\\n  octopusDefaultWorkerPoolIdOrName=\\\"$(encode_servicemessagevalue \"${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}\")\\\" \\\n  updateIfExisting=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  skipTlsVerification=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  healthCheckContainerImageFeedIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_dockerhub_feed_id}\")\\\" \\\n  healthCheckContainerImage=\\\"$(encode_servicemessagevalue \"octopusdeploy/worker-tools:3-ubuntu.18.04\")\\\"]\"",
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          # Get the containers
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull amazon/aws-cli 2>&1
+          docker pull imega/jq 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+          alias jq="docker run --rm -i imega/jq"
+
+          aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
+
+          echo "##octopus[create-kubernetestarget \
+            name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\" \
+            octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
+            clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
+            octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
+            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\" \
+            octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
+            updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
+            skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
+            healthCheckContainerImageFeedIdOrName=\"$(encode_servicemessagevalue "${var.octopus_dockerhub_feed_id}")\" \
+            healthCheckContainerImage=\"$(encode_servicemessagevalue "octopusdeploy/worker-tools:3-ubuntu.18.04")\"]"
+        EOT
+
       }
     }
   }
@@ -245,7 +273,34 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : "${var.aws_region}",
-        "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias jq=\"docker run --rm -i imega/jq\"\n\naws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json\n\necho \"##octopus[create-kubernetestarget \\\n  name=\\\"$(encode_servicemessagevalue 'App Builder EKS Cluster Frontend')\\\" \\\n  octopusRoles=\\\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\\\" \\\n  clusterName=\\\"$(encode_servicemessagevalue \"app-builder-${var.github_repo_owner}\")\\\" \\\n  clusterUrl=\\\"$(encode_servicemessagevalue \"$(cat clusterdetails.json | jq -r '.cluster.endpoint')\")\\\" \\\n  octopusAccountIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_aws_account_id}\")\\\" \\\n  namespace=\\\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-frontend')\\\" \\\n  octopusDefaultWorkerPoolIdOrName=\\\"$(encode_servicemessagevalue \"${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}\")\\\" \\\n  updateIfExisting=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  skipTlsVerification=\\\"$(encode_servicemessagevalue 'True')\\\" \\\n  healthCheckContainerImageFeedIdOrName=\\\"$(encode_servicemessagevalue \"${var.octopus_dockerhub_feed_id}\")\\\" \\\n  healthCheckContainerImage=\\\"$(encode_servicemessagevalue \"octopusdeploy/worker-tools:3-ubuntu.18.04\")\\\"]\"",
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          # Get the containers
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull amazon/aws-cli 2>&1
+          docker pull imega/jq 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+          alias jq="docker run --rm -i imega/jq"
+
+          aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
+
+          echo "##octopus[create-kubernetestarget \
+            name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Frontend')\" \
+            octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
+            clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
+            octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
+            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-frontend')\" \
+            octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
+            updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
+            skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
+            healthCheckContainerImageFeedIdOrName=\"$(encode_servicemessagevalue "${var.octopus_dockerhub_feed_id}")\" \
+            healthCheckContainerImage=\"$(encode_servicemessagevalue "octopusdeploy/worker-tools:3-ubuntu.18.04")\"]"
+        EOT
       }
     }
   }
