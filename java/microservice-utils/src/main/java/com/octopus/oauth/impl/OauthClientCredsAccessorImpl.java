@@ -15,10 +15,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OauthClientCredsAccessorImpl implements OauthClientCredsAccessor {
   private static long expiry;
-  private static String accessToken;
   private final OauthClientCreds cred;
-
   private final OauthClient oauthClient;
+
+  private String accessToken;
 
   /**
    * Constructor.
@@ -46,7 +46,7 @@ public class OauthClientCredsAccessorImpl implements OauthClientCredsAccessor {
               cred.clientId().get(),
               scope))
           // We expect to see an access token. Fail if the value is empty.
-          .filter(oauth -> StringUtils.isNotEmpty(oauth.getAccessToken()))
+          .filter(oauth -> StringUtils.isNotBlank(oauth.getAccessToken()))
           // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
           .mapTry(oauth -> {
             accessToken = oauth.getAccessToken();
