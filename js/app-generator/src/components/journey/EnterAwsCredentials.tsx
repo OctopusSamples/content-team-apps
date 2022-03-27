@@ -98,6 +98,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             You can find more information about creating access keys in the
                             &nbsp;<a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
                         </p>
+                        {props.machine.state.context.targetPlatform === "EKS" && <p>
+                            Ensure the account has the set of permissions documented for <a href={"https://eksctl.io/usage/minimum-iam-policies/"}>eksctl</a>,
+                            as well as the ability to <a href={"https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html"}>create an ECR instance and push images to it</a>.
+                        </p>}
                         <Grid container={true} className={classes.row} sx={formContainer}>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Access Key</FormLabel>

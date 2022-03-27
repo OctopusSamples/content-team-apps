@@ -54,7 +54,63 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : "${var.aws_region}",
-        "Octopus.Action.Script.ScriptBody": "# Get the containers\necho \"Downloading Docker images\"\necho \"##octopus[stdout-verbose]\"\ndocker pull amazon/aws-cli 2>&1 \ndocker pull imega/jq 2>&1 \ndocker pull weaveworks/eksctl 2>&1\necho \"##octopus[stdout-default]\"\n\n# Alias the docker run commands\nshopt -s expand_aliases\nalias aws=\"docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli\"\nalias eksctl=\"docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl\"\nalias jq=\"docker run --rm -i imega/jq\"\n\n# List the clusters to find out if the app-builer cluster already exists.\n# The AWS docs at https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html say to use the \"-it\" docker argument.\n# This results in errors, described at https://github.com/moby/moby/issues/30137#issuecomment-736955494.\n# So we just use \"-i\".\nINDEX=$(aws eks list-clusters | jq '.clusters | index(\"app-builder-${var.github_repo_owner}\")')\n\n# If the cluster does not exist, create it.\nif [[ $INDEX == \"null\" ]]; then\n\n  # Create the eksctl config file. More information can be found at https://eksctl.io/usage/creating-and-managing-clusters/.\n  cat <<EOF > cluster.yaml\napiVersion: eksctl.io/v1alpha5\nkind: ClusterConfig\n\nmetadata:\n  name: app-builder-${var.github_repo_owner}\n  region: ${var.aws_region}\n\nnodeGroups:\n  - name: ng-1\n    instanceType: t3a.small\n    desiredCapacity: 2\n    volumeSize: 80\n    iam:\n      withAddonPolicies:\n        imageBuilder: true\nEOF\n\n  # Use eksctl to create the new cluster.\n  echo \"Creating the EKS cluster\"\n  echo \"##octopus[stdout-verbose]\"\n  eksctl create cluster -f /build/cluster.yaml\n  echo \"##octopus[stdout-default]\"\n\n  if [[ $? -ne 0 ]]; then\n  \techo \"The cluster was not created successfully. Expand the verbose logs for more details.\"\n    exit 1\n  fi\nelse\n  echo \"Reusing the existing cluster.\"\nfi",
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          # Get the containers
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull amazon/aws-cli 2>&1
+          docker pull imega/jq 2>&1
+          docker pull weaveworks/eksctl 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+          alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
+          alias jq="docker run --rm -i imega/jq"
+
+          # List the clusters to find out if the app-builer cluster already exists.
+          # The AWS docs at https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html say to use the "-it" docker argument.
+          # This results in errors, described at https://github.com/moby/moby/issues/30137#issuecomment-736955494.
+          # So we just use "-i".
+          INDEX=$(aws eks list-clusters | jq '.clusters | index("app-builder-${var.github_repo_owner}")')
+
+          # If the cluster does not exist, create it.
+          if [[ $INDEX == "null" ]]; then
+
+            # Create the eksctl config file. More information can be found at https://eksctl.io/usage/creating-and-managing-clusters/.
+            cat <<EOF > cluster.yaml
+          apiVersion: eksctl.io/v1alpha5
+          kind: ClusterConfig
+
+          metadata:
+            name: app-builder-mcasperson
+            region: ${var.aws_region}
+
+          nodeGroups:
+            - name: ng-1
+              instanceType: t3a.small
+              desiredCapacity: 2
+              volumeSize: 80
+              iam:
+                withAddonPolicies:
+                  imageBuilder: true
+          EOF
+
+            # Use eksctl to create the new cluster.
+            echo "Creating the EKS cluster"
+            echo "##octopus[stdout-verbose]"
+            eksctl create cluster -f /build/cluster.yaml
+            echo "##octopus[stdout-default]"
+
+            if [[ $? -ne 0 ]]; then
+              echo "##octopus[stdout-error]"
+              echo "[AppBuilder-Infrastructure-EKSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-eksfailed) The cluster was not created successfully. Expand the verbose logs for more details, or click the error code link for more information."
+              exit 1
+            fi
+
+          fi
+        EOT
       }
     }
   }

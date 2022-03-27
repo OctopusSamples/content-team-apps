@@ -5,7 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet author="mcasperson" id="1">
-        <createTable tableName="customer">
+        <createTable tableName="awsIamPermission">
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true"/>
             </column>
