@@ -7,7 +7,6 @@
     <artifactId>content-team-apps</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>com.octopus</groupId>
   <artifactId>quarkus-microservice</artifactId>
   <version>0.1.0</version>
   <properties>
@@ -20,7 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.7.4.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.7.5.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
