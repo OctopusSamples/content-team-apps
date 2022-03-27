@@ -272,7 +272,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.Aws.AssumeRole" : "False",
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
-        "Octopus.Action.Aws.Region" : "${var.aws_region}",
+        "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody": <<-EOT
           # Get the containers
           echo "Downloading Docker images"
