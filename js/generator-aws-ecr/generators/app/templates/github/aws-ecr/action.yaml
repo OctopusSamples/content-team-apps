@@ -68,7 +68,8 @@ runs:
           echo "Sleeping to ensure bucket is available"
           sleep 60
           if [[ $? -ne 0 ]]; then
-            echo "AppBuilder-Infrastructure-S3Failed The build script failed to create an S3 bucket to hold the Terraform state. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-s3failed for more information."        
+            echo "AppBuilder-Infrastructure-S3Failed The build script failed to create an S3 bucket to hold the Terraform state. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-s3failed for more information."
+            exit 1
           fi
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
@@ -107,7 +108,8 @@ runs:
         -var="github_repo_owner=${{ inputs.github_repo_owner }}"
         
         if [[ $? -ne 0 ]]; then
-          echo "AppBuilder-Infrastructure-ECRFailed The build script failed to create an ECR instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfailed for more information."        
+          echo "AppBuilder-Infrastructure-ECRFailed The build script failed to create an ECR instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfailed for more information."
+          exit 1
         fi
       working-directory: terraform/aws-ecr
       shell: bash
