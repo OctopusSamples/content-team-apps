@@ -621,6 +621,10 @@ step "Deploy OAuth Proxy Token Exchange" {
                     "DeploymentId" : {
                       "Description" : "The deployment id",
                       "Value" : {"Ref": "Deployment#{Octopus.Deployment.Id | Replace -}"}
+                    },
+                    "LambdaVersion": {
+                      "Description": "The name of the Lambda version resource deployed by this template",
+                      "Value": "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
                     }
                   }
                 }
