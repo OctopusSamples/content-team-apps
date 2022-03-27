@@ -8,6 +8,7 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
+import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
@@ -24,11 +25,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
 /**
- * Simulate tests when a user token has been passed in.
+ * Simulate tests when a machine-to-machine token has been passed in.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
+public class HandlerAuthorizedPostWithMockedServiceTokenTests extends BaseTest {
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
@@ -37,13 +38,16 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   DisableSecurityFeature cognitoDisableAuth;
 
   @InjectMock
+  AdminJwtClaimFeature cognitoAdminClaim;
+
+  @InjectMock
   JwtInspector jwtInspector;
 
   @InjectMock
   JwtUtils jwtUtils;
 
   @Inject
-  ResourceHandler resourceHandler;
+  ResourceHandler handler;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -52,14 +56,15 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseTest {
   public void setup() throws SQLException, LiquibaseException {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
-    Mockito.when(jwtInspector.jwtContainsCognitoGroup(any(), any())).thenReturn(true);
+    Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
+    Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
     liquidbaseUpdater.update();
   }
 
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final Customer resource = createResource(resourceHandler, resourceConverter, "main");
+    final Customer resource = createResource(handler, resourceConverter, "main");
     assertEquals("myname", resource.getFirstName());
   }
 }

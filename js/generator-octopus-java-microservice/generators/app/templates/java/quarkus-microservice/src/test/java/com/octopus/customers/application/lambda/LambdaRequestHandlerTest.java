@@ -291,37 +291,4 @@ public class LambdaRequestHandlerTest extends BaseTest {
         api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(404, getResponse.getStatusCode());
   }
-
-  @Test
-  public void testHealthCollection() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/GET");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(200, postResponse.getStatusCode());
-  }
-
-  @Test
-  public void testHealthCreateItem() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/POST");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(200, postResponse.getStatusCode());
-  }
-
-  @Test
-  public void testHealthGetItem() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/x/GET");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(200, postResponse.getStatusCode());
-  }
 }

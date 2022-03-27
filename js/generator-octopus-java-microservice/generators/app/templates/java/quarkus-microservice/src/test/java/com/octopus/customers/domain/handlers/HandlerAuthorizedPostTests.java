@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class HandlerAuthorizedTests extends BaseTest {
+public class HandlerAuthorizedPostTests extends BaseTest {
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
@@ -50,22 +50,4 @@ public class HandlerAuthorizedTests extends BaseTest {
         List.of("main"),
         null, null));
   }
-
-  @Test
-  @Transactional
-  public void testGetResource() {
-    assertThrows(UnauthorizedException.class, () -> handler.getOne(
-        "1",
-        List.of("main"),
-        null, null));
-  }
-
-  @Test
-  @Transactional
-  public void testGetAllResource() {
-    assertThrows(UnauthorizedException.class, () -> handler.getAll(
-        List.of("main"),
-        null, null, null, null, null));
-  }
-
 }

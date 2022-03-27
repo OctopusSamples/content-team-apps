@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
+/**
+ * These tests verify the behaviour of the system when the underlying handler throws an exception.
+ */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaRequestHandlerBackendFailureTest extends BaseTest {

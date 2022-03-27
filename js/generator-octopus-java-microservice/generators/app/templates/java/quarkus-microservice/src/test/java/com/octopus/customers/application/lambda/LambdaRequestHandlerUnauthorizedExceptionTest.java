@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
+/**
+ * These tests verify the behaviour of unauthorized requests.
+ */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LambdaRequestHandlerUnauthorizedExceptionTest extends BaseTest {

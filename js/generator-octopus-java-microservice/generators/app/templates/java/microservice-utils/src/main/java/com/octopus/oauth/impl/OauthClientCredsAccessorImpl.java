@@ -1,6 +1,5 @@
 package com.octopus.oauth.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octopus.features.OauthClientCreds;
 import com.octopus.oauth.OauthClient;
 import com.octopus.oauth.OauthClientCredsAccessor;

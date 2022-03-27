@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+/**
+ * These tests verify the path matching behaviour of the Lambda request handler.
+ */
 public class LambdaRequestHandlerPathMatchingTest {
 
   private static final LambdaRequestHanlder API = new LambdaRequestHanlder();

@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+/**
+ * These tests verify the database access.
+ */
 @QuarkusTest
 @TestInstance(Lifecycle.PER_CLASS)
 public class RepositoryTest {
