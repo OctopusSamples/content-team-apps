@@ -67,6 +67,9 @@ runs:
           aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
+          if [[ $? -ne 0 ]]; then
+            AppBuilder-Infrastructure-S3Failed The build script failed to create an S3 bucket to hold the Terraform state.
+          fi
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
