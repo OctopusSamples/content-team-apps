@@ -2,6 +2,7 @@ package com.octopus.jenkins.domain.audits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jenkins.GlobalConstants;
 import com.octopus.jenkins.domain.entities.Audit;
 import com.octopus.jenkins.domain.framework.jsonapi.JsonApiConverter;
@@ -44,6 +45,9 @@ public class AuditGenerator {
   @ConfigProperty(name = "cognito.client-secret")
   Optional<String> cognitoClientSecret;
 
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
+
   /**
    * Create an audit event.
    *
@@ -72,7 +76,7 @@ public class AuditGenerator {
                 GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {
           // Note the failure
-          Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-Failed", e);
+          Log.error( microserviceNameFeature.getMicroserviceName()+ "-Audit-Failed", e);
           // As a fallback, write the audit event to the logs
           Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(audit)));
         });

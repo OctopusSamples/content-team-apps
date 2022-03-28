@@ -6,7 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jenkins.GlobalConstants;
+import com.octopus.jenkins.domain.features.impl.MicroserviceNameFeatureImpl;
 import com.octopus.jenkins.domain.hanlder.SimpleResponse;
 import com.octopus.jenkins.domain.hanlder.TemplateHandler;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
@@ -34,6 +36,9 @@ public class PipelineLambda implements
 
   @Inject
   TemplateHandler templateHandler;
+
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
 
   /**
    * The Lambda entry point.
@@ -92,7 +97,7 @@ public class PipelineLambda implements
               .put("Content-Type", "text/plain")
               .build());
     } catch (final Exception ex) {
-      Log.error(GlobalConstants.MICROSERVICE_NAME + "-General-Error", ex);
+      Log.error( microserviceNameFeature.getMicroserviceName()+ "-General-Error", ex);
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(500)
           .withBody("An internal server error was encountered.")

@@ -15,12 +15,16 @@ import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
 import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
+import com.octopus.jenkins.domain.features.ServiceBusCognitoConfig;
+import com.octopus.jenkins.infrastructure.client.CognitoClient;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
+import com.octopus.oauth.OauthClientCredsAccessor;
+import com.octopus.oauth.impl.OauthClientCredsAccessorImpl;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +32,9 @@ import java.util.Optional;
 import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * Generates CDI beans to be used in the pipeline generation. Be aware the not all scopes are used
@@ -42,6 +48,12 @@ public class PipelineProducer {
 
   @ConfigProperty(name = "application.github-client-secret", defaultValue = "")
   Optional<String> clientSecret;
+
+  @RestClient
+  CognitoClient cognitoClient;
+
+  @Inject
+  ServiceBusCognitoConfig serviceBusCognitoConfig;
 
   /**
    * Produces the HTTP client.
@@ -210,5 +222,16 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getDotNetCore() {
     return new DotnetCoreBuilder();
+  }
+
+  /**
+   * Produces the Oauth client creds token generator.
+   *
+   * @return An implementation of OauthClientCredsAccessor.
+   */
+  @ApplicationScoped
+  @Produces
+  public OauthClientCredsAccessor getOauthClientCredsAccessor() {
+    return new OauthClientCredsAccessorImpl(serviceBusCognitoConfig, cognitoClient);
   }
 }

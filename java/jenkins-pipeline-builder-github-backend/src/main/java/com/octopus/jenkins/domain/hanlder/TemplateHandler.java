@@ -118,7 +118,7 @@ public class TemplateHandler {
     // Write an audit message
     builder.ifPresent(b ->
         auditGenerator.createAuditEvent(new Audit(
-                GlobalConstants.MICROSERVICE_NAME,
+                microserviceNameFeature.getMicroserviceName(),
                 GlobalConstants.CREATED_TEMPLATE_ACTION,
                 b.getName()),
             xray,
