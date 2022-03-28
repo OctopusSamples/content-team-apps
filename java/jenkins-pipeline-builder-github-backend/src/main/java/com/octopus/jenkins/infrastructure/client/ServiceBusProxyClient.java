@@ -12,7 +12,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Path("api")
 @RegisterRestClient
 public interface ServiceBusProxyClient {
-  @Path("jenkinsloginmessage")
+  @Path("loginmessage")
   @POST
   @Consumes(GlobalConstants.JSONAPI_CONTENT_TYPE)
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
