@@ -45,3 +45,4 @@ jobs:
           servicebus_application_id_development: ${{ secrets.GH_ACTIONS_SERVICE_BUS_APPID_DEVELOPMENT }}
           cognito_library_variable_set_id: LibraryVariableSets-1262
           content_team_library_variable_set_id: LibraryVariableSets-1282
+          github_actions_library_variable_set_id: LibraryVariableSets-1222
