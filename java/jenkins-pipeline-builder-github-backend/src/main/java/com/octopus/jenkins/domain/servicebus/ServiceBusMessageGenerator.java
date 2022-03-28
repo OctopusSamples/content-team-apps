@@ -12,6 +12,7 @@ import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -52,16 +53,20 @@ public class ServiceBusMessageGenerator {
       @NonNull final String authHeaders) {
 
     oauthClientCredsAccessor.getAccessToken(GlobalConstants.LOGINMESSAGE_SCOPE)
-        .andThenTry(auditAccessToken ->
-            serviceBusProxyClient.createLoginMessage(
-                new String(jsonApiConverter.buildResourceConverter().writeDocument(
-                    new JSONAPIDocument<>(loginMessage))),
-                StringUtils.defaultString(xrayId),
-                routingHeaders,
-                dataPartitionHeaders,
-                authHeaders,
-                "Bearer " + auditAccessToken,
-                GlobalConstants.ASYNC_INVOCATION_TYPE))
+        .andThenTry(auditAccessToken -> {
+          final Response response = serviceBusProxyClient.createLoginMessage(
+              new String(jsonApiConverter.buildResourceConverter().writeDocument(
+                  new JSONAPIDocument<>(loginMessage))),
+              StringUtils.defaultString(xrayId),
+              routingHeaders,
+              dataPartitionHeaders,
+              authHeaders,
+              "Bearer " + auditAccessToken,
+              GlobalConstants.ASYNC_INVOCATION_TYPE);
+          if (response.getStatus() != 200) {
+            throw new RuntimeException();
+          }
+        })
         .onFailure(e -> {
           // Note the failure
           Log.error(microserviceNameFeature.getMicroserviceName() + "-ServiceBusMessage-Failed", e);
