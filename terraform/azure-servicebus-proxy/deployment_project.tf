@@ -518,7 +518,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.AppBuilderApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGatewayStage}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
             EnvironmentName:
