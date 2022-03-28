@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeser
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.jenkins.domain.entities.Audit;
+import com.octopus.jenkins.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
@@ -13,7 +14,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     TimestampDeserializer.class,
     Audit.class,
     IntegerIdHandler.class,
-    StringIdHandler.class})
+    StringIdHandler.class,
+    GithubUserLoggedInForFreeToolsEventV1.class})
 public class ReflectionConfig {
 
 }
