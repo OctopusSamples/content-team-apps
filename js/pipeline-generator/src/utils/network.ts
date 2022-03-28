@@ -38,30 +38,13 @@ function responseIsClientError(status: number) {
 export function appendUtms(url: string, utms?: UtmParams): string {
     try {
         const utmParams = utms || JSON.parse(window.localStorage.getItem("utmParams") || "");
-        let hasQuestionMark = url.indexOf("?") !== -1;
 
-        if (utmParams.source) {
-            url += (hasQuestionMark ? "&" : "?") + "utm_source=" + encodeURIComponent(utmParams.source);
-            hasQuestionMark = true;
-        }
-
-        if (utmParams.medium) {
-            url += (hasQuestionMark ? "&" : "?") + "utm_medium=" + encodeURIComponent(utmParams.medium);
-            hasQuestionMark = true;
-        }
-
-        if (utmParams.campaign) {
-            url += (hasQuestionMark ? "&" : "?") + "utm_campaign=" + encodeURIComponent(utmParams.campaign);
-            hasQuestionMark = true;
-        }
-
-        if (utmParams.term) {
-            url += (hasQuestionMark ? "&" : "?") + "utm_term=" + encodeURIComponent(utmParams.term);
-            hasQuestionMark = true;
-        }
-
-        if (utmParams.content) {
-            url += (hasQuestionMark ? "&" : "?") + "utm_content=" + encodeURIComponent(utmParams.content);
+        // if any utm params were passed in, append them to the path or url
+        let k: keyof typeof utmParams;
+        for (k in utmParams) {
+            if (utmParams[k]) {
+                url += (url.indexOf("?") !== -1 ? "&" : "?") + "utm_" + k + "=" + encodeURIComponent(utmParams[k]);
+            }
         }
 
         return url;
