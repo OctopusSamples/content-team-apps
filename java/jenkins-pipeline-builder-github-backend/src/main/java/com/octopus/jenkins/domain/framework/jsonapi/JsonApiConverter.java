@@ -3,6 +3,7 @@ package com.octopus.jenkins.domain.framework.jsonapi;
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.jenkins.domain.entities.Audit;
+import com.octopus.jenkins.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import javax.enterprise.inject.Produces;
 
 /** Produces a JSONAPI resource converter. */
@@ -16,7 +17,7 @@ public class JsonApiConverter {
   @Produces
   public ResourceConverter buildResourceConverter() {
     final ResourceConverter resourceConverter =
-        new ResourceConverter(Audit.class);
+        new ResourceConverter(Audit.class, GithubUserLoggedInForFreeToolsEventV1.class);
     resourceConverter.disableDeserializationOption(DeserializationFeature.REQUIRE_RESOURCE_ID);
     resourceConverter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);
     return resourceConverter;
