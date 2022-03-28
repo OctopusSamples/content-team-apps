@@ -226,7 +226,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
               --output text)
 
-          set_octopusvariable "PreviousCodeExchangeLambdaDescription" ${PREVIOUS_LAMBDA_DESCRIPTION}
+          set_octopusvariable "PreviousCodeExchangeLambdaDescription" $${PREVIOUS_LAMBDA_DESCRIPTION}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
