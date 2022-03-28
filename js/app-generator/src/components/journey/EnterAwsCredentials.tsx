@@ -101,7 +101,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Ensure the AWS account has the ability to <a href={"https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html"}>create an S3 bucket</a>.
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" && <span>
-                            Also ensure the account has the set of permissions documented for <a href={"https://eksctl.io/usage/minimum-iam-policies/"}>eksctl</a>,
+                            {" "}Also ensure the account has the set of permissions documented for <a href={"https://eksctl.io/usage/minimum-iam-policies/"}>eksctl</a>,
                             as well as the ability to <a href={"https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html"}>create an ECR repository and push images to it</a>.
                         </span>}
                         </p>
