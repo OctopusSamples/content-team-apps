@@ -359,7 +359,7 @@ step "Deploy Pipeline Backend" {
                         - Arn
                       Runtime: provided
                       Timeout: 30
-                  'LambdaVersion#{Octopus_Deployment.Id | Replace -}':
+                  'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::Lambda::Version'
                     Properties:
                       FunctionName: !Ref LambdaOne
