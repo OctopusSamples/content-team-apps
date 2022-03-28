@@ -450,7 +450,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ResourceId
-                PathPart: jenkinsloginmessage
+                PathPart: loginmessage
             ApiServiceAccountsMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
