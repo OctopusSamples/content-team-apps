@@ -49,6 +49,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Deploy Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
       features       = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
       package {
         name                      = local.package_name
@@ -88,7 +92,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.KubernetesContainers.IngressName" : "backend-ingress",
         "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/api/customers\",\"value\":\"web\",\"option\":\"\",\"option2\":\"ImplementationSpecific\"}]}}]",
         "Octopus.Action.KubernetesContainers.ServiceName" : "backend-service",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"8083\",\"targetPort\":\"\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
+        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
       }
     }
   }
@@ -103,6 +107,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Display the Service URL"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
       container {
         feed_id = var.octopus_dockerhub_feed_id
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
@@ -111,7 +119,17 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
         "Octopus.Action.Script.ScriptBody": <<-EOT
-          kubectl get service backend-service -o json
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull imega/jq 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias jq="docker run --rm -i imega/jq"
+
+          LOADBALANCER_HOSTNAME=$(kubectl get service backend-service -o json | ja -r '.status.loadbalancer.ingress[0].hostname')
+          echo "Open [http://$LOADBALANCER_HOSTNAME/api/customers](http://$LOADBALANCER_HOSTNAME/api/customers) to test the backend API."
         EOT
         "OctopusUseBundledTooling": "False"
       }
