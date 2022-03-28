@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.GlobalConstants;
+import com.octopus.githubactions.domain.entities.Utms;
 import com.octopus.githubactions.domain.hanlder.SimpleResponse;
 import com.octopus.githubactions.domain.hanlder.TemplateHandler;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
@@ -70,6 +71,14 @@ public class PipelineLambda implements
     final String xray = lambdaHttpHeaderExtractor.getFirstHeader(
         input,
         GlobalConstants.AMAZON_TRACE_ID_HEADER).orElse("");
+
+    final Utms utms = Utms.builder()
+        .source(lambdaHttpValueExtractor.getQueryParam(input, "utm_source").orElse(""))
+        .medium(lambdaHttpValueExtractor.getQueryParam(input, "utm_medium").orElse(""))
+        .campaign(lambdaHttpValueExtractor.getQueryParam(input, "utm_campaign").orElse(""))
+        .term(lambdaHttpValueExtractor.getQueryParam(input, "utm_term").orElse(""))
+        .content(lambdaHttpValueExtractor.getQueryParam(input, "utm_content").orElse(""))
+        .build();
 
     if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
       return new APIGatewayProxyResponseEvent()

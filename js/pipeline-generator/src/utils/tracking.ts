@@ -21,5 +21,15 @@ export function saveUtms() {
         term: urlSearchParams.get("utm_term"),
         content: urlSearchParams.get("utm_content")
     }
-    window.localStorage.setItem("utmParams", JSON.stringify(utmParams));
+
+    // if any utm params were passed in, save the object to local storage.
+    let k: keyof typeof utmParams;
+    for (k in utmParams) {
+        if (utmParams[k]) {
+            window.localStorage.setItem("utmParams", JSON.stringify(utmParams));
+            return;
+        }
+    }
+
+    // if no utm params were passed in, leave the existing utm params in local storage alone.
 }
