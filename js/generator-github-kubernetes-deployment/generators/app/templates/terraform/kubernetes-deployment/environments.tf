@@ -11,13 +11,13 @@ data "octopusdeploy_environments" "production_security" {
 }
 
 data "octopusdeploy_environments" "development" {
-  name         = "Development"
+  name         = "Development (App)"
   skip         = 0
   take         = 1
 }
 
 data "octopusdeploy_environments" "production" {
-  name         = "Production"
+  name         = "Production (App)"
   skip         = 0
   take         = 1
 }
