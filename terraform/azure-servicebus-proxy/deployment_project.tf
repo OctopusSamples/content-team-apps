@@ -203,6 +203,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --output text)
           echo "Cognito Client ID: $${COGNITO_CLIENT_ID}"
           set_octopusvariable "CognitoClientId" $${COGNITO_CLIENT_ID}
+
+          if [[ -z "$${COGNITO_CLIENT_ID}" ]]; then
+            echo "Run the ${octopusdeploy_project.cognito_userpool_client_project.name} project first"
+            exit 1
+          fi
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
