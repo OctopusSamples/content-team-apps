@@ -242,7 +242,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
-            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-backend')\" \
+            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}'.Split(\" \")[0] + '-backend')\" \
             octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
             updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
             skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
@@ -294,7 +294,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
-            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}-frontend')\" \
+            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}'.Split(\" \")[0] + '-frontend')\" \
             octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
             updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
             skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
