@@ -1,6 +1,7 @@
 import {GET_RETRIES} from "./constants";
 import {RedirectRule} from "../pages/Branching";
 import {getAccessToken} from "./security";
+import {UtmParams} from "./tracking";
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
@@ -32,33 +33,38 @@ function responseIsClientError(status: number) {
 /**
  * Take the UTM values saved in local storage and append them to the supplied URL.
  * @param url The url with any UTM params appended to it.
+ * @param utms The utms supplied directly.
  */
-export function appendUtms(url: string): string {
+export function appendUtms(url: string, utms?: UtmParams): string {
     try {
-        const utmParams = JSON.parse(window.localStorage.getItem("utmParams") || "");
-        const updatedUrl = new URL(url);
+        const utmParams = utms || JSON.parse(window.localStorage.getItem("utmParams") || "");
+        let hasQuestionMark = url.indexOf("?") !== -1;
 
         if (utmParams.source) {
-            updatedUrl.searchParams.append("utm_source", utmParams.source);
+            url += (hasQuestionMark ? "&" : "?") + "utm_source=" + encodeURIComponent(utmParams.source);
+            hasQuestionMark = true;
         }
 
         if (utmParams.medium) {
-            updatedUrl.searchParams.append("utm_medium", utmParams.medium);
+            url += (hasQuestionMark ? "&" : "?") + "utm_medium=" + encodeURIComponent(utmParams.medium);
+            hasQuestionMark = true;
         }
 
         if (utmParams.campaign) {
-            updatedUrl.searchParams.append("utm_campaign", utmParams.campaign);
+            url += (hasQuestionMark ? "&" : "?") + "utm_campaign=" + encodeURIComponent(utmParams.campaign);
+            hasQuestionMark = true;
         }
 
         if (utmParams.term) {
-            updatedUrl.searchParams.append("utm_term", utmParams.term);
+            url += (hasQuestionMark ? "&" : "?") + "utm_term=" + encodeURIComponent(utmParams.term);
+            hasQuestionMark = true;
         }
 
         if (utmParams.content) {
-            updatedUrl.searchParams.append("utm_content", utmParams.content);
+            url += (hasQuestionMark ? "&" : "?") + "utm_content=" + encodeURIComponent(utmParams.content);
         }
 
-        return updatedUrl.toString();
+        return url;
     } catch {
         // If there were no UTMs and the parse failed, return the original URL
         return url;
