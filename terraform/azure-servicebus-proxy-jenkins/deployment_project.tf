@@ -188,6 +188,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           echo "Rest Api ID: $${REST_API}"
 
+          if [[ -z "$${REST_API}" ]]; then
+            echo "Run the App Builder shared infrastructure project first"
+            exit 1
+          fi
+
           COGNITO_POOL_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormation.Cognito} \
@@ -195,6 +200,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --output text)
           echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
           set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
+
+          if [[ -z "$${COGNITO_POOL_ID}" ]]; then
+            echo "Run the Cognito project first"
+            exit 1
+          fi
 
           COGNITO_CLIENT_ID=$(aws cloudformation \
               describe-stacks \
