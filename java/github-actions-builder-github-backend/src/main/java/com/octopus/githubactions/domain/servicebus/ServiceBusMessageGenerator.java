@@ -54,18 +54,18 @@ public class ServiceBusMessageGenerator {
 
     oauthClientCredsAccessor.getAccessToken(GlobalConstants.LOGINMESSAGE_SCOPE)
         .andThenTry(auditAccessToken -> {
-            final Response response = serviceBusProxyClient.createLoginMessage(
-                new String(jsonApiConverter.buildResourceConverter().writeDocument(
-                    new JSONAPIDocument<>(loginMessage))),
-                StringUtils.defaultString(xrayId),
-                routingHeaders,
-                dataPartitionHeaders,
-                authHeaders,
-                "Bearer " + auditAccessToken,
-                GlobalConstants.ASYNC_INVOCATION_TYPE);
-            if (response.getStatus() != 202 && response.getStatus() != 200) {
-              throw new RuntimeException();
-            }
+          final Response response = serviceBusProxyClient.createLoginMessage(
+              new String(jsonApiConverter.buildResourceConverter().writeDocument(
+                  new JSONAPIDocument<>(loginMessage))),
+              StringUtils.defaultString(xrayId),
+              routingHeaders,
+              dataPartitionHeaders,
+              authHeaders,
+              "Bearer " + auditAccessToken,
+              GlobalConstants.ASYNC_INVOCATION_TYPE);
+          if (response.getStatus() != 202 && response.getStatus() != 200) {
+            throw new RuntimeException();
+          }
         })
         .onFailure(e -> {
           // Note the failure
