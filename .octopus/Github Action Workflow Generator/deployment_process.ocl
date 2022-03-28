@@ -158,264 +158,277 @@ step "Deploy Pipeline Backend" {
             Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Github Action Workflow Generator\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormation.Backend}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
-                Parameters:
-                  EnvironmentName:
+                --- 
+                Outputs: 
+                  DeploymentId: 
+                    Description: "The deployment id"
+                    Value: "Deployment#{Octopus.Deployment.Id | Replace -}"
+                Parameters: 
+                  AuditService: 
                     Type: String
-                    Default: '#{Octopus.Environment.Name}'
-                  RestApi:
+                  CognitoAuditClientId: 
                     Type: String
-                  ResourceId:
+                  CognitoAuditClientSecret: 
                     Type: String
-                  LambdaS3Key:
+                  CognitoJwk: 
                     Type: String
-                  LambdaS3Bucket:
+                  CognitoPool: 
                     Type: String
-                  ProxyLambdaS3Key:
+                  CognitoRegion: 
                     Type: String
-                  GithubClientId:
+                  CognitoRequiredGroup: 
                     Type: String
-                  GithubClientSecret:
+                  CognitoService: 
                     Type: String
-                  LambdaName:
+                  EnvironmentName: 
+                    Default: "#{Octopus.Environment.Name}"
                     Type: String
-                  LambdaDescription:
+                  GithubClientId: 
                     Type: String
-                  GithubEncryption:
+                  GithubClientSecret: 
                     Type: String
-                  GithubSalt:
+                  GithubEncryption: 
                     Type: String
-                  GithubLoginPage:
+                  GithubLoginPage: 
                     Type: String
-                  CognitoAuditClientId:
+                  GithubSalt: 
                     Type: String
-                  CognitoAuditClientSecret:
+                  LambdaDescription: 
                     Type: String
-                  CognitoService:
+                  LambdaName: 
                     Type: String
-                  AuditService:
+                  LambdaS3Bucket: 
                     Type: String
-                  CognitoRegion:
+                  LambdaS3Key: 
                     Type: String
-                  CognitoPool:
+                  ProxyLambdaS3Key: 
                     Type: String
-                  CognitoJwk:
+                  ResourceId: 
                     Type: String
-                  CognitoRequiredGroup:
+                  RestApi: 
                     Type: String
-                  ServiceBusProxyClientId:
+                  ServiceBusProxyClientId: 
                     Type: String
-                  ServiceBusProxyClientSecret:
+                  ServiceBusProxyClientSecret: 
                     Type: String
-                Resources:
-                  AppLogGroupProxyLambda:
-                    Type: 'AWS::Logs::LogGroup'
-                    Properties:
-                      LogGroupName: !Sub '/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy'
+                  ServiceBusUrl: 
+                    Type: String
+                Resources: 
+                  AppLogGroupOne: 
+                    Properties: 
+                      LogGroupName: "/aws/lambda/${EnvironmentName}-${LambdaName}"
                       RetentionInDays: 14
-                  IamRoleProxyLambdaExecution:
-                    Type: 'AWS::IAM::Role'
-                    Properties:
-                      AssumeRolePolicyDocument:
-                        Version: 2012-10-17
-                        Statement:
-                          - Effect: Allow
-                            Principal:
-                              Service:
-                                - lambda.amazonaws.com
-                            Action:
-                              - 'sts:AssumeRole'
-                      ManagedPolicyArns:
-                        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
-                      Policies:
-                        - PolicyName: !Sub '${EnvironmentName}-${LambdaName}-Proxy-policy'
-                          PolicyDocument:
-                            Version: 2012-10-17
-                            Statement:
-                              - Effect: Allow
-                                Action:
-                                  - 'logs:CreateLogStream'
-                                  - 'logs:CreateLogGroup'
-                                  - 'logs:PutLogEvents'
-                                Resource:
-                                  - !Sub >-
-                                    arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy*:*
-                              - Effect: Allow
-                                Action:
-                                  - 'lambda:InvokeFunction'
-                                Resource:
-                                  - !Sub >-
-                                    arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*:*
-                              - Effect: Allow
-                                Action:
-                                  - 'lambda:InvokeFunction'
-                                Resource:
-                                  - !Sub >-
-                                    arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*
-                      Path: /
-                      RoleName: !Sub '${EnvironmentName}-${LambdaName}-Proxy-role'
-                  ProxyLambdaPermissions:
-                    Type: 'AWS::Lambda::Permission'
-                    Properties:
-                      FunctionName: !GetAtt 
-                        - ProxyLambda
-                        - Arn
-                      Action: 'lambda:InvokeFunction'
-                      Principal: apigateway.amazonaws.com
-                      SourceArn: !Join 
-                        - ''
-                        - - 'arn:'
-                          - !Ref 'AWS::Partition'
-                          - ':execute-api:'
-                          - !Ref 'AWS::Region'
-                          - ':'
-                          - !Ref 'AWS::AccountId'
-                          - ':'
-                          - !Ref RestApi
-                          - /*/*
-                  ProxyLambda:
-                    Type: 'AWS::Lambda::Function'
-                    Properties:
-                      Code:
-                        S3Bucket: !Ref LambdaS3Bucket
-                        S3Key: !Ref ProxyLambdaS3Key
-                      Environment:
-                        Variables:
-                          DEFAULT_LAMBDA: !Ref 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
-                          COGNITO_REGION: !Ref CognitoRegion
-                          COGNITO_POOL: !Ref CognitoPool
-                          COGNITO_JWK: !Ref CognitoJwk
-                          COGNITO_REQUIRED_GROUP: !Ref CognitoRequiredGroup
-                      Description: !Sub '${LambdaDescription} Proxy'
-                      FunctionName: !Sub '${EnvironmentName}-${LambdaName}-Proxy'
-                      Handler: main
-                      MemorySize: 128
-                      PackageType: Zip
-                      Role: !GetAtt 
-                        - IamRoleProxyLambdaExecution
-                        - Arn
-                      Runtime: go1.x
-                      Timeout: 30
-                  AppLogGroupOne:
-                    Type: 'AWS::Logs::LogGroup'
-                    Properties:
-                      LogGroupName: !Sub '/aws/lambda/${EnvironmentName}-${LambdaName}'
+                    Type: "AWS::Logs::LogGroup"
+                  AppLogGroupProxyLambda: 
+                    Properties: 
+                      LogGroupName: "/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy"
                       RetentionInDays: 14
-                  IamRoleLambdaOneExecution:
-                    Type: 'AWS::IAM::Role'
-                    Properties:
-                      AssumeRolePolicyDocument:
-                        Version: 2012-10-17
-                        Statement:
-                          - Effect: Allow
-                            Principal:
-                              Service:
+                    Type: "AWS::Logs::LogGroup"
+                  ? "Deployment#{Octopus_Deployment.Id | Replace -}"
+                  : 
+                    DependsOn: 
+                      - LambdaOneMethodOne
+                    Properties: 
+                      RestApiId: RestApi
+                    Type: "AWS::ApiGateway::Deployment"
+                  IamRoleLambdaOneExecution: 
+                    Properties: 
+                      AssumeRolePolicyDocument: 
+                        Statement: 
+                          - 
+                            Action: 
+                              - "sts:AssumeRole"
+                            Effect: Allow
+                            Principal: 
+                              Service: 
                                 - lambda.amazonaws.com
-                            Action:
-                              - 'sts:AssumeRole'
-                      Policies:
-                        - PolicyName: !Sub '${EnvironmentName}-${LambdaName}-policy'
-                          PolicyDocument:
-                            Version: 2012-10-17
-                            Statement:
-                              - Effect: Allow
-                                Action:
-                                  - 'logs:CreateLogStream'
-                                  - 'logs:CreateLogGroup'
-                                  - 'logs:PutLogEvents'
-                                Resource:
-                                  - !Sub >-
-                                    arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}*:*
+                        Version: 2012-10-17
                       Path: /
-                      RoleName: !Sub '${EnvironmentName}-${LambdaName}-role'
-                  LambdaOne:
-                    Type: 'AWS::Lambda::Function'
-                    Properties:
-                      Description: !Ref LambdaDescription
-                      Code:
-                        S3Bucket: !Ref LambdaS3Bucket
-                        S3Key: !Ref LambdaS3Key
-                      Environment:
-                        Variables:
-                          GITHUB_CLIENT_ID: !Ref GithubClientId
-                          GITHUB_CLIENT_SECRET: !Ref GithubClientSecret
-                          GITHUB_ENCRYPTION: !Ref GithubEncryption
-                          GITHUB_SALT: !Ref GithubSalt
-                          GITHUB_LOGIN_PAGE: !Ref GithubLoginPage
-                          COGNITO_AUDIT_CLIENT_ID: !Ref CognitoAuditClientId
-                          COGNITO_AUDIT_CLIENT_SECRET: !Ref CognitoAuditClientSecret
-                          COGNITO_SERVICE: !Ref CognitoService
-                          AUDIT_SERVICE: !Ref AuditService
-                          COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_ID: !Ref ServiceBusProxyClientId
-                          COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_SECRET: !Ref ServiceBusProxyClientSecret
-                      FunctionName: !Sub '${EnvironmentName}-${LambdaName}'
+                      Policies: 
+                        - 
+                          PolicyDocument: 
+                            Statement: 
+                              - 
+                                Action: 
+                                  - "logs:CreateLogStream"
+                                  - "logs:CreateLogGroup"
+                                  - "logs:PutLogEvents"
+                                Effect: Allow
+                                Resource: 
+                                  - "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}*:*"
+                            Version: 2012-10-17
+                          PolicyName: "${EnvironmentName}-${LambdaName}-policy"
+                      RoleName: "${EnvironmentName}-${LambdaName}-role"
+                    Type: "AWS::IAM::Role"
+                  IamRoleProxyLambdaExecution: 
+                    Properties: 
+                      AssumeRolePolicyDocument: 
+                        Statement: 
+                          - 
+                            Action: 
+                              - "sts:AssumeRole"
+                            Effect: Allow
+                            Principal: 
+                              Service: 
+                                - lambda.amazonaws.com
+                        Version: 2012-10-17
+                      ManagedPolicyArns: 
+                        - "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                      Path: /
+                      Policies: 
+                        - 
+                          PolicyDocument: 
+                            Statement: 
+                              - 
+                                Action: 
+                                  - "logs:CreateLogStream"
+                                  - "logs:CreateLogGroup"
+                                  - "logs:PutLogEvents"
+                                Effect: Allow
+                                Resource: 
+                                  - "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${EnvironmentName}-${LambdaName}-Proxy*:*"
+                              - 
+                                Action: 
+                                  - "lambda:InvokeFunction"
+                                Effect: Allow
+                                Resource: 
+                                  - "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*:*"
+                              - 
+                                Action: 
+                                  - "lambda:InvokeFunction"
+                                Effect: Allow
+                                Resource: 
+                                  - "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${EnvironmentName}-${LambdaName}*"
+                            Version: 2012-10-17
+                          PolicyName: "${EnvironmentName}-${LambdaName}-Proxy-policy"
+                      RoleName: "${EnvironmentName}-${LambdaName}-Proxy-role"
+                    Type: "AWS::IAM::Role"
+                  LambdaOne: 
+                    Properties: 
+                      Code: 
+                        S3Bucket: LambdaS3Bucket
+                        S3Key: LambdaS3Key
+                      Description: LambdaDescription
+                      Environment: 
+                        Variables: 
+                          AUDIT_SERVICE: AuditService
+                          COGNITO_AUDIT_CLIENT_ID: CognitoAuditClientId
+                          COGNITO_AUDIT_CLIENT_SECRET: CognitoAuditClientSecret
+                          COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_ID: ServiceBusProxyClientId
+                          COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_SECRET: ServiceBusProxyClientSecret
+                          COGNITO_SERVICE: CognitoService
+                          GITHUB_CLIENT_ID: GithubClientId
+                          GITHUB_CLIENT_SECRET: GithubClientSecret
+                          GITHUB_ENCRYPTION: GithubEncryption
+                          GITHUB_LOGIN_PAGE: GithubLoginPage
+                          GITHUB_SALT: GithubSalt
+                          SERVICE_BUS_SERVICE: ServiceBusUrl
+                      FunctionName: "${EnvironmentName}-${LambdaName}"
                       Handler: not.used.in.provided.runtime
                       MemorySize: 256
                       PackageType: Zip
-                      Role: !GetAtt 
+                      Role: 
                         - IamRoleLambdaOneExecution
                         - Arn
                       Runtime: provided
                       Timeout: 30
-                  'LambdaVersion#{Octopus_Deployment.Id | Replace -}':
-                    Type: 'AWS::Lambda::Version'
-                    Properties:
-                      FunctionName: !Ref LambdaOne
-                      Description: !Ref LambdaDescription
-                      ProvisionedConcurrencyConfig:
-                        ProvisionedConcurrentExecutions: 20
-                  LambdaOnePermissions:
-                    Type: 'AWS::Lambda::Permission'
-                    Properties:
-                      FunctionName: !Ref 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
-                      Action: 'lambda:InvokeFunction'
-                      Principal: apigateway.amazonaws.com
-                      SourceArn: !Join 
-                        - ''
-                        - - 'arn:'
-                          - !Ref 'AWS::Partition'
-                          - ':execute-api:'
-                          - !Ref 'AWS::Region'
-                          - ':'
-                          - !Ref 'AWS::AccountId'
-                          - ':'
-                          - !Ref RestApi
-                          - /*/*
-                  LambdaOneMethodOne:
-                    Type: 'AWS::ApiGateway::Method'
-                    Properties:
+                    Type: "AWS::Lambda::Function"
+                  LambdaOneMethodOne: 
+                    Properties: 
                       AuthorizationType: NONE
                       HttpMethod: ANY
-                      Integration:
+                      Integration: 
                         IntegrationHttpMethod: POST
                         TimeoutInMillis: 20000
                         Type: AWS_PROXY
-                        Uri: !Join 
-                          - ''
-                          - - 'arn:'
-                            - !Ref 'AWS::Partition'
-                            - ':apigateway:'
-                            - !Ref 'AWS::Region'
-                            - ':lambda:path/2015-03-31/functions/'
-                            - !GetAtt 
+                        Uri: 
+                          - ""
+                          - 
+                            - "arn:"
+                            - "AWS::Partition"
+                            - ":apigateway:"
+                            - "AWS::Region"
+                            - ":lambda:path/2015-03-31/functions/"
+                            - 
                               - ProxyLambda
                               - Arn
                             - /invocations
-                      ResourceId: !Ref ResourceId
-                      RestApiId: !Ref RestApi
-                  'Deployment#{Octopus_Deployment.Id | Replace -}':
-                    Type: 'AWS::ApiGateway::Deployment'
-                    Properties:
-                      RestApiId: !Ref RestApi
-                    DependsOn:
-                      - LambdaOneMethodOne
-                Outputs:
-                  DeploymentId:
-                    Description: The deployment id
-                    Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
+                      ResourceId: ResourceId
+                      RestApiId: RestApi
+                    Type: "AWS::ApiGateway::Method"
+                  LambdaOnePermissions: 
+                    Properties: 
+                      Action: "lambda:InvokeFunction"
+                      FunctionName: "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
+                      Principal: apigateway.amazonaws.com
+                      SourceArn: 
+                        - ""
+                        - 
+                          - "arn:"
+                          - "AWS::Partition"
+                          - ":execute-api:"
+                          - "AWS::Region"
+                          - ":"
+                          - "AWS::AccountId"
+                          - ":"
+                          - RestApi
+                          - /*/*
+                    Type: "AWS::Lambda::Permission"
+                  ? "LambdaVersion#{Octopus_Deployment.Id | Replace -}"
+                  : 
+                    Properties: 
+                      Description: LambdaDescription
+                      FunctionName: LambdaOne
+                      ProvisionedConcurrencyConfig: 
+                        ProvisionedConcurrentExecutions: 20
+                    Type: "AWS::Lambda::Version"
+                  ProxyLambda: 
+                    Properties: 
+                      Code: 
+                        S3Bucket: LambdaS3Bucket
+                        S3Key: ProxyLambdaS3Key
+                      Description: "${LambdaDescription} Proxy"
+                      Environment: 
+                        Variables: 
+                          COGNITO_JWK: CognitoJwk
+                          COGNITO_POOL: CognitoPool
+                          COGNITO_REGION: CognitoRegion
+                          COGNITO_REQUIRED_GROUP: CognitoRequiredGroup
+                          DEFAULT_LAMBDA: "LambdaVersion#{Octopus.Deployment.Id | Replace -}"
+                      FunctionName: "${EnvironmentName}-${LambdaName}-Proxy"
+                      Handler: main
+                      MemorySize: 128
+                      PackageType: Zip
+                      Role: 
+                        - IamRoleProxyLambdaExecution
+                        - Arn
+                      Runtime: go1.x
+                      Timeout: 30
+                    Type: "AWS::Lambda::Function"
+                  ProxyLambdaPermissions: 
+                    Properties: 
+                      Action: "lambda:InvokeFunction"
+                      FunctionName: 
+                        - ProxyLambda
+                        - Arn
+                      Principal: apigateway.amazonaws.com
+                      SourceArn: 
+                        - ""
+                        - 
+                          - "arn:"
+                          - "AWS::Partition"
+                          - ":execute-api:"
+                          - "AWS::Region"
+                          - ":"
+                          - "AWS::AccountId"
+                          - ":"
+                          - RestApi
+                          - /*/*
+                    Type: "AWS::Lambda::Permission"
                 
             EOT
-            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineJenkinsGenerate}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GitHub.GitHubAppClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GitHub.GitHubAppClientSecret}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion} #{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"GithubLoginPage\",\"ParameterValue\":\"/oauth/github/login\"},{\"ParameterKey\":\"CognitoAuditClientId\",\"ParameterValue\":\"#{Cognito.AuditClientId}\"},{\"ParameterKey\":\"CognitoAuditClientSecret\",\"ParameterValue\":\"#{Cognito.AuditClientSecret}\"},{\"ParameterKey\":\"CognitoService\",\"ParameterValue\":\"#{Cognito.Service}\"},{\"ParameterKey\":\"AuditService\",\"ParameterValue\":\"#{ApiGateway.ContentTeamUrl}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"ServiceBusProxyClientId\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientId}\"},{\"ParameterKey\":\"ServiceBusProxyClientSecret\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientSecret}\"}]"
-            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineJenkinsGenerate}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GitHub.GitHubAppClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GitHub.GitHubAppClientSecret}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion} #{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"GithubLoginPage\",\"ParameterValue\":\"/oauth/github/login\"},{\"ParameterKey\":\"CognitoAuditClientId\",\"ParameterValue\":\"#{Cognito.AuditClientId}\"},{\"ParameterKey\":\"CognitoAuditClientSecret\",\"ParameterValue\":\"#{Cognito.AuditClientSecret}\"},{\"ParameterKey\":\"CognitoService\",\"ParameterValue\":\"#{Cognito.Service}\"},{\"ParameterKey\":\"AuditService\",\"ParameterValue\":\"#{ApiGateway.ContentTeamUrl}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"ServiceBusProxyClientId\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientId}\"},{\"ParameterKey\":\"ServiceBusProxyClientSecret\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientSecret}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParameters = "[{\"ParameterKey\":\"AuditService\",\"ParameterValue\":\"#{ApiGateway.ContentTeamUrl}\"},{\"ParameterKey\":\"CognitoAuditClientId\",\"ParameterValue\":\"#{Cognito.AuditClientId}\"},{\"ParameterKey\":\"CognitoAuditClientSecret\",\"ParameterValue\":\"#{Cognito.AuditClientSecret}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoService\",\"ParameterValue\":\"#{Cognito.Service}\"},{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GitHub.GitHubAppClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GitHub.GitHubAppClientSecret}\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubLoginPage\",\"ParameterValue\":\"/oauth/github/login\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion} #{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineJenkinsGenerate}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ServiceBusProxyClientId\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientId}\"},{\"ParameterKey\":\"ServiceBusProxyClientSecret\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientSecret}\"},{\"ParameterKey\":\"ServiceBusUrl\",\"ParameterValue\":\"#{ServiceBusProxy.Url}\"}]"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[{\"ParameterKey\":\"AuditService\",\"ParameterValue\":\"#{ApiGateway.ContentTeamUrl}\"},{\"ParameterKey\":\"CognitoAuditClientId\",\"ParameterValue\":\"#{Cognito.AuditClientId}\"},{\"ParameterKey\":\"CognitoAuditClientSecret\",\"ParameterValue\":\"#{Cognito.AuditClientSecret}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoService\",\"ParameterValue\":\"#{Cognito.Service}\"},{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"GithubClientId\",\"ParameterValue\":\"#{GitHub.GitHubAppClientId}\"},{\"ParameterKey\":\"GithubClientSecret\",\"ParameterValue\":\"#{GitHub.GitHubAppClientSecret}\"},{\"ParameterKey\":\"GithubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GithubLoginPage\",\"ParameterValue\":\"/oauth/github/login\"},{\"ParameterKey\":\"GithubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion} #{Octopus.Deployment.Id}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create Bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.ApiPipelineJenkinsGenerate}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ServiceBusProxyClientId\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientId}\"},{\"ParameterKey\":\"ServiceBusProxyClientSecret\",\"ParameterValue\":\"#{Cognito.ServiceBusProxyClientSecret}\"},{\"ParameterKey\":\"ServiceBusUrl\",\"ParameterValue\":\"#{ServiceBusProxy.Url}\"}]"
             Octopus.Action.Aws.IamCapabilities = "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
             Octopus.Action.Aws.Region = "#{AWS.Region}"
             Octopus.Action.Aws.TemplateSource = "Inline"
