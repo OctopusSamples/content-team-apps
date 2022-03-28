@@ -2,13 +2,13 @@ resource "octopusdeploy_project" "deploy_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the GitHub Actions Azure Service Bus Proxy. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  description                          = "Deploys the Jenkins Pipelines Azure Service Bus Proxy. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "GitHub Actions Azure Service Bus Proxy"
+  name                                 = "Jenkins Pipelines Azure Service Bus Proxy"
   project_group_id                     = octopusdeploy_project_group.appbuilder_github_oauth_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
