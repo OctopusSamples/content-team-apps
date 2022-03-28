@@ -354,7 +354,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                         - Arn
                       Runtime: provided
                       Timeout: 30
-                  'LambdaVersion#{Octopus_Deployment.Id | Replace -}':
+                  'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::Lambda::Version'
                     Properties:
                       FunctionName: !Ref LambdaOne
@@ -400,7 +400,7 @@ step "Deploy Jenkins Pipeline Backend Manual" {
                             - /invocations
                       ResourceId: !Ref ResourceId
                       RestApiId: !Ref RestApi
-                  'Deployment#{Octopus_Deployment.Id | Replace -}':
+                  'Deployment#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::ApiGateway::Deployment'
                     Properties:
                       RestApiId: !Ref RestApi
