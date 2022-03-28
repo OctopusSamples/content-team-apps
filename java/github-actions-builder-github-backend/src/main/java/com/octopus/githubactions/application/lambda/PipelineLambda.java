@@ -96,7 +96,8 @@ public class PipelineLambda implements
           xray,
           routingHeaders,
           dataPartitionHeaders,
-          authHeaders);
+          authHeaders,
+          utms);
 
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(response.getCode())
