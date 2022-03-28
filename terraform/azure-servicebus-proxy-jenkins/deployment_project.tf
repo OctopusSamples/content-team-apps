@@ -170,7 +170,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody": <<-EOT
           API_RESOURCE=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
+              --stack-name #{CloudFormationName.ApiGateway} \
               --query "Stacks[0].Outputs[?OutputKey=='Api'].OutputValue" \
               --output text)
 
@@ -178,9 +178,14 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           echo "API Resource ID: $${API_RESOURCE}"
 
+          if [[ -z "$${API_RESOURCE}" ]]; then
+            echo "Run the Jenkins Pipeline Shared Network Infrastructure project first"
+            exit 1
+          fi
+
           REST_API=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
+              --stack-name #{CloudFormationName.ApiGateway} \
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
@@ -189,7 +194,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           echo "Rest Api ID: $${REST_API}"
 
           if [[ -z "$${REST_API}" ]]; then
-            echo "Run the App Builder shared infrastructure project first"
+            echo "Run the Jenkins Pipeline Shared Network Infrastructure project first"
             exit 1
           fi
 
