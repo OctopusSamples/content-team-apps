@@ -12,12 +12,18 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 @Builder
 public class Utms {
+
   private String source;
   private String medium;
   private String campaign;
   private String term;
   private String content;
 
+  /**
+   * Conver the object to a mpa.
+   *
+   * @return A map containing the utm params.
+   */
   public Map<String, String> getMap() {
     final Map<String, String> utms = new HashMap<>();
     if (StringUtils.isNotBlank(source)) {
