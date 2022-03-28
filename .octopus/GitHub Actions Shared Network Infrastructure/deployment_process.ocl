@@ -75,6 +75,9 @@ step "Create API Gateway" {
                     Value: !GetAtt 
                       - RestApi
                       - RootResourceId
+                  Api:
+                    Description: ID of the resource exposing the API
+                    Value: !Ref Api
                   Web:
                     Description: ID of the resource exposing the Jenkins pipeline frontend
                     Value: !Ref Web
