@@ -195,30 +195,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --output text)
           echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
           set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
-
-          PREVIOUS_LAMBDA_VERSION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaVersion'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLambdaVersion" $${PREVIOUS_LAMBDA_VERSION}
-
-          PREVIOUS_LAMBDA_REF=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaRef'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLambdaReference" $${PREVIOUS_LAMBDA_REF}
-
-          PREVIOUS_LAMBDA_DESCRIPTION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLambdaDescription" $${PREVIOUS_LAMBDA_DESCRIPTION}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
