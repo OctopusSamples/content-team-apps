@@ -7,139 +7,84 @@ step "Create API Gateway" {
             Octopus.Action.Aws.CloudFormation.Tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Jenkins Pipeline Shared Network Infrastructure\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
             Octopus.Action.Aws.CloudFormationStackName = "#{CloudFormationName.ApiGateway}"
             Octopus.Action.Aws.CloudFormationTemplate = <<-EOT
-                {
-                	"Resources": {
-                		"RestApi": {
-                			"Type": "AWS::ApiGateway::RestApi",
-                			"Properties": {
-                				"Description": "My API Gateway",
-                				"Name": "Jenkins Pipeline API",
-                                "BinaryMediaTypes": ["*/*"],
-                				"EndpointConfiguration": {
-                					"Types": [
-                						"REGIONAL"
-                					]
-                				}
-                			}
-                		},
-                		"Web": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
-                				},
-                				"PathPart": "{proxy+}"
-                			}
-                		},
-                		"Api": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
-                				},
-                				"PathPart": "api"
-                			}
-                		},
-                		"ApiPipeline": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "Api"
-                				},
-                				"PathPart": "pipeline"
-                			}
-                		},
-                		"ApiPipelineJenkins": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipeline"
-                				},
-                				"PathPart": "jenkins"
-                			}
-                		},
-                		"ApiPipelineJenkinsGenerate": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipelineJenkins"
-                				},
-                				"PathPart": "generate"
-                			}
-                		},
-                		"ApiPipelineOAuth": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Fn::GetAtt": ["RestApi", "RootResourceId"]
-                				},
-                				"PathPart": "oauth"
-                			}
-                		},
-                		"ApiPipelineOAuthGitHub": {
-                			"Type": "AWS::ApiGateway::Resource",
-                			"Properties": {
-                				"RestApiId": {
-                					"Ref": "RestApi"
-                				},
-                				"ParentId": {
-                					"Ref": "ApiPipelineOAuth"
-                				},
-                				"PathPart": "github"
-                			}
-                		}
-                	},
-                	"Outputs": {
-                		"RestApi": {
-                			"Description": "The REST API",
-                			"Value": {
-                				"Ref": "RestApi"
-                			}
-                		},
-                		"RootResourceId": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
-                			"Value": {
-                				"Fn::GetAtt": ["RestApi", "RootResourceId"]
-                			}
-                		},
-                		"Web": {
-                			"Description": "ID of the resource exposing the Jenkins pipeline frontend",
-                			"Value": {
-                				"Ref": "Web"
-                			}
-                		},
-                		"#{CloudFormation.Output.PipelineEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the GitHub Actions Workflow generate function",
-                			"Value": {
-                				"Ref": "ApiPipelineJenkinsGenerate"
-                			}
-                		},
-                		"#{CloudFormation.Output.OAuthGithubEndpointVariableName}": {
-                			"Description": "ID of the resource exposing the GitHub OAuth proxy",
-                			"Value": {
-                				"Ref": "ApiPipelineOAuthGitHub"
-                			}
-                		}
-                	}
-                }
+                Resources:
+                  RestApi:
+                    Type: 'AWS::ApiGateway::RestApi'
+                    Properties:
+                      Description: My API Gateway
+                      Name: Jenkins Pipeline API
+                      BinaryMediaTypes:
+                        - '*/*'
+                      EndpointConfiguration:
+                        Types:
+                          - REGIONAL
+                  Web:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !GetAtt 
+                        - RestApi
+                        - RootResourceId
+                      PathPart: '{proxy+}'
+                  Api:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !GetAtt 
+                        - RestApi
+                        - RootResourceId
+                      PathPart: api
+                  ApiPipeline:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !Ref Api
+                      PathPart: pipeline
+                  ApiPipelineJenkins:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !Ref ApiPipeline
+                      PathPart: jenkins
+                  ApiPipelineJenkinsGenerate:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !Ref ApiPipelineJenkins
+                      PathPart: generate
+                  ApiPipelineOAuth:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !GetAtt 
+                        - RestApi
+                        - RootResourceId
+                      PathPart: oauth
+                  ApiPipelineOAuthGitHub:
+                    Type: 'AWS::ApiGateway::Resource'
+                    Properties:
+                      RestApiId: !Ref RestApi
+                      ParentId: !Ref ApiPipelineOAuth
+                      PathPart: github
+                Outputs:
+                  RestApi:
+                    Description: The REST API
+                    Value: !Ref RestApi
+                  RootResourceId:
+                    Description: ID of the resource exposing the Jenkins pipeline frontend
+                    Value: !GetAtt 
+                      - RestApi
+                      - RootResourceId
+                  Web:
+                    Description: ID of the resource exposing the Jenkins pipeline frontend
+                    Value: !Ref Web
+                  '#{CloudFormation.Output.PipelineEndpointVariableName}':
+                    Description: ID of the resource exposing the GitHub Actions Workflow generate function
+                    Value: !Ref ApiPipelineJenkinsGenerate
+                  '#{CloudFormation.Output.OAuthGithubEndpointVariableName}':
+                    Description: ID of the resource exposing the GitHub OAuth proxy
+                    Value: !Ref ApiPipelineOAuthGitHub
+                
             EOT
             Octopus.Action.Aws.CloudFormationTemplateParameters = "[]"
             Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "[]"
@@ -148,7 +93,6 @@ step "Create API Gateway" {
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
             Octopus.Action.AwsAccount.Variable = "AWS"
-            Octopus.Action.RunOnServer = "true"
         }
         worker_pool_variable = "WorkerPool"
     }
