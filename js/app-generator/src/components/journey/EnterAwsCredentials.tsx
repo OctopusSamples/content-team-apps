@@ -91,7 +91,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <h2>Enter your AWS credentials.</h2>
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
-                            resources used to host your sample application.
+                            resources that host your sample application.
                         </p>
                         <p>
                             You can find more information about creating access keys in the
@@ -100,11 +100,11 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <h3>Required Permissions</h3>
                         <p>
                             Ensure the AWS account has the ability to <a href={"https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html"}>create an S3 bucket</a>.
-                        </p>
-                        {props.machine.state && props.machine.state.context.targetPlatform === "EKS" && <p>
+                        {props.machine.state && props.machine.state.context.targetPlatform === "EKS" && <span>
                             Also ensure the account has the set of permissions documented for <a href={"https://eksctl.io/usage/minimum-iam-policies/"}>eksctl</a>,
                             as well as the ability to <a href={"https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html"}>create an ECR repository and push images to it</a>.
-                        </p>}
+                        </span>}
+                        </p>
                         <Grid container={true} className={classes.row} sx={formContainer}>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Access Key</FormLabel>
