@@ -45,9 +45,8 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
 
     if (!disableServiceBus.disabled()) {
       serviceBusSenderClient.sendMessage(generateMessage(traceId, body));
+      Log.info("Successfully sent message to service bus");
     }
-
-    Log.info("Successfully sent message to service bus");
   }
 
   ServiceBusMessage generateMessage(final String traceId, final String body) {
