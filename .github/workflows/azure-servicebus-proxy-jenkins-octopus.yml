@@ -1,4 +1,4 @@
-name: azure-servicebus-proxy-octopus
+name: azure-servicebus-proxy-jenkins-octopus
 
 on:
   push:
