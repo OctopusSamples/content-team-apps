@@ -63,7 +63,7 @@ public class ServiceBusMessageGenerator {
                 authHeaders,
                 "Bearer " + auditAccessToken,
                 GlobalConstants.ASYNC_INVOCATION_TYPE);
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != 202 && response.getStatus() != 200) {
               throw new RuntimeException();
             }
         })
