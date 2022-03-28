@@ -586,7 +586,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody": <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
+              --stack-name #{CloudFormationName.ApiGatewayStage} \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
               --output text)
 
