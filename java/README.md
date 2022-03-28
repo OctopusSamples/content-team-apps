@@ -1,17 +1,10 @@
-## Style
+# Content Team MonoRepo
 
-The code uses the Google style rules. Get the Intellij style format from
-[GitHub](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml)
-.
+This repo contains the microservices supporting the content team.
 
-## Tests
+And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e13fd-5130-4806-a235-668c53c8ca2f?key=4f239d74-6783-401b-96cd-db0ee17fcf6d).
 
-The following sites have nice lists of public git repos to test:
+## Links
 
-* https://github.com/bharatdwarkani/awesome-dotnet-core-applications
-* https://github.com/trending/java
-* https://github.com/trending/php
-* https://github.com/trending/javascript
-* https://github.com/trending/ruby
-* https://github.com/trending/go
-* https://github.com/trending/python
+* [Github Actions Workflow Generator](https://production.githubactionworkflows.com/)
+* [Jenkins Pipeline Generator](https://production.jenkinspipelines.com/)
