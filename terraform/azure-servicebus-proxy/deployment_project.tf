@@ -210,7 +210,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='LambdaVersion'].OutputValue" \
               --output text)
 
-          set_octopusvariable "PreviousCodeExchangeLambdaVersion" $${PREVIOUS_LAMBDA_VERSION}
+          set_octopusvariable "PreviousLambdaVersion" $${PREVIOUS_LAMBDA_VERSION}
 
           PREVIOUS_LAMBDA_REF=$(aws cloudformation \
               describe-stacks \
@@ -218,7 +218,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='LambdaRef'].OutputValue" \
               --output text)
 
-          set_octopusvariable "PreviousCodeExchangeLambdaReference" $${PREVIOUS_LAMBDA_REF}
+          set_octopusvariable "PreviousLambdaReference" $${PREVIOUS_LAMBDA_REF}
 
           PREVIOUS_LAMBDA_DESCRIPTION=$(aws cloudformation \
               describe-stacks \
@@ -226,7 +226,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
               --output text)
 
-          set_octopusvariable "PreviousCodeExchangeLambdaDescription" $${PREVIOUS_LAMBDA_DESCRIPTION}
+          set_octopusvariable "PreviousLambdaDescription" $${PREVIOUS_LAMBDA_DESCRIPTION}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
