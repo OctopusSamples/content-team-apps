@@ -64,7 +64,7 @@ public class ServiceBusMessageGenerator {
                 GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {
           // Note the failure
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-Audit-Failed", e);
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-ServiceBusMessage-Failed", e);
           // As a fallback, write the audit event to the logs
           Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(loginMessage)));
         });
