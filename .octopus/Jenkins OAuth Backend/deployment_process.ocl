@@ -208,7 +208,7 @@ step "Deploy OAuth Proxy Login" {
                         - Arn
                       Runtime: provided
                       Timeout: 30
-                  'LambdaVersion#{Octopus_Deployment.Id | Replace -}':
+                  'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::Lambda::Version'
                     Properties:
                       FunctionName: !Ref OauthProxyLambda
@@ -258,7 +258,7 @@ step "Deploy OAuth Proxy Login" {
                             - /invocations
                       ResourceId: !Ref ApiPipelineOAuthGitHubLogin
                       RestApiId: !Ref RestApi
-                  'Deployment#{Octopus_Deployment.Id | Replace -}':
+                  'Deployment#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::ApiGateway::Deployment'
                     Properties:
                       RestApiId: !Ref RestApi
@@ -381,7 +381,7 @@ step "Deploy OAuth Proxy Token Exchange" {
                         - Arn
                       Runtime: provided
                       Timeout: 30
-                  'LambdaVersion#{Octopus_Deployment.Id | Replace -}':
+                  'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::Lambda::Version'
                     Properties:
                       FunctionName: !Ref OauthProxyLambda
@@ -431,7 +431,7 @@ step "Deploy OAuth Proxy Token Exchange" {
                             - /invocations
                       ResourceId: !Ref ApiPipelineOAuthGitHubLogin
                       RestApiId: !Ref RestApi
-                  'Deployment#{Octopus_Deployment.Id | Replace -}':
+                  'Deployment#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::ApiGateway::Deployment'
                     Properties:
                       RestApiId: !Ref RestApi
