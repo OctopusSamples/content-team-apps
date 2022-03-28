@@ -479,6 +479,15 @@ step "Deploy OAuth Proxy Token Exchange" {
                       Description: !Ref LambdaDescription
                       ProvisionedConcurrencyConfig:
                         ProvisionedConcurrentExecutions: 20
+                #{if Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}
+                  'LambdaVersion#{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaVersion}':
+                    Type: 'AWS::Lambda::Version'
+                    Properties:
+                      FunctionName: #{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaReference}
+                      Description: #{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaDescription}
+                      ProvisionedConcurrencyConfig:
+                        ProvisionedConcurrentExecutions: 20   
+                #{/if}
                   OauthProxyLambdaPermissions:
                     Type: 'AWS::Lambda::Permission'
                     Properties:
