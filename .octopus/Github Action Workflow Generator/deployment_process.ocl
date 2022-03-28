@@ -405,7 +405,7 @@ step "Deploy Pipeline Backend" {
                             - /invocations
                       ResourceId: !Ref ResourceId
                       RestApiId: !Ref RestApi
-                  'Deployment#{Octopus_Deployment.Id | Replace -}':
+                  'Deployment#{Octopus.Deployment.Id | Replace -}':
                     Type: 'AWS::ApiGateway::Deployment'
                     Properties:
                       RestApiId: !Ref RestApi
