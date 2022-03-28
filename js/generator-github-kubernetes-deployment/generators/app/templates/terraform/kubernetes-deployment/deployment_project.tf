@@ -81,7 +81,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.KubernetesContainers.Replicas" : "1",
         "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1",
         "Octopus.Action.KubernetesContainers.ServiceNameType" : "External",
-        "Octopus.Action.KubernetesContainers.ServiceType" : "NodePort",
+        "Octopus.Action.KubernetesContainers.ServiceType" : "LoadBalancer",
         "Octopus.Action.KubernetesContainers.Tolerations" : "[]",
         "OctopusUseBundledTooling" : "False",
         "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
@@ -89,6 +89,31 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/api/customers\",\"value\":\"web\",\"option\":\"\",\"option2\":\"ImplementationSpecific\"}]}}]",
         "Octopus.Action.KubernetesContainers.ServiceName" : "backend-service",
         "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"8083\",\"targetPort\":\"\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Display the Service URL"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = ["Kubernetes Backend"]
+    action {
+      action_type    = "Octopus.KubernetesRunScript"
+      name           = "Display the Service URL"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      container {
+        feed_id = var.octopus_dockerhub_feed_id
+        image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
+      }
+      properties = {
+        "Octopus.Action.Script.ScriptSource": "Inline"
+        "Octopus.Action.Script.Syntax": "Bash"
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          kubectl get service backend-service -o json
+        EOT
+        "OctopusUseBundledTooling": "False"
       }
     }
   }
@@ -105,6 +130,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       script_syntax                      = "Bash"
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       name                               = "Check for Vulnerabilities"
+      environments                       = [
+        data.octopusdeploy_environments.development_security.environments[0].id,
+        data.octopusdeploy_environments.production_security.environments[0].id
+      ]
       package {
         name                      = local.package_name
         package_id                = "quarkus-microservice-sbom"

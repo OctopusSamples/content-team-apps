@@ -101,7 +101,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "Creating the EKS cluster"
             echo "##octopus[stdout-verbose]"
             eksctl create cluster -f /build/cluster.yaml
-            echo "##octopus[stdout-default]"
 
             if [[ $? -ne 0 ]]; then
               echo "##octopus[stdout-error]"
@@ -109,6 +108,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               exit 1
             fi
 
+            echo "##octopus[stdout-default]"
           fi
         EOT
       }
@@ -177,7 +177,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             --region=${var.aws_region} \
             --namespace=kube-system \
             --name=aws-load-balancer-controller \
-            --attach-policy-arn=arn:aws:iam::${ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy \
+            --attach-policy-arn=arn:aws:iam::$${ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy \
             --override-existing-serviceaccounts \
             --approve
 
