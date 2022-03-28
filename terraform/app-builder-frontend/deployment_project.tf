@@ -188,6 +188,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           set_octopusvariable "Web" $${WEB_RESOURCE_ID}
           echo "Web Resource ID: $WEB_RESOURCE_ID"
 
+          if [[ -z "$${WEB_RESOURCE_ID}" ]]; then
+            echo "Run the App Builder shared infrastructure project first"
+            exit 1
+          fi
+
           REST_API=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGateway} \
@@ -197,6 +202,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           set_octopusvariable "RestApi" $${REST_API}
           echo "Rest API ID: $REST_API"
 
+          if [[ -z "$${REST_API}" ]]; then
+            echo "Run the App Builder shared infrastructure project first"
+            exit 1
+          fi
+
           ROOT_RESOURCE_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGateway} \
@@ -205,6 +215,11 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           set_octopusvariable "RootResourceId" $${ROOT_RESOURCE_ID}
           echo "Root resource ID: $ROOT_RESOURCE_ID"
+
+          if [[ -z "$${ROOT_RESOURCE_ID}" ]]; then
+            echo "Run the App Builder shared infrastructure project first"
+            exit 1
+          fi
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
