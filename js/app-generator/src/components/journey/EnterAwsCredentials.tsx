@@ -90,9 +90,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Enter your AWS credentials.</h2>
                         <p>
-                            Enter your AWS access and secret keys. These credentials are used to deploy your application
-                            to AWS. They are saved as secrets in GitHub repository that holds your application's code,
-                            as well as an Octopus AWS account in your hosted instance.
+                            Enter your AWS access and secret keys. These credentials are used to create the AWS
+                            resources used to host your sample application.
                         </p>
                         <p>
                             You can find more information about creating access keys in the
