@@ -178,3 +178,30 @@ runs:
         --space "Content Team"
         --latestSuccessful
       shell: bash
+
+
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Jenkins Pipelines Azure Service Bus Proxy"
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
+    - name: Trigger deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo promote-release
+        --project "Jenkins Pipelines Azure Service Bus Proxy"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
