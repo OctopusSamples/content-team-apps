@@ -97,7 +97,7 @@ public class PipelineLambda implements
               .put("Content-Type", "text/plain")
               .build());
     } catch (final Exception ex) {
-      Log.error( microserviceNameFeature.getMicroserviceName()+ "-General-Error", ex);
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Error", ex);
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(500)
           .withBody("An internal server error was encountered.")
