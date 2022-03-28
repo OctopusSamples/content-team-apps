@@ -124,3 +124,8 @@ variable "content_team_library_variable_set_id" {
   type = string
   nullable = false
 }
+
+variable "jenkins_pipeline_library_variable_set_id" {
+  type = string
+  nullable = false
+}

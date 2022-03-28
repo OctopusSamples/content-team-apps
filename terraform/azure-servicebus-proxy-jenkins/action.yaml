@@ -82,6 +82,9 @@ inputs:
   content_team_library_variable_set_id:
     description: 'The ID of the variable set containing shared content team values'
     required: true
+  jenkins_pipeline_library_variable_set_id:
+    description: 'The ID of the variable set containing shared jenkins pipeline values'
+    required: true
 
 runs:
   using: "composite"
@@ -151,5 +154,6 @@ runs:
         -var="servicebus_application_id_development=${{ inputs.servicebus_application_id_development }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
+        -var="jenkins_pipeline_library_variable_set_id=${{ inputs.jenkins_pipeline_library_variable_set_id }}"
       working-directory: terraform/azure-servicebus-proxy-jenkins
       shell: bash

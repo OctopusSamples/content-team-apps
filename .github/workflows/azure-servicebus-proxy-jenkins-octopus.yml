@@ -45,3 +45,4 @@ jobs:
           servicebus_application_id_development: ${{ secrets.GH_ACTIONS_SERVICE_JENKINS_BUS_APPID_DEVELOPMENT }}
           cognito_library_variable_set_id: LibraryVariableSets-1262
           content_team_library_variable_set_id: LibraryVariableSets-1282
+          jenkins_pipeline_library_variable_set_id: LibraryVariableSets-1223
