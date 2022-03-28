@@ -49,11 +49,11 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Deploy Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments                       = [
+      environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
-      features       = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
+      features = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
       package {
         name                      = local.package_name
         package_id                = var.octopus_docker_image
@@ -107,7 +107,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Display the Service URL"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments                       = [
+      environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
@@ -116,22 +116,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
       }
       properties = {
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
-          echo "Downloading Docker images"
-          echo "##octopus[stdout-verbose]"
-          docker pull imega/jq 2>&1
-          echo "##octopus[stdout-default]"
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias jq="docker run --rm -i imega/jq"
-
-          LOADBALANCER_HOSTNAME=$(kubectl get service backend-service -o json | ja -r '.status.loadbalancer.ingress[0].hostname')
-          echo "Open [http://$LOADBALANCER_HOSTNAME/api/customers](http://$LOADBALANCER_HOSTNAME/api/customers) to test the backend API."
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          LOADBALANCER_HOSTNAME=$(kubectl get service backend-service -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
+          echo "Open [http://$LOADBALANCER_HOSTNAME/api/customers](http://$LOADBALANCER_HOSTNAME/api/customers) to view the backend API."
         EOT
-        "OctopusUseBundledTooling": "False"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -146,6 +137,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       is_disabled                        = false
       is_required                        = true
       script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       name                               = "Check for Vulnerabilities"
       environments                       = [
@@ -159,7 +152,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
       }
-      script_body   = <<-EOT
+      script_body = <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
           for x in **/bom.xml; do
@@ -201,7 +194,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           exit 0
         EOT
-      run_on_server = true
     }
   }
 }
