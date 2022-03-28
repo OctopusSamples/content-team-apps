@@ -6,10 +6,13 @@ import com.google.common.io.Resources;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jenkins.GlobalConstants;
 import com.octopus.jenkins.domain.audits.AuditGenerator;
 import com.octopus.jenkins.domain.entities.Audit;
 import com.octopus.jenkins.domain.entities.GitHubEmail;
+import com.octopus.jenkins.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.jenkins.domain.servicebus.ServiceBusMessageGenerator;
 import com.octopus.jenkins.infrastructure.client.GitHubUser;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
@@ -57,6 +60,12 @@ public class TemplateHandler {
   @RestClient
   GitHubUser gitHubUser;
 
+  @Inject
+  ServiceBusMessageGenerator serviceBusMessageGenerator;
+
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
+
   /**
    * Generate a github repo.
    *
@@ -83,7 +92,7 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    auditEmail(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
@@ -91,50 +100,7 @@ public class TemplateHandler {
         .orElse(buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
   }
 
-  /**
-   * Query the users email addresses, encrypt them, and log them to the audit.
-   *
-   * @param token                The GitHub access token.
-   * @param routingHeaders       The routing headers.
-   * @param dataPartitionHeaders The data-partition headers.
-   * @param authHeaders          The authorization headers.
-   */
-  private void auditEmail(final String token,
-      final String xray,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
 
-    // We may not have a token to use.
-    if (StringUtils.isEmpty(token)) {
-      return;
-    }
-
-    try {
-
-      final String publicKey = Base64.getEncoder()
-          .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
-
-      final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
-
-      for (final GitHubEmail email : emails) {
-        final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
-
-        auditGenerator.createAuditEvent(new Audit(
-                GlobalConstants.MICROSERVICE_NAME,
-                GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
-                encryptedEmail,
-                true,
-                false),
-            xray,
-            routingHeaders,
-            dataPartitionHeaders,
-            authHeaders);
-      }
-    } catch (final Exception e) {
-      Log.error(GlobalConstants.MICROSERVICE_NAME + "-Audit-RecordEmailFailed", e);
-    }
-  }
 
   private SimpleResponse buildPipeline(
       @NonNull final RepoClient accessor,
@@ -192,5 +158,115 @@ public class TemplateHandler {
     }
 
     return Optional.empty();
+  }
+
+  private void logUserDetails(final String token,
+      final String xray,
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
+
+    try {
+      if (StringUtils.isNotBlank(token)) {
+        final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
+
+        recordEmailInOctofront(token, xray, emails, routingHeaders, dataPartitionHeaders,
+            authHeaders);
+
+        auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+      }
+    } catch (final Exception ex) {
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
+          ex);
+    }
+  }
+
+  /**
+   * Query the users email addresses, encrypt them, and log them to the audit.
+   *
+   * @param token                The GitHub access token.
+   * @param routingHeaders       The routing headers.
+   * @param dataPartitionHeaders The data-partition headers.
+   * @param authHeaders          The authorization headers.
+   */
+  private void auditEmail(final String token,
+      final String xray,
+      final GitHubEmail[] emails,
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
+
+    // We may not have a token to use.
+    if (StringUtils.isEmpty(token)) {
+      return;
+    }
+
+    try {
+
+      final String publicKey = Base64.getEncoder()
+          .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der")));
+
+      // Log first to the audit service
+      for (final GitHubEmail email : emails) {
+        final String encryptedEmail = asymmetricEncryptor.encrypt(email.getEmail(), publicKey);
+
+        auditGenerator.createAuditEvent(new Audit(
+                microserviceNameFeature.getMicroserviceName(),
+                GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
+                encryptedEmail,
+                true,
+                false),
+            xray,
+            routingHeaders,
+            dataPartitionHeaders,
+            authHeaders);
+      }
+    } catch (final Exception ex) {
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-Audit-RecordEmailFailed",
+          ex);
+    }
+  }
+
+  /**
+   * Query the users email addresses, encrypt them, and log them to Octofront.
+   *
+   * @param token                The GitHub access token.
+   * @param routingHeaders       The routing headers.
+   * @param dataPartitionHeaders The data-partition headers.
+   * @param authHeaders          The authorization headers.
+   */
+  private void recordEmailInOctofront(final String token,
+      final String xray,
+      final GitHubEmail[] emails,
+      @NonNull final String routingHeaders,
+      @NonNull final String dataPartitionHeaders,
+      @NonNull final String authHeaders) {
+
+    // We may not have a token to use.
+    if (StringUtils.isEmpty(token)) {
+      return;
+    }
+
+    // Log second to the Azure service bus proxy service
+    try {
+      for (final GitHubEmail email : emails) {
+        serviceBusMessageGenerator.sendLoginMessage(
+            GithubUserLoggedInForFreeToolsEventV1.builder()
+                .id("")
+                .emailAddress(email.getEmail())
+                .build(),
+            xray,
+            routingHeaders,
+            dataPartitionHeaders,
+            authHeaders);
+
+      }
+    } catch (final Exception ex) {
+      Log.error(
+          microserviceNameFeature.getMicroserviceName() + "-ServiceBus-RecordLoginFailed",
+          ex);
+    }
   }
 }

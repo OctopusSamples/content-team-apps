@@ -20,4 +20,5 @@ public final class GlobalConstants {
   public static final String CREATED_TEMPLATE_FOR_ACTION = "CreateTemplateFor";
   public static final String CLIENT_CREDENTIALS = "client_credentials";
   public static final String AUDIT_SCOPE = "audit.content-team/admin";
+  public static final String LOGINMESSAGE_SCOPE = "loginmessage.content-team/admin";
 }
