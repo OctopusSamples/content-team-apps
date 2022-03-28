@@ -452,15 +452,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
                   ProvisionedConcurrentExecutions: 20
-            #{if Octopus.Action[Get Stack Outputs].Output.PreviousLoginLambdaVersion}
-            '#{Octopus.Action[Get Stack Outputs].Output.PreviousLoginLambdaVersion}':
-              Type: 'AWS::Lambda::Version'
-              Properties:
-                FunctionName: #{Octopus.Action[Get Stack Outputs].Output.PreviousLoginLambdaReference}
-                Description: #{Octopus.Action[Get Stack Outputs].Output.PreviousLoginLambdaDescription}
-                ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
-            #{/if}
             OauthProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -739,15 +730,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Description: !Ref LambdaDescription
               ProvisionedConcurrencyConfig:
                 ProvisionedConcurrentExecutions: 20
-            #{if Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaVersion}
-            '#{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaVersion}':
-              Type: 'AWS::Lambda::Version'
-              Properties:
-                FunctionName: #{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaReference}
-                Description: #{Octopus.Action[Get Stack Outputs].Output.PreviousCodeExchangeLambdaDescription}
-                ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
-            #{/if}
             OauthProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
