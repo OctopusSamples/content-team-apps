@@ -195,6 +195,30 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               --output text)
           echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
           set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
+
+          PREVIOUS_LAMBDA_VERSION=$(aws cloudformation \
+              describe-stacks \
+              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
+              --query "Stacks[0].Outputs[?OutputKey=='LambdaVersion'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "PreviousLambdaVersion" $${PREVIOUS_LAMBDA_VERSION}
+
+          PREVIOUS_LAMBDA_REF=$(aws cloudformation \
+              describe-stacks \
+              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
+              --query "Stacks[0].Outputs[?OutputKey=='LambdaRef'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "PreviousLambdaReference" $${PREVIOUS_LAMBDA_REF}
+
+          PREVIOUS_LAMBDA_DESCRIPTION=$(aws cloudformation \
+              describe-stacks \
+              --stack-name #{CloudFormation.OctopusServiceAccountCreator} \
+              --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "PreviousLambdaDescription" $${PREVIOUS_LAMBDA_DESCRIPTION}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
@@ -398,6 +422,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
                   ProvisionedConcurrentExecutions: 20
+            #{if Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}
+              'LambdaVersion#{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}':
+                Type: 'AWS::Lambda::Version'
+                Properties:
+                  FunctionName: #{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaReference}
+                  Description: #{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaDescription}
+                  ProvisionedConcurrencyConfig:
+                    ProvisionedConcurrentExecutions: 20
+            #{/if}
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -453,6 +486,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             DeploymentId:
               Description: The deployment id
               Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
+            LambdaVersion:
+              Description: The name of the Lambda version resource deployed by this template
+              Value: 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
+            LambdaRef:
+              Description: The Lambda reference
+              Value: !Ref ApplicationLambda
+            LambdaDescription:
+              Description: The Lambda description
+              Value: !Ref LambdaDescription
             EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
