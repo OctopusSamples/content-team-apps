@@ -236,13 +236,17 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
 
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
-            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}'.Split(\" \")[0] + '-backend')\" \
+            namespace=\"$(encode_servicemessagevalue \"$${FIXED_ENVIRONMENT}-backend\")\" \
             octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
             updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
             skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
@@ -288,13 +292,17 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
 
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Frontend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
-            namespace=\"$(encode_servicemessagevalue '#{Octopus.Environment.Name | ToLower}'.Split(\" \")[0] + '-frontend')\" \
+            namespace=\"$(encode_servicemessagevalue \"$${FIXED_ENVIRONMENT}-backend\")\" \
             octopusDefaultWorkerPoolIdOrName=\"$(encode_servicemessagevalue "${data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id}")\" \
             updateIfExisting=\"$(encode_servicemessagevalue 'True')\" \
             skipTlsVerification=\"$(encode_servicemessagevalue 'True')\" \
