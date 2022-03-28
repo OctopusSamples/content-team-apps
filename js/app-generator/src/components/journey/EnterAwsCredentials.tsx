@@ -98,6 +98,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             You can find more information about creating access keys in the
                             &nbsp;<a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
                         </p>
+                        <h3>Required Permissions</h3>
                         <p>
                             Ensure the AWS account has the ability to <a href={"https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html"}>create an S3 bucket</a>.
                         </p>

@@ -67,8 +67,11 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Enter an API key for your Octopus instance.</h2>
                             <p>
-                                This API key will be used to create a new space in your Octopus instance. The associated
-                                account must have the <strong>SpaceCreate</strong> permission.
+                                This API key will be used to create a new space in your Octopus instance.
+                            </p>
+                            <h3>Required Permissions</h3>
+                            <p>
+                                The account associated with the API key must have the <strong>SpaceCreate</strong> permission.
                             </p>
                             <p>
                                 You can learn more about creating an API
