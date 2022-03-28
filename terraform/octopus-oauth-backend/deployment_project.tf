@@ -487,7 +487,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     ProvisionedConcurrentExecutions: 20
             #{/if}
             #{if Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}
-            'LambdaVersion#{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}':
+            '#{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaVersion}':
               Type: 'AWS::Lambda::Version'
               Properties:
                 FunctionName: #{Octopus.Action[Get Stack Outputs].Output.PreviousLambdaReference}
