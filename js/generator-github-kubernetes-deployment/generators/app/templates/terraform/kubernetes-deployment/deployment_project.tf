@@ -149,8 +149,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         name                      = local.package_name
         package_id                = "quarkus-microservice-sbom"
         feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
+        acquisition_location      = "Server"
+        extract_during_deployment = true
       }
       script_body = <<-EOT
           TIMESTAMP=$(date +%s%3N)
