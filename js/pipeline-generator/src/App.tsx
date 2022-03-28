@@ -19,7 +19,7 @@ import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getAccessToken, getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 import * as H from "history";
-import {getBranchingRules} from "./utils/network";
+import {appendUtms, getBranchingRules} from "./utils/network";
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({
@@ -97,8 +97,11 @@ function App(config: DynamicConfig) {
             if (accessToken) {
                 requestHeaders.set('Authorization', 'Bearer ' + accessToken);
             }
+
+            const utmUrl = appendUtms(config.settings.generateApiPath + '?repo=' + url);
+
             const template =
-                await fetch(config.settings.generateApiPath + '?repo=' + url, {redirect: "error", headers: requestHeaders})
+                await fetch(utmUrl, {redirect: "error", headers: requestHeaders})
                     .then(response => {
                         /*
                             The /generate endpoint will return unauthorized if it detects that it can not read the repo.

@@ -8,6 +8,13 @@ import reportWebVitals from './reportWebVitals';
 import {loadConfig} from "./dynamicConfig";
 import {handleCognitoLogin, handleGitHubLogin} from "./utils/security";
 import {removeHash} from "./utils/path";
+import {saveUtms} from "./utils/tracking";
+
+/*
+    Save any UTMs that were passed in to local storage. This allows us to retrieve the values even after we redirect
+    from external logins.
+ */
+saveUtms();
 
 /*
     This app must cater for multiple redirections to the main page from authentication platforms that have no support

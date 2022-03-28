@@ -29,6 +29,42 @@ function responseIsClientError(status: number) {
     return status >= 400 && status <= 499;
 }
 
+/**
+ * Take the UTM values saved in local storage and append them to the supplied URL.
+ * @param url The url with any UTM params appended to it.
+ */
+export function appendUtms(url: string): string {
+    try {
+        const utmParams = JSON.parse(window.localStorage.getItem("utmParams") || "");
+        const updatedUrl = new URL(url);
+
+        if (utmParams.source) {
+            updatedUrl.searchParams.append("utm_source", utmParams.source);
+        }
+
+        if (utmParams.medium) {
+            updatedUrl.searchParams.append("utm_medium", utmParams.medium);
+        }
+
+        if (utmParams.campaign) {
+            updatedUrl.searchParams.append("utm_campaign", utmParams.campaign);
+        }
+
+        if (utmParams.term) {
+            updatedUrl.searchParams.append("utm_term", utmParams.term);
+        }
+
+        if (utmParams.content) {
+            updatedUrl.searchParams.append("utm_content", utmParams.content);
+        }
+
+        return updatedUrl.toString();
+    } catch {
+        // If there were no UTMs and the parse failed, return the original URL
+        return url;
+    }
+}
+
 export function getJson<T>(url: string, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
@@ -36,7 +72,9 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
     requestHeaders.set('Routing', getBranchingRules());
     requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
-    return fetch(url, {
+    const updatedUrl = appendUtms(url);
+
+    return fetch(updatedUrl, {
         method: 'GET',
         headers: requestHeaders
     })
@@ -63,7 +101,9 @@ export function getJsonApi<T>(url: string, partition: string | null, retryCount?
     requestHeaders.set('Routing', getBranchingRules());
     requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
-    return fetch(url, {
+    const updatedUrl = appendUtms(url);
+
+    return fetch(updatedUrl, {
         method: 'GET',
         headers: requestHeaders
     })
@@ -91,7 +131,9 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
     requestHeaders.set('Routing', getBranchingRules());
     requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
-    return fetch(url, {
+    const updatedUrl = appendUtms(url);
+
+    return fetch(updatedUrl, {
         method: 'PATCH',
         headers: requestHeaders,
         body: resource
@@ -120,7 +162,9 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
     requestHeaders.set('Routing', getBranchingRules());
     requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
-    return fetch(url, {
+    const updatedUrl = appendUtms(url);
+
+    return fetch(updatedUrl, {
         method: 'POST',
         headers: requestHeaders,
         body: resource
@@ -142,7 +186,9 @@ export function deleteJsonApi(url: string, partition: string | null, retryCount?
     requestHeaders.set('Routing', getBranchingRules());
     requestHeaders.set('Authorization', accessToken ? 'Bearer ' + accessToken : '');
 
-    return fetch(url, {
+    const updatedUrl = appendUtms(url);
+
+    return fetch(updatedUrl, {
         method: 'DELETE',
         headers: requestHeaders
     })
