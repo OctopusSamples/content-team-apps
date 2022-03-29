@@ -104,7 +104,7 @@ const Audits: FC<{}> = (): ReactElement => {
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
-            {audits && <Grid container={true} className={classes.container}>
+            {audits && <Grid container={true} className={classes.fullHeightContainer}>
                 <Grid xs={12} className={classes.mainContent}>
                     <DataGrid
                         pagination

@@ -6,6 +6,10 @@ export const styles = makeStyles((theme) =>
             height: "fit-content",
             backgroundColor: theme.palette.background.default
         },
+        fullHeightContainer: {
+            height: "100%",
+            backgroundColor: theme.palette.background.default
+        },
         cell: {
             padding: "8px",
             alignItems: "center"
