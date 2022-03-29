@@ -12,6 +12,7 @@ import com.octopus.jenkins.domain.audits.AuditGenerator;
 import com.octopus.jenkins.domain.entities.Audit;
 import com.octopus.jenkins.domain.entities.GitHubEmail;
 import com.octopus.jenkins.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.jenkins.domain.entities.Utms;
 import com.octopus.jenkins.domain.servicebus.ServiceBusMessageGenerator;
 import com.octopus.jenkins.infrastructure.client.GitHubUser;
 import com.octopus.repoclients.RepoClient;
@@ -82,7 +83,8 @@ public class TemplateHandler {
       final String xray,
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      @NonNull final String authHeaders,
+      @NonNull final Utms utms) {
     LOG.log(DEBUG, "PipelineLambda.generatePipeline(String)");
     if (StringUtils.isBlank(repo)) {
       throw new IllegalArgumentException("repo can not be blank");
@@ -92,7 +94,7 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders);
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
 
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
@@ -103,11 +105,11 @@ public class TemplateHandler {
 
 
   private SimpleResponse buildPipeline(
-      @NonNull final RepoClient accessor,
+      final RepoClient accessor,
       final String xray,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders) {
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
@@ -162,16 +164,23 @@ public class TemplateHandler {
 
   private void logUserDetails(final String token,
       final String xray,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders,
+      final Utms utms) {
 
     try {
       if (StringUtils.isNotBlank(token)) {
         final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
 
-        recordEmailInOctofront(token, xray, emails, routingHeaders, dataPartitionHeaders,
-            authHeaders);
+        recordEmailInOctofront(
+            token,
+            xray,
+            emails,
+            routingHeaders,
+            dataPartitionHeaders,
+            authHeaders,
+            utms);
 
         auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
       }
@@ -193,9 +202,9 @@ public class TemplateHandler {
   private void auditEmail(final String token,
       final String xray,
       final GitHubEmail[] emails,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders) {
 
     // We may not have a token to use.
     if (StringUtils.isEmpty(token)) {
@@ -240,9 +249,10 @@ public class TemplateHandler {
   private void recordEmailInOctofront(final String token,
       final String xray,
       final GitHubEmail[] emails,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders,
+      final Utms utms) {
 
     // We may not have a token to use.
     if (StringUtils.isEmpty(token)) {
@@ -256,6 +266,7 @@ public class TemplateHandler {
             GithubUserLoggedInForFreeToolsEventV1.builder()
                 .id("")
                 .emailAddress(email.getEmail())
+                .utmParameters(utms.getMap())
                 .build(),
             xray,
             routingHeaders,

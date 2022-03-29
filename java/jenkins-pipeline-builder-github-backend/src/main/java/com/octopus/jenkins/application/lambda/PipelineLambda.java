@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.octopus.PipelineConstants;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jenkins.GlobalConstants;
+import com.octopus.jenkins.domain.entities.Utms;
 import com.octopus.jenkins.domain.features.impl.MicroserviceNameFeatureImpl;
 import com.octopus.jenkins.domain.hanlder.SimpleResponse;
 import com.octopus.jenkins.domain.hanlder.TemplateHandler;
@@ -72,6 +73,14 @@ public class PipelineLambda implements
         input,
         GlobalConstants.AMAZON_TRACE_ID_HEADER).orElse("");
 
+    final Utms utms = Utms.builder()
+        .source(lambdaHttpValueExtractor.getQueryParam(input, "utm_source").orElse(""))
+        .medium(lambdaHttpValueExtractor.getQueryParam(input, "utm_medium").orElse(""))
+        .campaign(lambdaHttpValueExtractor.getQueryParam(input, "utm_campaign").orElse(""))
+        .term(lambdaHttpValueExtractor.getQueryParam(input, "utm_term").orElse(""))
+        .content(lambdaHttpValueExtractor.getQueryParam(input, "utm_content").orElse(""))
+        .build();
+
     if (lambdaHttpValueExtractor.getQueryParam(input, "action").orElse("").equals("health")) {
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(201)
@@ -88,7 +97,8 @@ public class PipelineLambda implements
           xray,
           routingHeaders,
           dataPartitionHeaders,
-          authHeaders);
+          authHeaders,
+          utms);
 
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(response.getCode())

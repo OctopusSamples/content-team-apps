@@ -2,6 +2,7 @@ package com.octopus.jenkins.application.http;
 
 import com.octopus.PipelineConstants;
 import com.octopus.jenkins.GlobalConstants;
+import com.octopus.jenkins.domain.entities.Utms;
 import com.octopus.jenkins.domain.exceptions.BadRequest;
 import com.octopus.jenkins.domain.exceptions.EntityNotFound;
 import com.octopus.jenkins.domain.exceptions.ServerError;
@@ -41,7 +42,12 @@ public class PipelineResource {
       @HeaderParam(GlobalConstants.ROUTING_HEADER) final String routingHeaders,
       @HeaderParam(GlobalConstants.DATA_PARTITION) final String dataPartitionHeaders,
       @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final String authHeaders,
-      @CookieParam(PipelineConstants.GITHUB_SESSION_COOKIE) final String auth) {
+      @CookieParam(PipelineConstants.GITHUB_SESSION_COOKIE) final String auth,
+      @QueryParam("utm_source") final String source,
+      @QueryParam("utm_medium") final String medium,
+      @QueryParam("utm_campaign") final String campaign,
+      @QueryParam("utm_term") final String term,
+      @QueryParam("utm_content") final String content) {
 
     if (StringUtils.isBlank(repo)) {
       throw new BadRequest();
@@ -53,7 +59,14 @@ public class PipelineResource {
         xray,
         routingHeaders,
         dataPartitionHeaders,
-        authHeaders);
+        authHeaders,
+        Utms.builder()
+            .source(source)
+            .medium(medium)
+            .campaign(campaign)
+            .term(term)
+            .content(content)
+            .build());
 
     if (response.getCode() == 200) {
       return response.getBody();
