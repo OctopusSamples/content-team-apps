@@ -102,7 +102,7 @@ public class TemplateHandler {
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElse(buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElseGet(() -> buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
   }
 
   private void logUserDetails(final String token,
@@ -145,9 +145,9 @@ public class TemplateHandler {
   private void auditEmail(final String token,
       final String xray,
       final GitHubEmail[] emails,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders) {
 
     // We may not have a token to use.
     if (StringUtils.isEmpty(token)) {
@@ -225,11 +225,11 @@ public class TemplateHandler {
   }
 
   private SimpleResponse buildPipeline(
-      @NonNull final RepoClient accessor,
+      final RepoClient accessor,
       final String xray,
-      @NonNull final String routingHeaders,
-      @NonNull final String dataPartitionHeaders,
-      @NonNull final String authHeaders) {
+      final String routingHeaders,
+      final String dataPartitionHeaders,
+      final String authHeaders) {
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
@@ -264,7 +264,7 @@ public class TemplateHandler {
    * requires authentication. We make the decision here based on the presence of the session
    * cookie.
    */
-  public Optional<SimpleResponse> checkForPublicRepo(@NonNull final RepoClient accessor) {
+  public Optional<SimpleResponse> checkForPublicRepo(final RepoClient accessor) {
     if (!accessor.testRepo()) {
       if (accessor.hasAccessToken()) {
         return Optional.of(new SimpleResponse(
