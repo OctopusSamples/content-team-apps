@@ -66,7 +66,7 @@ const Template: FC<{}> = (): ReactElement => {
                 </Grid>
             </Grid>
             {!copyText &&
-                <img alt="loading" id="spinner" src={useDefaultTheme ? lightSpinner : lightDark} style={{
+                <img alt="loading" id="spinner" src={useDefaultTheme ? lightDark : lightSpinner} style={{
                     position: "fixed",
                     top: "50%",
                     left: "50%",
