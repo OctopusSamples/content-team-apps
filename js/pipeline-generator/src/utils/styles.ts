@@ -21,11 +21,10 @@ export const styles = makeStyles((theme) =>
             color: theme.palette.text.hint
         },
         mainContent: {
-            height: "calc(100% - 40px)"
+            height: "calc(100% - 56px)"
         },
         buttonRow: {
-            height: "40px",
-            paddingTop: "16px"
+            height: "40px"
         },
         table: {
             height: "fit-content",
