@@ -61,7 +61,7 @@ function App(config: DynamicConfig) {
         localStorage.getItem('defaultTheme') !== "false");
 
     // define custom theme
-    let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
+    let theme: Theme = createTheme(useDefaultTheme ? darkTheme: lightTheme );
     theme = responsiveFontSizes(theme);
 
     const [copyText, setCopyText] = useState("");

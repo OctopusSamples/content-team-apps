@@ -162,9 +162,6 @@ const Home: FC<{}> = (): ReactElement => {
                     justifyContent="center"
                     alignContent={"flex-start"}
                 >
-                    <Grid item xs={12} className={classes.sampleLabelContainer}>
-                        <FormLabel className={classes.sampleLabel}>Sample Projects</FormLabel>
-                    </Grid>
                     <Grid item md={1} sm={2} xs={3}>
                         <Link
                             onClick={() => handleExampleClick("https://github.com/mcasperson/SampleMavenProject-SpringBoot")}>

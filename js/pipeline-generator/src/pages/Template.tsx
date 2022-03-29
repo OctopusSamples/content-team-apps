@@ -35,7 +35,7 @@ const Template: FC<{}> = (): ReactElement => {
      */
     const {copyText, settings, useDefaultTheme} = useContext(AppContext);
 
-    const theme = !useDefaultTheme ? 'rubyblue' : 'neo';
+    const theme = !useDefaultTheme ? 'neo' : 'rubyblue';
     const mode = settings?.editorFormat || 'javascript';
 
     return (

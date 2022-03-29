@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme: Theme) =>
             display: "flex",
             flexGrow: 1,
             padding: theme.spacing(3),
+            backgroundImage: 'url("ocean-bed.svg")',
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "50% 50%"
         },
         toolbar: {
             ...theme.mixins.toolbar,
