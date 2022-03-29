@@ -406,7 +406,11 @@ func getRuleComponents(acceptComponent string) (string, string, string, error) {
 			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
 			pathAndMethod := strings.Split(strippedVersion, ":")
 			if len(pathAndMethod) == 2 {
-				return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
+				if isDisabledRule(ruleComponents[1]) {
+					log.Println("rule " + ruleComponents[1] + " is disabled, so ignoring it.")
+				} else {
+					return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
+				}
 			} else {
 				log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a path and a HTTP method. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
 			}
@@ -418,6 +422,11 @@ func getRuleComponents(acceptComponent string) (string, string, string, error) {
 	}
 
 	return "", "", "", errors.New("component was not a valid rule")
+}
+
+func isDisabledRule(dest string) bool {
+	// Any rule starting with an underscore is disabled
+	return strings.Index(dest, "_") == 0
 }
 
 func getDestinationPath(acceptAll string, ruleDestination string) (string, error) {
