@@ -4,7 +4,7 @@ import {AppContext} from "../App";
 import {DataGrid} from "@material-ui/data-grid";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {Button, Grid} from "@material-ui/core";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import {styles} from "../utils/styles";
 
 interface JsonAPILink {
     href: string;
@@ -34,18 +34,6 @@ interface Audit {
     }
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        mainContent: {
-            height: "calc(100% - 40px)"
-        },
-        buttonRow: {
-            height: "40px",
-            paddingTop: "16px"
-        }
-    })
-);
-
 /**
  * In the event that the JSONAPI links collection does not have the total rows, use a large number
  * as a fallback to allow the records to be paged anyway.
@@ -57,7 +45,7 @@ const Audits: FC<{}> = (): ReactElement => {
     const context = useContext(AppContext);
     context.setCopyText("");
 
-    const classes = useStyles();
+    const classes = styles();
 
     const [audits, setAudits] = useState<AuditsCollection | null>(null);
     const [page, setPage] = useState<number>(0);
@@ -116,7 +104,7 @@ const Audits: FC<{}> = (): ReactElement => {
                     <Button variant={"outlined"} onClick={refresh}>Reload</Button>
                 </Grid>
             </Grid>}
-            {audits && <Grid container={true}>
+            {audits && <Grid container={true} className={classes.container}>
                 <Grid xs={12} className={classes.mainContent}>
                     <DataGrid
                         pagination
