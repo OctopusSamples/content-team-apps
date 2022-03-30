@@ -622,7 +622,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
-                FunctionName: !Ref 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
+                FunctionName: !Ref LambdaVersion
                 Action: 'lambda:InvokeFunction'
                 Principal: apigateway.amazonaws.com
                 SourceArn: !Join
