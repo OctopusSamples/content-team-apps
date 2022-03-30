@@ -23,6 +23,7 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
   </properties>
 
   <build>
@@ -58,10 +59,12 @@
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.minimum.coverage}</minimum>
                     </limit>
                     <limit>
                       <counter>BRANCH</counter>
                       <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.minimum.coverage}</minimum>
                     </limit>
                   </limits>
                 </rule>
