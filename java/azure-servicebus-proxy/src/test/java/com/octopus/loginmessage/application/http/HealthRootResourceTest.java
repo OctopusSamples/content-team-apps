@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import lombok.NonNull;
@@ -20,7 +20,7 @@ public class HealthRootResourceTest extends BaseTest {
   @ParameterizedTest
   @ValueSource(
       strings = {
-          Paths.HEALTH_ENDPOINT + "/POST",
+          TestPaths.HEALTH_ENDPOINT + "/POST",
       })
   public void testCreateAndGetResource(@NonNull final String path) {
     given().when().get(path).then().statusCode(200);

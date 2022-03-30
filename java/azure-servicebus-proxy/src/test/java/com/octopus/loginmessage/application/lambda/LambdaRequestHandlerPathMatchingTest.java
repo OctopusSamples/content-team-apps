@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.octopus.Constants;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,7 +16,7 @@ public class LambdaRequestHandlerPathMatchingTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-      Paths.HEALTH_ENDPOINT + "/POST"})
+      TestPaths.HEALTH_ENDPOINT + "/POST"})
   public void testHealthRequestMatching(final String path) {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
@@ -28,7 +28,7 @@ public class LambdaRequestHandlerPathMatchingTest {
   public void testCreateRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
-    event.setPath(Paths.API_ENDPOINT);
+    event.setPath(TestPaths.API_ENDPOINT);
     assertTrue(API.requestIsMatch(event, API.ROOT_RE, Constants.Http.POST_METHOD));
   }
 

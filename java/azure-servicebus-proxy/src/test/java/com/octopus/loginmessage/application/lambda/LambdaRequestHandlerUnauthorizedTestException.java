@@ -6,12 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import com.octopus.loginmessage.domain.handlers.ResourceHandler;
-import com.octopus.exceptions.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -34,7 +33,7 @@ public class LambdaRequestHandlerUnauthorizedTestException extends BaseTest {
   ResourceHandler handler;
 
   @BeforeEach
-  public void setup() throws DocumentSerializationException {
+  public void setup() {
     Mockito.doThrow(new UnauthorizedException()).when(handler).create(any(), any(), any(), any(), any());
   }
 
@@ -49,7 +48,7 @@ public class LambdaRequestHandlerUnauthorizedTestException extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
+    apiGatewayProxyRequestEvent.setPath(TestPaths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(403, postResponse.getStatusCode());

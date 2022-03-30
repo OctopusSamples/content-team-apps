@@ -9,7 +9,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import com.octopus.loginmessage.domain.handlers.ResourceHandler;
 import com.octopus.loginmessage.domain.handlers.HealthHandler;
 import io.quarkus.test.junit.QuarkusTest;
@@ -53,7 +53,7 @@ public class LambdaRequestHandlerBackendFailureTest extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
+    apiGatewayProxyRequestEvent.setPath(TestPaths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());
@@ -70,7 +70,7 @@ public class LambdaRequestHandlerBackendFailureTest extends BaseTest {
           }
         });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/POST");
+    apiGatewayProxyRequestEvent.setPath(TestPaths.HEALTH_ENDPOINT + "/POST");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());

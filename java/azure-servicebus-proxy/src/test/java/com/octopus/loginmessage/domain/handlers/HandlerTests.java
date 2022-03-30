@@ -10,11 +10,10 @@ import static org.mockito.ArgumentMatchers.any;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
@@ -95,7 +94,7 @@ public class HandlerTests extends BaseTest {
 
   @ParameterizedTest
   @CsvSource({
-      Paths.HEALTH_ENDPOINT + ",POST",
+      TestPaths.HEALTH_ENDPOINT + ",POST",
   })
   public void testHealth(@NonNull final String path, @NonNull final String method)
       throws DocumentSerializationException {

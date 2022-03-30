@@ -6,14 +6,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.loginmessage.BaseTest;
 import com.octopus.loginmessage.CommercialAzureServiceBusTestProfile;
-import com.octopus.loginmessage.application.Paths;
+import com.octopus.loginmessage.application.TestPaths;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1Upstream;
+import com.octopus.loginmessage.domain.framework.producers.JsonApiConverter;
+import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import java.util.Base64;
 import java.util.HashMap;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +42,61 @@ public class LambdaRequestHandlerTest extends BaseTest {
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
 
+  @InjectMock
+  CommercialServiceBus commercialServiceBus;
+
+  @Inject
+  JsonApiConverter jsonApiConverter;
+
   @BeforeEach
   public void beforeEach() {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+  }
+
+  @Test
+  public void testCreateMessage() throws DocumentSerializationException {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent()
+            .withHeaders(
+                new HashMap<>() {
+                  {
+                    put("Accept", "application/vnd.api+json");
+                  }
+                })
+            .withHttpMethod("POST")
+            .withPath(TestPaths.API_ENDPOINT)
+            .withBody(new String(jsonApiConverter.buildResourceConverter().writeDocument(
+                new JSONAPIDocument<>(GithubUserLoggedInForFreeToolsEventV1
+                    .builder()
+                    .emailAddress("test@test.com")
+                    .build()))));
+    final APIGatewayProxyResponseEvent postResponse =
+        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals(202, postResponse.getStatusCode());
+  }
+
+  @Test
+  public void testCreateMessageBase64Encoded() throws DocumentSerializationException {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent()
+            .withHeaders(
+                new HashMap<>() {
+                  {
+                    put("Accept", "application/vnd.api+json");
+                  }
+                })
+            .withHttpMethod("POST")
+            .withPath(TestPaths.API_ENDPOINT)
+            .withBody(Base64.getEncoder()
+                .encodeToString(jsonApiConverter.buildResourceConverter().writeDocument(
+                    new JSONAPIDocument<>(GithubUserLoggedInForFreeToolsEventV1
+                        .builder()
+                        .emailAddress("test@test.com")
+                        .build()))))
+            .withIsBase64Encoded(true);
+    final APIGatewayProxyResponseEvent postResponse =
+        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals(202, postResponse.getStatusCode());
   }
 
   @Test
@@ -54,16 +113,16 @@ public class LambdaRequestHandlerTest extends BaseTest {
   @Test
   public void testLambdaCreateWithBadBody() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
-    apiGatewayProxyRequestEvent.setHttpMethod("POST");
-    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT);
-    apiGatewayProxyRequestEvent.setBody("Not a valid JSON document");
+        new APIGatewayProxyRequestEvent()
+            .withHeaders(
+                new HashMap<>() {
+                  {
+                    put("Accept", "application/vnd.api+json");
+                  }
+                })
+            .withHttpMethod("POST")
+            .withPath(TestPaths.API_ENDPOINT)
+            .withBody("Not a valid JSON document");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(400, postResponse.getStatusCode());
@@ -72,15 +131,32 @@ public class LambdaRequestHandlerTest extends BaseTest {
   @Test
   public void testMissingPath() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath("/api/blah");
+        new APIGatewayProxyRequestEvent()
+            .withHeaders(
+                new HashMap<>() {
+                  {
+                    put("Accept", "application/vnd.api+json");
+                  }
+                })
+            .withHttpMethod("GET")
+            .withPath("/api/blah");
+    final APIGatewayProxyResponseEvent postResponse =
+        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals(404, postResponse.getStatusCode());
+  }
+
+  @Test
+  public void testMissingMethod() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent()
+            .withHeaders(
+                new HashMap<>() {
+                  {
+                    put("Accept", "application/vnd.api+json");
+                  }
+                })
+            .withHttpMethod("GET")
+            .withPath(TestPaths.API_ENDPOINT);
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(404, postResponse.getStatusCode());
@@ -89,9 +165,9 @@ public class LambdaRequestHandlerTest extends BaseTest {
   @Test
   public void testHealthCreateItem() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.HEALTH_ENDPOINT + "/POST");
+        new APIGatewayProxyRequestEvent()
+            .withHttpMethod("GET")
+            .withPath(TestPaths.HEALTH_ENDPOINT + "/POST");
     final APIGatewayProxyResponseEvent postResponse =
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(200, postResponse.getStatusCode());
