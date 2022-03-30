@@ -61,7 +61,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
-      properties     = {
+      properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy Azure Service Bus Proxy\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
@@ -443,7 +443,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy"
-      description    = "To allow us to debug applications locally and deploy feature branches, each Lambda is exposed by a reverse proxy that can redirect requests to anoter Lambda or URL. This step deploys the reverse proxy."
+      notes          = "To allow us to debug applications locally and deploy feature branches, each Lambda is exposed by a reverse proxy that can redirect requests to anoter Lambda or URL. This step deploys the reverse proxy."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
@@ -588,7 +588,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version"
-      description    = "This step deploys a uniquely named CloudFormation stack that creates a version of the reverse proxy created in the previous step."
+      notes          = "This step deploys a uniquely named CloudFormation stack that creates a version of the reverse proxy created in the previous step."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
@@ -665,7 +665,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Azure Service Bus Proxy"
-      description    = "This step attaches the reverse proxy version created in the previous step to the API Gateway, and creates an API Gateway deployment."
+      notes          = "This step attaches the reverse proxy version created in the previous step to the API Gateway, and creates an API Gateway deployment."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
@@ -759,7 +759,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Update Stage"
-      description    = "This step deploys the deployment created in the previous step, effectively exposing the new Lambdas to the public.."
+      notes          = "This step deploys the deployment created in the previous step, effectively exposing the new Lambdas to the public.."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
