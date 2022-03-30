@@ -520,6 +520,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                           Resource:
                             - !Sub >-
                               arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*
+                        - Effect: Allow
+                          Action:
+                            - 'lambda:InvokeFunction'
+                          Resource:
+                            - !Sub >-
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*:*
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
