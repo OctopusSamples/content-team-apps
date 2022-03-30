@@ -823,7 +823,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && ?Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && ?Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && ?Tags[?Key == `OctopusRunbookRunId` && Value != `#{Octopus.RunbookRun.Id}`] && ?Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted{#/unless}`]].{StackName: StackName}' --output text
+          aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && Tags[?Key == `OctopusRunbookRunId` && Value != `#{Octopus.RunbookRun.Id}`] && Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted{#/unless}`]].{StackName: StackName}' --output text
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
