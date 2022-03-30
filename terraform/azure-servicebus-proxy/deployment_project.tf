@@ -366,12 +366,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Azure Service Bus Proxy Lambda Version"
+    name                = "Deploy Application Lambda Version"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Deploy Azure Service Bus Proxy Lambda Version"
+      name           = "Deploy Application Lambda Version"
       notes          = "Stacks deploying Lambda versions must have unique names to ensure a new version is created each time. This step deploys a uniquely names stack creating a version of the Lambda deployed in the last step."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
@@ -437,12 +437,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy"
+    name                = "Deploy Application Lambda Reverse Proxy"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy"
+      name           = "Deploy Application Lambda Reverse Proxy"
       notes          = "To allow us to debug applications locally and deploy feature branches, each Lambda is exposed by a reverse proxy that can redirect requests to anoter Lambda or URL. This step deploys the reverse proxy."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
@@ -569,8 +569,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Description: The proxy lambda reference
               Value: !Ref ProxyLambda
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
@@ -582,12 +582,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version"
+    name                = "Deploy Application Lambda Reverse Proxy Version"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version"
+      name           = "Deploy Application Lambda Reverse Proxy Version"
       notes          = "This step deploys a uniquely named CloudFormation stack that creates a version of the reverse proxy created in the previous step."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
@@ -641,8 +641,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Description: The name of the Lambda version resource deployed by this template
               Value: LambdaVersion
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
@@ -724,8 +724,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Description: The deployment id
               Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
