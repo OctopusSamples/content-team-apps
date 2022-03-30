@@ -50,6 +50,42 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
   value = "AzureServiceBusProxyJenkinsBucket"
 }
 
+resource "octopusdeploy_variable" "aws_cloudformation_lambda" {
+  name = "CloudFormation.AzureServiceBusProxyLambda"
+  type = "String"
+  description = "The name of the stack hosting lambda."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "AzureServiceBusProxyJenkinsLambda"
+}
+
+resource "octopusdeploy_variable" "aws_cloudformation_lambda_version" {
+  name = "CloudFormation.AzureServiceBusProxyLambdaVersion"
+  type = "String"
+  description = "The name of the stack hosting lambda."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "AzureServiceBusProxyJenkinsLambdaVersion"
+}
+
+resource "octopusdeploy_variable" "aws_cloudformation_lambda_reverse_proxy" {
+  name = "CloudFormation.AzureServiceBusProxyLambdaReverseProxy"
+  type = "String"
+  description = "The name of the stack hosting the reverse proxy lambda."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "AzureServiceBusProxyJenkinsLambdaReverseProxy"
+}
+
+resource "octopusdeploy_variable" "aws_cloudformation_lambda_reverse_proxy_version" {
+  name = "CloudFormation.AzureServiceBusProxyLambdaReverseProxyVersion"
+  type = "String"
+  description = "The name of the stack hosting the reverse proxy lambda version."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "AzureServiceBusProxyJenkinsLambdaReverseProxyVersion"
+}
+
 resource "octopusdeploy_variable" "aws_cloudformation_code" {
   name = "CloudFormation.AzureServiceBusProxy"
   type = "String"
