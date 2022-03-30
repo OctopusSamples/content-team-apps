@@ -1,7 +1,7 @@
 package com.octopus.githubactions.github.infrastructure.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.octopus.githubactions.github.domain.entities.GitHubEmail;
 import com.octopus.githubactions.github.domain.framework.WireMockExtensions;
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Verify the round trip accessing the GitHub API mocked with WireMock. This is mostly used to
- * verify serialization with Lombok based data objects, which can interfere with Jackson if
- * you have not set the @Jacksonized annotation.
+ * verify serialization with Lombok based data objects, which can interfere with Jackson if you have
+ * not set the @Jacksonized annotation.
  */
 @QuarkusTest
 @QuarkusTestResource(WireMockExtensions.class)
@@ -24,8 +24,9 @@ public class GitHubUserTest {
 
   @Test
   public void testPublicEmails() {
-      final GitHubEmail[] emails = gitHubUser.publicEmails("whatever");
-      assertTrue(emails.length == 1);
-      assertEquals("matthewcasperson@example.org", emails[0].getEmail());
+    final GitHubEmail[] emails = gitHubUser.publicEmails("whatever");
+    assertNotNull(emails);
+    assertEquals(1, emails.length);
+    assertEquals("matthewcasperson@example.org", emails[0].getEmail());
   }
 }
