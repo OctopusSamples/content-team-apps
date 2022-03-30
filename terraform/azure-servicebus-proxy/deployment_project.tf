@@ -639,7 +639,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           Outputs:
             ProxyLambdaVersion:
               Description: The name of the Lambda version resource deployed by this template
-              Value: LambdaVersion
+              Value: !Ref LambdaVersion
             EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ProxyLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Reverse Proxy].Output.AwsOutputs[ProxyLambda]}\"}]"
