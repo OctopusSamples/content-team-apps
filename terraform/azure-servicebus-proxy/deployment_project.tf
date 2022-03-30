@@ -372,7 +372,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Deploy Azure Service Bus Proxy Lambda Version"
-      notes          = "To achieve zero downtime deployments, we must deploy Lambdas and their versions in separate stacks. Stacks deploying Lambda versions must have unique names to ensure a new version is created each time. This step deploys a uniquely names stack creating a version of the Lambda deployed in the last step."
+      notes          = "Stacks deploying Lambda versions must have unique names to ensure a new version is created each time. This step deploys a uniquely names stack creating a version of the Lambda deployed in the last step."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
@@ -810,6 +810,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
     action {
       action_type    = "Octopus.AwsRunScript"
       name           = "Clean up Lambda Versions"
+      notes          = "Now that the API Gateway is pointing to the new Lambda versions, the old Lambda versions can be cleaned up."
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
