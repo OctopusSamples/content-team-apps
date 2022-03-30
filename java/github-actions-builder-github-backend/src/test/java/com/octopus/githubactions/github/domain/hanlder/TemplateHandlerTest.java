@@ -12,6 +12,7 @@ import com.octopus.githubactions.github.domain.audits.AuditGenerator;
 import com.octopus.githubactions.github.domain.entities.GitHubEmail;
 import com.octopus.githubactions.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.github.domain.entities.Utms;
+import com.octopus.githubactions.github.domain.entities.UtmsTest;
 import com.octopus.githubactions.github.domain.servicebus.ServiceBusMessageGenerator;
 import com.octopus.githubactions.github.infrastructure.client.GitHubUser;
 import com.octopus.oauth.OauthClientCredsAccessor;

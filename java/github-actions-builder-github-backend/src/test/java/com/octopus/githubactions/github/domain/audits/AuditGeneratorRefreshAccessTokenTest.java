@@ -18,6 +18,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Verifies the AuditGenerator refreshes the access token if it is expired.
@@ -58,9 +59,9 @@ public class AuditGeneratorRefreshAccessTokenTest {
         .when(cognitoClient)
         .getToken(any(), any(), any(), any());
 
-    doNothing()
-        .when(auditClient)
-        .createAudit(any(), any(), any(), any(), any(), any(), any());
+    Mockito
+        .when(auditClient.createAudit(any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn("Success");
   }
 
   @Test
