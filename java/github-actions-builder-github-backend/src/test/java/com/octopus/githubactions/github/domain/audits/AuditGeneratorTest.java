@@ -1,5 +1,6 @@
 package com.octopus.githubactions.github.domain.audits;
 
+import static io.smallrye.common.constraint.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,9 +18,9 @@ import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.Map;
 import javax.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  * Verifies the AuditGenerator passes a request through to the rest client OK.
@@ -35,6 +36,8 @@ public class AuditGeneratorTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+  private int externalApiCalls = 0;
+
   @Inject
   AuditGenerator auditGenerator;
 
@@ -48,10 +51,19 @@ public class AuditGeneratorTest {
 
   @BeforeEach
   public void setup() {
-    Mockito.when(cognitoClient.getToken(any(), any(), any(), any())).thenReturn(
-        Oauth.builder()
-            .accessToken("accessToken")
-            .build());
+    doAnswer(invocation -> {
+      ++externalApiCalls;
+
+      // The access key should be cached, and we only make this call once
+      assertTrue(externalApiCalls <= 1);
+
+      return Oauth.builder()
+          .accessToken("accessToken")
+          .expiresIn(Integer.MAX_VALUE)
+          .build();
+    })
+        .when(cognitoClient)
+        .getToken(any(), any(), any(), any());
 
     doAnswer(invocation -> {
       final String audit = invocation.getArgument(0);
@@ -74,7 +86,7 @@ public class AuditGeneratorTest {
 
   @Test
   public void testAuditGenerator() {
-    auditGenerator.createAuditEvent(
+    Assertions.assertDoesNotThrow(() -> auditGenerator.createAuditEvent(
         Audit
             .builder()
             .action("action")
@@ -84,6 +96,67 @@ public class AuditGeneratorTest {
         XRAY,
         ROUTING,
         PARTITION,
-        AUTH);
+        AUTH));
+
+    // Call again to test the access key is cached.
+    Assertions.assertDoesNotThrow(() -> auditGenerator.createAuditEvent(
+        Audit
+            .builder()
+            .action("action")
+            .object("object")
+            .subject("subject")
+            .build(),
+        XRAY,
+        ROUTING,
+        PARTITION,
+        AUTH));
+
+    assertEquals(1, externalApiCalls, "The access token should have been requested once.");
+  }
+
+  @Test
+  public void testAuditGeneratorNullArgs() {
+    Assertions.assertThrows(NullPointerException.class, () -> auditGenerator.createAuditEvent(
+        null,
+        XRAY,
+        ROUTING,
+        PARTITION,
+        AUTH));
+
+    Assertions.assertThrows(NullPointerException.class, () -> auditGenerator.createAuditEvent(
+        Audit
+            .builder()
+            .action("action")
+            .object("object")
+            .subject("subject")
+            .build(),
+        XRAY,
+        null,
+        PARTITION,
+        AUTH));
+
+    Assertions.assertThrows(NullPointerException.class, () -> auditGenerator.createAuditEvent(
+        Audit
+            .builder()
+            .action("action")
+            .object("object")
+            .subject("subject")
+            .build(),
+        XRAY,
+        ROUTING,
+        null,
+        AUTH));
+
+    Assertions.assertThrows(NullPointerException.class, () -> auditGenerator.createAuditEvent(
+        Audit
+            .builder()
+            .action("action")
+            .object("object")
+            .subject("subject")
+            .build(),
+        XRAY,
+        ROUTING,
+        PARTITION,
+        null));
   }
 }
