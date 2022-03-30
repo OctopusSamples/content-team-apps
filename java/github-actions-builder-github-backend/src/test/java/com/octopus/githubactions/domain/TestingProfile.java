@@ -1,4 +1,4 @@
-package com.octopus.githubactions.domain.hanlder;
+package com.octopus.githubactions.domain;
 
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.test.junit.QuarkusTestProfile;

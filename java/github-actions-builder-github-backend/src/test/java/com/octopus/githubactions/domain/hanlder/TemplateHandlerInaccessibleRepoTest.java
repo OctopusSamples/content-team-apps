@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.githubactions.domain.TestingProfile;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
 import com.octopus.githubactions.domain.entities.GitHubEmail;
 import com.octopus.githubactions.domain.entities.Utms;

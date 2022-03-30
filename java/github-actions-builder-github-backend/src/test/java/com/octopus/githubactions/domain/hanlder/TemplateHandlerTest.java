@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.githubactions.domain.TestingProfile;
 import com.octopus.githubactions.domain.audits.AuditGenerator;
 import com.octopus.githubactions.domain.entities.GitHubEmail;
 import com.octopus.githubactions.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
@@ -26,7 +27,6 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
