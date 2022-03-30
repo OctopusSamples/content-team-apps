@@ -2,6 +2,7 @@ package com.octopus.jenkins.dsl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.octopus.jenkins.shared.dsl.Comment;
 import org.junit.jupiter.api.Test;
 
 public class CommentTest {

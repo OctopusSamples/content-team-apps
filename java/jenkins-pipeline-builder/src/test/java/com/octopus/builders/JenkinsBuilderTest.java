@@ -1,14 +1,14 @@
 package com.octopus.builders;
 
 import com.google.common.io.Resources;
-import com.octopus.builders.dotnet.DotnetCoreBuilder;
-import com.octopus.builders.go.GoBuilder;
-import com.octopus.builders.java.JavaGradleBuilder;
-import com.octopus.builders.java.JavaMavenBuilder;
-import com.octopus.builders.nodejs.NodejsBuilder;
-import com.octopus.builders.php.PhpComposerBuilder;
-import com.octopus.builders.python.PythonBuilder;
-import com.octopus.builders.ruby.RubyGemBuilder;
+import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
+import com.octopus.jenkins.shared.builders.go.GoBuilder;
+import com.octopus.jenkins.shared.builders.java.JavaGradleBuilder;
+import com.octopus.jenkins.shared.builders.java.JavaMavenBuilder;
+import com.octopus.jenkins.shared.builders.nodejs.NodejsBuilder;
+import com.octopus.jenkins.shared.builders.php.PhpComposerBuilder;
+import com.octopus.jenkins.shared.builders.python.PythonBuilder;
+import com.octopus.jenkins.shared.builders.ruby.RubyGemBuilder;
 import com.octopus.jenkinsclient.JenkinsClient;
 import com.octopus.jenkinsclient.JenkinsDetails;
 import com.octopus.octopusclient.OctopusClient;

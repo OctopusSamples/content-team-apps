@@ -2,6 +2,8 @@ package com.octopus.jenkins.dsl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.octopus.jenkins.shared.dsl.ArgType;
+import com.octopus.jenkins.shared.dsl.Argument;
 import org.junit.jupiter.api.Test;
 
 public class ArgumentTest {

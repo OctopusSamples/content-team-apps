@@ -3,7 +3,7 @@ package com.octopus.githubactions.builders.jenkins;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.builders.dotnet.DotnetCoreBuilder;
+import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.repoclients.impl.GithubRepoClient;
 import io.vavr.control.Try;

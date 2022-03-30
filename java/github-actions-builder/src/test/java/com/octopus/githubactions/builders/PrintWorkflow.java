@@ -1,5 +1,10 @@
 package com.octopus.githubactions.builders;
 
+import com.octopus.githubactions.shared.builders.DotNetCoreBuilder;
+import com.octopus.githubactions.shared.builders.GenericBuilder;
+import com.octopus.githubactions.shared.builders.JavaMavenBuilder;
+import com.octopus.githubactions.shared.builders.NodeJsBuilder;
+import com.octopus.githubactions.shared.builders.PhpComposerBuilder;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.test.repoclients.DotnetTestRepoClient;
 import com.octopus.test.repoclients.GenericTestRepoClient;

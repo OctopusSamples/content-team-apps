@@ -3,6 +3,10 @@ package com.octopus.jenkins.dsl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.ImmutableList;
+import com.octopus.jenkins.shared.dsl.ArgType;
+import com.octopus.jenkins.shared.dsl.Argument;
+import com.octopus.jenkins.shared.dsl.Element;
+import com.octopus.jenkins.shared.dsl.FunctionManyArgs;
 import org.junit.jupiter.api.Test;
 
 public class FunctionManyArgsTest {
