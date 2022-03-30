@@ -5,13 +5,19 @@ import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents an audit resource.
  */
 @Type("audits")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Audit {
 
   @Id(IntegerIdHandler.class)
@@ -23,10 +29,6 @@ public class Audit {
   private Timestamp time;
   private boolean encryptedSubject;
   private boolean encryptedObject;
-
-  public Audit() {
-
-  }
 
   /**
    * Constructs an Audit record.

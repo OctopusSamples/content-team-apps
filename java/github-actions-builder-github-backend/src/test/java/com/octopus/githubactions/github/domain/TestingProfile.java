@@ -11,6 +11,8 @@ public class TestingProfile implements QuarkusTestProfile {
     return ImmutableMap.<String, String>builder()
         .put("github.encryption", "12345678901234567890123456789012")
         .put("github.salt", "12345678901234567890123456789012")
+        .put("cognito.client-id", "clientid")
+        .put("cognito.client-secret", "secret")
         .build();
   }
 }
