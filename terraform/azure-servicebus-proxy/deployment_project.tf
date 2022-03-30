@@ -826,6 +826,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           OLD_STACKS=$(aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusTransient` && Value == `True`] && Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}`]].{StackName: StackName}' --output text)
 
           if [[ -n "$${OLD_STACKS}" ]]; then
+            echo "Cleaning up the following stacks:"
             echo "$${OLD_STACKS}"
             echo "$${OLD_STACKS}" | xargs -n1 aws cloudformation delete-stack --stack-name $1
           fi
