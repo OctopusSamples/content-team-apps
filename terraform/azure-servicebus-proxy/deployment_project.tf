@@ -730,15 +730,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             DeploymentId:
               Description: The deployment id
               Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
-            LambdaVersion:
-              Description: The name of the Lambda version resource deployed by this template
-              Value: 'LambdaVersion#{Octopus.Deployment.Id | Replace -}'
-            LambdaRef:
-              Description: The Lambda reference
-              Value: !Ref ApplicationLambda
-            LambdaDescription:
-              Description: The Lambda description
-              Value: !Ref LambdaDescription
             EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersionArn\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersionArn]}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersionArn\",\"ParameterValue\":\"#{Octopus.Action[Deploy Azure Service Bus Proxy Lambda Reverse Proxy Version].Output.AwsOutputs[ProxyLambdaVersionArn]}\"}]"
