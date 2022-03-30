@@ -68,7 +68,7 @@ public class PipelineResourceTest {
   }
 
   @Test
-  public void generateTemplate() {
+  public void testHttpInterface() {
     given()
         .queryParam("repo", REPO)
         .header(GlobalConstants.AMAZON_TRACE_ID_HEADER, XRAY)
