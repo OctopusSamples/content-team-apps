@@ -3,18 +3,25 @@ description: Builds and deploys GitHub Actions Backend
 inputs:
   run_number:
     required: true
+    description: The GitHub Action run number
   github_token:
     required: true
+    description: The github token
   github_user:
     required: true
+    description: The GitHub username
   dockerhub_username:
     required: true
+    description: The DockerHub username
   dockerhub_password:
     required: true
+    description: The DockerHub password
   octopus_server_url:
     required: true
+    description: The Octopus server url
   octopus_api_token:
     required: true
+    description: The Octopus API token
 runs:
   using: "composite"
   steps:
