@@ -1,22 +1,22 @@
-package com.octopus.githubactions.builders.jenkins;
+package com.octopus.jenkins.builders;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.jenkins.shared.builders.java.JavaMavenBuilder;
+import com.octopus.jenkins.shared.builders.java.JavaGradleBuilder;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.repoclients.impl.GithubRepoClient;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
-public class JavaMavenBuilderTest {
+public class JavaGradleBuilderTest {
 
-  private static final JavaMavenBuilder JAVA_MAVEN_BUILDER = new JavaMavenBuilder();
+  private static final JavaGradleBuilder JAVA_GRADLE_BUILDER = new JavaGradleBuilder();
 
   @Test
   public void verifyBuilderSupport() {
     Try.run(() -> Thread.sleep(3000));
-    assertFalse(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
+    assertFalse(JAVA_GRADLE_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyHttpClientImpl())
         .repo("https://github.com/OctopusSamples/RandomQuotes")
@@ -25,10 +25,10 @@ public class JavaMavenBuilderTest {
         .build()));
 
     Try.run(() -> Thread.sleep(3000));
-    assertTrue(JAVA_MAVEN_BUILDER.canBuild(GithubRepoClient
+    assertTrue(JAVA_GRADLE_BUILDER.canBuild(GithubRepoClient
         .builder()
         .readOnlyHttpClient(new ReadOnlyHttpClientImpl())
-        .repo("https://github.com/mcasperson/SampleMavenProject-SpringBoot")
+        .repo("https://github.com/mcasperson/SampleGradleProject-SpringBoot")
         .username(System.getenv("APP_GITHUB_ID"))
         .password(System.getenv("APP_GITHUB_SECRET"))
         .build()));

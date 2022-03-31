@@ -99,7 +99,7 @@ public class TemplateHandler {
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElse(buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElseGet(() -> buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
   }
 
 

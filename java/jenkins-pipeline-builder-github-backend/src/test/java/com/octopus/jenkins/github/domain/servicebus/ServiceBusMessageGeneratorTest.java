@@ -1,4 +1,4 @@
-package com.octopus.githubactions.github.domain.servicebus;
+package com.octopus.jenkins.github.domain.servicebus;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,9 +8,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.octopus.githubactions.github.domain.TestingProfile;
-import com.octopus.githubactions.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
-import com.octopus.githubactions.github.infrastructure.client.ServiceBusProxyClient;
+import com.octopus.jenkins.github.domain.TestingProfile;
+import com.octopus.jenkins.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
+import com.octopus.jenkins.github.infrastructure.client.ServiceBusProxyClient;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -62,11 +62,10 @@ public class ServiceBusMessageGeneratorTest {
 
   @BeforeEach
   public void setup() {
-    Mockito.when(oauthClientCredsAccessor.getAccessToken(any())).thenReturn(Try.of(() -> "token"));
-
     final Response response = Mockito.mock(Response.class);
     when(response.getStatus()).thenReturn(200);
 
+    when(oauthClientCredsAccessor.getAccessToken(any())).thenReturn(Try.of(() -> "token"));
     doAnswer(invocation -> {
       final String message = invocation.getArgument(0);
       final String xray = invocation.getArgument(1);

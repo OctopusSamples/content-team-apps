@@ -72,6 +72,7 @@ public class PipelineProducer {
    * @return An implementation of RepoAccessor.
    */
   @Produces
+  @ApplicationScoped
   public RepoClientFactory getRepoClientFactory(final ReadOnlyHttpClient readOnlyHttpClient) {
     return GitHubRepoClientFactory.builder()
         .readOnlyHttpClient(readOnlyHttpClient)

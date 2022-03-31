@@ -3,6 +3,7 @@ package com.octopus.githubactions.github.domain.hanlder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.githubactions.github.domain.TestingProfile;
@@ -63,58 +64,12 @@ public class TemplateHandlerInaccessibleRepoTest {
 
   @BeforeEach
   public void setup() {
+    final RepoClient repoClient = Mockito.mock(RepoClient.class);
+    when(repoClient.testRepo()).thenReturn(false);
+    when(repoClient.hasAccessToken()).thenReturn(true);
+
     Mockito.when(repoClientFactory.buildRepoClient(any(), any()))
-        .thenReturn(new RepoClient() {
-          @Override
-          public String getRepo() {
-            return null;
-          }
-
-          @Override
-          public boolean hasAccessToken() {
-            return true;
-          }
-
-          @Override
-          public Try<String> getFile(String path) {
-            return null;
-          }
-
-          @Override
-          public boolean testFile(String path) {
-            return false;
-          }
-
-          @Override
-          public Try<List<String>> getWildcardFiles(String path, int limit) {
-            return null;
-          }
-
-          @Override
-          public Try<Boolean> wildCardFileExist(@NonNull String path) {
-            return null;
-          }
-
-          @Override
-          public String getRepoPath() {
-            return null;
-          }
-
-          @Override
-          public List<String> getDefaultBranches() {
-            return null;
-          }
-
-          @Override
-          public Try<String> getRepoName() {
-            return null;
-          }
-
-          @Override
-          public boolean testRepo() {
-            return false;
-          }
-        });
+        .thenReturn(repoClient);
     Mockito.when(oauthClientCredsAccessor.getAccessToken(any()))
         .thenReturn(Try.of(() -> "accesstoken"));
     Mockito.when(gitHubUser.publicEmails(any()))

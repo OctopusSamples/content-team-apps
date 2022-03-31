@@ -1,4 +1,4 @@
-package com.octopus.githubactions.github.domain.hanlder;
+package com.octopus.jenkins.github.domain.hanlder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,12 +6,12 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.githubactions.github.domain.TestingProfile;
-import com.octopus.githubactions.github.domain.audits.AuditGenerator;
-import com.octopus.githubactions.github.domain.entities.GitHubEmail;
-import com.octopus.githubactions.github.domain.entities.Utms;
-import com.octopus.githubactions.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.githubactions.github.infrastructure.client.GitHubUser;
+import com.octopus.jenkins.github.domain.TestingProfile;
+import com.octopus.jenkins.github.domain.audits.AuditGenerator;
+import com.octopus.jenkins.github.domain.entities.GitHubEmail;
+import com.octopus.jenkins.github.domain.entities.Utms;
+import com.octopus.jenkins.github.domain.servicebus.ServiceBusMessageGenerator;
+import com.octopus.jenkins.github.infrastructure.client.GitHubUser;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
@@ -68,13 +68,13 @@ public class TemplateHandlerPrivateRepoTest {
     when(repoClient.testRepo()).thenReturn(false);
     when(repoClient.hasAccessToken()).thenReturn(false);
 
-    Mockito.when(repoClientFactory.buildRepoClient(any(), any()))
+    when(repoClientFactory.buildRepoClient(any(), any()))
         .thenReturn(repoClient);
-    Mockito.when(oauthClientCredsAccessor.getAccessToken(any()))
+    when(oauthClientCredsAccessor.getAccessToken(any()))
         .thenReturn(Try.of(() -> "accesstoken"));
-    Mockito.when(gitHubUser.publicEmails(any()))
+    when(gitHubUser.publicEmails(any()))
         .thenReturn(new GitHubEmail[]{GitHubEmail.builder().email(TEST_EMAIL).build()});
-    Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
+    when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
     doNothing().when(auditGenerator).createAuditEvent(any(), any(), any(), any(), any());
     doNothing().when(serviceBusMessageGenerator).sendLoginMessage(any(), any(), any(), any(), any());
   }

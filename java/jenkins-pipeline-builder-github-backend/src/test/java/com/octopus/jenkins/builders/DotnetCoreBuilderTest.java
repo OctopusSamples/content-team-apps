@@ -1,4 +1,4 @@
-package com.octopus.githubactions.builders.jenkins;
+package com.octopus.jenkins.builders;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

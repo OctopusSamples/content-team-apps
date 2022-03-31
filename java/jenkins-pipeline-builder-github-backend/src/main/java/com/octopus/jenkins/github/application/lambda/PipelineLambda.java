@@ -15,6 +15,7 @@ import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import io.quarkus.logging.Log;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -22,6 +23,7 @@ import javax.inject.Named;
  * The AWS Lambda server.
  */
 @Named("generate")
+@ApplicationScoped
 public class PipelineLambda implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
@@ -102,6 +104,13 @@ public class PipelineLambda implements
       return new APIGatewayProxyResponseEvent()
           .withStatusCode(response.getCode())
           .withBody(response.getBody())
+          .withHeaders(new ImmutableMap.Builder<String, String>()
+              .put("Content-Type", "text/plain")
+              .build());
+    } catch (final IllegalArgumentException ex) {
+      return new APIGatewayProxyResponseEvent()
+          .withStatusCode(400)
+          .withBody("The request was invalid.")
           .withHeaders(new ImmutableMap.Builder<String, String>()
               .put("Content-Type", "text/plain")
               .build());
