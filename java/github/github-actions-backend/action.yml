@@ -103,7 +103,7 @@ runs:
           .github/badges/github.svg
           .github/badges/githubbranches.svg
         commit-msg: Update badges
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github_token }}
 
     - name: Test Pipelines
       run: mvn --batch-mode test

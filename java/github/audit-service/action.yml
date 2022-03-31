@@ -135,7 +135,7 @@ runs:
           .github/badges/audits.svg
           .github/badges/auditsbranches.svg
         commit-msg: Update badges
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github_token }}
 
     - name: Build with Maven
       run: ./mvnw --batch-mode --no-transfer-progress package --file pom.xml -Pnative -Plambda package -DskipTests -Dquarkus.profile=prod
