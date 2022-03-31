@@ -10,6 +10,14 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Branches](.github/badges/auditsbranches.svg)
 ![Coverage](.github/badges/audits.svg)
 
+### GitHub Actions Workflow Generator
+![Branches](.github/badges/githubbranches.svg)
+![Coverage](.github/badges/github.svg)
+
+### Jenkins Pipelines Generator
+![Branches](.github/badges/jenkinsbranches.svg)
+![Coverage](.github/badges/jenkins.svg)
+
 ## Links
 
 * [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
