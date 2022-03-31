@@ -13,6 +13,9 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
+  versioning_strategy {
+    template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
+  }
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
