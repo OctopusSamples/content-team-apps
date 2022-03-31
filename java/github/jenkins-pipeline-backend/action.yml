@@ -73,7 +73,7 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: Test Backend
-      run: mvn --batch-mode test
+      run: mvn --batch-mode --no-transfer-progress test
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 

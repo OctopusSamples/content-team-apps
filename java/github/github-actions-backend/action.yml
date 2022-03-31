@@ -73,7 +73,7 @@ runs:
       working-directory: java/github-actions-builder-github-backend
 
     - name: Test Backend
-      run: mvn --batch-mode test
+      run: mvn --batch-mode --no-transfer-progress test
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
