@@ -62,7 +62,7 @@ runs:
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=0.1.${{ github.run_number }}
+      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=1.0.${{ github.run_number }}
       shell: bash
       working-directory: java/github-oauth-backend
 
@@ -111,8 +111,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: github-oauth-backend.0.1.${{ inputs.run_number }}
-        release_name: GitHub OAuth Proxy Release 0.1.${{ inputs.run_number }}
+        tag_name: github-oauth-backend.1.0.${{ inputs.run_number }}
+        release_name: GitHub OAuth Proxy Release 1.0.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
@@ -130,13 +130,13 @@ runs:
     - name: Rename zip
       run: >
         mv github-oauth-backend/target/function.zip
-        github-oauth-backend-lambda.0.1.${{ inputs.run_number }}.zip
+        github-oauth-backend-lambda.1.0.${{ inputs.run_number }}.zip
       shell: bash
       working-directory: java
 
     - name: Push Package
       run: >
-        octo push --package github-oauth-backend-lambda.0.1.${{ inputs.run_number }}.zip
+        octo push --package github-oauth-backend-lambda.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -152,7 +152,7 @@ runs:
       run: >
         octo pack
         --id github-oauth-backend-lambda-sbom
-        --version 0.1.${{ inputs.run_number }}
+        --version 1.0.${{ inputs.run_number }}
         --format zip
         --include **/bom.xml
       shell: bash
@@ -160,7 +160,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package github-oauth-backend-lambda-sbom.0.1.${{ inputs.run_number }}.zip
+        octo push --package github-oauth-backend-lambda-sbom.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -174,7 +174,7 @@ runs:
         octopus_project: GitHub OAuth Backend
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
-        push_version: 0.1.${{ inputs.run_number }}
+        push_version: 1.0.${{ inputs.run_number }}
         push_package_ids: github-oauth-backend-lambda
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
