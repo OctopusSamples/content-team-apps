@@ -88,6 +88,7 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: Generate JaCoCo Badges
+      if: ${{ env.BRANCH_NAME == 'main' }}
       id: jacocoMod1
       uses: cicirello/jacoco-badge-generator@v2
       with:
@@ -97,6 +98,7 @@ runs:
         branches-badge-filename: jenkinsbranches.svg
 
     - name: Update resources
+      if: ${{ env.BRANCH_NAME == 'main' }}
       uses: test-room-7/action-update-file@v1.6.0
       with:
         file-path: |
