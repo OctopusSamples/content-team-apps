@@ -26,6 +26,9 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Branches](.github/badges/microservice-utils-branches.svg)
 ![Coverage](.github/badges/microservice-utils-coverage.svg)
 
+### Reverse Proxy
+[![Go Report Card](https://goreportcard.com/badge/github.com/OctopusSamples/content-team-apps/go/reverse-proxy)](https://goreportcard.com/report/github.com/OctopusSamples/content-team-apps/go/reverse-proxy)
+
 ## Links
 
 * [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
