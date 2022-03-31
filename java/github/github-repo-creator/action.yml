@@ -58,7 +58,7 @@ runs:
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=0.1.${{ github.run_number }}
+      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=1.0.${{ github.run_number }}
       shell: bash
       working-directory: java/github-repo-creator
 
@@ -144,7 +144,7 @@ runs:
 
     - name: Push Package
       run: >
-        octo push --package github-repo-creator-lambda.0.1.${{ inputs.run_number }}.zip
+        octo push --package github-repo-creator-lambda.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -168,7 +168,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package github-repo-creator-lambda-sbom.0.1.${{ inputs.run_number }}.zip
+        octo push --package github-repo-creator-lambda-sbom.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -182,7 +182,7 @@ runs:
         octopus_project: GitHub Repo Creator
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
-        push_version: 0.1.${{ inputs.run_number }}
+        push_version: 1.0.${{ inputs.run_number }}
         push_package_ids: github-repo-creator-lambda
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
@@ -192,6 +192,7 @@ runs:
       run: >
         octo create-release
         --project "GitHub Repo Creator"
+        --version 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
