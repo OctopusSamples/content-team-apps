@@ -12,6 +12,7 @@ resource "octopusdeploy_project" "deploy_project" {
   project_group_id                     = octopusdeploy_project_group.appbuilder_frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
+  versioning_strategy                  = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   included_library_variable_sets       = [octopusdeploy_library_variable_set.frontend_library_variable_set.id]
 
   connectivity_policy {

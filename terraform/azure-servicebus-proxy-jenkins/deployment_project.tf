@@ -12,6 +12,7 @@ resource "octopusdeploy_project" "deploy_project" {
   project_group_id                     = octopusdeploy_project_group.appbuilder_github_oauth_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
+  versioning_strategy                  = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   included_library_variable_sets       = [octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id, var.content_team_library_variable_set_id, var.jenkins_pipeline_library_variable_set_id]
 
   connectivity_policy {
