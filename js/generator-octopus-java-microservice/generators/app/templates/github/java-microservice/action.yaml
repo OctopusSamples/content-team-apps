@@ -153,10 +153,12 @@ runs:
     # The SBOM package is pushed to the Octopus built-in feed.
     - name: Push SBOM Package
       run: >
-        octo push --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        octo push 
+        --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
+        --overwrite-mode OverwriteExisting
       shell: bash
       working-directory: java/quarkus-microservice
 
