@@ -184,6 +184,7 @@ runs:
       run: >
         octo create-release
         --project "GitHub OAuth Backend"
+        --version 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
@@ -198,6 +199,7 @@ runs:
       run: >
         octo create-release
         --project "Jenkins OAuth Backend"
+        1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
