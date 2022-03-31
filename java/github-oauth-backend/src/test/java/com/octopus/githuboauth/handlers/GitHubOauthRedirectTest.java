@@ -1,6 +1,7 @@
 package com.octopus.githuboauth.handlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -18,6 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Null;
 
 @QuarkusTest
 @TestProfile(TestingProfile.class)
@@ -58,5 +60,30 @@ public class GitHubOauthRedirectTest {
             .flatMap(k -> simpleResponse.getMultiValueHeaders().get(k).stream())
             .anyMatch(v -> v.startsWith("GitHubState")),
         "The response must include a cookie called GitHubState");
+  }
+
+  @Test
+  public void testLoginRedirectWithInvalidCodes() {
+    final SimpleResponse simpleResponse = gitHubOauthRedirect.oauthRedirect("12345",
+        List.of("54321"), "12345");
+    assertEquals(400, simpleResponse.getCode(), "The response must be a redirect");
+  }
+
+  @Test
+  public void testLoginRedirectWithNullParams() {
+    assertThrows(NullPointerException.class, () -> gitHubOauthRedirect.oauthRedirect(
+        null,
+        List.of("54321"),
+        "12345"));
+
+    assertThrows(NullPointerException.class, () -> gitHubOauthRedirect.oauthRedirect(
+        "12345",
+        null,
+        "12345"));
+
+    assertThrows(NullPointerException.class, () -> gitHubOauthRedirect.oauthRedirect(
+        "12345",
+        List.of("54321"),
+        null));
   }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import java.util.Map;
 
-public class TestingProfile implements QuarkusTestProfile {
+public class OauthLoginLambaProfile implements QuarkusTestProfile {
 
   @Override
   public Map<String, String> getConfigOverrides() {
@@ -14,8 +14,8 @@ public class TestingProfile implements QuarkusTestProfile {
         .put("github.client.redirect", "redirect")
         .put("github.client.id", "clientid")
         .put("github.client.secret", "secret")
+        .put("quarkus.lambda.handler", "login")
         .put("github.login.redirect", "redirect")
-        .put("quarkus.lambda.handler", "accessToken")
         .build();
   }
 }

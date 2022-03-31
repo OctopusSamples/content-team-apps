@@ -36,7 +36,8 @@ public class GitHubOauth {
   @Path("login")
   public Response githubLogin() {
     final SimpleResponse simpleResponse = gitHubOauthLoginHandler.oauthLoginRedirect();
-    final ResponseBuilder response = Response.status(simpleResponse.getCode(),
+    final ResponseBuilder response = Response.status(
+        simpleResponse.getCode(),
         simpleResponse.getBody());
     simpleResponse.getHeaders().forEach(response::header);
     return response.build();
@@ -53,7 +54,6 @@ public class GitHubOauth {
   @GET
   @Path("code")
   public Response githubReturn(
-      final String document,
       @QueryParam(OauthBackendConstants.STATE_QUERY_PARAM) final String state,
       @CookieParam(OauthBackendConstants.STATE_COOKIE) final String savedState,
       @QueryParam(OauthBackendConstants.CODE_QUERY_PARAM) final String code) {

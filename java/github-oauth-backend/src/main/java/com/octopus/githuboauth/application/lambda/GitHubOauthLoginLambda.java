@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.githuboauth.domain.handlers.GitHubOauthLoginHandler;
 import com.octopus.githuboauth.domain.handlers.SimpleResponse;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.NonNull;
@@ -15,6 +16,7 @@ import lombok.NonNull;
  * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#1-request-a-users-github-identity
  */
 @Named("login")
+@ApplicationScoped
 public class GitHubOauthLoginLambda implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
