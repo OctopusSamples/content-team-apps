@@ -6,9 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.githuboauth.domain.handlers.GitHubOauthLoginHandler;
 import com.octopus.githuboauth.domain.handlers.SimpleResponse;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.NonNull;
 
 /**
  * This lambda handles the redirection to the GitHub login web page.
@@ -22,8 +22,9 @@ public class GitHubOauthLoginLambda implements
   GitHubOauthLoginHandler gitHubOauthLoginHandler;
 
   @Override
-  public APIGatewayProxyResponseEvent handleRequest(@Nonnull final APIGatewayProxyRequestEvent input,
-      @Nonnull final Context context) {
+  public APIGatewayProxyResponseEvent handleRequest(
+      @NonNull final APIGatewayProxyRequestEvent input,
+      @NonNull final Context context) {
     final SimpleResponse response = gitHubOauthLoginHandler.oauthLoginRedirect();
 
     return new APIGatewayProxyResponseEvent()
