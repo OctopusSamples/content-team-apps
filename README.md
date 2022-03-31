@@ -23,7 +23,7 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Coverage](.github/badges/azure-servicebus-proxy-coverage.svg)
 
 ### GitHub OAuth Proxy
-![Branches](.github/badges/github-oauth-proxy-coverage.svg)
+![Branches](.github/badges/github-oauth-proxy-branches.svg)
 ![Coverage](.github/badges/github-oauth-proxy-coverage.svg)
 
 ### Microservice Utils Shared Library
