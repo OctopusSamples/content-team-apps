@@ -106,7 +106,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         </span>}
                         </p>
                         <p>
-                            A sample IAM policy can be found <a href={"https://github.com/OctopusSamples/content-team-apps/wiki/App-Builder-Sample-IAM-Policy"}>here</a>
+                            A sample IAM policy can be found <a href={"https://github.com/OctopusSamples/content-team-apps/wiki/App-Builder-Sample-IAM-Policy"}>here</a>.
                         </p>
                         <Grid container={true} className={classes.row} sx={formContainer}>
                             <Grid md={3} xs={12} container={true}>
