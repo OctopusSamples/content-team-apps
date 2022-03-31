@@ -113,6 +113,23 @@ runs:
       run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)' | jq -r '.Items[0].Id')\""
       shell: bash
 
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    - name: Delete existing projects
+      run: |
+        ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=Deploy%20Backend%20Service | jq -r ".[0].Id")
+        if [[ -n "$ID" && "$ID" != "null" ]]; then
+          echo "Deleting project Deploy Backend Service"
+          curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+        fi
+        
+        ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=Deploy%20EKS%20Cluster | jq -r ".[0].Id")
+        if [[ -n "$ID" && "$ID" != "null" ]]; then
+          echo "Deleting project Deploy EKS Cluster"
+          curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+        fi
+      shell: bash
+
     - name: Terraform Init
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
