@@ -70,6 +70,22 @@ runs:
       shell: bash
       working-directory: java/azure-servicebus-proxy
 
+    - name: Rename zip
+      run: >
+        mv azure-servicebus-proxy/target/function.zip
+        azure-servicebus-proxy-lambda.1.0.${{ inputs.run_number }}.zip
+      shell: bash
+      working-directory: java
+
+    - name: Push Package
+      run: >
+        octo push --package azure-servicebus-proxy-lambda.1.0.${{ inputs.run_number }}.zip
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+      shell: bash
+      working-directory: java
+
     - name: Test Backend
       run: mvn --batch-mode test
       shell: bash
@@ -98,22 +114,6 @@ runs:
       run: mvn --batch-mode test
       shell: bash
       working-directory: java/azure-servicebus-proxy
-
-    - name: Rename zip
-      run: >
-        mv azure-servicebus-proxy/target/function.zip
-        azure-servicebus-proxy-lambda.1.0.${{ inputs.run_number }}.zip
-      shell: bash
-      working-directory: java
-
-    - name: Push Package
-      run: >
-        octo push --package azure-servicebus-proxy-lambda.1.0.${{ inputs.run_number }}.zip
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-      shell: bash
-      working-directory: java
 
     - name: Generate SBOM
       run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
