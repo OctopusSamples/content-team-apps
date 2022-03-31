@@ -29,7 +29,16 @@ public class GitHubOauthLoginLambdaTest {
         Mockito.mock(Context.class));
 
     assertEquals(307, response.getStatusCode(), "Response must be a redirect");
-    assertTrue(response.getHeaders().keySet().stream().anyMatch("location"::equalsIgnoreCase));
+    assertTrue(response.getHeaders().keySet().stream().anyMatch("location"::equalsIgnoreCase),
+        "The response must set a location");
+    assertTrue(response.getHeaders().keySet().stream()
+        .anyMatch("set-cookie"::equalsIgnoreCase), "The response must set cookies");
+    assertTrue(response.getHeaders().keySet()
+            .stream()
+            .filter("set-cookie"::equalsIgnoreCase)
+            .map(k -> response.getHeaders().get(k))
+            .anyMatch(v -> v.startsWith("GitHubState")),
+        "The response must include a cookie called GitHubUserSession");
   }
 
   @Test

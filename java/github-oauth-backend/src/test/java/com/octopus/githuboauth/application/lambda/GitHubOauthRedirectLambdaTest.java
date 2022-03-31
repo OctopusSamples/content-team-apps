@@ -55,6 +55,22 @@ public class GitHubOauthRedirectLambdaTest {
 
     assertEquals(303, response.getStatusCode(), "response must be a redirect");
     assertTrue(response.getHeaders().keySet().stream().anyMatch("location"::equalsIgnoreCase));
+    assertTrue(response.getHeaders().keySet().stream().anyMatch("location"::equalsIgnoreCase),
+        "The response must set a location");
+    assertTrue(response.getMultiValueHeaders().keySet().stream()
+        .anyMatch("set-cookie"::equalsIgnoreCase), "The response must set cookies");
+    assertTrue(response.getMultiValueHeaders().keySet()
+            .stream()
+            .filter("set-cookie"::equalsIgnoreCase)
+            .flatMap(k -> response.getMultiValueHeaders().get(k).stream())
+            .anyMatch(v -> v.startsWith("GitHubUserSession")),
+        "The response must include a cookie called GitHubUserSession");
+    assertTrue(response.getMultiValueHeaders().keySet()
+            .stream()
+            .filter("set-cookie"::equalsIgnoreCase)
+            .flatMap(k -> response.getMultiValueHeaders().get(k).stream())
+            .anyMatch(v -> v.startsWith("GitHubState")),
+        "The response must include a cookie called GitHubState");
   }
 
   @Test
