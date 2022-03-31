@@ -123,8 +123,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: jenkins-pipeline-backend.0.1.${{ inputs.run_number }}
-        release_name: Jenkins Pipeline Backend Release 0.1.${{ inputs.run_number }}
+        tag_name: jenkins-pipeline-backend.1.0.${{ inputs.run_number }}
+        release_name: Jenkins Pipeline Backend Release 1.0.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
@@ -142,13 +142,13 @@ runs:
     - name: Rename zip
       run: >
         mv jenkins-pipeline-builder-github-backend/target/function.zip
-        jenkins-pipeline-builder-github-backend-lambda.0.1.${{ inputs.run_number }}.zip
+        jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
       shell: bash
       working-directory: java
 
     - name: Push Package
       run: >
-        octo push --package jenkins-pipeline-builder-github-backend-lambda.0.1.${{ inputs.run_number }}.zip
+        octo push --package jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -164,7 +164,7 @@ runs:
       run: >
         octo pack
         --id jenkins-pipeline-builder-github-backend-lambda-sbom
-        --version 0.1.${{ inputs.run_number }}
+        --version 1.0.${{ inputs.run_number }}
         --format zip
         --include **/bom.xml
       shell: bash
@@ -172,7 +172,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package jenkins-pipeline-builder-github-backend-lambda-sbom.0.1.${{ inputs.run_number }}.zip
+        octo push --package jenkins-pipeline-builder-github-backend-lambda-sbom.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -186,7 +186,7 @@ runs:
         octopus_project: Jenkins Pipeline Generator
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
-        push_version: 0.1.${{ inputs.run_number }}
+        push_version: 1.0.${{ inputs.run_number }}
         push_package_ids: jenkins-pipeline-builder-github-backend-lambda
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
@@ -198,6 +198,7 @@ runs:
         --gitRef "main"
         --project "Jenkins Pipeline Generator"
         --deployTo "Development"
+        --version 1.0.${{ inputs.run_number }}
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --waitForDeployment 

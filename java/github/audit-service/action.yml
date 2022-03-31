@@ -147,16 +147,16 @@ runs:
     - name: Rename zip
       run: >
         mv target/function.zip
-        audits-service.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        audits-service.1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
       shell: bash
       working-directory: java/audit-service
 
     - run: >
         ./mvnw deploy:deploy-file
-        -Dfile=audits-service.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        -Dfile=audits-service.1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
         -DgroupId=com.octopus
         -DartifactId=audits-service
-        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        -Dversion=1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         -Dpackaging=zip
         -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
       shell: bash
@@ -171,7 +171,7 @@ runs:
       run: >
         octo pack
         --id audits-service-sbom
-        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --version 1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --format zip
         --include **/bom.xml
       shell: bash
@@ -179,11 +179,11 @@ runs:
 
     - run: >
         ./mvnw --batch-mode --no-transfer-progress deploy:deploy-file
-        -Dfile=audits-service-sbom.0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
+        -Dfile=audits-service-sbom.1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}.zip
         -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
         -DgroupId=com.octopus
         -DartifactId=audits-service-sbom
-        -Dversion=0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        -Dversion=1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         -Dpackaging=zip
       shell: bash
       working-directory: java/audit-service
@@ -194,7 +194,7 @@ runs:
         octopus_api_key: ${{ inputs.octopus_api_token }}
         octopus_project: Audit Service
         octopus_server: ${{ inputs.octopus_server_url }}
-        push_version: 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        push_version: 1.0.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         push_package_ids: com.octopus:audits-service
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
@@ -206,6 +206,7 @@ runs:
       run: >
         octo create-release
         --project "Audit Service"
+        --version 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --waitForDeployment
         --server ${{ inputs.octopus_server_url }}
