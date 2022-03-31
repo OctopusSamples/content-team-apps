@@ -25,6 +25,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # See https://github.com/actions/checkout/issues/124#issuecomment-606277160 for why we use
+    # fetch-depth
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
