@@ -1,18 +1,24 @@
 name: 'Jenkins Pipeline Backend'
 description: Build and deploy the Jenkins Pipeline Backend
 inputs:
-  dockerhub_username:  
+  dockerhub_username:
     required: true
-  dockerhub_password:  
+    description: The DockerHub username
+  dockerhub_password:
     required: true
-  github_token:  
+    description: The DockerHub password
+  github_token:
     required: true
-  octopus_server_url:  
+    description: The github token
+  octopus_server_url:
     required: true
-  octopus_api_token:  
+    description: The Octopus server url
+  octopus_api_token:
     required: true
-  run_number:  
+    description: The Octopus API token
+  run_number:
     required: true
+    description: The GitHub Action run number
 runs:
   using: "composite"
   steps:
