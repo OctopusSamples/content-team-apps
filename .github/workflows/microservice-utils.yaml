@@ -1,0 +1,21 @@
+name: microservice-utils
+
+on:
+  push:
+    paths:
+    - 'java/microservice-utils/**'
+    - '.github/workflows/microservice-utils.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./java/github/microservice-utils
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
