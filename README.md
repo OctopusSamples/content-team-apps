@@ -22,6 +22,10 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Branches](.github/badges/azure-servicebus-proxy-branches.svg)
 ![Coverage](.github/badges/azure-servicebus-proxy-coverage.svg)
 
+### Microservice Utils Shared Library
+![Branches](.github/badges/microservice-utils-branches.svg)
+![Coverage](.github/badges/microservice-utils-coverage.svg)
+
 ## Links
 
 * [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
