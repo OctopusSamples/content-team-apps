@@ -1,4 +1,4 @@
-# Content Team MonoRepo
+# Content Team Monorepo
 
 This repo contains the microservices supporting the content team.
 
@@ -6,5 +6,5 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 
 ## Links
 
-* [Github Actions Workflow Generator](https://production.githubactionworkflows.com/)
-* [Jenkins Pipeline Generator](https://production.jenkinspipelines.com/)
+* [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
+* [Jenkins Pipeline Generator](https://jenkinspipelinegenerator.octopus.com/#/)
