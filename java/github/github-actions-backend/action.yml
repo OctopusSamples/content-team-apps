@@ -88,6 +88,7 @@ runs:
 
     - name: Commit the badge (if it changed)
       run: |
+        ls -la .github/badges
         if [[ `git diff --exit-code .github/badges` ]]; then
           git config --global user.name 'Matthew Casperson'
           git config --global user.email 'mcasperson@users.noreply.github.com'
