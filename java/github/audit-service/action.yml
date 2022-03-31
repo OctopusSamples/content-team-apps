@@ -214,19 +214,6 @@ runs:
         --gitRef main
       shell: bash
 
-    - name: Trigger deployment to security
-      if: ${{ env.BRANCH_NAME == 'main' }}
-      run: >
-        octo deploy-release
-        --project "Audit Service"
-        --deployTo "Development (Security)"
-        --waitForDeployment
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --version=latest
-      shell: bash
-
     - name: Trigger branch deployment
       if: ${{ env.BRANCH_NAME != 'main' }}
       run: >
