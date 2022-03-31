@@ -18,6 +18,10 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Branches](.github/badges/jenkinsbranches.svg)
 ![Coverage](.github/badges/jenkins.svg)
 
+### Azure Service Bus Proxy
+![Branches](.github/badges/azure-servicebus-proxy-branches.svg)
+![Coverage](.github/badges/azure-servicebus-proxy-coverage.svg)
+
 ## Links
 
 * [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
