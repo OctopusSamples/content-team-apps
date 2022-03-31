@@ -12,8 +12,12 @@ resource "octopusdeploy_project" "deploy_project" {
   project_group_id                     = octopusdeploy_project_group.appbuilder_frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
-  versioning_strategy                  = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
-  included_library_variable_sets       = [octopusdeploy_library_variable_set.frontend_library_variable_set.id]
+  versioning_strategy {
+    template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
+  }
+  included_library_variable_sets = [
+    octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  ]
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
@@ -27,21 +31,21 @@ output "deploy_project_id" {
 }
 
 resource "octopusdeploy_variable" "debug_variable" {
-  name = "OctopusPrintVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.deploy_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_variable" "debug_evaluated_variable" {
-  name = "OctopusPrintEvaluatedVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintEvaluatedVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.deploy_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_project" {
@@ -56,7 +60,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Create S3 Bucket"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
@@ -137,28 +143,30 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Upload Frontend"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       primary_package {
         acquisition_location = "Server"
-        feed_id = var.octopus_built_in_feed_id
-        package_id = "app-builder-frontend"
-        properties = {
-          "SelectionMode": "immediate"
+        feed_id              = var.octopus_built_in_feed_id
+        package_id           = "app-builder-frontend"
+        properties           = {
+          "SelectionMode" : "immediate"
         }
       }
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
-        "Octopus.Action.Aws.S3.FileSelections": "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
-        "Octopus.Action.Aws.S3.TargetMode": "FileSelections"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Package.DownloadOnTentacle": "False"
-        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId": "app-builder-frontend"
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+        "Octopus.Action.Aws.S3.FileSelections" : "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
+        "Octopus.Action.Aws.S3.TargetMode" : "FileSelections"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Package.DownloadOnTentacle" : "False"
+        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId" : "app-builder-frontend"
       }
     }
   }
@@ -172,14 +180,16 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Get Stack Outputs"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           WEB_RESOURCE_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGateway} \
@@ -222,9 +232,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
             exit 1
           fi
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -238,13 +248,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Proxy with API Gateway"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.Frontend}"
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.Frontend}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
               Type: String
@@ -467,13 +479,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Value:
                 Ref: 'Deployment#{Octopus.Deployment.Id | Replace -}'
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{WebApp.SubPath}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{WebApp.SubPath}\"}]"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{WebApp.SubPath}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"RootResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Web}\"},{\"ParameterKey\":\"PackageVersion\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageVersion}\"},{\"ParameterKey\":\"PackageId\",\"ParameterValue\":\"#{Octopus.Action[Upload Frontend].Package[].PackageId}\"},{\"ParameterKey\":\"BucketName\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}\"},{\"ParameterKey\":\"SubPath\",\"ParameterValue\":\"#{WebApp.SubPath}\"}]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
@@ -487,13 +499,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Update Stage"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.AppBuilderApiGatewayStage}"
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormationName.AppBuilderApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
               Type: String
@@ -525,13 +539,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   - !Ref Stage
                   - /
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
@@ -545,14 +559,16 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       name           = "Get Stage URL"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
@@ -563,9 +579,9 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           echo "Stage URL: $${STAGE_URL}"
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
