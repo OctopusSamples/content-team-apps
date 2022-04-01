@@ -27,7 +27,7 @@ public class GenericBuilder implements PipelineBuilder {
 
   @Override
   public Integer getPriority() {
-    return -1;
+    return -100;
   }
 
   @Override
