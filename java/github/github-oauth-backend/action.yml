@@ -72,7 +72,7 @@ runs:
       working-directory: java/github-oauth-backend
 
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+      run: mvn --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/github-oauth-backend
 
