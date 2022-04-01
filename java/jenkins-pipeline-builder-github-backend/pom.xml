@@ -152,13 +152,6 @@
       <groupId>io.quarkus</groupId>
     </dependency>
 
-    <!-- Required to get an Ant path matcher implementation -->
-    <dependency>
-      <artifactId>shiro-core</artifactId>
-      <groupId>org.apache.shiro</groupId>
-      <version>1.8.0</version>
-    </dependency>
-
     <dependency>
       <artifactId>quarkus-junit5</artifactId>
       <groupId>io.quarkus</groupId>
