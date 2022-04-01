@@ -48,32 +48,32 @@ runs:
       shell: bash
 
     - name: Checkstyle
-      run: mvn --batch-mode checkstyle:check
+      run: ./mvnw --batch-mode checkstyle:check
       shell: bash
       working-directory: java
 
     - name: Install modules
-      run: mvn --batch-mode install -DskipTests
+      run: ./mvnw --batch-mode install -DskipTests
       shell: bash
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=0.1.${{ github.run_number }}
+      run: ./mvnw --batch-mode build-helper:parse-version versions:set -DnewVersion=0.1.${{ github.run_number }}
       shell: bash
       working-directory: java/octopus-service-account-creator
 
     - name: List dependencies
-      run: mvn --batch-mode dependency:tree --no-transfer-progress
+      run: ./mvnw --batch-mode dependency:tree --no-transfer-progress
       shell: bash
       working-directory: java/octopus-service-account-creator
 
     - name: Build with Maven
-      run: mvn --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests "-Dquarkus.profile=prod"
       shell: bash
       working-directory: java/octopus-service-account-creator
 
 #    - name: Test Backend
-#      run: mvn --batch-mode test
+#      run: ./mvnw --batch-mode test
 #      env:
 #        LAMBDA_HANDLER: login
 #        GITHUB_REDIRECT: https://development.githubactionworkflows.com/oauth/github/code
@@ -106,7 +106,7 @@ runs:
 #      shell: bash
 #
 #    - name: Test Common
-#      run: mvn --batch-mode test
+#      run: ./mvnw --batch-mode test
 #      shell: bash
 #      working-directory: java/pipeline-builder-utils
 
@@ -149,7 +149,7 @@ runs:
       working-directory: java
 
     - name: Generate SBOM
-      run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
+      run: ./mvnw cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
       shell: bash
       working-directory: java
 
