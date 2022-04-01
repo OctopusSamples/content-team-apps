@@ -140,7 +140,7 @@ public class NodejsBuilder implements PipelineBuilder {
                 .build())
             .add(Comment.builder()
                 .content(
-                    "The step above always passes. The results should be processed and the pipeline\n"
+                    "The results should be processed and the pipeline\n"
                         + "passed or failed with a step like https://plugins.jenkins.io/junit/ or\n"
                         + "https://plugins.jenkins.io/xunit/ (depending on the report format). Dedicated\n"
                         + "test processing steps provide flexibility around test failure thresholds rather than\n"
