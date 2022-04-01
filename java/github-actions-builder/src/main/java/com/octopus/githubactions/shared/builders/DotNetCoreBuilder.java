@@ -122,7 +122,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "dotnet test -l:trx || true")
+                                                    "dotnet test -l:trx")
                                                 .workingDirectory(workingDirectory)
                                                 .build())
                                         .add(UsesWith.builder()

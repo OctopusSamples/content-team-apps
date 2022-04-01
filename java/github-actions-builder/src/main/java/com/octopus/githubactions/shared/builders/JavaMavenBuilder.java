@@ -95,7 +95,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     mavenExecutable()
-                                                        + " --batch-mode -Dmaven.test.failure.ignore=true test")
+                                                        + " --batch-mode test")
                                                 .build())
                                         .add(
                                             GIT_BUILDER.buildJunitReport(

@@ -93,7 +93,7 @@ public class PythonBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "pip install pytest; pytest --junitxml=results.xml || true")
+                                                    "pip install pytest; pytest --junitxml=results.xml")
                                                 .build())
                                         .add(GIT_BUILDER.buildJunitReport("Python Tests",
                                             "results.xml"))

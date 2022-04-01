@@ -97,7 +97,7 @@ public class RubyBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "gem install rspec_junit_formatter; rspec --format RspecJunitFormatter --out results.xml || true")
+                                                    "gem install rspec_junit_formatter; rspec --format RspecJunitFormatter --out results.xml")
                                                 .build())
                                         .add(GIT_BUILDER.buildJunitReport("Ruby Tests",
                                             "results.xml"))

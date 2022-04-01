@@ -83,7 +83,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     gradleExecutable()
-                                                        + " check --console=plain || true")
+                                                        + " check --console=plain")
                                                 .build())
                                         .add(
                                             GIT_BUILDER.buildJunitReport(
