@@ -119,8 +119,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: github-repo-creator.0.1.${{ inputs.run_number }}
-        release_name: GitHub OAuth Proxy Release 0.1.${{ inputs.run_number }}
+        tag_name: github-repo-creator.1.0.${{ inputs.run_number }}
+        release_name: GitHub OAuth Proxy Release 1.0.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
@@ -138,7 +138,7 @@ runs:
     - name: Rename zip
       run: >
         mv github-repo-creator/target/function.zip
-        github-repo-creator-lambda.0.1.${{ inputs.run_number }}.zip
+        github-repo-creator-lambda.1.0.${{ inputs.run_number }}.zip
       shell: bash
       working-directory: java
 
@@ -160,7 +160,7 @@ runs:
       run: >
         octo pack
         --id github-repo-creator-lambda-sbom
-        --version 0.1.${{ inputs.run_number }}
+        --version 1.0.${{ inputs.run_number }}
         --format zip
         --include **/bom.xml
       shell: bash
