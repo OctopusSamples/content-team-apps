@@ -97,7 +97,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("Test")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " test || true")
+                                                .run(getPackageManager() + " test")
                                                 .build())
                                         .add(
                                             RunStep.builder()

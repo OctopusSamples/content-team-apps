@@ -96,7 +96,7 @@ public class GoBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "go install gotest.tools/gotestsum@latest; gotestsum --junitfile results.xml || true")
+                                                    "go install gotest.tools/gotestsum@latest; gotestsum --junitfile results.xml")
                                                 .build())
                                         .add(GIT_BUILDER.buildJunitReport("Go Tests",
                                             "results.xml"))
