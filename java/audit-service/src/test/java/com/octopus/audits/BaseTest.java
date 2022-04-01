@@ -8,7 +8,6 @@ import com.octopus.audits.domain.handlers.AuditsHandler;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.List;
-import javax.annotation.Nonnull;
 import lombok.NonNull;
 
 public class BaseTest {
@@ -27,9 +26,9 @@ public class BaseTest {
   }
 
   protected Audit createAudit(
-      @Nonnull final AuditsHandler auditsHandler,
+      @NonNull final AuditsHandler auditsHandler,
       @NonNull final ResourceConverter resourceConverter,
-      @Nonnull final String partition)
+      @NonNull final String partition)
       throws DocumentSerializationException {
     final Audit audit = createAudit("myname");
     final String result =
