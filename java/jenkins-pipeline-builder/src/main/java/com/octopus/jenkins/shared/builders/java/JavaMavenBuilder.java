@@ -204,7 +204,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        mavenExecutable() + " --batch-mode -Dmaven.test.failure.ignore=true test",
+                        mavenExecutable() + " --batch-mode test",
                         ArgType.STRING))
                     .build())
                 .build())
