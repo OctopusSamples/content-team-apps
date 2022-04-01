@@ -57,7 +57,7 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
     message.getApplicationProperties()
         .put(SOURCE_KEY, microserviceNameFeature.getMicroserviceName());
     message.getApplicationProperties().put(CONTEXT_KEY, CONTEXT);
-    message.getApplicationProperties().put(TYPE_KEY, GithubUserLoggedInForFreeToolsEventV1.class.getSimpleName());
+    message.getApplicationProperties().put(TYPE_KEY, GithubUserLoggedInForFreeToolsEventV1.class.getSimpleName().toLowerCase());
     message.getApplicationProperties().put(OCCURRED_TIME_UTC_KEY, Instant.now().toString());
     message.getApplicationProperties().put(ACTIVITY_ID_KEY, traceId);
     message.getApplicationProperties().put(SPEC_VERSION_KEY, SPEC_VERSION);
