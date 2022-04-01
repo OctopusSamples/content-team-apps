@@ -1,20 +1,14 @@
 package com.octopus.jenkins.shared.builders.generic;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.jenkins.shared.builders.java.JavaGitBuilder;
-import com.octopus.jenkins.shared.dsl.ArgType;
-import com.octopus.jenkins.shared.dsl.Argument;
-import com.octopus.jenkins.shared.dsl.Comment;
 import com.octopus.jenkins.shared.dsl.Element;
 import com.octopus.jenkins.shared.dsl.Function1Arg;
 import com.octopus.jenkins.shared.dsl.Function1ArgTrailingLambda;
-import com.octopus.jenkins.shared.dsl.FunctionManyArgs;
 import com.octopus.jenkins.shared.dsl.FunctionTrailingLambda;
 import com.octopus.jenkins.shared.dsl.StringContent;
 import com.octopus.repoclients.RepoClient;
-import java.util.Map;
 import lombok.NonNull;
 import org.jboss.logging.Logger;
 
