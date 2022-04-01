@@ -78,9 +78,16 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: Build with Maven
-      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests "-Dquarkus.profile=prod"
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
+
+    - name: Rename zip
+      run: >
+        mv jenkins-pipeline-builder-github-backend/target/function.zip
+        jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
+      shell: bash
+      working-directory: java
 
     - name: Test Backend
       run: ./mvnw --batch-mode --no-transfer-progress test
@@ -138,13 +145,6 @@ runs:
         asset_path: java/jenkins-pipeline-builder-github-backend/target/jenkins-pipeline-builder-github-backend-runner
         asset_name: jenkins-pipeline-builder-github-backend-runner
         asset_content_type: application/octet-stream
-
-    - name: Rename zip
-      run: >
-        mv jenkins-pipeline-builder-github-backend/target/function.zip
-        jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
-      shell: bash
-      working-directory: java
 
     - name: Push Package
       run: >
