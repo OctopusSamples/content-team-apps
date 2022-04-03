@@ -63,11 +63,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
 
     const selectionsValid = () => {
-        if (!props.machine.state.context.generator) {
-            return false;
-        }
-
-        return true;
+        return props.machine.state.context && !!props.machine.state.context.generator;
     }
 
     const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
