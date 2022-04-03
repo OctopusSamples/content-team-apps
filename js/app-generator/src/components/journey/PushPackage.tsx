@@ -61,9 +61,12 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             });
     }
 
-
+    /**
+     * Determines if the values we have allow for a valid repo to be created.
+     * We can't continue if there is no generator defined.
+     */
     const selectionsValid = () => {
-        return props.machine.state.context && !!props.machine.state.context.generator;
+        return props.machine.state && !!props.machine.state.context.generator;
     }
 
     const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
