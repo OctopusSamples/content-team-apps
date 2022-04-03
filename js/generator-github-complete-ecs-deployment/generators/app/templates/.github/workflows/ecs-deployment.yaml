@@ -1,4 +1,4 @@
-name: EKS Deployment
+name: ECS Deployment
 'on':
   workflow_dispatch: {}
   push:
