@@ -36,6 +36,7 @@ function getInitialStateContext() {
             awsAccessKey: state.awsAccessKey || "",
             awsRegion: state.awsRegion || "",
             targetPlatform: state.targetPlatform || "",
+            generator: state.generator || "",
             developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
             githubRepo: state.githubRepo || "",
@@ -49,6 +50,7 @@ function getInitialStateContext() {
         awsAccessKey: "",
         awsRegion: "",
         targetPlatform: "",
+        generator: "",
         developmentFramework: "",
         octopusServer: "",
         githubRepo: "",
@@ -126,6 +128,10 @@ export interface StateContext {
      * The target platform to deploy to
      */
     targetPlatform: string,
+    /**
+     * The generator associated with the platform
+     */
+    generator: string,
     /**
      * The development framework
      */

@@ -61,20 +61,9 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             });
     }
 
-    const selectGenerator = () => {
-        if (props.machine.state.context.targetPlatform === "EKS") {
-            return "@octopus-content-team/generator-github-complete-eks-deployment"
-        }
-
-        if (props.machine.state.context.targetPlatform === "ECS") {
-            return "@octopus-content-team/generator-github-complete-ecs-deployment"
-        }
-
-        return null;
-    }
 
     const selectionsValid = () => {
-        if (!selectGenerator()) {
+        if (!props.machine.state.context.generator) {
             return false;
         }
 
@@ -88,7 +77,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 "attributes": {
                     githubRepository: createRepoName(),
                     createNewRepo: false,
-                    generator: selectGenerator(),
+                    generator: props.machine.state.context.generator,
                     secrets: [
                         {
                             name: "OCTOPUS_SERVER",

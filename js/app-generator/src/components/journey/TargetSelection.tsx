@@ -12,6 +12,14 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
         setButtonDisabled(true);
         if (props.machine.state) {
             props.machine.state.context.targetPlatform = platform;
+
+            if (props.machine.state.context.generator === "EKS") {
+                return "@octopus-content-team/generator-github-complete-eks-deployment"
+            }
+
+            if (props.machine.state.context.generator === "ECS") {
+                return "@octopus-content-team/generator-github-complete-ecs-deployment"
+            }
         }
         props.machine.send(state);
     }
@@ -37,8 +45,8 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("ECS", "ECS")}>
-                            {"AWS Elastic Compute Service (ECS) (Coming soon)"}
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("ECS", "ECS")}>
+                            {"AWS Elastic Compute Service (ECS)"}
                         </Button>
                         <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("LAMBDA", "LAM")}>
                             {"AWS Lambda (Coming soon)"}
