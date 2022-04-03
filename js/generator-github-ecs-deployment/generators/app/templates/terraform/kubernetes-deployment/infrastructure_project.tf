@@ -115,7 +115,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
             ecs-cli configure --cluster app-builer --default-launch-type FARGATE --config-name app-builer --region $${AWS_DEFAULT_REGION}
             ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builer-profile
-            ecs-cli up --cluster-config app-builer --ecs-profile app-builer-profile > output.txt
+            ecs-cli up --cluster-config app-builer --ecs-profile app-builer-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
