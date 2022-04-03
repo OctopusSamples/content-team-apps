@@ -58,32 +58,39 @@ runs:
       shell: bash
 
     - name: Checkstyle
-      run: mvn --batch-mode checkstyle:check
+      run: ./mvnw --batch-mode checkstyle:check
       shell: bash
       working-directory: java
 
     - name: Install modules
-      run: mvn --batch-mode install -DskipTests
+      run: ./mvnw --batch-mode install -DskipTests
       shell: bash
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}
+      run: ./mvnw --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: List dependencies
-      run: mvn --batch-mode dependency:tree --no-transfer-progress
+      run: ./mvnw --batch-mode dependency:tree --no-transfer-progress
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode clean package --file pom.xml -Plambda -Pnative -DskipTests "-Dquarkus.profile=prod"
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
+    - name: Rename zip
+      run: >
+        mv jenkins-pipeline-builder-github-backend/target/function.zip
+        jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
+      shell: bash
+      working-directory: java
+
     - name: Test Backend
-      run: mvn --batch-mode --no-transfer-progress test
+      run: ./mvnw --batch-mode --no-transfer-progress test
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
@@ -108,12 +115,12 @@ runs:
         github-token: ${{ inputs.github_token }}
 
     - name: Test Pipelines
-      run: mvn --batch-mode test
+      run: ./mvnw --batch-mode test
       shell: bash
       working-directory: java/jenkins-pipeline-builder
 
     - name: Test Common
-      run: mvn --batch-mode test
+      run: ./mvnw --batch-mode test
       shell: bash
       working-directory: java/pipeline-builder-utils
 
@@ -139,13 +146,6 @@ runs:
         asset_name: jenkins-pipeline-builder-github-backend-runner
         asset_content_type: application/octet-stream
 
-    - name: Rename zip
-      run: >
-        mv jenkins-pipeline-builder-github-backend/target/function.zip
-        jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
-      shell: bash
-      working-directory: java
-
     - name: Push Package
       run: >
         octo push --package jenkins-pipeline-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
@@ -156,7 +156,7 @@ runs:
       working-directory: java
 
     - name: Generate SBOM
-      run: mvn --no-transfer-progress --batch-mode cyclonedx:makeAggregateBom -DskipTests
+      run: ./mvnw --no-transfer-progress --batch-mode cyclonedx:makeAggregateBom -DskipTests
       shell: bash
       working-directory: java
 

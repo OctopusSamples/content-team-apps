@@ -133,14 +133,14 @@ public class NodejsBuilder implements PipelineBuilder {
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument(
                         "script",
-                        getPackageManager() + " test || true",
+                        getPackageManager() + " test",
                         ArgType.STRING))
                     .add(new Argument("returnStdout", "true", ArgType.BOOLEAN))
                     .build())
                 .build())
             .add(Comment.builder()
                 .content(
-                    "The step above always passes. The results should be processed and the pipeline\n"
+                    "The results should be processed and the pipeline\n"
                         + "passed or failed with a step like https://plugins.jenkins.io/junit/ or\n"
                         + "https://plugins.jenkins.io/xunit/ (depending on the report format). Dedicated\n"
                         + "test processing steps provide flexibility around test failure thresholds rather than\n"

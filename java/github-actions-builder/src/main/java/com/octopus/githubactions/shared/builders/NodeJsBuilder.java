@@ -90,14 +90,14 @@ public class NodeJsBuilder implements PipelineBuilder {
                                                 .shell("bash")
                                                 .run(
                                                     getPackageManager()
-                                                        + " outdated > dependencyUpdates.txt || true")
+                                                        + " outdated > dependencyUpdates.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencyUpdates())
                                         .add(
                                             RunStep.builder()
                                                 .name("Test")
                                                 .shell("bash")
-                                                .run(getPackageManager() + " test || true")
+                                                .run(getPackageManager() + " test")
                                                 .build())
                                         .add(
                                             RunStep.builder()

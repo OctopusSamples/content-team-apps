@@ -22,12 +22,12 @@ runs:
         distribution: 'adopt'
 
     - name: List dependencies
-      run: mvn --batch-mode dependency:tree --no-transfer-progress
+      run: ./mvnw --batch-mode dependency:tree --no-transfer-progress
       shell: bash
       working-directory: java/microservice-utils
 
     - name: Test Backend
-      run: mvn --batch-mode --no-transfer-progress test
+      run: ./mvnw --batch-mode --no-transfer-progress test
       shell: bash
       working-directory: java/microservice-utils
 

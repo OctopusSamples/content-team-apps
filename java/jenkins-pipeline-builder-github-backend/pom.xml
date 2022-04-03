@@ -3,7 +3,29 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>content-team-apps</artifactId>
+    <groupId>com.octopus</groupId>
+    <version>1.0</version>
+  </parent>
+
   <artifactId>jenkins-pipeline-builder-github-backend</artifactId>
+  <version>1.0.0</version>
+
+  <properties>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+    <quarkus.platform.version>2.7.5.Final</quarkus.platform.version>
+    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
+  </properties>
 
   <build>
     <finalName>jenkins-pipeline-builder-github-backend</finalName>
@@ -130,13 +152,6 @@
       <groupId>io.quarkus</groupId>
     </dependency>
 
-    <!-- Required to get an Ant path matcher implementation -->
-    <dependency>
-      <artifactId>shiro-core</artifactId>
-      <groupId>org.apache.shiro</groupId>
-      <version>1.8.0</version>
-    </dependency>
-
     <dependency>
       <artifactId>quarkus-junit5</artifactId>
       <groupId>io.quarkus</groupId>
@@ -158,18 +173,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.octopus</groupId>
-      <artifactId>github-actions-builder</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8</artifactId>
       <scope>test</scope>
       <version>2.32.0</version>
     </dependency>
   </dependencies>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -182,13 +192,24 @@
     </dependencies>
   </dependencyManagement>
 
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>content-team-apps</artifactId>
-    <groupId>com.octopus</groupId>
-    <version>1.0</version>
-  </parent>
   <profiles>
+    <!--
+      Adds the lambda dependencies. This is not used when building a web server.
+    -->
+    <profile>
+      <id>lambda</id>
+      <activation>
+        <property>
+          <name>lambda</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-amazon-lambda</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <activation>
         <property>
@@ -226,36 +247,5 @@
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
     </profile>
-    <!--
-      Adds the lambda dependencies. This is not used when building a web server.
-    -->
-    <profile>
-      <id>lambda</id>
-      <activation>
-        <property>
-          <name>lambda</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-amazon-lambda</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
   </profiles>
-  <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.7.5.Final</quarkus.platform.version>
-    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
-  </properties>
-  <version>1.0.0</version>
 </project>

@@ -185,7 +185,7 @@ public class DotnetCoreBuilder implements PipelineBuilder {
             .add(FunctionManyArgs.builder()
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
-                    .add(new Argument("script", "dotnet test -l:trx || true",
+                    .add(new Argument("script", "dotnet test -l:trx",
                         ArgType.STRING))
                     .build())
                 .build())

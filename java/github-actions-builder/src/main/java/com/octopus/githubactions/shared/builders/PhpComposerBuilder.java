@@ -83,7 +83,7 @@ public class PhpComposerBuilder implements PipelineBuilder {
                                                 .name("Test")
                                                 .shell("bash")
                                                 .run(
-                                                    "vendor/bin/phpunit --log-junit results.xml tests || true")
+                                                    "vendor/bin/phpunit --log-junit results.xml tests")
                                                 .build())
                                         .add(GIT_BUILDER.buildJunitReport("PHP Tests",
                                             "results.xml"))

@@ -2,6 +2,7 @@ package com.octopus.jenkins.github.domain.framework.producer;
 
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
+import com.octopus.jenkins.shared.builders.generic.GenericBuilder;
 import com.octopus.jenkins.shared.builders.go.GoBuilder;
 import com.octopus.jenkins.shared.builders.java.JavaGradleBuilder;
 import com.octopus.jenkins.shared.builders.java.JavaMavenBuilder;
@@ -223,6 +224,17 @@ public class PipelineProducer {
   @Produces
   public PipelineBuilder getDotNetCore() {
     return new DotnetCoreBuilder();
+  }
+
+  /**
+   * Produces the generic pipeline builder.
+   *
+   * @return An implementation of PipelineBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public PipelineBuilder getGenericBuilder() {
+    return new GenericBuilder();
   }
 
   /**
