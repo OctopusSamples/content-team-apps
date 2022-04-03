@@ -49,9 +49,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             workflow to complete.
                         </p>
                         <p>
-                            Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform + " " + props.machine.state.context.developmentFramework}</strong> and
-                            ending with your GitHub account name (or as many characters of your GitHub account name as we could fit in the space
-                            name) in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will be populated with a
+                            Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform}</strong> and
+                            ending with your GitHub account name in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will be populated with a
                             sample project and all other associated resources to complete a deployment.
                         </p>
                         <p>

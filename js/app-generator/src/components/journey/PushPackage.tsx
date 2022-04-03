@@ -16,7 +16,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     function createRepoName() {
-        return "AppBuilder-" + props.machine.state.context.targetPlatform + "-" + props.machine.state.context.developmentFramework;
+        return "AppBuilder-" + props.machine.state.context.targetPlatform;
     }
 
     function getOctopusServer() {
@@ -61,6 +61,22 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             });
     }
 
+    const selectGenerator = () => {
+        if (props.machine.state.context.targetPlatform === "EKS") {
+            return "@octopus-content-team/generator-github-complete-eks-deployment"
+        }
+
+        return null;
+    }
+
+    const selectionsValid = () => {
+        if (!selectGenerator()) {
+            return false;
+        }
+
+        return true;
+    }
+
     const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
         const populateRepoBody = {
             "data": {
@@ -68,7 +84,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 "attributes": {
                     githubRepository: createRepoName(),
                     createNewRepo: false,
-                    generator: "@octopus-content-team/generator-github-complete-eks-deployment",
+                    generator: selectGenerator(),
                     secrets: [
                         {
                             name: "OCTOPUS_SERVER",
@@ -100,7 +116,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         "awsStateBucketRegion": "$TERRAFORM_BUCKET_REGION",
                         "s3BucketSuffix": "$TERRAFORM_BUCKET_SUFFIX",
                         "awsRegion": props.machine.state.context.awsRegion,
-                        "framework": props.machine.state.context.developmentFramework,
+                        "framework": "",
                         "platform": props.machine.state.context.targetPlatform
                     }
                 }
@@ -171,7 +187,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Click the next button to configure your CI/CD pipeline.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={pushPackage}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={!selectionsValid() || buttonDisabled} onClick={pushPackage}>
                             {"Next >"}
                         </Button>
                     </Grid>

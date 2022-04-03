@@ -17,7 +17,6 @@ import LogIntoOctopus from "../components/journey/LogIntoOctopus";
 import LoggedIntoOctopus from "../components/journey/LoggedIntoOctopus";
 import LogIntoGitHub from "../components/journey/LogIntoGitHub";
 import LoggedIntoGithub from "../components/journey/LoggedIntoGitHub";
-import SelectFramework from "../components/journey/SelectFramework";
 import PushPackage from "../components/journey/PushPackage";
 import Done from "../components/journey/Done";
 import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
@@ -173,7 +172,6 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ECS: {target: 'doYouHaveCloudOctopus'},
                         EKS: {target: 'doYouHaveCloudOctopus'},
                         LAMBDA: {target: 'doYouHaveCloudOctopus'},
-                        STANDALONE: {target: 'selectFramework'},
                     },
                     entry: [
                         saveCurrentState("selectTarget"),
@@ -263,38 +261,16 @@ export const appBuilderMachine = createMachine<StateContext>({
                 enterAwsCredentials: {
                     on: {
                         BACK: {target: 'logIntoGitHub'},
-                        NEXT: {target: 'selectFramework'},
+                        NEXT: {target: 'pushPackage'},
                     },
                     entry: [
                         saveCurrentState("enterAwsCredentials"),
                         assignForm(EnterAwsCredentials)
                     ]
                 },
-                selectFramework: {
-                    on: {
-                        BACK: {target: 'enterAwsCredentials'},
-                        QUARKUS: {target: 'pushPackage'},
-                        SPRING: {target: 'selectedFrameworkNotAvailable'},
-                        DOTNETCORE: {target: 'selectedFrameworkNotAvailable'},
-                        PYTHON: {target: 'selectedFrameworkNotAvailable'},
-                        GO: {target: 'selectedFrameworkNotAvailable'}
-                    },
-                    entry: [
-                        saveCurrentState("selectFramework"),
-                        assignForm(SelectFramework)
-                    ]
-                },
-                selectedFrameworkNotAvailable: {
-                    on: {
-                        BACK: {target: 'selectFramework'}
-                    },
-                    entry: [
-                        saveCurrentState("selectedFrameworkNotAvailable"),
-                    ]
-                },
                 pushPackage: {
                     on: {
-                        BACK: {target: 'selectFramework'},
+                        BACK: {target: 'logIntoGitHub'},
                         NEXT: {target: 'done'},
                         ERROR: {target: 'error'},
                     },

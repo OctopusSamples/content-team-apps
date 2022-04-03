@@ -38,12 +38,13 @@ module.exports = class extends Generator {
     writing() {
         const framework = this.options["framework"];
         const platform = this.options["platform"];
+        const spaceName = platform + (framework ? " " + framework : "");
 
         this.fs.copyTpl(
             this.templatePath('.github/workflows/eks-deployment.yaml'),
             this.destinationPath('.github/workflows/eks-deployment.yaml'),
             {
-                octopus_space: platform + " " + framework,
+                octopus_space: spaceName,
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
                 aws_region: this.options["awsRegion"],
                 framework,
