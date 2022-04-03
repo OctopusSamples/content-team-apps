@@ -70,7 +70,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
-          aws_ecr_repository_name: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>"
+          aws_ecr_repository_name: "<%= repository %>"
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
           github_repo: ${{ github.repository }}
@@ -87,7 +87,7 @@ jobs:
           octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
           octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
-          octopus_docker_image: "octopus-microservice-<%= framework.toLowerCase() %>-<%= platform.toLowerCase() %>-${{ github.repository_owner }}"
+          octopus_docker_image: "<%= repository %>"
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
