@@ -13,12 +13,12 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
         if (props.machine.state) {
             props.machine.state.context.targetPlatform = platform;
 
-            if (props.machine.state.context.generator === "EKS") {
-                return "@octopus-content-team/generator-github-complete-eks-deployment"
+            if (props.machine.state.context.targetPlatform === "EKS") {
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-eks-deployment"
             }
 
-            if (props.machine.state.context.generator === "ECS") {
-                return "@octopus-content-team/generator-github-complete-ecs-deployment"
+            if (props.machine.state.context.targetPlatform === "ECS") {
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-ecs-deployment"
             }
         }
         props.machine.send(state);
