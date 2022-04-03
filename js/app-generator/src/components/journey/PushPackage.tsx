@@ -66,6 +66,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             return "@octopus-content-team/generator-github-complete-eks-deployment"
         }
 
+        if (props.machine.state.context.targetPlatform === "ECS") {
+            return "@octopus-content-team/generator-github-complete-ecs-deployment"
+        }
+
         return null;
     }
 
