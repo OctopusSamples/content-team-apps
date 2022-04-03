@@ -1,0 +1,114 @@
+name: EKS Deployment
+'on':
+  workflow_dispatch: {}
+  push:
+    paths:
+      - '**/*'
+      - '!.github/badges/*'
+    branches-ignore:
+      - 'app-builder-update'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: nelonoel/branch-name@v1.0.1
+
+      # This main workflow file implements each stage through composable actions -
+      # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+      # This allows us to mix and match build and deployment steps, which is important for a platform engineering tool
+      # like the App Builder.
+
+      - name: Create Initial Space
+        id: shared_space
+        # The App Builder will update an existing repo by placing the new code in the branch called app-builder-update.
+        # We don't trigger any builds from this branch, as it is up to the end user to merge any required changes
+        # into main.
+        # To overwrite the main branch with app-builder-update, use the "ours" merge strategy. See
+        # https://stackoverflow.com/a/2862938/157605 for more information:
+        #
+        # git checkout app-builder-update
+        # git merge -s ours main
+        # git checkout main
+        # git merge app-builder-update
+        uses: ./github/shared-space
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space: "<%= octopus_space %>"
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
+      - name: Create Shared Resources
+        id: shared_resources
+        uses: ./github/shared-infrastructure
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          github_username: ${{ github.actor }}
+          github_repo: ${{ github.repository }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+
+      - name: Create the ECR repository and feed
+        id: ecr_resources
+        uses: ./github/aws-ecr
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
+      - name: Create ECS Deployment Project
+        uses: ./github/ecs-deployment
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
+          octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
+          octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
+          octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
+          octopus_docker_image: "<%= repository %>"
+          octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          repository_owner: ${{ github.repository_owner }}
+          octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
+      - name: Build Java Microservice
+        uses: ./github/java-microservice
+        with:
+          image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          run_number: ${{ github.run_number }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          github_repo: ${{ github.repository }}
