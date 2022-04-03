@@ -203,6 +203,7 @@ runs:
         --apiKey ${{ inputs.octopus_api_token }}
         --waitForDeployment 
         --space "Content Team"
+        --version 1.0.${{ inputs.run_number }}
         --deploymentTimeout 00:30:00
       shell: bash
 

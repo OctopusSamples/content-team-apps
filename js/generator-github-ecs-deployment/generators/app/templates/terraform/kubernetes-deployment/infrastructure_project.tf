@@ -106,16 +106,16 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           fi
 
           # Find any existing cluster with the name "app-builder".
-          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builer"))')
+          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builder"))')
 
           # If the cluster does not exist, create it.
           if [[ -z "$${EXISTINGCLUSTER}" ]]; then
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
 
-            ecs-cli configure --cluster app-builer --default-launch-type FARGATE --config-name app-builer --region $${AWS_DEFAULT_REGION}
-            ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builer-profile
-            ecs-cli up --cluster-config app-builer --ecs-profile app-builer-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+            ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder --region $${AWS_DEFAULT_REGION}
+            ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-profile
+            ecs-cli up --cluster-config app-builder --ecs-profile app-builder-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
@@ -124,6 +124,16 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           else
             echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
           fi
+
+          read -r -d '' INPUTS <<EOT2
+          {
+              "clusterName": "$(get_octopusvariable "app-builder")",
+              "name": "$(get_octopusvariable "app-builder")",
+              "awsAccount": "$(get_octopusvariable "${var.octopus_aws_account_id}")",
+          }
+          EOT2
+
+          new_octopustarget -n "$(get_octopusvariable "target_name")" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "$(get_octopusvariable "role")"
         EOT
       }
     }
