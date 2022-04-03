@@ -60,9 +60,12 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "##octopus[stdout-verbose]"
           docker pull amazon/aws-cli 2>&1
           docker pull imega/jq 2>&1
+          echo "##octopus[stdout-default]"
 
           # install the ecsctl tool
           if [[ ! -f /usr/local/bin/ecs-cli ]]; then
+              echo "Installing the ecs-cli tool"
+              echo "##octopus[stdout-verbose]"
               sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
               sudo chmod +x /usr/local/bin/ecs-cli
           fi
@@ -74,7 +77,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias jq="docker run --rm -i imega/jq"
 
           # Create the cluster using the instructions from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
-          EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .RoleName')
+          EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
           if [[ -z "$${EXISTING}" ]]; then
             echo "Creating IAM role"
             echo "##octopus[stdout-verbose]"
@@ -98,10 +101,14 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://build/ecsTaskExecutionRole.json
             aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
             echo "##octopus[stdout-default]"
+          else
+            echo "IAM role already exists with ARN $${EXISTING}"
           fi
 
-          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("app-builer"))')
+          # Find any existing cluster with the name "app-builder".
+          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builer"))')
 
+          # If the cluster does not exist, create it.
           if [[ -z "$${EXISTINGCLUSTER}" ]]; then
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
@@ -114,6 +121,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
             aws ec2 authorize-security-group-ingress --group-id $${SECURITYGROUP} --protocol tcp --port 80 --cidr 0.0.0.0/0
             echo "##octopus[stdout-default]"
+          else
+            echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
           fi
         EOT
       }
