@@ -205,3 +205,4 @@ runs:
         packages: octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
         wait_for_deployment: true
+        timeout: 1800
