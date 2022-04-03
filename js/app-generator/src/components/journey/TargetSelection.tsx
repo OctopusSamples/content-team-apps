@@ -43,9 +43,6 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("LAMBDA", "LAM")}>
                             {"AWS Lambda (Coming soon)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("STANDALONE", "STANDALONE")}>
-                            {"Download the code with no CI/CD configuration (Coming soon)"}
-                        </Button>
                     </Grid>
                 </Grid>
                 <Grid item md={3} xs={0}/>
