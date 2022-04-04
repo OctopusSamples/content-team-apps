@@ -156,6 +156,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias kubectl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY jshimko/kube-tools-aws kubectl"
           alias jq="docker run --rm -i imega/jq"
 
+          # Get the environment name, up to the first space
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           # Extract the current AWS account
           ACCOUNT=$(aws sts get-caller-identity --query "Account" --output text)
 
@@ -174,11 +179,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           eksctl utils associate-iam-oidc-provider \
               --region=${var.aws_region} \
-              --cluster=app-builder-${var.github_repo_owner} \
+              --cluster=app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} \
               --approve
 
           eksctl create iamserviceaccount \
-            --cluster=app-builder-${var.github_repo_owner} \
+            --cluster=app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} \
             --region=${var.aws_region} \
             --namespace=kube-system \
             --name=aws-load-balancer-controller \
@@ -186,7 +191,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             --override-existing-serviceaccounts \
             --approve
 
-          aws eks update-kubeconfig --name app-builder-${var.github_repo_owner} --kubeconfig /build/kubeconfig
+          aws eks update-kubeconfig --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --kubeconfig /build/kubeconfig
 
           kubectl apply \
               --kubeconfig=/build/kubeconfig \
@@ -239,11 +244,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
 
-          aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
-
           ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
+          aws eks describe-cluster --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\" \
