@@ -219,6 +219,17 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                           - ecs-tasks.amazonaws.com
                       Action:
                         - sts:AssumeRole
+                    # This is a copy of the AmazonECSTaskExecutionRolePolicy granting access to ECR and CloudWatch
+                    # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html
+                    - Effect: Allow
+                      Action:
+                        - ecr:GetAuthorizationToken
+                        - ecr:BatchCheckLayerAvailability
+                        - ecr:GetDownloadUrlForLayer
+                        - ecr:BatchGetImage
+                        - logs:CreateLogStream
+                        - logs:PutLogEvents
+                      Resource: "*"
                 Path: /
           # You can attach some policies here. Just add AmazonECSTaskExecutionRolePolicyArn as a parameter.
           #      ManagedPolicyArns:
