@@ -36,14 +36,14 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
   project_id = octopusdeploy_project.deploy_infrastructure_project.id
   step {
     condition           = "Success"
-    name                = "Create an EKS cluster"
+    name                = "Create an ECS cluster"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = []
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Create an EKS Cluster"
-      notes          = "Create an EKS cluster with eksctl"
+      name           = "Create an ECS Cluster"
+      notes          = "Create an ECS cluster with ecs-cli"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       properties     = {
@@ -66,8 +66,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           if [[ ! -f /usr/local/bin/ecs-cli ]]; then
               echo "Installing the ecs-cli tool"
               echo "##octopus[stdout-verbose]"
-              sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
-              sudo chmod +x /usr/local/bin/ecs-cli
+              curl --silent -Lo ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
+              chmod +x ecs-cli
           fi
           echo "##octopus[stdout-default]"
 
@@ -96,7 +96,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
                 }
               ]
             }
-            EOF
+          EOF
 
             aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://build/ecsTaskExecutionRole.json
             aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
@@ -113,9 +113,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
 
-            ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder --region $${AWS_DEFAULT_REGION}
-            ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-profile
-            ecs-cli up --cluster-config app-builder --ecs-profile app-builder-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+            ./ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder --region $${AWS_DEFAULT_REGION}
+            ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-profile
+            ./ecs-cli up --cluster-config app-builder --ecs-profile app-builder-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
@@ -125,13 +125,13 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
           fi
 
-          read -r -d '' INPUTS <<EOT2
+          read -r -d '' INPUTS <<EOF
           {
               "clusterName": "$(get_octopusvariable "app-builder")",
               "name": "$(get_octopusvariable "app-builder")",
               "awsAccount": "$(get_octopusvariable "${var.octopus_aws_account_id}")",
           }
-          EOT2
+          EOF
 
           new_octopustarget -n "$(get_octopusvariable "target_name")" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "$(get_octopusvariable "role")"
         EOT
