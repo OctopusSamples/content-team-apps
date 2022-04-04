@@ -156,6 +156,11 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           # https://stackoverflow.com/a/69643388/157605
           AWSTemplateFormatVersion: '2010-09-09'
           Resources:
+            CloudWatchLogsGroup:
+              Type: AWS::Logs::LogGroup
+              Properties:
+                LogGroupName: !Ref AWS::StackName
+                RetentionInDays: 14
             ServiceBackend:
               Type: AWS::ECS::Service
               Properties:
@@ -199,6 +204,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       - ContainerPort: 80
                         HostPort: 80
                         Protocol: tcp
+                    LogConfiguration:
+                      LogDriver: awslogs
+                      Options:
+                        awslogs-group: !Ref CloudWatchLogsGroup
+                        awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: backend
                 Family:
                   Ref: TaskDefinitionName
                 Cpu:
