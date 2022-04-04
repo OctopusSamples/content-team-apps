@@ -43,20 +43,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   project_id = octopusdeploy_project.deploy_backend_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Backend Service"
+    name                = "Deploy Application Lambda"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
-    target_roles        = ["Kubernetes Backend"]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Backend Service"
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Deploy Application Lambda"
+      notes          = "Deploy the task definition and service via CloudFormation"
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      worker_pool_id = var.octopus_worker_pool_id
       environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
+        var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
-      features = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
       package {
         name                      = local.package_name
         package_id                = var.octopus_docker_image
@@ -64,68 +62,115 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
       }
-      container {
-        feed_id = var.octopus_dockerhub_feed_id
-        image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
-      }
+
       properties = {
-        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
-        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"backend\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
-        "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"backend\"}",
-        "Octopus.Action.KubernetesContainers.DeploymentName" : "backend",
-        "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment",
-        "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
-        "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
-        "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/health/customers/GET\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
-        "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
-        "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
-        "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]",
-        "Octopus.Action.KubernetesContainers.Replicas" : "1",
-        "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1",
-        "Octopus.Action.KubernetesContainers.ServiceNameType" : "External",
-        "Octopus.Action.KubernetesContainers.ServiceType" : "LoadBalancer",
-        "Octopus.Action.KubernetesContainers.Tolerations" : "[]",
-        "OctopusUseBundledTooling" : "False",
-        "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
-        "Octopus.Action.KubernetesContainers.IngressName" : "backend-ingress",
-        "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/api/customers\",\"value\":\"web\",\"option\":\"\",\"option2\":\"ImplementationSpecific\"}]}}]",
-        "Octopus.Action.KubernetesContainers.ServiceName" : "backend-service",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
-      }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Display the Service URL"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = ["Kubernetes Backend"]
-    action {
-      action_type    = "Octopus.KubernetesRunScript"
-      name           = "Display the Service URL"
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      container {
-        feed_id = var.octopus_dockerhub_feed_id
-        image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
-      }
-      properties = {
-        "Octopus.Action.Script.ScriptSource" : "Inline"
-        "Octopus.Action.Script.Syntax" : "Bash"
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          LOADBALANCER_HOSTNAME=$(kubectl get service backend-service -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
-          echo "Open [http://$LOADBALANCER_HOSTNAME/api/customers](http://$LOADBALANCER_HOSTNAME/api/customers) to view the backend API."
-        EOT
-        "OctopusUseBundledTooling" : "False"
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          AWSTemplateFormatVersion: '2010-09-09'
+          Resources:
+            ServiceBackend:
+              Type: AWS::ECS::Service
+              Properties:
+                Cluster:
+                  Ref: ClusterName
+                TaskDefinition:
+                  Ref: TaskDefinitionBackend
+                DesiredCount: 1
+                EnableECSManagedTags: false
+                Tags: []
+                LaunchType: FARGATE
+                NetworkConfiguration:
+                  AwsvpcConfiguration:
+                    AssignPublicIp: ENABLED
+                    SecurityGroups:
+                      - !Ref SecurityGroup
+                    Subnets:
+                      - !Ref SubnetA
+                      - !Ref SubnetB
+                DeploymentConfiguration:
+                  MaximumPercent: 200
+                  MinimumHealthyPercent: 100
+              DependsOn: TaskDefinitionbackend
+            TaskDefinitionBackend:
+              Type: AWS::ECS::TaskDefinition
+              Properties:
+                ContainerDefinitions:
+                  - Essential: true
+                    Image: '#{Octopus.Action.Package[${local.package_name}].Image}'
+                    Name: backend
+                    ResourceRequirements: []
+                    EnvironmentFiles: []
+                    DisableNetworking: false
+                    DnsServers: []
+                    DnsSearchDomains: []
+                    ExtraHosts: []
+                    PortMappings:
+                      - ContainerPort: 80
+                        HostPort: 80
+                        Protocol: tcp
+                Family:
+                  Ref: TaskDefinitionName
+                Cpu:
+                  Ref: TaskDefinitionCPU
+                Memory:
+                  Ref: TaskDefinitionMemory
+                ExecutionRoleArn:
+                  Ref: TaskExecutionRolebackend
+                RequiresCompatibilities:
+                  - FARGATE
+                NetworkMode: awsvpc
+                Volumes: []
+                Tags: []
+                RuntimePlatform:
+                  CPUArchitecture: X86_64
+                  OperatingSystemFamily: LINUX
+            TaskExecutionRolebackend:
+              Type: AWS::IAM::Role
+              Properties:
+                AssumeRolePolicyDocument:
+                  Version: '2012-10-17'
+                  Statement:
+                    - Effect: Allow
+                      Principal:
+                        Service:
+                          - ecs-tasks.amazonaws.com
+                      Action:
+                        - sts:AssumeRole
+                Path: /
+                ManagedPolicyArns:
+                  - Ref: AmazonECSTaskExecutionRolePolicyArn
+          Parameters:
+            ClusterName:
+              Type: String
+              Default: app-builder
+            TaskDefinitionName:
+              Type: String
+              Default: backend
+            TaskDefinitionCPU:
+              Type: String
+              Default: '256'
+            TaskDefinitionMemory:
+              Type: String
+              Default: '512'
+            AmazonECSTaskExecutionRolePolicyArn:
+              Type: String
+            SubnetA:
+              Type: String
+            SubnetB:
+              Type: String
+            SecurityGroup:
+              Type: String
+            EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[]"
+        "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
