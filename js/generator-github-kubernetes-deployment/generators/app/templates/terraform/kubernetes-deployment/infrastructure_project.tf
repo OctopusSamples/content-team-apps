@@ -253,7 +253,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
-            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
             namespace=\"$(encode_servicemessagevalue "$${FIXED_ENVIRONMENT}-backend")\" \
@@ -300,7 +300,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
 
-          aws eks describe-cluster --name app-builder-${var.github_repo_owner} > clusterdetails.json
+          aws eks describe-cluster --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
@@ -309,7 +309,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Frontend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
-            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}")\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
             namespace=\"$(encode_servicemessagevalue "$${FIXED_ENVIRONMENT}-backend")\" \
