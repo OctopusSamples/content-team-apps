@@ -125,16 +125,17 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
           fi
 
+          # Create the dyanmic target.
+          # https://octopus.com/docs/infrastructure/deployment-targets/dynamic-infrastructure/new-octopustarget
           read -r -d '' INPUTS <<EOF
           {
               "clusterName": "app-builder",
-              "name": "app-builder",
-              "role": "ECS Cluster",
-              "awsAccount": "$(get_octopusvariable "${var.octopus_aws_account_id}")",
+              "awsAccount": "${var.octopus_aws_account_id}",
+              "region": "$${AWS_DEFAULT_REGION}"
           }
           EOF
 
-          new_octopustarget -n "$(get_octopusvariable "target_name")" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "$(get_octopusvariable "role")"
+          new_octopustarget -n "app-builder" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "ECS Cluster"
         EOT
       }
     }
