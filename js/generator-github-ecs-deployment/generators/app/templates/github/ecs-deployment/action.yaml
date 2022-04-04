@@ -119,7 +119,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Deploy%20Backend%20Service" "Deploy%20EKS%20Cluster")
+        declare -a arr=("Deploy%20Backend%20Service" "Create%20ECS%20Cluster")
         
         for i in "${arr[@]}"
         do
@@ -158,7 +158,7 @@ runs:
       run: >
         octo create-release
         --project "Create ECS Cluster"
-        --deployTo "Development"
+        --deployTo "Development (App)"
         --waitForDeployment
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
