@@ -55,6 +55,7 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
 
 locals {
   package_name = "backend"
+  port         = "8083"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend" {
@@ -194,15 +195,15 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     ResourceRequirements: []
                     Environment:
                       - Name: PORT
-                        Value: !!str "80"
+                        Value: !!str "${local.port}"
                     EnvironmentFiles: []
                     DisableNetworking: false
                     DnsServers: []
                     DnsSearchDomains: []
                     ExtraHosts: []
                     PortMappings:
-                      - ContainerPort: 80
-                        HostPort: 80
+                      - ContainerPort: ${local.port}
+                        HostPort: ${local.port}
                         Protocol: tcp
                     LogConfiguration:
                       LogDriver: awslogs
