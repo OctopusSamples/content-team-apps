@@ -308,6 +308,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       notes          = "Queries the task for the public IP address."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
       properties     = {
         "OctopusUseBundledTooling" : "False",
         "Octopus.Action.Script.ScriptSource" : "Inline",
