@@ -125,7 +125,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
-            aws ec2 authorize-security-group-ingress --group-id $${SECURITYGROUP} --protocol tcp --port 80 --cidr 0.0.0.0/0
+            aws ec2 authorize-security-group-ingress --group-id $${SECURITYGROUP} --protocol tcp --port 8083 --cidr 0.0.0.0/0
             echo "##octopus[stdout-default]"
           else
             echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
