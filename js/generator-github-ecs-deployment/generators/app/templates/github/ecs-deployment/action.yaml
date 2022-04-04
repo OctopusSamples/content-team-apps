@@ -157,7 +157,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy EKS Cluster"
+        --project "Create ECS Cluster"
         --deployTo "Development"
         --waitForDeployment
         --server ${{ inputs.octopus_server }}

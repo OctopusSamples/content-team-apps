@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_infrastructure_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_infrastructure_lifecycle_id
-  name                                 = "Deploy ECS Cluster"
+  name                                 = "Create ECS Cluster"
   project_group_id                     = octopusdeploy_project_group.infrastructure_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -127,8 +127,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           read -r -d '' INPUTS <<EOF
           {
-              "clusterName": "$(get_octopusvariable "app-builder")",
-              "name": "$(get_octopusvariable "app-builder")",
+              "clusterName": "app-builder",
+              "name": "app-builder",
+              "role": "ECS Cluster",
               "awsAccount": "$(get_octopusvariable "${var.octopus_aws_account_id}")",
           }
           EOF
