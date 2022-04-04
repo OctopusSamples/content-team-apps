@@ -92,6 +92,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
 
+          # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
+          # as we'll place our new ECS services in them.
           EXISTINGROLE=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
           SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[0].SubnetId')
           SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[1].SubnetId')
@@ -185,6 +187,9 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     Image: '#{Octopus.Action.Package[${local.package_name}].Image}'
                     Name: backend
                     ResourceRequirements: []
+                    Environment:
+                      - Name: PORT
+                        Value: !!str "80"
                     EnvironmentFiles: []
                     DisableNetworking: false
                     DnsServers: []
@@ -221,21 +226,23 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                           - ecs-tasks.amazonaws.com
                       Action:
                         - sts:AssumeRole
-                    # This is a copy of the AmazonECSTaskExecutionRolePolicy granting access to ECR and CloudWatch
-                    # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html
-                    - Effect: Allow
-                      Action:
-                        - ecr:GetAuthorizationToken
-                        - ecr:BatchCheckLayerAvailability
-                        - ecr:GetDownloadUrlForLayer
-                        - ecr:BatchGetImage
-                        - logs:CreateLogStream
-                        - logs:PutLogEvents
-                      Resource: "*"
+                Policies:
+                  # This is a copy of the AmazonECSTaskExecutionRolePolicy granting access to ECR and CloudWatch
+                  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html
+                  - PolicyName: ecrcloudwatch
+                    PolicyDocument:
+                      Version: "2012-10-17"
+                      Statement:
+                        - Effect: Allow
+                          Action:
+                            - ecr:GetAuthorizationToken
+                            - ecr:BatchCheckLayerAvailability
+                            - ecr:GetDownloadUrlForLayer
+                            - ecr:BatchGetImage
+                            - logs:CreateLogStream
+                            - logs:PutLogEvents
+                          Resource: "*"
                 Path: /
-          # You can attach some policies here. Just add AmazonECSTaskExecutionRolePolicyArn as a parameter.
-          #      ManagedPolicyArns:
-          #        - Ref: AmazonECSTaskExecutionRolePolicyArn
           Parameters:
             ClusterName:
               Type: String
@@ -255,7 +262,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             SecurityGroup:
               Type: String
-            EOT
+          Outputs:
+            ServiceName:
+              Description: The service name
+              Value: !GetAtt
+                - ServiceBackend
+                - Name
+        EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
