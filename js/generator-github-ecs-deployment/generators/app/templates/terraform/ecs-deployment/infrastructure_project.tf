@@ -122,8 +122,10 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             ./ecs-cli configure --cluster app-builder-${var.github_repo_owner} --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner} --region $${AWS_DEFAULT_REGION}
             ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-${var.github_repo_owner}-profile
             ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner} --ecs-profile app-builder-${var.github_repo_owner}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+            RESULT=$?
+            cat output.txt
 
-            if [[ $? -ne 0 ]]; then
+            if [[ $RESULT -ne 0 ]]; then
               echo "##octopus[stdout-default]"
               echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
               exit 1

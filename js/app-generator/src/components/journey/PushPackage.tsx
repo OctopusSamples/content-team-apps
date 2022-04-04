@@ -63,10 +63,17 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     /**
      * Determines if the values we have allow for a valid repo to be created.
-     * We can't continue if there is no generator defined.
+     * We can't continue if there is no generator defined, or if the cookies holding
+     * the api and secret keys have expired.
      */
     const selectionsValid = () => {
-        return props.machine.state && !!props.machine.state.context.generator;
+        if (props.machine.state) {
+          return !!props.machine.state.context.generator &&
+              !!Cookies.get("awsSecretKey") &&
+              !!Cookies.get("octopusApiKey");
+        }
+
+        return false;
     }
 
     const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
