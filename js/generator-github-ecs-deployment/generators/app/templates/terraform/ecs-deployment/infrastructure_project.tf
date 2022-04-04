@@ -124,6 +124,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner} --ecs-profile app-builder-${var.github_repo_owner}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
 
             if [[ $? -ne 0 ]]; then
+              echo "##octopus[stdout-default]"
               echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
               exit 1
             fi
