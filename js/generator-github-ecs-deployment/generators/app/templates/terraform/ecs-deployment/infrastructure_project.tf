@@ -135,7 +135,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           }
           EOF
 
-          new_octopustarget -n "app-builder" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "ECS Cluster"
+          echo "Creating ECS cluster"
+          echo "##octopus[stdout-verbose]"
+          new_octopustarget --update-if-existing -n "app-builder" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "ECS Cluster"
         EOT
       }
     }
