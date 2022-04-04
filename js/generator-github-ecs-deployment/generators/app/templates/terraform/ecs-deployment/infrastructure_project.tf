@@ -117,7 +117,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           fi
 
           # Find any existing cluster with the name "app-builder".
-          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builder-${var.github_repo_owner}"))')
+          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r ".clusterArns[] | select(. | endswith(\"/app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}\"))")
 
           # If the cluster does not exist, create it.
           if [[ -z "$${EXISTINGCLUSTER}" ]]; then

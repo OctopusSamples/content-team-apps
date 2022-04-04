@@ -326,7 +326,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           TASK=$(aws ecs list-tasks --cluster app-builder-${var.github_repo_owner} | jq -r '.taskArns[0]')
 
           # Get the network interface
-          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value)
+          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value)')
 
           # Get the public IP
           IP=$(aws ec2 describe-network-interfaces --network-interface-ids $${ENI} | jq -r '.NetworkInterfaces[0].Association.PublicIp')
