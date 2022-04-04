@@ -55,7 +55,12 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody": <<-EOT
-          # Get the containers
+          # Get the containers used as CLI tools.
+          # Docker provides a useful, and (nearly) universal package manager for CLI tooling. Images are downloaded
+          # and cached as a usual part of the Docker workflow, providing us with a performant solution that reduces
+          # the need to redownload images when reusing workers. It also means we don't have to worry about modifying
+          # workers in the same way that we would if we needed to download raw executables and save them in the shared
+          # file system.
           echo "Downloading Docker images"
           echo "##octopus[stdout-verbose]"
           docker pull amazon/aws-cli 2>&1
@@ -63,7 +68,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull weaveworks/eksctl 2>&1
           echo "##octopus[stdout-default]"
 
-          # Alias the docker run commands
+          # Alias the docker run commands. This allows us to run the Docker images like regular CLI commands.
           shopt -s expand_aliases
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"

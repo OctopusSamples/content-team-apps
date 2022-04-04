@@ -55,14 +55,20 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody": <<-EOT
-          # Get the containers
+          # Get the containers used as CLI tools.
+          # Docker provides a useful, and (nearly) universal package manager for CLI tooling. Images are downloaded
+          # and cached as a usual part of the Docker workflow, providing us with a performant solution that reduces
+          # the need to redownload images when reusing workers. It also means we don't have to worry about modifying
+          # workers in the same way that we would if we needed to download raw executables and save them in the shared
+          # file system.
           echo "Downloading Docker images"
           echo "##octopus[stdout-verbose]"
           docker pull amazon/aws-cli 2>&1
           docker pull imega/jq 2>&1
           echo "##octopus[stdout-default]"
 
-          # install the ecsctl tool
+          # Install the ecsctl tool. Unfortunately there is no officially maintained or third party Docker image for
+          # this tool.
           if [[ ! -f /usr/local/bin/ecs-cli ]]; then
               echo "Installing the ecs-cli tool"
               echo "##octopus[stdout-verbose]"
@@ -71,7 +77,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           fi
           echo "##octopus[stdout-default]"
 
-          # Alias the docker run commands
+          # Alias the docker run commands. This allows us to run the Docker images like regular CLI commands.
           shopt -s expand_aliases
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
@@ -122,9 +128,14 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               exit 1
             fi
 
+            # Extract the VPC and subnets from the ecs-cli output text.
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
+
+            # Find the security group associated with the VPC.
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
+
+            # Expose port 8083, which is used by the sample backend service.
             aws ec2 authorize-security-group-ingress --group-id $${SECURITYGROUP} --protocol tcp --port 8083 --cidr 0.0.0.0/0
             echo "##octopus[stdout-default]"
           else
