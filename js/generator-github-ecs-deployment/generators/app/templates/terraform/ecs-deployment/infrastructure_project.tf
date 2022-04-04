@@ -112,16 +112,16 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           fi
 
           # Find any existing cluster with the name "app-builder".
-          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builder"))')
+          EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns[] | select(. | endswith("/app-builder-${var.github_repo_owner}"))')
 
           # If the cluster does not exist, create it.
           if [[ -z "$${EXISTINGCLUSTER}" ]]; then
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
 
-            ./ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder --region $${AWS_DEFAULT_REGION}
-            ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-profile
-            ./ecs-cli up --cluster-config app-builder --ecs-profile app-builder-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+            ./ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner} --region $${AWS_DEFAULT_REGION}
+            ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-${var.github_repo_owner}-profile
+            ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner} --ecs-profile app-builder-${var.github_repo_owner}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
 
             if [[ $? -ne 0 ]]; then
               echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
@@ -144,9 +144,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           # Create the dyanmic target.
           # https://octopus.com/docs/infrastructure/deployment-targets/dynamic-infrastructure/new-octopustarget
+          # Note that the ECS deployments are done via CloudFormation in this example project, which does not require
+          # an ECS target. However, if you wish to use the "Deploy Amazon ECS Service", this target can be used.
           read -r -d '' INPUTS <<EOF
           {
-              "clusterName": "app-builder",
+              "clusterName": "app-builder-${var.github_repo_owner}",
               "awsAccount": "${var.octopus_aws_account_id}",
               "region": "$${AWS_DEFAULT_REGION}"
           }

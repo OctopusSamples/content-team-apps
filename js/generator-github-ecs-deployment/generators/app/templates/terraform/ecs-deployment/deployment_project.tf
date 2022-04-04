@@ -95,9 +95,9 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
           # as we'll place our new ECS services in them.
-          SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[0].SubnetId')
-          SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[1].SubnetId')
-          VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Vpcs[0].VpcId')
+          SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}" | jq -r '.Subnets[0].SubnetId')
+          SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}" | jq -r '.Subnets[1].SubnetId')
+          VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}" | jq -r '.Vpcs[0].VpcId')
           SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
 
           echo "Found Security Group: $${SECURITYGROUP}"
@@ -255,7 +255,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder
+              Default: app-builder-${var.github_repo_owner}
             TaskDefinitionName:
               Type: String
               Default: backend
@@ -278,14 +278,61 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 - ServiceBackend
                 - Name
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder-${var.github_repo_owner}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"app-builder-${var.github_repo_owner}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Find the Task IP Address"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = []
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Find the Task IP Address"
+      notes          = "Queries the task for the public IP address."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      properties     = {
+        "OctopusUseBundledTooling" : "False",
+        "Octopus.Action.Script.ScriptSource" : "Inline",
+        "Octopus.Action.Script.Syntax" : "Bash",
+        "Octopus.Action.Aws.AssumeRole" : "False",
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account",
+        "Octopus.Action.Aws.Region" : var.aws_region,
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          # Get the containers
+          echo "Downloading Docker images"
+          echo "##octopus[stdout-verbose]"
+          docker pull amazon/aws-cli 2>&1
+          docker pull imega/jq 2>&1
+          echo "##octopus[stdout-default]"
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+          alias jq="docker run --rm -i imega/jq"
+
+          # Get the first task on the cluster
+          TASK=$(aws ecs list-tasks --cluster app-builder-${var.github_repo_owner} | jq -r '.taskArns[0]')
+
+          # Get the network interface
+          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value)
+
+          # Get the public IP
+          IP=$(aws ec2 describe-network-interfaces --network-interface-ids $${ENI} | jq -r '.NetworkInterfaces[0].Association.PublicIp')
+
+          echo "Open [http://$${IP}:8083/api/customers](http://$${IP}:8083/api/customers) to view the backend API."
+        EOT
       }
     }
   }
