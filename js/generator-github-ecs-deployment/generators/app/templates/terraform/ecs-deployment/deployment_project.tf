@@ -95,25 +95,22 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
           # as we'll place our new ECS services in them.
-          EXISTINGROLE=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
           SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[0].SubnetId')
           SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Subnets[1].SubnetId')
           VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder" | jq -r '.Vpcs[0].VpcId')
           SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
 
-          echo "Found Role ARN: $${EXISTINGROLE}"
           echo "Found Security Group: $${SECURITYGROUP}"
           echo "Found Subnet A: $${SUBNETA}"
           echo "Found Subnet B: $${SUBNETB}"
           echo "Found VPC: $${VPC}"
 
-          set_octopusvariable "Role" "$${EXISTINGROLE}"
           set_octopusvariable "SecurityGroup" "$${SECURITYGROUP}"
           set_octopusvariable "SubnetA" "$${SUBNETA}"
           set_octopusvariable "SubnetB" "$${SUBNETB}"
           set_octopusvariable "Vpc" "$${VPC}"
 
-          if [[ -z $${EXISTINGROLE} || -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
+          if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
             echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
             exit 1
           fi
