@@ -329,14 +329,36 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
 
+          # Get the environmen name (or at least up until the first space)
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           # Get the first task on the cluster
-          TASK=$(aws ecs list-tasks --cluster app-builder-${var.github_repo_owner} | jq -r '.taskArns[0]')
+          TASK=$(aws ecs list-tasks --cluster app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
+          echo "Found Task $${TASK}"
+
+          if [[ "$${TASK}" == "null" || -z "$${TASK}" ]]; then
+            echo "Unable to find the task"
+            exit 0
+          fi
 
           # Get the network interface
-          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value')
+          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value')
+          echo "Found Elastic Network Interface $${ENI}"
+
+          if [[ "$${ENI}" == "null" || -z "$${ENI}" ]]; then
+            echo "Unable to find the ENI"
+            exit 0
+          fi
 
           # Get the public IP
           IP=$(aws ec2 describe-network-interfaces --network-interface-ids $${ENI} | jq -r '.NetworkInterfaces[0].Association.PublicIp')
+
+          if [[ "$${IP}" == "null" || -z "$${IP}" ]]; then
+            echo "Unable to find the IP"
+            exit 0
+          fi
 
           echo "Open [http://$${IP}:8083/api/customers](http://$${IP}:8083/api/customers) to view the backend API."
         EOT
