@@ -206,3 +206,4 @@ runs:
         space: "Content Team"
         wait_for_deployment: true
         timeout: 1800
+        release_number: ${{ steps.determine_version.outputs.semVer }}
