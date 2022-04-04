@@ -148,7 +148,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${var.github_repo_owner}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # A handy checklist for accessing private ECR repositories:
           # https://stackoverflow.com/a/69643388/157605
