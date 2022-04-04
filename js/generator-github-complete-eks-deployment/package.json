@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-eks-deployment",
-  "version": "0.1.100",
+  "version": "0.1.101",
   "description": "",
   "files": [
     "generators"
@@ -14,7 +14,7 @@
     "@octopus-content-team/generator-github-shared-space": "0.1.13",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.17",
     "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.56",
-    "@octopus-content-team/generator-aws-ecr": "0.1.15"
+    "@octopus-content-team/generator-aws-ecr": "0.1.16"
   },
   "scripts": {
     "pub": "npm version patch --force && npm publish"
