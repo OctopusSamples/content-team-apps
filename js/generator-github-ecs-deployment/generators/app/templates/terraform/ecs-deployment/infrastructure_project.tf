@@ -119,7 +119,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
 
-            ./ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner} --region $${AWS_DEFAULT_REGION}
+            ./ecs-cli configure --cluster app-builder-${var.github_repo_owner} --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner} --region $${AWS_DEFAULT_REGION}
             ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-${var.github_repo_owner}-profile
             ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner} --ecs-profile app-builder-${var.github_repo_owner}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
 
