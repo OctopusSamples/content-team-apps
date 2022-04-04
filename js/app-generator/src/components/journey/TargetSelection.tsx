@@ -40,7 +40,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         <h2>Where are you deploying the microservice?</h2>
                         <p>
                             Select the platform that you wish to deploy the sample microservice application to using
-                            Octopus. If you only want to download the application code, select the last option.
+                            Octopus.
                         </p>
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
