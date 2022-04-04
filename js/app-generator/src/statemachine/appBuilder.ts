@@ -39,8 +39,7 @@ function getInitialStateContext() {
             generator: state.generator || "",
             developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
-            githubRepo: state.githubRepo || "",
-            octopusApiKey: state.octopusApiKey || ""
+            githubRepo: state.githubRepo || ""
         }
     }
 
@@ -53,8 +52,7 @@ function getInitialStateContext() {
         generator: "",
         developmentFramework: "",
         octopusServer: "",
-        githubRepo: "",
-        octopusApiKey: ""
+        githubRepo: ""
     }
 }
 
@@ -143,11 +141,7 @@ export interface StateContext {
     /**
      * The github repository that was just populated
      */
-    githubRepo: string,
-    /**
-     * The Octopus server API key
-     */
-    octopusApiKey: string
+    githubRepo: string
 }
 
 /**
