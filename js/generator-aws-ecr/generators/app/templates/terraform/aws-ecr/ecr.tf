@@ -10,3 +10,7 @@ resource "aws_ecr_repository" "aws_ecr_repository" {
 output "aws_ecr_repository_url" {
   value = aws_ecr_repository.aws_ecr_repository.repository_url
 }
+
+output "aws_ecr_repository_name" {
+  value = aws_ecr_repository.aws_ecr_repository.name
+}

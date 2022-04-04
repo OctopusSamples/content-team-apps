@@ -2,7 +2,7 @@
   "name": "@octopus-content-team/generator-github-ecs-deployment",
   "description": "A Yeoman generator to build a ECS deployment project.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
-  "version": "0.1.8",
+  "version": "0.1.17",
   "files": [
     "generators"
   ],

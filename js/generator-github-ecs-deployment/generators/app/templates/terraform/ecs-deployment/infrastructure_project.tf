@@ -116,6 +116,12 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             ./ecs-cli configure --cluster app-builder --default-launch-type FARGATE --config-name app-builder --region $${AWS_DEFAULT_REGION}
             ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-profile
             ./ecs-cli up --cluster-config app-builder --ecs-profile app-builder-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+
+            if [[ $? -ne 0 ]]; then
+              echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
+              exit 1
+            fi
+
             VPC=$(awk '/VPC created:/{print $NF}' output.txt)
             SUBNETS=$(awk '/Subnet created:/{print $NF}' output.txt)
             SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')

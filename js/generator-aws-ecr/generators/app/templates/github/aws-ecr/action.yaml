@@ -39,6 +39,9 @@ outputs:
   aws_ecr_repository_url:
     description: 'The ECR URL'
     value: ${{ steps.aws_ecr_repository_url.outputs.stdout }}
+  aws_ecr_repository_name:
+    description: 'The ECR Name'
+    value: ${{ steps.aws_ecr_repository_name.outputs.stdout }}
   ecr_feed_id:
     description: 'The ECR Feed ID'
     value: ${{ steps.ecr_feed_id.outputs.stdout }}
@@ -119,5 +122,14 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform output -raw ecr_feed_id
+      working-directory: terraform/aws-ecr
+      shell: bash
+
+    - name: Terraform Collect ECR URL
+      id: aws_ecr_repository_name
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw aws_ecr_repository_name
       working-directory: terraform/aws-ecr
       shell: bash
