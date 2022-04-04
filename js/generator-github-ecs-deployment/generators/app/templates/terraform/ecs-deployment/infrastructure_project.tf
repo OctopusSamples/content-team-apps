@@ -82,6 +82,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias jq="docker run --rm -i imega/jq"
 
+          # Get the environmen name (or at least up until the first space)
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           # Create the cluster using the instructions from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
           EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
           if [[ -z "$${EXISTING}" ]]; then
@@ -119,9 +124,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "Creating ECS cluster"
             echo "##octopus[stdout-verbose]"
 
-            ./ecs-cli configure --cluster app-builder-${var.github_repo_owner} --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner} --region $${AWS_DEFAULT_REGION}
-            ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-${var.github_repo_owner}-profile
-            ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner} --ecs-profile app-builder-${var.github_repo_owner}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
+            ./ecs-cli configure --cluster app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --default-launch-type FARGATE --config-name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --region $${AWS_DEFAULT_REGION}
+            ./ecs-cli configure profile --access-key $${AWS_ACCESS_KEY_ID} --secret-key $${AWS_SECRET_ACCESS_KEY} --profile-name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}-profile
+            ./ecs-cli up --cluster-config app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --ecs-profile app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}-profile --tags 'CreatedBy=AppBuilder,TargetType=ECS' > output.txt
             RESULT=$?
             cat output.txt
 
@@ -151,7 +156,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # an ECS target. However, if you wish to use the "Deploy Amazon ECS Service", this target can be used.
           read -r -d '' INPUTS <<EOF
           {
-              "clusterName": "app-builder-${var.github_repo_owner}",
+              "clusterName": "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}",
               "awsAccount": "${var.octopus_aws_account_id}",
               "region": "$${AWS_DEFAULT_REGION}"
           }
