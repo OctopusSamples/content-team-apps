@@ -78,6 +78,7 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
                             <p>
                                 The account associated with the API key must have the <strong>SpaceCreate</strong> permission.
                             </p>
+                            <h3>Octopus API Key</h3>
                             <FormControl error variant="standard" sx={formElements}>
                                 <TextField
                                     disabled={buttonDisabled}

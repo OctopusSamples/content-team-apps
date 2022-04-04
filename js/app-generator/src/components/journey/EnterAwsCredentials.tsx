@@ -110,6 +110,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 href={"https://github.com/OctopusSamples/content-team-apps/wiki/App-Builder-ECS-Sample-Policy"}>here</a>.
                             </p>
                         }
+                        <h3>AWS Credentials</h3>
                         <Grid container={true} className={classes.row} sx={formContainer}>
                             <Grid md={3} xs={12} container={true}>
                                 <FormLabel sx={formElements}>Access Key</FormLabel>
