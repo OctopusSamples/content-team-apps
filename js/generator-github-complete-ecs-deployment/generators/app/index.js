@@ -45,8 +45,8 @@ module.exports = class extends Generator {
         const repository = "octopus-microservice" + (framework ? "-" + framework : "");
 
         this.fs.copyTpl(
-            this.templatePath('.github/workflows/eks-deployment.yaml'),
-            this.destinationPath('.github/workflows/eks-deployment.yaml'),
+            this.templatePath('.github/workflows/ecs-deployment.yaml'),
+            this.destinationPath('.github/workflows/ecs-deployment.yaml'),
             {
                 octopus_space: spaceName,
                 s3_bucket_suffix: this.options["s3BucketSuffix"],
