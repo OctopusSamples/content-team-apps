@@ -131,6 +131,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     }
 
     const pushPackage = () => {
+        if (!selectionsValid()) {
+            props.machine.send("ERROR");
+            return;
+        }
 
         setButtonDisabled(true);
 
@@ -179,7 +183,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Click the next button to configure your CI/CD pipeline.
                         </p>
-                        <Button sx={nextButtonStyle} variant="outlined" disabled={!selectionsValid() || buttonDisabled} onClick={pushPackage}>
+                        <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={pushPackage}>
                             {"Next >"}
                         </Button>
                     </Grid>
