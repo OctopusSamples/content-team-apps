@@ -115,6 +115,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "SubnetB" "$${SUBNETB}"
           set_octopusvariable "Vpc" "$${VPC}"
           set_octopusvariable "ClusterName" "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}"
+          set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
 
           if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
             echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
@@ -154,7 +155,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${var.github_repo_owner}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${var.github_repo_owner}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # A handy checklist for accessing private ECR repositories:
           # https://stackoverflow.com/a/69643388/157605
