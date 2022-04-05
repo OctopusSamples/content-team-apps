@@ -37,3 +37,8 @@ variable "github_repo_owner" {
   type = string
   nullable = false
 }
+
+variable "platform" {
+  type = string
+  nullable = false
+}

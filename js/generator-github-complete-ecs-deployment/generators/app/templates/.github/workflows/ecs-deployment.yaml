@@ -75,6 +75,7 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
           github_repo: ${{ github.repository }}
           github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
 
       - name: Create ECS Deployment Project
         uses: ./github/ecs-deployment
