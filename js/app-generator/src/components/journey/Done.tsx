@@ -43,14 +43,14 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             The sample application is being pushed to <a href={"https://github.com/?q=" + props.machine.state.context.githubRepo} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
                             repository called <strong>{props.machine.state.context.githubRepo}</strong>. This repository
-                            will take a few seconds to be created.
-                        </p>
-                        <p>
-                            In a minute or so the sample project files will be uploaded and the initial GitHub Actions
-                            workflow will start automatically.
+                            will take a few seconds to be created. In a minute or so the sample project files will be
+                            uploaded and the initial GitHub Actions workflow will start automatically.
                         </p>
                         <p>
                             <img src={"repo.png"} alt={"GitHub Repo"}/>
+                        </p>
+                        <p>
+                            <img src={"github-workflow.png"} alt={"GitHub Workflow"}/>
                         </p>
                         <p>
                             Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform}</strong> and
