@@ -345,6 +345,7 @@ step "Deploy Pipeline Backend" {
                           GITHUB_LOGIN_PAGE: !Ref GithubLoginPage
                           COGNITO_AUDIT_CLIENT_ID: !Ref CognitoAuditClientId
                           COGNITO_AUDIT_CLIENT_SECRET: !Ref CognitoAuditClientSecret
+                          COGNITO_JWK: !Ref CognitoJwk
                           COGNITO_SERVICE: !Ref CognitoService
                           AUDIT_SERVICE: !Ref AuditService
                           COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_ID: !Ref ServiceBusProxyClientId
