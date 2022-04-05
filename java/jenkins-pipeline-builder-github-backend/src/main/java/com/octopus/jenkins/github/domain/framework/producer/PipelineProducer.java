@@ -2,7 +2,9 @@ package com.octopus.jenkins.github.domain.framework.producer;
 
 import com.octopus.builders.PipelineBuilder;
 import com.octopus.features.AdminJwtGroupFeature;
+import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
 import com.octopus.jenkins.shared.builders.generic.GenericBuilder;
 import com.octopus.jenkins.shared.builders.go.GoBuilder;
@@ -22,6 +24,7 @@ import com.octopus.jenkins.github.domain.features.ServiceBusCognitoConfig;
 import com.octopus.jenkins.github.infrastructure.client.CognitoClient;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtValidator;
+import com.octopus.jwt.impl.JoseJwtInspector;
 import com.octopus.jwt.impl.JwtValidatorImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
@@ -264,6 +267,25 @@ public class PipelineProducer {
   @Produces
   public JwtValidator getJwtValidator() {
     return new JwtValidatorImpl();
+  }
+
+  /**
+   * Produces the JWT verification service.
+   *
+   * @return An implementation of JwtVerifier.
+   */
+  @ApplicationScoped
+  @Produces
+  public JwtInspector getJwtInspector(
+      CognitoJwkBase64Feature cognitoJwkBase64Feature,
+      DisableSecurityFeature disableSecurityFeature,
+      JwtValidator jwtValidator,
+      MicroserviceNameFeature microserviceNameFeature) {
+    return new JoseJwtInspector(
+        cognitoJwkBase64Feature,
+        disableSecurityFeature,
+        jwtValidator,
+        microserviceNameFeature);
   }
 
   /**
