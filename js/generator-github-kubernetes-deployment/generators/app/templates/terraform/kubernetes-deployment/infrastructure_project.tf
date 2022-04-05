@@ -83,7 +83,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # The AWS docs at https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html say to use the "-it" docker argument.
           # This results in errors, described at https://github.com/moby/moby/issues/30137#issuecomment-736955494.
           # So we just use "-i".
-          INDEX=$(aws eks list-clusters | jq '.clusters | index("app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")')
+          INDEX=$(aws eks list-clusters | jq ".clusters | index(\"app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}\")")
 
           # If the cluster does not exist, create it.
           if [[ $INDEX == "null" ]]; then
