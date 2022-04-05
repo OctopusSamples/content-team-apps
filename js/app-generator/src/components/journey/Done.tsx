@@ -50,9 +50,15 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             workflow will start automatically.
                         </p>
                         <p>
+                            <img src={"repo.png"} alt={"GitHub Repo"}/>
+                        </p>
+                        <p>
                             Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform}</strong> and
                             ending with your GitHub account name in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will
                             be populated with a sample project and all other associated resources to complete a deployment.
+                        </p>
+                        <p>
+                            <img src={"octopus-space.png"} alt={"Octopus Space"}/>
                         </p>
                         <p>
                             If you would like to share some feedback about the App Builder, feel free to leave a comment
