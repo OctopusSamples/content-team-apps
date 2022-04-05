@@ -163,4 +163,5 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
+        --deploymentTimeout "00:30:00"
       shell: bash
