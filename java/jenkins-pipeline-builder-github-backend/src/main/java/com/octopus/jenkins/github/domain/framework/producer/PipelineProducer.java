@@ -1,6 +1,8 @@
 package com.octopus.jenkins.github.domain.framework.producer;
 
 import com.octopus.builders.PipelineBuilder;
+import com.octopus.features.AdminJwtGroupFeature;
+import com.octopus.features.DisableSecurityFeature;
 import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
 import com.octopus.jenkins.shared.builders.generic.GenericBuilder;
 import com.octopus.jenkins.shared.builders.go.GoBuilder;
@@ -18,6 +20,9 @@ import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.jenkins.github.domain.features.ServiceBusCognitoConfig;
 import com.octopus.jenkins.github.infrastructure.client.CognitoClient;
+import com.octopus.jwt.JwtInspector;
+import com.octopus.jwt.JwtValidator;
+import com.octopus.jwt.impl.JwtValidatorImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
@@ -28,6 +33,8 @@ import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.oauth.impl.OauthClientCredsAccessorImpl;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
+import com.octopus.utilties.PartitionIdentifier;
+import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import javax.crypto.NoSuchPaddingException;
@@ -246,5 +253,30 @@ public class PipelineProducer {
   @Produces
   public OauthClientCredsAccessor getOauthClientCredsAccessor() {
     return new OauthClientCredsAccessorImpl(serviceBusCognitoConfig, cognitoClient);
+  }
+
+  /**
+   * Produces the JWT validator.
+   *
+   * @return An implementation of JwtValidator.
+   */
+  @ApplicationScoped
+  @Produces
+  public JwtValidator getJwtValidator() {
+    return new JwtValidatorImpl();
+  }
+
+  /**
+   * Produces the data partition identifier service.
+   *
+   * @return An implementation of PartitionIdentifier.
+   */
+  @ApplicationScoped
+  @Produces
+  public PartitionIdentifier getPartitionIdentifier(
+      JwtInspector jwtInspector,
+      AdminJwtGroupFeature adminJwtGroupFeature,
+      DisableSecurityFeature disableSecurityFeature) {
+    return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
   }
 }

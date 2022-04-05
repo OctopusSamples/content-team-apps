@@ -2,14 +2,17 @@ package com.octopus.githubactions.github.domain.servicebus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
+import com.octopus.Constants;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.github.GlobalConstants;
 import com.octopus.githubactions.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.github.domain.framework.jsonapi.JsonApiConverter;
 import com.octopus.githubactions.github.infrastructure.client.ServiceBusProxyClient;
 import com.octopus.oauth.OauthClientCredsAccessor;
+import com.octopus.utilties.PartitionIdentifier;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -37,6 +40,9 @@ public class ServiceBusMessageGenerator {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
+  @Inject
+  PartitionIdentifier partitionIdentifier;
+
   /**
    * Create an audit event.
    *
@@ -51,6 +57,11 @@ public class ServiceBusMessageGenerator {
       @NonNull final String routingHeaders,
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
+
+    // Any testing in another data partition won't be recorded in upstream services
+    if (!Constants.DEFAULT_PARTITION.equals(partitionIdentifier.getPartition(List.of(dataPartitionHeaders), authHeaders))) {
+      return;
+    }
 
     oauthClientCredsAccessor.getAccessToken(GlobalConstants.LOGINMESSAGE_SCOPE)
         .andThenTry(auditAccessToken -> {
