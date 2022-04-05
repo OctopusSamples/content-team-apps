@@ -33,7 +33,7 @@ module.exports = class extends Generator {
         this.composeWith(
             require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'), args);
         this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-ecs-deployment/generators/app'), args);
+            require.resolve('@octopus-content-team/generator-github-kubernetes-deployment/generators/app'), args);
         this.composeWith(
             require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), args);
     }
