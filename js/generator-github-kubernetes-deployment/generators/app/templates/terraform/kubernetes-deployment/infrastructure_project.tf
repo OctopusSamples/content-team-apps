@@ -172,7 +172,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "Installing ALB Ingress Controller"
           echo "##octopus[stdout-verbose]"
           # https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
-          curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.1/docs/install/iam_policy.json 2>&1
+          curl --silent -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.1/docs/install/iam_policy.json 2>&1
 
           POLICY_EXISTS=$(aws iam list-policies | jq '.Policies[] | select (.PolicyName == "AWSLoadBalancerControllerIAMPolicy")')
 
