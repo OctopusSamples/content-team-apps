@@ -5,6 +5,10 @@ import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
+import com.octopus.features.AdminJwtGroupFeature;
+import com.octopus.features.CognitoJwkBase64Feature;
+import com.octopus.features.DisableSecurityFeature;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubactions.shared.builders.DotNetCoreBuilder;
 import com.octopus.githubactions.shared.builders.GenericBuilder;
 import com.octopus.githubactions.shared.builders.GoBuilder;
@@ -20,6 +24,10 @@ import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.json.JsonSerializer;
 import com.octopus.json.impl.JacksonJsonSerializerImpl;
+import com.octopus.jwt.JwtInspector;
+import com.octopus.jwt.JwtValidator;
+import com.octopus.jwt.impl.JoseJwtInspector;
+import com.octopus.jwt.impl.JwtValidatorImpl;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
@@ -30,6 +38,8 @@ import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.oauth.impl.OauthClientCredsAccessorImpl;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.repoclients.impl.GitHubRepoClientFactory;
+import com.octopus.utilties.PartitionIdentifier;
+import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import javax.crypto.NoSuchPaddingException;
@@ -259,5 +269,49 @@ public class PipelineProducer {
   @Produces
   public OauthClientCredsAccessor getOauthClientCredsAccessor() {
     return new OauthClientCredsAccessorImpl(serviceBusCognitoConfig, cognitoClient);
+  }
+
+  /**
+   * Produces the JWT validator.
+   *
+   * @return An implementation of JwtValidator.
+   */
+  @ApplicationScoped
+  @Produces
+  public JwtValidator getJwtValidator() {
+    return new JwtValidatorImpl();
+  }
+
+  /**
+   * Produces the JWT verification service.
+   *
+   * @return An implementation of JwtVerifier.
+   */
+  @ApplicationScoped
+  @Produces
+  public JwtInspector getJwtInspector(
+      CognitoJwkBase64Feature cognitoJwkBase64Feature,
+      DisableSecurityFeature disableSecurityFeature,
+      JwtValidator jwtValidator,
+      MicroserviceNameFeature microserviceNameFeature) {
+    return new JoseJwtInspector(
+        cognitoJwkBase64Feature,
+        disableSecurityFeature,
+        jwtValidator,
+        microserviceNameFeature);
+  }
+
+  /**
+   * Produces the data partition identifier service.
+   *
+   * @return An implementation of PartitionIdentifier.
+   */
+  @ApplicationScoped
+  @Produces
+  public PartitionIdentifier getPartitionIdentifier(
+      JwtInspector jwtInspector,
+      AdminJwtGroupFeature adminJwtGroupFeature,
+      DisableSecurityFeature disableSecurityFeature) {
+    return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
   }
 }
