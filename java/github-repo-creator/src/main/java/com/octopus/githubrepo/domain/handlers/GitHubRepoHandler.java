@@ -2,6 +2,7 @@ package com.octopus.githubrepo.domain.handlers;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.google.common.base.Preconditions;
 import com.goterl.lazysodium.LazySodium;
 import com.goterl.lazysodium.LazySodiumJava;
 import com.goterl.lazysodium.SodiumJava;
@@ -175,6 +176,9 @@ public class GitHubRepoHandler {
       final String routingHeader,
       @NonNull final String githubToken)
       throws DocumentSerializationException {
+
+    Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
+    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken), "githubToken can not be blank");
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
