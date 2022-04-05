@@ -21,11 +21,30 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
         const [octopusServer, setOctopusServer] = useState<string>((props.machine.state && props.machine.state.context.octopusServer) || "");
         const [octopusServerError, setOctopusServerError] = useState<string | null>(null);
 
+        /**
+         * Extract the hostname from a fully formed URL if that was pasted in.
+         *
+         * @param input The server name
+         * @returns The hostname of a full URL, or the input if it wasn't a URL
+         */
+        const sanitizeUrl = (input: string) => {
+            if (!input) return input;
+
+            try {
+                const url = new URL(input.trim());
+                return url.hostname;
+            } catch {
+                return input;
+            }
+        }
+
         const validate = () => {
-            if (!octopusServer.trim()) {
+            const santizedUrl = sanitizeUrl(octopusServer);
+
+            if (!santizedUrl.trim()) {
                 setOctopusServerError("The Octopus server name is a required field.");
                 return false;
-            } else if (!octopusServer.trim().endsWith("octopus.app")) {
+            } else if (!santizedUrl.trim().endsWith("octopus.app")) {
                 setOctopusServerError("The Octopus server hostname must end with octopus.app.");
                 return false;
             } else {
@@ -41,8 +60,10 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
 
             setButtonDisabled(true);
 
+            const santizedUrl = sanitizeUrl(octopusServer);
+
             if (props.machine.state) {
-                props.machine.state.context.octopusServer = octopusServer.trim();
+                props.machine.state.context.octopusServer = santizedUrl;
                 // We are leaving the site, so need to save the state so we can retain the Octopus instance name
                 saveCurrentState("doYouHaveCloudOctopus");
             }
