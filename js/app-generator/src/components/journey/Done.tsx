@@ -42,16 +42,17 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <h2>You're all done.</h2>
                         <p>
                             The sample application is being pushed to <a href={"https://github.com/?q=" + props.machine.state.context.githubRepo} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
-                            repository called <strong>{props.machine.state.context.githubRepo}</strong>.
+                            repository called <strong>{props.machine.state.context.githubRepo}</strong>. This repository
+                            will take a few seconds to be created.
                         </p>
                         <p>
-                            It will take a few minutes for the files to be uploaded and for the initial GitHub Actions
-                            workflow to complete.
+                            In a minute or so the sample project files will be uploaded and the initial GitHub Actions
+                            workflow will start automatically.
                         </p>
                         <p>
                             Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform}</strong> and
-                            ending with your GitHub account name in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will be populated with a
-                            sample project and all other associated resources to complete a deployment.
+                            ending with your GitHub account name in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will
+                            be populated with a sample project and all other associated resources to complete a deployment.
                         </p>
                         <p>
                             If you would like to share some feedback about the App Builder, feel free to leave a comment

@@ -91,11 +91,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <h2>Enter your AWS credentials.</h2>
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
-                            resources that host your sample application.
-                        </p>
-                        <p>
-                            You can find more information about creating access keys in the
-                            &nbsp;<a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
+                            resources that host your sample application. You can find more information about creating
+                            access keys in the <a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
                         </p>
                         <h3>Required Permissions</h3>
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&
@@ -155,7 +152,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             {"Next >"}
                         </Button>
                         <p style={{marginTop: "80px", color: "grey"}}>
-                            Octonauts - Use the credentials from the <strong>AWS CloudDeployer (new account)</strong> entry in the password manager.
+                            Octonauts - The credentials from the <strong>AWS CloudDeployer (new account)</strong> entry
+                            in the password manager can be used here.
                         </p>
                     </Grid>
                 </Grid>
