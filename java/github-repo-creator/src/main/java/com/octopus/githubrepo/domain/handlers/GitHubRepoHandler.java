@@ -314,6 +314,7 @@ public class GitHubRepoHandler {
       final String serviceAuthHeader,
       final String routingHeader)
       throws IOException {
+
     try (final Response response = generateTemplateClient.generateTemplate(
         body, routingHeader, authHeader, serviceAuthHeader)) {
       if (response.getStatus() != 200) {
