@@ -1,5 +1,5 @@
 name: Terraform Apply
-description: Create a Kubernetes deployment project
+description: Create an ECS deployment project
 inputs:
   octopus_server:
     description: 'Octopus cloud URL'
