@@ -74,11 +74,16 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
           alias jq="docker run --rm -i imega/jq"
 
+          # Get the environment name, up to the first space
+          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
+          ENVIRONMENT_ARRAY=($ENVIRONMENT)
+          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+
           # List the clusters to find out if the app-builer cluster already exists.
           # The AWS docs at https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html say to use the "-it" docker argument.
           # This results in errors, described at https://github.com/moby/moby/issues/30137#issuecomment-736955494.
           # So we just use "-i".
-          INDEX=$(aws eks list-clusters | jq '.clusters | index("app-builder-${var.github_repo_owner}")')
+          INDEX=$(aws eks list-clusters | jq '.clusters | index("app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")')
 
           # If the cluster does not exist, create it.
           if [[ $INDEX == "null" ]]; then
@@ -89,7 +94,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           kind: ClusterConfig
 
           metadata:
-            name: app-builder-${var.github_repo_owner}
+            name: app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}
             region: ${var.aws_region}
 
           nodeGroups:
