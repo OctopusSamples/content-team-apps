@@ -110,7 +110,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             # Use eksctl to create the new cluster.
             echo "Creating the EKS cluster"
             echo "##octopus[stdout-verbose]"
-            eksctl create cluster --tags 'CreatedBy=AppBuilder,TargetType=EKS' -f /build/cluster.yaml
+            eksctl create cluster -f /build/cluster.yaml
 
             if [[ $? -ne 0 ]]; then
               echo "##octopus[stdout-error]"
