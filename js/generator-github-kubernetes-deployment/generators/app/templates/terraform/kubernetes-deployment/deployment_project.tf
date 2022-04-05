@@ -136,6 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           LOADBALANCER_HOSTNAME=$(kubectl get service backend-service -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
           echo "Open [http://$LOADBALANCER_HOSTNAME/api/customers](http://$LOADBALANCER_HOSTNAME/api/customers) to view the backend API."
+          echo "Note it can take a minute or two for the load balancer to start responding to a new deployment."
         EOT
         "OctopusUseBundledTooling" : "False"
       }
