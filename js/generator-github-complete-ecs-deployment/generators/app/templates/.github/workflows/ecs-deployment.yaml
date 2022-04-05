@@ -113,3 +113,4 @@ jobs:
           run_number: ${{ github.run_number }}
           octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
           github_repo: ${{ github.repository }}
+          github_token: ${{ github.token }}

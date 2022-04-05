@@ -31,6 +31,9 @@ inputs:
   github_repo:
     description: 'The github repo'
     required: true
+  github_token:
+    description: 'The github token'
+    required: true
 
 runs:
   using: "composite"

@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-eks-deployment",
-  "version": "0.1.108",
+  "version": "0.1.109",
   "description": "",
   "files": [
     "generators"
