@@ -103,8 +103,8 @@ runs:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
       with:
-        input: terraform/ecs-deployment/backend.tf
-        output: terraform/ecs-deployment/backend.tf
+        input: terraform/kubernetes-deployment/backend.tf
+        output: terraform/kubernetes-deployment/backend.tf
 
     # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
     # we need to manually query the new space for the built-in feed ID.
@@ -136,7 +136,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/ecs-deployment
+      working-directory: terraform/kubernetes-deployment
       shell: bash
 
     - name: Terraform Apply
@@ -150,7 +150,7 @@ runs:
           echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."
           exit 1
         fi
-      working-directory: terraform/ecs-deployment
+      working-directory: terraform/kubernetes-deployment
       shell: bash
 
     - name: Create the cluster
