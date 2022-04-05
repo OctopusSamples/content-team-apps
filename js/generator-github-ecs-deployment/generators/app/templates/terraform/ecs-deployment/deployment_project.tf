@@ -100,9 +100,9 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
           # as we'll place our new ECS services in them.
-          SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
-          SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
-          VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
+          SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
+          SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
+          VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
           SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
 
           echo "Found Security Group: $${SECURITYGROUP}"
@@ -114,7 +114,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "SubnetA" "$${SUBNETA}"
           set_octopusvariable "SubnetB" "$${SUBNETB}"
           set_octopusvariable "Vpc" "$${VPC}"
-          set_octopusvariable "ClusterName" "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}"
+          set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
           set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
 
           if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
@@ -155,7 +155,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${var.github_repo_owner}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # A handy checklist for accessing private ECR repositories:
           # https://stackoverflow.com/a/69643388/157605
@@ -262,7 +262,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder-${var.github_repo_owner}
+              Default: app-builder-${lower(var.github_repo_owner)}
             TaskDefinitionName:
               Type: String
               Default: backend
@@ -339,7 +339,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Get the first task on the cluster
-          TASK=$(aws ecs list-tasks --cluster app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
+          TASK=$(aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
           echo "Found Task $${TASK}"
 
           if [[ "$${TASK}" == "null" || -z "$${TASK}" ]]; then
@@ -348,7 +348,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           fi
 
           # Get the network interface
-          ENI=$(aws ecs describe-tasks --cluster app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value')
+          ENI=$(aws ecs describe-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value')
           echo "Found Elastic Network Interface $${ENI}"
 
           if [[ "$${ENI}" == "null" || -z "$${ENI}" ]]; then

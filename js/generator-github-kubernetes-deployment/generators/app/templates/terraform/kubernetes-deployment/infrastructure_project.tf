@@ -83,7 +83,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # The AWS docs at https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html say to use the "-it" docker argument.
           # This results in errors, described at https://github.com/moby/moby/issues/30137#issuecomment-736955494.
           # So we just use "-i".
-          INDEX=$(aws eks list-clusters | jq ".clusters | index(\"app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}\")")
+          INDEX=$(aws eks list-clusters | jq ".clusters | index(\"app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}\")")
 
           # If the cluster does not exist, create it.
           if [[ $INDEX == "null" ]]; then
@@ -94,7 +94,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           kind: ClusterConfig
 
           metadata:
-            name: app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}
+            name: app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}
             region: ${var.aws_region}
 
           nodeGroups:
@@ -184,11 +184,11 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           eksctl utils associate-iam-oidc-provider \
               --region=${var.aws_region} \
-              --cluster=app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} \
+              --cluster=app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} \
               --approve
 
           eksctl create iamserviceaccount \
-            --cluster=app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} \
+            --cluster=app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} \
             --region=${var.aws_region} \
             --namespace=kube-system \
             --name=aws-load-balancer-controller \
@@ -196,7 +196,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             --override-existing-serviceaccounts \
             --approve
 
-          aws eks update-kubeconfig --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} --kubeconfig /build/kubeconfig
+          aws eks update-kubeconfig --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --kubeconfig /build/kubeconfig
 
           kubectl apply \
               --kubeconfig=/build/kubeconfig \
@@ -253,12 +253,12 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
-          aws eks describe-cluster --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} > clusterdetails.json
+          aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Backend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
-            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
             namespace=\"$(encode_servicemessagevalue "$${FIXED_ENVIRONMENT}-backend")\" \
@@ -309,12 +309,12 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
-          aws eks describe-cluster --name app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT} > clusterdetails.json
+          aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
             name=\"$(encode_servicemessagevalue 'App Builder EKS Cluster Frontend')\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
-            clusterName=\"$(encode_servicemessagevalue "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}")\" \
+            clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
             octopusAccountIdOrName=\"$(encode_servicemessagevalue "${var.octopus_aws_account_id}")\" \
             namespace=\"$(encode_servicemessagevalue "$${FIXED_ENVIRONMENT}-backend")\" \
