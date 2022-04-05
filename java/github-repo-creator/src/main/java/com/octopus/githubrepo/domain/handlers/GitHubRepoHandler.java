@@ -514,7 +514,7 @@ public class GitHubRepoHandler {
                         + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
                         + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
                         + "* `java`: The sample Java application.\n"
-                        + "* `js`: The sample JavaScript application.\n"
+                        + "* `js`: The sample JavaScript application.\n\n"
                         + "If you have run the App Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
                         + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
                         + "To replace the `main` branch with the `app-builder-update` branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
