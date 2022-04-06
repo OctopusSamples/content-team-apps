@@ -1,9 +1,8 @@
 import {FC, ReactElement, useState} from "react";
-import {Box, Button, Grid} from "@mui/material";
+import {Button, Grid} from "@mui/material";
 import {buttonStyle, journeyContainer, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from '@mui/material/LinearProgress';
-import Typography from '@mui/material/Typography';
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -45,13 +44,16 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                             Select the platform that you wish to deploy the sample microservice application to using
                             Octopus.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("EKS", "EKS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
+                                onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => next("ECS", "ECS")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
+                                onClick={() => next("ECS", "ECS")}>
                             {"AWS Elastic Compute Service (ECS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={true} onClick={() => next("LAMBDA", "LAM")}>
+                        <Button sx={buttonStyle} variant="outlined" disabled={true}
+                                onClick={() => next("LAMBDA", "LAM")}>
                             {"AWS Lambda (Coming soon)"}
                         </Button>
                     </Grid>
