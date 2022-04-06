@@ -169,6 +169,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         extract_during_deployment = true
       }
       script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          docker pull appthreat/dep-scan
+          echo "##octopus[stdout-default]"
+
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
           for x in **/bom.xml; do
