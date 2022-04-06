@@ -219,7 +219,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
           curl --silent -Lo v2_4_1_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.1/v2_4_1_full.yaml
-          sed -i.bak -e 's|your-cluster-name|app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}|' ./v2_4_1_full.yaml
+          sed -i.bak -e "s|your-cluster-name|app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}|" ./v2_4_1_full.yaml
 
           # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
           kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml 2>&1
