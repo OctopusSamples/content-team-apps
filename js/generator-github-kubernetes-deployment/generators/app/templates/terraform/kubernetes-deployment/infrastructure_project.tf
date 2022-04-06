@@ -213,6 +213,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           # Wait for the CRDs to be established. This prevents errors like:
           # no matches for kind "IngressClassParams" in version "elbv2.k8s.aws/v1beta1"
+          # See https://github.com/OctopusSamples/content-team-apps/issues/14
           kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/ingressclassparams.elbv2.k8s.aws
           kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/targetgroupbindings.elbv2.k8s.aws
 
