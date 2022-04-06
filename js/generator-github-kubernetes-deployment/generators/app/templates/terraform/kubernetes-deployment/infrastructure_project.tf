@@ -209,7 +209,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # Download the CRDs as a seperate step
           curl --silent -Lo v2_4_1_crd.yaml https://gist.githubusercontent.com/mcasperson/3338fdd21c1a5fe8668924f5d867830b/raw/6b12bb630bd5fbc2c186158a9107267288b7496b/v2_4_1_crd.yaml 2>&1
 
-          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_crd.yaml
+          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_crd.yaml 2>&1
 
           # Wait for the CRDs to be established. This prevents errors like:
           # no matches for kind "IngressClassParams" in version "elbv2.k8s.aws/v1beta1"
@@ -221,7 +221,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           curl --silent -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1
 
           # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
-          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml
+          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml 2>&1
           echo "##octopus[stdout-default]"
 
           echo "Displaying the aws-load-balancer-controller deployment"
