@@ -203,9 +203,23 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               --validate=false \
               -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
+          # Wait for deployment
+          kubectl --kubeconfig=/build/kubeconfig -n cert-manager rollout status deployment cert-manager
+
+          # Download the CRDs as a seperate step
+          curl --silent -Lo v2_4_1_crd.yaml https://gist.githubusercontent.com/mcasperson/3338fdd21c1a5fe8668924f5d867830b/raw/6b12bb630bd5fbc2c186158a9107267288b7496b/v2_4_1_crd.yaml 2>&1
+
+          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_crd.yaml
+
+          # Wait for the CRDs to be established. This prevents errors like:
+          # no matches for kind "IngressClassParams" in version "elbv2.k8s.aws/v1beta1"
+          kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/ingressclassparams.elbv2.k8s.aws
+          kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/targetgroupbindings.elbv2.k8s.aws
+
           # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
           curl --silent -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1
 
+          # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
           kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml
           echo "##octopus[stdout-default]"
 
