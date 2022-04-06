@@ -204,7 +204,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
           # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
-          curl -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1
+          curl --silent -Lo v2_4_1_full.yaml https://gist.githubusercontent.com/mcasperson/9edc50d87d7904d643d2f1e2f1bcc088/raw/3f24f9908ebe51fcc14aa56cc74f0b3377ea183d/v2_4_1_full.yaml 2>&1
 
           kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml
           echo "##octopus[stdout-default]"

@@ -1,8 +1,9 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
-import {journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {AppContext} from "../../App";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -35,6 +36,7 @@ const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={60} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Log into GitHub.</h2>
                         <p>

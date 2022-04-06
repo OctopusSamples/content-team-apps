@@ -1,9 +1,10 @@
 import {FC, ReactElement, useState} from "react";
 import {Button, FormControl, FormHelperText, FormLabel, Grid, Link, TextField} from "@mui/material";
-import {formContainer, formElements, journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {formContainer, formElements, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
+import LinearProgress from "@mui/material/LinearProgress";
 
 const mask =  "**************";
 
@@ -12,7 +13,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
     const [accessKeyError, setAccessKeyError] = useState<string | null>(null);
-    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "");
+    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "us-east-1");
     const [regionError, setRegionError] = useState<string | null>(null);
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? mask : "");
     const [secretKeyError, setSecretKeyError] = useState<string | null>(null);
@@ -87,6 +88,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={80} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Enter your AWS credentials.</h2>
                         <p>

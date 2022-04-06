@@ -1,9 +1,10 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Button, FormControl, FormHelperText, Grid, Link, TextField} from "@mui/material";
-import {formElements, journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {formElements, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps, saveCurrentState} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
 import {AppContext} from "../../App";
+import LinearProgress from "@mui/material/LinearProgress";
 
 // define the randomUUID function
 declare global {
@@ -97,6 +98,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             container={true}
                             className={classes.column}
                         >
+                            <LinearProgress variant="determinate" value={40} sx={progressStyle}/>
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Log into you cloud Octopus instance.</h2>
                             <p>
@@ -105,7 +107,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             </p>
                             <p>
                                 Please enter the hostname of the Octopus Cloud instance that you which to populate with the
-                                sample deployment project and click the login button to be taken to the Octopus login page.
+                                sample deployment project and click the next button to be taken to the Octopus login page.
                             </p>
                             <FormControl error variant="standard" sx={formElements}>
                                 <TextField

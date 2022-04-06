@@ -48,6 +48,10 @@ export const journeyContainer = makeStyles((theme) => {
     }
 });
 
+export const progressStyle: SxProps<Theme> = {
+    marginBottom: "8px"
+}
+
 export const buttonStyle: SxProps<Theme> = {
     width: '100%',
     minHeight: '64px',

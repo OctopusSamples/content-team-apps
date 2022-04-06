@@ -1,7 +1,8 @@
 import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
-import {buttonStyle, journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {buttonStyle, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -21,15 +22,19 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={30} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Complete the cloud Octopus trail sign up.</h2>
                         <p>
-                            Click the signup button to open a new tab where you can sign up for a free Octopus cloud trial.
+                            Click the signup button to open a new tab where you can sign up for a free Octopus cloud
+                            trial.
                         </p>
                         <p>
-                            Once you have completed the signup for the cloud trial, return to this page, and click the next button.
+                            Once you have completed the signup for the cloud trial, return to this page, and click the
+                            next button.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined" onClick={() => window.open("https://octopus.com/start/cloud")}>
+                        <Button sx={buttonStyle} variant="outlined"
+                                onClick={() => window.open("https://octopus.com/start/cloud")}>
                             {"Signup"}
                         </Button>
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {

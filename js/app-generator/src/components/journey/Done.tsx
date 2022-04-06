@@ -1,7 +1,8 @@
 import {FC, ReactElement} from "react";
 import {Button, Grid} from "@mui/material";
-import {journeyContainer, nextButtonStyle} from "../../utils/styles";
+import {journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -39,6 +40,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>You're all done.</h2>
                         <p>
                             The sample application is being pushed to <a href={"https://github.com/?q=" + props.machine.state.context.githubRepo} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a

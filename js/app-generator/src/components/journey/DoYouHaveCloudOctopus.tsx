@@ -1,7 +1,8 @@
 import {FC, ReactElement, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
-import {buttonStyle, journeyContainer} from "../../utils/styles";
+import {buttonStyle, journeyContainer, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -21,6 +22,7 @@ const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={20} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Do you have an existing cloud Octopus instance?</h2>
                         <p>

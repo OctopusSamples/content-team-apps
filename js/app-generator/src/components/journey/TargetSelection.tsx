@@ -1,7 +1,24 @@
 import {FC, ReactElement, useState} from "react";
-import {Button, Grid} from "@mui/material";
-import {buttonStyle, journeyContainer} from "../../utils/styles";
+import {Box, Button, Grid} from "@mui/material";
+import {buttonStyle, journeyContainer, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+
+function LinearProgressWithLabel(props: {value: number}) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress variant="determinate" {...props} />
+            </Box>
+            <Box sx={{ minWidth: 35 }}>
+                <Typography variant="body2" color="text.secondary">{`${Math.round(
+                    props.value,
+                )}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -37,6 +54,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
+                        <LinearProgress variant="determinate" value={10} sx={progressStyle}/>
                         <h2>Where are you deploying the microservice?</h2>
                         <p>
                             Select the platform that you wish to deploy the sample microservice application to using
@@ -55,6 +73,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                 </Grid>
                 <Grid item md={3} xs={0}/>
             </Grid>
+
         </>
     );
 };
