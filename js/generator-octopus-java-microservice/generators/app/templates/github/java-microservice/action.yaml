@@ -173,3 +173,14 @@ runs:
         docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
       shell: bash
       working-directory: java/quarkus-microservice
+
+    - name: Create a release
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Deploy Backend Service"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+      shell: bash
