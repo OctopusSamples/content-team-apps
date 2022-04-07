@@ -56,11 +56,33 @@ function getInitialStateContext() {
     }
 }
 
+const validStates = [
+    "selectTarget",
+    "selectedTargetNotAvailable",
+    "doYouHaveCloudOctopus",
+    "signUpForCloudOctopus",
+    "logIntoOctopus",
+    "enterOctopusCredentials",
+    "loggedIntoOctopus",
+    "logIntoGitHub",
+    "loggedIntoGithub",
+    "enterAwsCredentials",
+    "pushPackage",
+    "done",
+    "error"];
+
 /**
  * Return the name of the state that we should start the form at.
  */
 function getInitialState() {
-    return localStorage.getItem("appBuilderState") || "selectTarget";
+
+    const initialState = localStorage.getItem("appBuilderState") || "";
+
+    if (validStates.indexOf(initialState) !== -1) {
+        return initialState;
+    }
+
+    return "selectTarget";
 }
 
 /**
@@ -278,9 +300,6 @@ export const appBuilderMachine = createMachine<StateContext>({
                         saveCurrentState("pushPackage"),
                         assignForm(PushPackage)
                     ]
-                },
-                downloadPackage: {
-                    type: 'final'
                 },
                 done: {
                     type: 'final',
