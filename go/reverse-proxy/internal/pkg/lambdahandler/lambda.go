@@ -102,7 +102,6 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 }
 
 func httpReverseProxy(upstreamUrl *url.URL, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.httpReverseProxy(*url.URL, events.APIGatewayProxyRequest)")
 	log.Println("Calling URL " + upstreamUrl.String())
 
 	handler := func(w http.ResponseWriter, httpReq *http.Request) {
@@ -125,7 +124,6 @@ func httpReverseProxy(upstreamUrl *url.URL, req events.APIGatewayProxyRequest) (
 }
 
 func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.callSqs(string, events.APIGatewayProxyRequest)")
 	log.Println("Calling SQS " + queueURL)
 
 	sess := session.Must(session.NewSession())
@@ -223,7 +221,6 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 }
 
 func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.callLambda(string, events.APIGatewayProxyRequest)")
 	log.Println("Calling Lambda " + lambdaName)
 
 	sess := session.Must(session.NewSession())
