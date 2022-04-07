@@ -1,0 +1,59 @@
+package com.octopus.githubrepo.domain.handlers;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
+import java.io.IOException;
+import org.kohsuke.github.GHBranch;
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHCommitBuilder;
+import org.kohsuke.github.GHRef;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHTree;
+import org.kohsuke.github.GHTreeBuilder;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.connector.GitHubConnector;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+public class BaseGitHubTest extends BaseTest {
+
+  /**
+   * A third party GitHub client is used to push files to a GitHub repo. This method stubs out
+   * all the interactions used by this service.
+   * @param gitHubBuilder The GitHub builder.
+   */
+  protected void mockGithubClient(final GitHubBuilder gitHubBuilder) throws IOException {
+    Mockito.when(gitHubBuilder.withOAuthToken(any())).thenReturn(gitHubBuilder);
+    Mockito.when(gitHubBuilder.withConnector(ArgumentMatchers.<GitHubConnector>any()))
+        .thenReturn(gitHubBuilder);
+
+    final GitHub gitHub = Mockito.mock(GitHub.class);
+    final GHRepository repo = Mockito.mock(GHRepository.class);
+    final GHTreeBuilder treeBuilder = Mockito.mock(GHTreeBuilder.class);
+    final GHCommitBuilder commitBuilder = Mockito.mock(GHCommitBuilder.class);
+    final GHCommit commit = Mockito.mock(GHCommit.class);
+    final GHRef ref = Mockito.mock(GHRef.class);
+
+    Mockito.doNothing().when(ref).updateTo(any());
+    Mockito.when(commitBuilder.tree(any())).thenReturn(commitBuilder);
+    Mockito.when(commitBuilder.parent(any())).thenReturn(commitBuilder);
+    Mockito.when(commitBuilder.message(any())).thenReturn(commitBuilder);
+    Mockito.when(commitBuilder.create()).thenReturn(commit);
+    Mockito.when(treeBuilder.baseTree(any())).thenReturn(treeBuilder);
+    Mockito.when(treeBuilder.create()).thenReturn(Mockito.mock(GHTree.class));
+    Mockito.when(treeBuilder.add(anyString(), any(byte[].class), anyBoolean()))
+        .thenReturn(treeBuilder);
+    Mockito.when(repo.createTree()).thenReturn(treeBuilder);
+    Mockito.when(repo.createCommit()).thenReturn(commitBuilder);
+    Mockito.when(repo.getRef(any())).thenReturn(ref);
+    Mockito.when(repo.getBranch(any())).thenReturn(Mockito.mock(GHBranch.class));
+    Mockito.when(gitHub.getRepository(any())).thenReturn(repo);
+
+    Mockito.when(gitHubBuilder.build()).thenReturn(gitHub);
+  }
+}
