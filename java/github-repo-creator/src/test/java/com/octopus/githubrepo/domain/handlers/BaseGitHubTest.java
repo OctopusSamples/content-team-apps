@@ -2,11 +2,20 @@ package com.octopus.githubrepo.domain.handlers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
+import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
+import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import java.io.IOException;
+import java.util.List;
+import javax.ws.rs.core.Response;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHCommitBuilder;
@@ -39,7 +48,7 @@ public class BaseGitHubTest extends BaseTest {
     final GHCommit commit = Mockito.mock(GHCommit.class);
     final GHRef ref = Mockito.mock(GHRef.class);
 
-    Mockito.doNothing().when(ref).updateTo(any());
+    doNothing().when(ref).updateTo(any());
     Mockito.when(commitBuilder.tree(any())).thenReturn(commitBuilder);
     Mockito.when(commitBuilder.parent(any())).thenReturn(commitBuilder);
     Mockito.when(commitBuilder.message(any())).thenReturn(commitBuilder);
@@ -55,5 +64,47 @@ public class BaseGitHubTest extends BaseTest {
     Mockito.when(gitHub.getRepository(any())).thenReturn(repo);
 
     Mockito.when(gitHubBuilder.build()).thenReturn(gitHub);
+  }
+
+  protected void mockGithubClient(final GitHubClient gitHubClient, final boolean repoExists) {
+
+    final Response notFoundResponse = Mockito.mock(Response.class);
+    Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
+
+    final Response foundResponse = Mockito.mock(Response.class);
+    Mockito.when(foundResponse.getStatus()).thenReturn(200);
+
+    final Response mockScopeResponse = Mockito.mock(Response.class);
+    Mockito.when(mockScopeResponse.getHeaderString("X-OAuth-Scopes")).thenReturn("workflow,repo");
+
+    final ClientWebApplicationException notFoundException = Mockito.mock(
+        ClientWebApplicationException.class);
+    Mockito.when(notFoundException.getResponse()).thenReturn(notFoundResponse);
+
+    final Response linksResponse = Mockito.mock(Response.class);
+    Mockito.when(linksResponse.getHeaderString(any()))
+        .thenReturn("Link: <https://api.github.com/repos?page=3&per_page=100>; rel=\"next\",\n"
+            + "<https://api.github.com/repos?page=50&per_page=100>; rel=\"last\"");
+
+    Mockito.when(gitHubClient.checkRateLimit(any())).thenReturn(mockScopeResponse);
+    Mockito.when(gitHubClient.getSecret(any(), any(), any(), any()))
+        .thenThrow(new RuntimeException());
+    doThrow(notFoundException).when(gitHubClient).getFile(any(), any(), any(), any(), any());
+    doNothing().when(gitHubClient).createFile(any(), any(), any(), any(), any());
+    Mockito.when(gitHubClient.getCommitsRaw(any(), any(), anyInt(), any()))
+        .thenReturn(linksResponse);
+    Mockito.when(gitHubClient.getCommits(any(), any(), anyInt(), anyInt(), any()))
+        .thenReturn(List.of(
+            GitHubCommit.builder().sha("sha12345").build()));
+    Mockito.when(gitHubClient.getBranch(any(), any(), any(), any())).thenThrow(notFoundException);
+    if (repoExists) {
+      Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenReturn(foundResponse);
+    } else {
+      Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenThrow(notFoundException);
+    }
+    Mockito.when(gitHubClient.getUser(any()))
+        .thenReturn(GitHubUser.builder().login("testuser").build());
+    Mockito.when(gitHubClient.getPublicKey(any(), any(), any()))
+        .thenReturn(GitHubPublicKey.builder().key("test").keyId("test").build());
   }
 }

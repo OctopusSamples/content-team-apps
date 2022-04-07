@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
@@ -55,7 +56,7 @@ import org.mockito.Mockito;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class HandlerTests extends BaseTest {
+public class HandlerTests extends BaseGitHubTest {
 
   private static final String HEALTH_ENDPOINT = "/health/serviceaccounts";
 
@@ -81,6 +82,9 @@ public class HandlerTests extends BaseTest {
   @InjectMock
   CryptoUtils cryptoUtils;
 
+  @InjectMock
+  AsymmetricDecryptor asymmetricDecryptor;
+
   @Inject
   ResourceConverter resourceConverter;
 
@@ -97,11 +101,8 @@ public class HandlerTests extends BaseTest {
 
   @BeforeAll
   public void setup() throws IOException {
-    final Response mockScopeResponse = Mockito.mock(Response.class);
-    Mockito.when(mockScopeResponse.getHeaderString("X-OAuth-Scopes")).thenReturn("workflow,repo");
-
-    final Response mockRepoResponse = Mockito.mock(Response.class);
-    Mockito.when(mockRepoResponse.getStatus()).thenReturn(404);
+    mockGithubClient(gitHubBuilder);
+    mockGithubClient(gitHubClient, true);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
@@ -115,44 +116,9 @@ public class HandlerTests extends BaseTest {
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
     Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
-    Mockito.when(gitHubClient.checkRateLimit(any())).thenReturn(mockScopeResponse);
-    Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenReturn(mockRepoResponse);
-    Mockito.when(gitHubClient.getUser(any()))
-        .thenReturn(GitHubUser.builder().login("testuser").build());
-    Mockito.when(gitHubClient.getPublicKey(any(), any(), any()))
-        .thenReturn(GitHubPublicKey.builder().key("test").keyId("test").build());
+    Mockito.when(asymmetricDecryptor.decrypt(any(), any())).thenReturn("decrypted");
     Mockito.when(generateTemplateClient.generateTemplate(any(), any(), any(), any()))
         .thenReturn(zipFileResponse);
-
-    // We need to stub out all interactions with GitHub via the third party github client
-
-    Mockito.when(gitHubBuilder.withOAuthToken(any())).thenReturn(gitHubBuilder);
-    Mockito.when(gitHubBuilder.withConnector(ArgumentMatchers.<GitHubConnector>any()))
-        .thenReturn(gitHubBuilder);
-
-    final GitHub gitHub = Mockito.mock(GitHub.class);
-    final GHRepository repo = Mockito.mock(GHRepository.class);
-    final GHTreeBuilder treeBuilder = Mockito.mock(GHTreeBuilder.class);
-    final GHCommitBuilder commitBuilder = Mockito.mock(GHCommitBuilder.class);
-    final GHCommit commit = Mockito.mock(GHCommit.class);
-    final GHRef ref = Mockito.mock(GHRef.class);
-
-    Mockito.doNothing().when(ref).updateTo(any());
-    Mockito.when(commitBuilder.tree(any())).thenReturn(commitBuilder);
-    Mockito.when(commitBuilder.parent(any())).thenReturn(commitBuilder);
-    Mockito.when(commitBuilder.message(any())).thenReturn(commitBuilder);
-    Mockito.when(commitBuilder.create()).thenReturn(commit);
-    Mockito.when(treeBuilder.baseTree(any())).thenReturn(treeBuilder);
-    Mockito.when(treeBuilder.create()).thenReturn(Mockito.mock(GHTree.class));
-    Mockito.when(treeBuilder.add(anyString(), any(byte[].class), anyBoolean()))
-        .thenReturn(treeBuilder);
-    Mockito.when(repo.createTree()).thenReturn(treeBuilder);
-    Mockito.when(repo.createCommit()).thenReturn(commitBuilder);
-    Mockito.when(repo.getRef(any())).thenReturn(ref);
-    Mockito.when(repo.getBranch(any())).thenReturn(Mockito.mock(GHBranch.class));
-    Mockito.when(gitHub.getRepository(any())).thenReturn(repo);
-
-    Mockito.when(gitHubBuilder.build()).thenReturn(gitHub);
   }
 
   @ParameterizedTest

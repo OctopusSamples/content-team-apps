@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.io.Resources;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
@@ -87,6 +89,9 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest
   @InjectMock
   CryptoUtils cryptoUtils;
 
+  @InjectMock
+  AsymmetricDecryptor asymmetricDecryptor;
+
   @Inject
   GitHubRepoHandler handler;
 
@@ -106,32 +111,20 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest
 
   @BeforeAll
   public void setup() throws IOException {
-    super.mockGithubClient(gitHubBuilder);
-
-    final Response mockScopeResponse = Mockito.mock(Response.class);
-    Mockito.when(mockScopeResponse.getHeaderString("X-OAuth-Scopes")).thenReturn("workflow,repo");
-
-    final Response mockRepoResponse = Mockito.mock(Response.class);
-    Mockito.when(mockRepoResponse.getStatus()).thenReturn(404);
+    mockGithubClient(gitHubBuilder);
+    mockGithubClient(gitHubClient, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
-    // Return the smallest legal ZIP file possible
     Mockito.when(zipFileResponse.readEntity(InputStream.class)).thenReturn(new ByteArrayInputStream(
-        new byte[]{80, 75, 05, 06, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-            00, 00}));
+        Resources.toByteArray(Resources.getResource("template.zip"))));
 
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
     Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
-    Mockito.when(gitHubClient.checkRateLimit(any())).thenReturn(mockScopeResponse);
-    Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenReturn(mockRepoResponse);
-    Mockito.when(gitHubClient.getUser(any()))
-        .thenReturn(GitHubUser.builder().login("testuser").build());
-    Mockito.when(gitHubClient.getPublicKey(any(), any(), any()))
-        .thenReturn(GitHubPublicKey.builder().key("test").keyId("test").build());
+    Mockito.when(asymmetricDecryptor.decrypt(any(), any())).thenReturn("decrypted");
     Mockito.when(generateTemplateClient.generateTemplate(any(), any(), any(), any()))
         .thenReturn(zipFileResponse);
   }
