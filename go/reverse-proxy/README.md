@@ -1,3 +1,5 @@
+# Dumb Reverse Proxy (DRP)
+
 This project implements a simple reverse proxy Lambda capable of forwarding requests to a downstream HTTP service, Lambda,
 or SQS queues.
 

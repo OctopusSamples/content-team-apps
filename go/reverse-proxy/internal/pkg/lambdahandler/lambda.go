@@ -59,8 +59,9 @@ func HandleRequest(_ context.Context, req events.APIGatewayProxyRequest) (events
 func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	upstreamUrl, upstreamLambda, upstreamSqs, err := extractUpstreamService(req)
 
-	if err == nil {
-
+	if err != nil {
+		log.Println("ReverseProxy-Routing-ParseError " + err.Error())
+	} else {
 		if upstreamUrl != nil {
 			/*
 				This avoids loops where the routing header pointed back to the API Gateway, which in turn
@@ -85,6 +86,8 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 		}
 	}
 
+	// fall back to the default values
+
 	if os.Getenv("DEFAULT_LAMBDA") != "" {
 		return callLambda(os.Getenv("DEFAULT_LAMBDA"), req)
 	}
@@ -102,7 +105,6 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 }
 
 func httpReverseProxy(upstreamUrl *url.URL, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.httpReverseProxy(*url.URL, events.APIGatewayProxyRequest)")
 	log.Println("Calling URL " + upstreamUrl.String())
 
 	handler := func(w http.ResponseWriter, httpReq *http.Request) {
@@ -125,7 +127,6 @@ func httpReverseProxy(upstreamUrl *url.URL, req events.APIGatewayProxyRequest) (
 }
 
 func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.callSqs(string, events.APIGatewayProxyRequest)")
 	log.Println("Calling SQS " + queueURL)
 
 	sess := session.Must(session.NewSession())
@@ -223,7 +224,6 @@ func callSqs(queueURL string, req events.APIGatewayProxyRequest) (events.APIGate
 }
 
 func callLambda(lambdaName string, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("lambdahandler.callLambda(string, events.APIGatewayProxyRequest)")
 	log.Println("Calling Lambda " + lambdaName)
 
 	sess := session.Must(session.NewSession())
@@ -327,7 +327,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 
 	if err != nil {
 		log.Println("Routing header was not defined")
-		return nil, "", "", errors.New("routing header is required")
+		return nil, "", "", nil
 	}
 
 	// Log the headers for debugging
@@ -336,46 +336,60 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 	}
 
 	if !authorizeRouting(req) {
-		log.Println("User is not authorized to route requests")
 		return nil, "", "", errors.New("user is not authorized to route requests")
 	}
 
 	for _, routing := range getComponentsFromHeader(routingAll) {
 		path, method, destination, err := getRuleComponents(routing)
-		if err == nil {
-			if pathAndMethodIsMatch(path, method, req) {
 
-				// for convenience, rules can reference the destinations of other paths, allowing
-				// complex rule sets to be updated with a single destination
-				pathDest, err := getDestinationPath(routingAll, destination)
+		if err != nil {
+			log.Println("ReverseProxy-Routing-RoutingParseError " + err.Error())
+			continue
+		}
 
-				if err == nil {
-					destination = pathDest
-				}
+		if pathAndMethodIsMatch(path, method, req) {
 
-				url, err := getDestinationUrl(destination)
+			// for convenience, rules can reference the destinations of other paths, allowing
+			// complex rule sets to be updated with a single destination
+			pathDest, err := getDestinationPath(routingAll, destination)
 
-				if err == nil {
-					return url, "", "", nil
-				}
+			if err == nil {
+				destination = pathDest
+			}
 
-				lambda, err := getDestinationLambda(destination)
+			url, err := getDestinationUrl(destination)
 
-				if err == nil {
-					return nil, lambda, "", nil
-				}
+			if err != nil {
+				log.Println("ReverseProxy-Routing-UrlParseError " + err.Error())
+			}
 
-				sqs, err := getDestinationSqs(destination)
+			if url != nil {
+				return url, "", "", nil
+			}
 
-				if err == nil {
-					return nil, "", sqs, nil
-				}
+			lambda, err := getDestinationLambda(destination)
+
+			if err != nil {
+				log.Println("ReverseProxy-Routing-LambdaParseError " + err.Error())
+			}
+
+			if lambda != "" {
+				return nil, lambda, "", nil
+			}
+
+			sqs, err := getDestinationSqs(destination)
+
+			if err != nil {
+				log.Println("ReverseProxy-Routing-SqsParseError " + err.Error())
+			}
+
+			if sqs != "" {
+				return nil, "", sqs, nil
 			}
 		}
 	}
 
-	log.Println("Failed to find upstream service. Ensure the route is in the format route[/api/path:METHOD]=dest[upstream name], where \"dest\" is \"url\", \"lambda\", or \"sqs\".")
-	return nil, "", "", errors.New("failed to find upstream service")
+	return nil, "", "", nil
 }
 
 func getComponentsFromHeader(header string) []string {
@@ -400,28 +414,31 @@ func pathAndMethodIsMatch(path string, method string, req events.APIGatewayProxy
 
 func getRuleComponents(acceptComponent string) (string, string, string, error) {
 	ruleComponents := strings.Split(strings.TrimSpace(acceptComponent), "=")
+
 	// ensure the component has an equals sign
-	if len(ruleComponents) == 2 {
-		if strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]") {
-			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
-			pathAndMethod := strings.Split(strippedVersion, ":")
-			if len(pathAndMethod) == 2 {
-				if isDisabledRule(ruleComponents[1]) {
-					log.Println("rule " + ruleComponents[1] + " is disabled, so ignoring it.")
-				} else {
-					return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
-				}
-			} else {
-				log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a path and a HTTP method. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
-			}
-		} else {
-			log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not lead with the route[] statement. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
-		}
-	} else {
-		log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a route and an upstream component separated by an equals. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
+	if len(ruleComponents) != 2 {
+		return "", "", "", errors.New("the routing rule did not have a route and an upstream component separated by an equals - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
 	}
 
-	return "", "", "", errors.New("component was not a valid rule")
+	// Ensure the route starts with "route[" and ends with "]"
+	if !(strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]")) {
+		return "", "", "", errors.New("the routing rule did not lead with the route[] statement - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
+	}
+
+	strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
+	pathAndMethod := strings.Split(strippedVersion, ":")
+
+	// There must be a path and method
+	if len(pathAndMethod) != 2 {
+		return "", "", "", errors.New("the routing rule did not have a path and a HTTP method - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
+	}
+
+	if isDisabledRule(ruleComponents[1]) {
+		return "", "", "", errors.New("rule " + ruleComponents[1] + " is disabled, so ignoring it.")
+	}
+
+	// All checks pass, so return the rule
+	return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
 }
 
 func isDisabledRule(dest string) bool {
@@ -456,20 +473,21 @@ func getDestinationUrl(ruleDestination string) (*url.URL, error) {
 		// See if the downstream service is a valid URL
 		parsedUrl, err := url.Parse(trimmedDestination)
 
-		// downstream service was not a url, so assume it is a lambda
-		if err == nil {
-			// The proxy will not rewrite URLs, so the redirection URL must have an empty or root path.
-			if !(parsedUrl.Path == "" || parsedUrl.Path == "/") {
-				log.Println("ReverseProxy-Url-UrlParseError Path rewriting is not supported, so the redirection URL must have an empty path, or refer to the root path")
-			} else if strings.HasPrefix(trimmedDestination, "http") {
-				return parsedUrl, nil
-			}
-		} else {
-			log.Println("ReverseProxy-Url-UrlParseError " + err.Error())
+		if err != nil {
+			return nil, err
+		}
+
+		// The proxy will not rewrite URLs, so the redirection URL must have an empty or root path.
+		if !(parsedUrl.Path == "" || parsedUrl.Path == "/") {
+			return nil, errors.New("path rewriting is not supported, so the redirection URL must have an empty path, or refer to the root path")
+		}
+
+		if strings.HasPrefix(trimmedDestination, "http") {
+			return parsedUrl, nil
 		}
 	}
 
-	return nil, errors.New("destination was not a URL")
+	return nil, nil
 }
 
 func getDestinationLambda(ruleDestination string) (string, error) {
@@ -482,7 +500,7 @@ func getDestinationLambda(ruleDestination string) (string, error) {
 		return destination, nil
 	}
 
-	return "", errors.New("destination was not a lambda")
+	return "", nil
 }
 
 func getDestinationSqs(ruleDestination string) (string, error) {
