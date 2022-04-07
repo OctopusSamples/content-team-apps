@@ -342,40 +342,43 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 
 	for _, routing := range getComponentsFromHeader(routingAll) {
 		path, method, destination, err := getRuleComponents(routing)
-		if err == nil {
-			if pathAndMethodIsMatch(path, method, req) {
 
-				// for convenience, rules can reference the destinations of other paths, allowing
-				// complex rule sets to be updated with a single destination
-				pathDest, err := getDestinationPath(routingAll, destination)
+		if err != nil {
+			log.Println("ReverseProxy-Routing-RoutingParseError " + err.Error())
+			continue
+		}
 
-				if err == nil {
-					destination = pathDest
-				}
+		if pathAndMethodIsMatch(path, method, req) {
 
-				url, err := getDestinationUrl(destination)
+			// for convenience, rules can reference the destinations of other paths, allowing
+			// complex rule sets to be updated with a single destination
+			pathDest, err := getDestinationPath(routingAll, destination)
 
-				if err == nil {
-					return url, "", "", nil
-				}
+			if err == nil {
+				destination = pathDest
+			}
 
-				lambda, err := getDestinationLambda(destination)
+			url, err := getDestinationUrl(destination)
 
-				if err == nil {
-					return nil, lambda, "", nil
-				}
+			if err == nil {
+				return url, "", "", nil
+			}
 
-				sqs, err := getDestinationSqs(destination)
+			lambda, err := getDestinationLambda(destination)
 
-				if err == nil {
-					return nil, "", sqs, nil
-				}
+			if err == nil {
+				return nil, lambda, "", nil
+			}
+
+			sqs, err := getDestinationSqs(destination)
+
+			if err == nil {
+				return nil, "", sqs, nil
 			}
 		}
 	}
 
-	log.Println("Failed to find upstream service. Ensure the route is in the format route[/api/path:METHOD]=dest[upstream name], where \"dest\" is \"url\", \"lambda\", or \"sqs\".")
-	return nil, "", "", errors.New("failed to find upstream service")
+	return nil, "", "", errors.New("failed to find upstream service - ensure the route is in the format route[/api/path:METHOD]=dest[upstream name], where \"dest\" is \"url\", \"lambda\", or \"sqs\"")
 }
 
 func getComponentsFromHeader(header string) []string {
@@ -400,28 +403,31 @@ func pathAndMethodIsMatch(path string, method string, req events.APIGatewayProxy
 
 func getRuleComponents(acceptComponent string) (string, string, string, error) {
 	ruleComponents := strings.Split(strings.TrimSpace(acceptComponent), "=")
+
 	// ensure the component has an equals sign
-	if len(ruleComponents) == 2 {
-		if strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]") {
-			strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
-			pathAndMethod := strings.Split(strippedVersion, ":")
-			if len(pathAndMethod) == 2 {
-				if isDisabledRule(ruleComponents[1]) {
-					log.Println("rule " + ruleComponents[1] + " is disabled, so ignoring it.")
-				} else {
-					return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
-				}
-			} else {
-				log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a path and a HTTP method. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
-			}
-		} else {
-			log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not lead with the route[] statement. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
-		}
-	} else {
-		log.Println("ReverseProxy-Routing-RoutingParseError The routing rule did not have a route and an upstream component separated by an equals. Routes must be in the format route[/api/path:METHOD]=dest[upstream name].")
+	if len(ruleComponents) != 2 {
+		return "", "", "", errors.New("the routing rule did not have a route and an upstream component separated by an equals - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
 	}
 
-	return "", "", "", errors.New("component was not a valid rule")
+	// Ensure the route starts with "route[" and ends with "]"
+	if !(strings.HasPrefix(ruleComponents[0], "route[") && strings.HasSuffix(ruleComponents[0], "]")) {
+		return "", "", "", errors.New("the routing rule did not lead with the route[] statement - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
+	}
+
+	strippedVersion := strings.TrimSuffix(strings.TrimPrefix(ruleComponents[0], "route["), "]")
+	pathAndMethod := strings.Split(strippedVersion, ":")
+
+	// There must be a path and method
+	if len(pathAndMethod) != 2 {
+		return "", "", "", errors.New("the routing rule did not have a path and a HTTP method - routes must be in the format route[/api/path:METHOD]=dest[upstream name]")
+	}
+
+	if isDisabledRule(ruleComponents[1]) {
+		return "", "", "", errors.New("rule " + ruleComponents[1] + " is disabled, so ignoring it.")
+	}
+
+	// All checks pass, so return the rule
+	return pathAndMethod[0], pathAndMethod[1], ruleComponents[1], nil
 }
 
 func isDisabledRule(dest string) bool {
