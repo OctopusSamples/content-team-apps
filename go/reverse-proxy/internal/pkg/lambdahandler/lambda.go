@@ -358,6 +358,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 			url, err := getDestinationUrl(destination)
 
 			if err == nil {
+				log.Println("ReverseProxy-Url-UrlParseError " + err.Error())
 				return url, "", "", nil
 			}
 
@@ -459,16 +460,17 @@ func getDestinationUrl(ruleDestination string) (*url.URL, error) {
 		// See if the downstream service is a valid URL
 		parsedUrl, err := url.Parse(trimmedDestination)
 
-		// downstream service was not a url, so assume it is a lambda
-		if err == nil {
-			// The proxy will not rewrite URLs, so the redirection URL must have an empty or root path.
-			if !(parsedUrl.Path == "" || parsedUrl.Path == "/") {
-				log.Println("ReverseProxy-Url-UrlParseError Path rewriting is not supported, so the redirection URL must have an empty path, or refer to the root path")
-			} else if strings.HasPrefix(trimmedDestination, "http") {
-				return parsedUrl, nil
-			}
-		} else {
-			log.Println("ReverseProxy-Url-UrlParseError " + err.Error())
+		if err != nil {
+			return nil, err
+		}
+
+		// The proxy will not rewrite URLs, so the redirection URL must have an empty or root path.
+		if !(parsedUrl.Path == "" || parsedUrl.Path == "/") {
+			return nil, errors.New("path rewriting is not supported, so the redirection URL must have an empty path, or refer to the root path")
+		}
+
+		if strings.HasPrefix(trimmedDestination, "http") {
+			return parsedUrl, nil
 		}
 	}
 
