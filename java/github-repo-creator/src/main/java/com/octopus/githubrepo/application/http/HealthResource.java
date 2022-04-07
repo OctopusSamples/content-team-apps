@@ -11,7 +11,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /** A resource to respond to health check requests. */
-@Path("/health/githubrepo")
+@Path("/health/populategithubrepo")
 @RequestScoped
 public class HealthResource {
 

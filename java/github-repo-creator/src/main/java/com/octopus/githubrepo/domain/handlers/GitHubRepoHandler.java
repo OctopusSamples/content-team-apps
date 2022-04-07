@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -155,6 +156,9 @@ public class GitHubRepoHandler {
 
   @Inject
   LinksHeaderParsing linksHeaderParsing;
+
+  @Inject
+  GitHubBuilder gitHubBuilder;
 
   /**
    * Creates a new service account in the Octopus cloud instance.
@@ -358,7 +362,7 @@ public class GitHubRepoHandler {
       final String branch) throws IOException {
     final Path inputPath = Paths.get(path);
 
-    final GitHub gitHub = new GitHubBuilder()
+    final GitHub gitHub = gitHubBuilder
         .withOAuthToken(githubToken)
         /*
           Note that we must define a connector here, as the GitHubConnectorSubstitution removed
@@ -383,20 +387,22 @@ public class GitHubRepoHandler {
     GHTreeBuilder treeBuilder = repo.createTree().baseTree(targetBranch.getSHA1());
 
     // loop over all the files and add them to the treebuilder.
-    Collection<File> files = FileUtils.listFiles(new File(path), null, true);
-    for (final File file : files) {
+    if (Files.exists(inputPath)) {
+      Collection<File> files = FileUtils.listFiles(new File(path), null, true);
+      for (final File file : files) {
 
-      // don't process git dirs if they exist
-      if (!pathHasIgnoreDirectory(file.getAbsolutePath())) {
-        final String relativePath = inputPath.relativize(file.toPath()).toString()
-            .replaceAll("\\\\", "/");
+        // don't process git dirs if they exist
+        if (!pathHasIgnoreDirectory(file.getAbsolutePath())) {
+          final String relativePath = inputPath.relativize(file.toPath()).toString()
+              .replaceAll("\\\\", "/");
 
-        Log.info("Adding " + relativePath);
+          Log.info("Adding " + relativePath);
 
-        treeBuilder = treeBuilder.add(
-            relativePath,
-            com.google.common.io.Files.toByteArray(file),
-            fileIsExecutable(file));
+          treeBuilder = treeBuilder.add(
+              relativePath,
+              com.google.common.io.Files.toByteArray(file),
+              fileIsExecutable(file));
+        }
       }
     }
 

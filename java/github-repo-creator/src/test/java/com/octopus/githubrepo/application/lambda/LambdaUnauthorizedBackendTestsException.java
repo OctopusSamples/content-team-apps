@@ -9,8 +9,10 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaUnauthorizedBackendTestsException extends BaseTest {
 
   private static final String API_ENDPOINT = "/api/populategithubrepo";

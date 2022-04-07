@@ -10,7 +10,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaTests extends BaseTest {
 
   private static final String API_ENDPOINT = "/api/populategithubrepo";
@@ -28,9 +31,6 @@ public class LambdaTests extends BaseTest {
 
   @Inject
   ServiceAccountApi api;
-
-  @Inject
-  ResourceConverter resourceConverter;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;

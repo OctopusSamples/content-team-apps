@@ -170,7 +170,7 @@ public class ServiceAccountApi implements
       }
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInputException e) {
+    } catch (final InvalidInputException | IllegalArgumentException e) {
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();

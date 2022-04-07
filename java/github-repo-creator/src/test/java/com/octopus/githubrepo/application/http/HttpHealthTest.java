@@ -3,7 +3,9 @@ package com.octopus.githubrepo.application.http;
 import static io.restassured.RestAssured.given;
 
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import lombok.NonNull;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,9 +13,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HttpHealthTest extends BaseTest {
 
-  private static final String HEALTH_ENDPOINT = "/health/serviceaccounts";
+  private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @ParameterizedTest
   @ValueSource(

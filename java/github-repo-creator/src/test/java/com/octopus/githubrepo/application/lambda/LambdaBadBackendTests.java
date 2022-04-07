@@ -8,9 +8,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaBadBackendTests extends BaseTest {
 
   private static final String API_ENDPOINT = "/api/populategithubrepo";
@@ -39,23 +42,6 @@ public class LambdaBadBackendTests extends BaseTest {
   public void setup() throws DocumentSerializationException {
     Mockito.when(handler.create(any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
     Mockito.when(healthHandler.getHealth(any(), any())).thenThrow(new RuntimeException());
-  }
-
-  @Test
-  public void testUnexpectedExceptionGetAll() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
-    apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(API_ENDPOINT);
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
-    assertEquals(500, postResponse.getStatusCode());
   }
 
   @Test

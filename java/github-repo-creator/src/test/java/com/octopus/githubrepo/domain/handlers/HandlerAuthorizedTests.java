@@ -6,8 +6,10 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -18,6 +20,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HandlerAuthorizedTests extends BaseTest {
 
   @Inject
@@ -36,9 +39,9 @@ public class HandlerAuthorizedTests extends BaseTest {
 
   @Test
   @Transactional
-  public void testCreateAudit() {
+  public void testCreateResource() {
     assertThrows(UnauthorizedException.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new CreateGithubRepo()),
-        null, null, null, null));
+        null, null, null, "blah"));
   }
 }

@@ -6,7 +6,9 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +18,11 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HttpApiTest extends BaseTest {
 
-  private static final String API_ENDPOINT = "/api/customers";
-  private static final String HEALTH_ENDPOINT = "/health/customers";
+  private static final String API_ENDPOINT = "/api/populategithubrepo";
+  private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @Inject ResourceConverter resourceConverter;
 
@@ -66,7 +69,8 @@ public class HttpApiTest extends BaseTest {
             .accept("application/vnd.api+json")
             .header("data-partition", "main")
             .contentType("application/vnd.api+json")
-            .when()
+            .cookie("GitHubUserSession", "blah")
+        .when()
             .body("{}")
             .post(API_ENDPOINT)
             .then()
@@ -79,7 +83,8 @@ public class HttpApiTest extends BaseTest {
         .accept("application/vnd.api+json")
         .header("data-partition", "main")
         .contentType("application/vnd.api+json")
-        .when()
+        .cookie("GitHubUserSession", "blah")
+    .when()
         .get(API_ENDPOINT + "/100000000000")
         .then()
         .statusCode(404);

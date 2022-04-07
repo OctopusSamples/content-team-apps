@@ -41,6 +41,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
+import org.kohsuke.github.GitHubBuilder;
 
 /**
  * Produces a number of objects for injection.
@@ -234,5 +235,14 @@ public class UtilityProducer {
   public AsymmetricDecryptor getAsymmetricDecryptor()
       throws NoSuchPaddingException, NoSuchAlgorithmException {
     return new RsaCryptoUtilsDecryptor();
+  }
+
+  /**
+   * Produces an instance of GitHubBuilder.
+   */
+  @ApplicationScoped
+  @Produces
+  public GitHubBuilder getGitHubBuilder() {
+    return new GitHubBuilder();
   }
 }

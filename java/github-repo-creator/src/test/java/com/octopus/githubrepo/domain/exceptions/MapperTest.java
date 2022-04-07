@@ -5,18 +5,21 @@ import com.github.jasminb.jsonapi.exceptions.InvalidJsonApiResourceException;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.InvalidAcceptHeadersException;
 import com.octopus.exceptions.InvalidInputException;
+import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.framework.providers.DocumentSerializationExceptionMapper;
 import com.octopus.githubrepo.domain.framework.providers.EntityNotFoundMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidAcceptHeadersMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidInputExceptionMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidJsonApiResourceExceptionMapper;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestProfile(TestingProfile.class)
 public class MapperTest {
 
   @Inject
