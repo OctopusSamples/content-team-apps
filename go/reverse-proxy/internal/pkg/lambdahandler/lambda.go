@@ -59,8 +59,9 @@ func HandleRequest(_ context.Context, req events.APIGatewayProxyRequest) (events
 func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	upstreamUrl, upstreamLambda, upstreamSqs, err := extractUpstreamService(req)
 
-	if err == nil {
-
+	if err != nil {
+		log.Println("ReverseProxy-Routing-ParseError " + err.Error())
+	} else {
 		if upstreamUrl != nil {
 			/*
 				This avoids loops where the routing header pointed back to the API Gateway, which in turn
@@ -84,6 +85,8 @@ func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRe
 			return callSqs(upstreamSqs, req)
 		}
 	}
+
+	// fall back to the default values
 
 	if os.Getenv("DEFAULT_LAMBDA") != "" {
 		return callLambda(os.Getenv("DEFAULT_LAMBDA"), req)
@@ -324,7 +327,7 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 
 	if err != nil {
 		log.Println("Routing header was not defined")
-		return nil, "", "", errors.New("routing header is required")
+		return nil, "", "", nil
 	}
 
 	// Log the headers for debugging
@@ -333,7 +336,6 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 	}
 
 	if !authorizeRouting(req) {
-		log.Println("User is not authorized to route requests")
 		return nil, "", "", errors.New("user is not authorized to route requests")
 	}
 
@@ -357,26 +359,37 @@ func extractUpstreamService(req events.APIGatewayProxyRequest) (http *url.URL, l
 
 			url, err := getDestinationUrl(destination)
 
-			if err == nil {
-				log.Println("ReverseProxy-Url-UrlParseError " + err.Error())
+			if err != nil {
+				log.Println("ReverseProxy-Routing-UrlParseError " + err.Error())
+			}
+
+			if url != nil {
 				return url, "", "", nil
 			}
 
 			lambda, err := getDestinationLambda(destination)
 
-			if err == nil {
+			if err != nil {
+				log.Println("ReverseProxy-Routing-LambdaParseError " + err.Error())
+			}
+
+			if lambda != "" {
 				return nil, lambda, "", nil
 			}
 
 			sqs, err := getDestinationSqs(destination)
 
-			if err == nil {
+			if err != nil {
+				log.Println("ReverseProxy-Routing-SqsParseError " + err.Error())
+			}
+
+			if sqs != "" {
 				return nil, "", sqs, nil
 			}
 		}
 	}
 
-	return nil, "", "", errors.New("failed to find upstream service - ensure the route is in the format route[/api/path:METHOD]=dest[upstream name], where \"dest\" is \"url\", \"lambda\", or \"sqs\"")
+	return nil, "", "", nil
 }
 
 func getComponentsFromHeader(header string) []string {
@@ -474,7 +487,7 @@ func getDestinationUrl(ruleDestination string) (*url.URL, error) {
 		}
 	}
 
-	return nil, errors.New("destination was not a URL")
+	return nil, nil
 }
 
 func getDestinationLambda(ruleDestination string) (string, error) {
@@ -487,7 +500,7 @@ func getDestinationLambda(ruleDestination string) (string, error) {
 		return destination, nil
 	}
 
-	return "", errors.New("destination was not a lambda")
+	return "", nil
 }
 
 func getDestinationSqs(ruleDestination string) (string, error) {
