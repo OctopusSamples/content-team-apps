@@ -98,7 +98,6 @@ public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
 
-    // This is not a valid ZIP file
     Mockito.when(zipFileResponse.readEntity(InputStream.class))
         .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
             Resources.toByteArray(Resources.getResource("template.zip"))));
