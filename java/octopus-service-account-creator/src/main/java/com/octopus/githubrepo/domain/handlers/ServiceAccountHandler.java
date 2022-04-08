@@ -173,8 +173,8 @@ public class ServiceAccountHandler {
 
       return jsonApiServiceUtils.respondWithResource(combinedResponse);
     } catch (final ClientWebApplicationException ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-          + ex.getResponse().readEntity(String.class));
+      Try.run(() -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
+          + ex.getResponse().readEntity(String.class)));
       throw new InvalidInputException();
     }
   }

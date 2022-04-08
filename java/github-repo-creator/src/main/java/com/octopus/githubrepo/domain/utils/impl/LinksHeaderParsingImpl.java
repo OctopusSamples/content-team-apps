@@ -4,6 +4,7 @@ import com.octopus.githubrepo.domain.utils.LinksHeaderParsing;
 import java.util.Arrays;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Implementation of LinksHeaderParsing.
@@ -12,7 +13,11 @@ import javax.enterprise.context.ApplicationScoped;
 public class LinksHeaderParsingImpl implements LinksHeaderParsing {
 
   @Override
-  public Optional<String> getLastPage(String link) {
+  public Optional<String> getLastPage(final String link) {
+    if (StringUtils.isBlank(link)) {
+      return Optional.empty();
+    }
+
     // split on commas
     return Arrays.stream(link.split(","))
         .map(String::trim)

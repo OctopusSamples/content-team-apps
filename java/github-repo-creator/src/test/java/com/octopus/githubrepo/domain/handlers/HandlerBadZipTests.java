@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.kohsuke.github.GitHubBuilder;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 
 /**
  * Simulate tests when a bad zip file is returned by the upstream service.
@@ -79,17 +80,15 @@ public class HandlerBadZipTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true);
-
-    final Response mockRepoResponse = Mockito.mock(Response.class);
-    Mockito.when(mockRepoResponse.getStatus()).thenReturn(404);
+    mockGithubClient(gitHubClient, true, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
 
     // This is not a valid ZIP file
-    Mockito.when(zipFileResponse.readEntity(InputStream.class)).thenReturn(new ByteArrayInputStream(
-        Resources.toByteArray(Resources.getResource("bad.zip"))));
+    Mockito.when(zipFileResponse.readEntity(InputStream.class))
+        .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
+            Resources.toByteArray(Resources.getResource("bad.zip"))));
 
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));

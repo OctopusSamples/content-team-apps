@@ -28,6 +28,7 @@ import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.connector.GitHubConnector;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 
 public class BaseGitHubTest extends BaseTest {
 
@@ -66,7 +67,13 @@ public class BaseGitHubTest extends BaseTest {
     Mockito.when(gitHubBuilder.build()).thenReturn(gitHub);
   }
 
-  protected void mockGithubClient(final GitHubClient gitHubClient, final boolean repoExists) {
+  /**
+   * Mocks the github client for various scenarios.
+   * @param gitHubClient The client to mock.
+   * @param repoExists true if the repo should be found to exist, and false otherwise
+   * @param linksExist true if the list of shas should return a paged response, and false otherwise
+   */
+  protected void mockGithubClient(final GitHubClient gitHubClient, final boolean repoExists, final boolean linksExist) {
 
     final Response notFoundResponse = Mockito.mock(Response.class);
     Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
@@ -82,13 +89,27 @@ public class BaseGitHubTest extends BaseTest {
     Mockito.when(notFoundException.getResponse()).thenReturn(notFoundResponse);
 
     final Response linksResponse = Mockito.mock(Response.class);
-    Mockito.when(linksResponse.getHeaderString(any()))
-        .thenReturn("Link: <https://api.github.com/repos?page=3&per_page=100>; rel=\"next\",\n"
-            + "<https://api.github.com/repos?page=50&per_page=100>; rel=\"last\"");
+
+    if (linksExist) {
+      Mockito.when(linksResponse.getHeaderString(any()))
+          .thenReturn("Link: <https://api.github.com/repos?page=3&per_page=100>; rel=\"next\",\n"
+              + "<https://api.github.com/repos?page=50&per_page=100>; rel=\"last\"");
+    } else {
+      Mockito.when(linksResponse.getHeaderString(any())).thenReturn("");
+    }
 
     Mockito.when(gitHubClient.checkRateLimit(any())).thenReturn(mockScopeResponse);
-    Mockito.when(gitHubClient.getSecret(any(), any(), any(), any()))
-        .thenThrow(new RuntimeException());
+    Mockito.when(gitHubClient.getSecret(any(), any(), any(), any())).thenAnswer((InvocationOnMock invocation) -> {
+      final String secretName = invocation.getArgument(3);
+
+      // indicate that a secret to be preserved already exists
+      if ("preserveme".equals(secretName)) {
+        return foundResponse;
+      }
+
+      // All others can be found to not exist
+      return notFoundResponse;
+    });
     doThrow(notFoundException).when(gitHubClient).getFile(any(), any(), any(), any(), any());
     doNothing().when(gitHubClient).createFile(any(), any(), any(), any(), any());
     Mockito.when(gitHubClient.getCommitsRaw(any(), any(), anyInt(), any()))

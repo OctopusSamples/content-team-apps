@@ -23,7 +23,7 @@ public class BaseTest {
         Secret.builder().name("secret").value("secret").encrypted(false).build(),
         Secret.builder().name("secret4").value("").encrypted(false).build(),
         Secret.builder().name("").value("secret").encrypted(false).build(),
-        Secret.builder().name("secret2").value("secret2").preserveExistingSecret(true).build(),
+        Secret.builder().name("preserveme").value("value").preserveExistingSecret(true).build(),
         Secret.builder().name("secret3").value("secret3").encrypted(true).build()));
     }
     return resource;

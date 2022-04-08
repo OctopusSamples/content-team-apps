@@ -255,8 +255,8 @@ public class GitHubRepoHandler {
           .githubRepository(repoName)
           .build());
     } catch (final ClientWebApplicationException ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-          + ex.getResponse().readEntity(String.class), ex);
+      Try.run(() -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
+          + ex.getResponse().readEntity(String.class), ex));
       throw new InvalidInputException();
     } catch (final InvalidInputException ex) {
       Log.error(
@@ -566,7 +566,7 @@ public class GitHubRepoHandler {
     final String linkHeader = response.getHeaderString("Link");
 
     // get the last page from the header
-    if (linkHeader != null) {
+    if (StringUtils.isNotBlank(linkHeader)) {
       final Optional<String> lastPage = linksHeaderParsing.getLastPage(linkHeader);
 
       Log.info("Getting last SHA from page " + lastPage.orElse("1"));

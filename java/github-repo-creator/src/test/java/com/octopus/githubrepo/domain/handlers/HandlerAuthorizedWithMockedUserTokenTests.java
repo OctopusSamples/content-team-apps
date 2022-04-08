@@ -47,6 +47,7 @@ import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.connector.GitHubConnector;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 
 /**
  * Simulate tests when a user token has been passed in.
@@ -94,12 +95,13 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true);
+    mockGithubClient(gitHubClient, true, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
-    Mockito.when(zipFileResponse.readEntity(InputStream.class)).thenReturn(new ByteArrayInputStream(
-        Resources.toByteArray(Resources.getResource("template.zip"))));
+    Mockito.when(zipFileResponse.readEntity(InputStream.class))
+        .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
+            Resources.toByteArray(Resources.getResource("template.zip"))));
 
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));

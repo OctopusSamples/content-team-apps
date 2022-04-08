@@ -1,24 +1,17 @@
 package com.octopus.githubrepo.domain.handlers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.exceptions.InvalidInputException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
-import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
-
-import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
@@ -34,39 +27,25 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
-import lombok.NonNull;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.github.GHBranch;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHCommitBuilder;
-import org.kohsuke.github.GHRef;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHTree;
-import org.kohsuke.github.GHTreeBuilder;
-import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.connector.GitHubConnector;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 
+/**
+ * Simulate tests when a request to an upstream service (like the GitHub API) fails.
+ */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class HandlerTests extends BaseGitHubTest {
-
-  private static final String HEALTH_ENDPOINT = "/health/serviceaccounts";
+public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
 
   @Inject
-  GitHubRepoHandler handler;
-
-  @Inject
-  HealthHandler healthHandler;
+  GitHubRepoHandler gitHubRepoHandler;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -105,11 +84,25 @@ public class HandlerTests extends BaseGitHubTest {
     mockGithubClient(gitHubBuilder);
     mockGithubClient(gitHubClient, true, false);
 
+    final Response notFoundResponse = Mockito.mock(Response.class);
+    Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
+    Mockito.when(notFoundResponse.readEntity(String.class)).thenReturn("resource missing");
+
+    final ClientWebApplicationException notFoundException = Mockito.mock(
+        ClientWebApplicationException.class);
+    Mockito.when(notFoundException.getResponse()).thenReturn(notFoundResponse);
+
+    // Simulate a failed upstream call
+    Mockito.when(gitHubClient.getUser(any())).thenThrow(notFoundException);
+
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
+
+    // This is not a valid ZIP file
     Mockito.when(zipFileResponse.readEntity(InputStream.class))
         .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
             Resources.toByteArray(Resources.getResource("template.zip"))));
+
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
@@ -120,47 +113,10 @@ public class HandlerTests extends BaseGitHubTest {
         .thenReturn(zipFileResponse);
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      HEALTH_ENDPOINT + ",POST",
-  })
-  public void testHealth(@NonNull final String path, @NonNull final String method)
-      throws DocumentSerializationException {
-    assertNotNull(healthHandler.getHealth(path, method));
-  }
-
-  @Test
-  public void testHealthNulls() {
-    assertThrows(NullPointerException.class, () -> healthHandler.getHealth(null, "GET"));
-    assertThrows(NullPointerException.class, () -> healthHandler.getHealth("blah", null));
-  }
-
   @Test
   @Transactional
-  public void createResourceTestNull() {
-    assertThrows(NullPointerException.class, () -> {
-      handler.create(
-          null,
-          null,
-          null,
-          null,
-          null);
-    });
-
-    assertThrows(NullPointerException.class, () -> {
-      final CreateGithubRepo audit = createResource();
-      handler.create(resourceToResourceDocument(resourceConverter, audit),
-          null,
-          null,
-          null,
-          null);
-    });
-  }
-
-  @Test
-  @Transactional
-  public void testCreateResource() throws DocumentSerializationException {
-    final CreateGithubRepo resultObject = createResource(handler, resourceConverter);
-    assertEquals("myrepo", resultObject.getGithubRepository());
+  public void testCreateResource() {
+    assertThrows(
+        InvalidInputException.class, () -> createResource(gitHubRepoHandler, resourceConverter));
   }
 }
