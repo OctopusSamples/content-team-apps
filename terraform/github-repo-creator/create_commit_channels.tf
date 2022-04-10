@@ -1,6 +1,6 @@
 resource "octopusdeploy_channel" "feature_branch" {
   name        = "Feature Branches"
-  project_id  = octopusdeploy_project.deploy_project.id
+  project_id  = octopusdeploy_project.create_commit_project.id
   description = "The channel through which feature branches are deployed"
   rule {
     tag = ".+"
@@ -12,7 +12,7 @@ resource "octopusdeploy_channel" "feature_branch" {
 
 resource "octopusdeploy_channel" "mainline" {
   name        = "Mainline"
-  project_id  = octopusdeploy_project.deploy_project.id
+  project_id  = octopusdeploy_project.create_commit_project.id
   description = "The channel through which mainline releases are deployed"
   is_default  = true
   rule {
