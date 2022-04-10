@@ -183,7 +183,7 @@ public class GitHubCommitHandler {
           ? DEFAULT_BRANCH : UPDATE_BRANCH;
 
       // Make an async call to populate the new repo
-      populateRepoClient.populateRepo(jsonApiServiceUtilsCreateGithubRepo.respondWithResource(
+      try (final Response response = populateRepoClient.populateRepo(jsonApiServiceUtilsCreateGithubRepo.respondWithResource(
               PopulateGithubRepo
                   .builder()
                   .generator(createGithubRepo.getGenerator())
@@ -195,7 +195,11 @@ public class GitHubCommitHandler {
           routingHeader,
           authorizationHeader,
           null,
-          GlobalConstants.ASYNC_INVOCATION_TYPE);
+          GlobalConstants.ASYNC_INVOCATION_TYPE)) {
+        if (response.getStatus() != 202) {
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus() + " but expected a 202");
+        }
+      }
 
       // return the details of the new repo
       return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
