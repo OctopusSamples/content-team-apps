@@ -163,5 +163,5 @@ resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
   description = "The location of the GitHub Repo Creator API."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "/#{Octopus.Environment.Name}/api/populategithubrepo"
+  value = "/#{Octopus.Environment.Name}/api/githubcommit"
 }
