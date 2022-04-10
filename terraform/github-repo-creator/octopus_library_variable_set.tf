@@ -152,6 +152,15 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   value = "GitHubRepoCreatorLambda"
 }
 
+resource "octopusdeploy_variable" "cloudformation_lambda_create_commit" {
+  name = "Lambda.GitHubCommitCreatorName"
+  type = "String"
+  description = "The name of the Lambda."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "GitHubCommitCreatorLambda"
+}
+
 resource "octopusdeploy_variable" "cloudformation_service_disable" {
   name = "Service.Disable"
   type = "String"
