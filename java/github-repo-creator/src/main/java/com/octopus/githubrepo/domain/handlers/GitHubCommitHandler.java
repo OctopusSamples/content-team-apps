@@ -42,15 +42,15 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
  * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
  * to repositories.
  *
- * The GitHub Commit handler is responsible for creating a new commit in GitHub. Every time the
+ * <p>The GitHub Commit handler is responsible for creating a new commit in GitHub. Every time the
  * App Builder is run, a new commit is created somewhere, so this maps nicely to the idea
  * of a REST endpoint creating a new commit with a POST request.
  *
- * This handler is expected to return a 202 HTTP code to the caller to indicate that the request
+ * <p>This handler is expected to return a 202 HTTP code to the caller to indicate that the request
  * was accepted, but that the actual commit is going to be created later. The response body
  * includes the details of the GitHub repo where the commit will be created.
  *
- * This handler solves a number of issues:
+ * <p>This handler solves a number of issues:
  * 1. It is more RESTful than simply executing an action to populate repo. Conceptually, we are
  *    creating a new commit every time this service is run, which maps nicely to a JSONAPI
  *    create endpoint.
@@ -62,7 +62,7 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
  * 3. The long-running operation of populating the repo is handled async and API clients don't
  *    need to be aware of the details.
  *
- * It is the responsibility of the GitHubRepoHandler to create the commit with the contents of the
+ * <p>It is the responsibility of the GitHubRepoHandler to create the commit with the contents of the
  * template to be saved in the git repo. This can take a bit of time, and so is done async.
  */
 @ApplicationScoped
