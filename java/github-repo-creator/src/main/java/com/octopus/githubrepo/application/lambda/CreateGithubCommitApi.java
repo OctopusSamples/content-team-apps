@@ -9,12 +9,15 @@ import com.octopus.Constants;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.githubrepo.domain.ServiceConstants;
+import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
+import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
-import com.octopus.githubrepo.domain.handlers.HealthHandler;
-import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -26,7 +29,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * The Lambda entry point used to return audit resources.
+ * The Lambda entry point used to create a GitHub commit.
  *
  * <p>Note that Quarkus (at least at 2.7) had issues running both a web server and the mock Lambda
  * server at the same time. This is solved by not compiling the io.quarkus:quarkus-amazon-lambda
@@ -37,13 +40,13 @@ import org.apache.commons.lang3.ObjectUtils;
  *
  * <p>mvn -Pnative -Plambda package
  */
-@Named("ServiceAccounts")
+@Named("CreateGithubCommit")
 @ApplicationScoped
-public class ServiceAccountApi implements
+public class CreateGithubCommitApi implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-  private static final String API_PATH = "/api/populategithubrepo";
-  private static final String HEALTH_PATH = "/health/populategithubrepo";
+  private static final String API_PATH = "/api/githubcommit";
+  private static final String HEALTH_PATH = "/health/githubcommit";
 
   /**
    * A regular expression matching the collection of entities.
@@ -52,11 +55,10 @@ public class ServiceAccountApi implements
   /**
    * A regular expression matching a health endpoint.
    */
-  public static final Pattern HEALTH_RE =
-      Pattern.compile(HEALTH_PATH + "/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
+  public static final Pattern HEALTH_RE = Pattern.compile(HEALTH_PATH + "/POST");
 
   @Inject
-  GitHubRepoHandler gitHubRepoHandler;
+  GitHubCommitHandler gitHubCommitHandler;
 
   @Inject
   HealthHandler healthHandler;
@@ -69,6 +71,12 @@ public class ServiceAccountApi implements
 
   @Inject
   ProxyResponseBuilder proxyResponseBuilder;
+
+  @Inject
+  RequestMatcher requestMatcher;
+
+  @Inject
+  RequestBodyExtractor requestBodyExtractor;
 
 
   /**
@@ -126,25 +134,27 @@ public class ServiceAccountApi implements
   private Optional<APIGatewayProxyResponseEvent> checkHealth(
       final APIGatewayProxyRequestEvent input) {
 
-    if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
-      try {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
-                .withBody(healthHandler.getHealth(
-                    input.getPath().substring(0, input.getPath().lastIndexOf("/")),
-                    input.getPath().substring(input.getPath().lastIndexOf("/")))));
-      } catch (final Exception e) {
-        e.printStackTrace();
-        return Optional.of(proxyResponseBuilder.buildError(e));
-      }
+    if (!requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
+      return Optional.empty();
     }
 
-    return Optional.empty();
+    try {
+      return Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(200)
+              .withBody(healthHandler.getHealth(
+                  input.getPath().substring(0, input.getPath().lastIndexOf("/")),
+                  input.getPath().substring(input.getPath().lastIndexOf("/")))));
+    } catch (final Exception e) {
+      e.printStackTrace();
+      return Optional.of(proxyResponseBuilder.buildError(e));
+    }
   }
 
   /**
-   * Create a audit.
+   * Create a github commit. Note this endpoint returns a 202, as the actual commit is created
+   * in an async operation after this request has returned. The returned entity contains the
+   * details of the repo that the commit will be placed into.
    *
    * @param input The Lambda request.
    * @return The Lambda response.
@@ -152,13 +162,13 @@ public class ServiceAccountApi implements
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
+                .withStatusCode(202)
                 .withBody(
-                    gitHubRepoHandler.create(
-                        getBody(input),
+                    gitHubCommitHandler.create(
+                        requestBodyExtractor.getBody(input),
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
@@ -174,44 +184,9 @@ public class ServiceAccountApi implements
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, getBody(input)));
+      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Determine if the Lambda request matches path and method.
-   *
-   * @param input  The Lambda request.
-   * @param regex  The path regex.
-   * @param method The HTTP method.
-   * @return true if this request matches the supplied values, and false otherwise.
-   */
-  public boolean requestIsMatch(
-      @NonNull final APIGatewayProxyRequestEvent input,
-      @NonNull final Pattern regex,
-      @NonNull final String method) {
-    final String path = ObjectUtils.defaultIfNull(input.getPath(), "");
-    final String requestMethod = ObjectUtils.defaultIfNull(input.getHttpMethod(), "").toLowerCase();
-    return regex.matcher(path).matches() && method.toLowerCase().equals(requestMethod);
-  }
-
-  /**
-   * Get the request body, and deal with the fact that it may be base64 encoded.
-   *
-   * @param input The Lambda request
-   * @return The decoded request body
-   */
-  private String getBody(final APIGatewayProxyRequestEvent input) {
-    final String body = ObjectUtils.defaultIfNull(input.getBody(), "");
-    final String isBase64Encoded =
-        ObjectUtils.defaultIfNull(input.getIsBase64Encoded(), "").toString().toLowerCase();
-
-    if ("true".equals(isBase64Encoded)) {
-      return new String(Base64.getDecoder().decode(body));
-    }
-
-    return body;
   }
 }

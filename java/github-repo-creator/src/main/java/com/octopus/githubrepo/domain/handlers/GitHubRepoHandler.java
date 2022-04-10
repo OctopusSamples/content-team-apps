@@ -16,7 +16,7 @@ import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.files.TemporaryResources;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
 import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
@@ -137,7 +137,7 @@ public class GitHubRepoHandler {
 
   @Inject
   @Named("JsonApiServiceUtilsCreateGithubRepo")
-  JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
+  JsonApiResourceUtils<PopulateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
 
   @Inject
   CryptoUtils cryptoUtils;
@@ -189,7 +189,7 @@ public class GitHubRepoHandler {
     }
 
     if (disableServiceFeature.getDisableRepoCreation()) {
-      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
+      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(PopulateGithubRepo
           .builder()
           .id("")
           .githubRepository("")
@@ -198,11 +198,11 @@ public class GitHubRepoHandler {
 
     try {
       // Extract the create service account action from the HTTP body.
-      final CreateGithubRepo createGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(
-          document, CreateGithubRepo.class);
+      final PopulateGithubRepo populateGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(
+          document, PopulateGithubRepo.class);
 
       // Ensure the validity of the request.
-      verifyRequest(createGithubRepo);
+      verifyRequest(populateGithubRepo);
 
       // Decrypt the github token passed in as a cookie.
       final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
@@ -214,45 +214,42 @@ public class GitHubRepoHandler {
       // Get the GitHub login name
       final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
 
-      // Get the destination repo name
-      final String repoName = createGithubRepo.isCreateNewRepo()
-          ? getUniqueRepoName(decryptedGithubToken, createGithubRepo, user)
-          : createGithubRepo.getGithubRepository();
-
       /*
-       Create a new, unique repo, or reuse an existing repo.
-       If a new repo is created, we populate main. If an existing repo is reused, we populate
-       app-builder-update.
+       Ensure the repo exists. We do expect that the repo was created by an upstream service
+       before we get here, but we also support creating the repo as part of this rquest.
        */
-      final String branch = createRepo(decryptedGithubToken, createGithubRepo, user, repoName)
-          ? DEFAULT_BRANCH : UPDATE_BRANCH;
+      createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository());
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, createGithubRepo, user, repoName);
+      createSecrets(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository());
 
-      if (!DEFAULT_BRANCH.equals(branch)) {
-        createBranch(decryptedGithubToken, user, repoName, branch);
-      } else {
-        // The empty repo needs a file pushed to ensure the GitHub client can find the default branch.
-        populateInitialFile(decryptedGithubToken, createGithubRepo, user, repoName);
-      }
+      // Ensure there is an initial commit in the repo to use as the basis of other commits
+      populateInitialFile(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository());
+
+      // ensure the branch exists
+      createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch());
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
           .get(() -> downloadTemplate(
-              createGithubRepo,
+              populateGithubRepo,
               authorizationHeader,
               null,
               routingHeader));
 
       // Commit the files
-      commitFiles(decryptedGithubToken, user, repoName, templateDir, branch);
+      final String commit = commitFiles(
+          decryptedGithubToken,
+          user,
+          populateGithubRepo.getGithubRepository(),
+          templateDir,
+          populateGithubRepo.getBranch());
 
-      // return the details of the new repo
-      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(CreateGithubRepo
+      // return the details of the new commit
+      return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(PopulateGithubRepo
           .builder()
-          .id(user.getLogin() + "/" + repoName)
-          .githubRepository(repoName)
+          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/" + commit)
+          .githubRepository(populateGithubRepo.getGithubRepository())
           .build());
     } catch (final ClientWebApplicationException ex) {
       Try.run(() -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
@@ -293,7 +290,7 @@ public class GitHubRepoHandler {
   }
 
   private String downloadTemplate(
-      final CreateGithubRepo createGithubRepo,
+      final PopulateGithubRepo populateGithubRepo,
       final String authHeader,
       final String serviceAuthHeader,
       final String routingHeader)
@@ -301,8 +298,8 @@ public class GitHubRepoHandler {
 
     final GenerateTemplate generateTemplate = GenerateTemplate.builder()
         .id("")
-        .generator(createGithubRepo.getGenerator())
-        .options(createGithubRepo.getOptions())
+        .generator(populateGithubRepo.getGenerator())
+        .options(populateGithubRepo.getOptions())
         .build();
 
     final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(
@@ -354,7 +351,7 @@ public class GitHubRepoHandler {
     }
   }
 
-  private void commitFiles(
+  private String commitFiles(
       final String githubToken,
       final GitHubUser user,
       final String repoName,
@@ -420,6 +417,8 @@ public class GitHubRepoHandler {
         .create();
 
     repo.getRef("heads/" + branch).updateTo(commit.getSHA1());
+
+    return commit.getSHA1();
   }
 
   private boolean fileIsExecutable(final File file) {
@@ -433,7 +432,6 @@ public class GitHubRepoHandler {
   }
 
   private boolean createRepo(final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo,
       final GitHubUser user,
       final String repoName) {
 
@@ -441,8 +439,7 @@ public class GitHubRepoHandler {
      If we are creating a unique repo name, or creating a new common repo, go ahead and
      create a new GitHub repo.
      */
-    if (createGithubRepo.isCreateNewRepo()
-        || !doesRepoExist(decryptedGithubToken, user, repoName)) {
+    if (!doesRepoExist(decryptedGithubToken, user, repoName)) {
       gitHubClient.createRepo(
           GithubRepo.builder().name(repoName).build(),
           "token " + decryptedGithubToken);
@@ -454,15 +451,15 @@ public class GitHubRepoHandler {
 
   private String getUniqueRepoName(
       final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo,
+      final PopulateGithubRepo populateGithubRepo,
       final GitHubUser user) {
-    String repoName = createGithubRepo.getGithubRepository();
+    String repoName = populateGithubRepo.getGithubRepository();
 
     // If we want to create a fresh repo every time, add a counter to the end of the repo name
     for (int i = 1; i <= 100; ++i) {
 
       if (doesRepoExist(decryptedGithubToken, user, repoName)) {
-        repoName = createGithubRepo.getGithubRepository() + i;
+        repoName = populateGithubRepo.getGithubRepository() + i;
       } else {
         break;
       }
@@ -502,7 +499,7 @@ public class GitHubRepoHandler {
    */
   private void populateInitialFile(
       final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo,
+      final PopulateGithubRepo populateGithubRepo,
       final GitHubUser user,
       final String repoName) {
 
@@ -643,7 +640,7 @@ public class GitHubRepoHandler {
 
   private void createSecrets(
       final String decryptedGithubToken,
-      final CreateGithubRepo createGithubRepo,
+      final PopulateGithubRepo populateGithubRepo,
       final GitHubUser user,
       final String repoName) {
 
@@ -662,8 +659,8 @@ public class GitHubRepoHandler {
     final Key githubKey = Key.fromBase64String(publicKey.getKey());
 
     // Add the repository secrets.
-    if (createGithubRepo.getSecrets() != null) {
-      for (final Secret secret : createGithubRepo.getSecrets()) {
+    if (populateGithubRepo.getSecrets() != null) {
+      for (final Secret secret : populateGithubRepo.getSecrets()) {
         if (StringUtils.isBlank(secret.getName())) {
           continue;
         }
@@ -724,8 +721,8 @@ public class GitHubRepoHandler {
   /**
    * Ensure the service account being created has the correct values.
    */
-  private void verifyRequest(final CreateGithubRepo resource) {
-    final Set<ConstraintViolation<CreateGithubRepo>> violations = validator.validate(resource);
+  private void verifyRequest(final PopulateGithubRepo resource) {
+    final Set<ConstraintViolation<PopulateGithubRepo>> violations = validator.validate(resource);
     if (violations.isEmpty()) {
       return;
     }

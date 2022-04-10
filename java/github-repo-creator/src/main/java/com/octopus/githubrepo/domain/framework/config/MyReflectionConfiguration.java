@@ -6,7 +6,8 @@ import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
 import com.github.jasminb.jsonapi.StringIdHandler;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -33,7 +34,8 @@ import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector;
  */
 @RegisterForReflection(
     targets = {StringIdHandler.class,
-        CreateGithubRepo.class,
+        PopulateGithubRepo.class,
+        CreateGithubCommit.class,
         Health.class,
         GenerateTemplate.class,
         IntegerIdHandler.class,

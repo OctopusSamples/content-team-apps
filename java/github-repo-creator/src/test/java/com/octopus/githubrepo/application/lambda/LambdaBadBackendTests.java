@@ -30,7 +30,7 @@ public class LambdaBadBackendTests extends BaseTest {
   private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @Inject
-  ServiceAccountApi api;
+  PopulateGithubRepoApi api;
 
   @InjectMock
   GitHubRepoHandler handler;

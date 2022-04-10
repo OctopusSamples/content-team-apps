@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
@@ -30,7 +29,7 @@ public class LambdaTests extends BaseTest {
   private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @Inject
-  ServiceAccountApi api;
+  PopulateGithubRepoApi api;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;

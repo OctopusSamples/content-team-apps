@@ -9,7 +9,9 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
+import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtilsCreateGithubCommit;
 import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtilsGenerateTemplate;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
@@ -25,13 +27,17 @@ import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
 import com.octopus.lambda.impl.CaseInsensitiveCookieExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.impl.JsonApiServiceUtilsCreateGithubRepo;
+import com.octopus.lambda.impl.RequestBodyExtractorImpl;
+import com.octopus.lambda.impl.RequestMatcherImpl;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
@@ -190,9 +196,23 @@ public class UtilityProducer {
   @ApplicationScoped
   @Produces
   @Named("JsonApiServiceUtilsCreateGithubRepo")
-  public JsonApiResourceUtils<CreateGithubRepo> jsonApiServiceUtilsCreateGithubRepo(
+  public JsonApiResourceUtils<PopulateGithubRepo> jsonApiServiceUtilsCreateGithubRepo(
       final ResourceConverter resourceConverter) {
     return new JsonApiServiceUtilsCreateGithubRepo(resourceConverter);
+  }
+
+  /**
+   * Produces a JsonApiResourceUtils typed for CreateGithubCommit.
+   *
+   * @param resourceConverter The JSON api resource converter.
+   * @return An instance of JsonApiResourceUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  @Named("JsonApiServiceUtilsCreateGithubCommit")
+  public JsonApiResourceUtils<CreateGithubCommit> jsonApiServiceUtilsCreateGithubCommit(
+      final ResourceConverter resourceConverter) {
+    return new JsonApiServiceUtilsCreateGithubCommit(resourceConverter);
   }
 
   /**
@@ -244,5 +264,23 @@ public class UtilityProducer {
   @Produces
   public GitHubBuilder getGitHubBuilder() {
     return new GitHubBuilder();
+  }
+
+  /**
+   * Produces an instance of RequestMatcher.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestMatcher getRequestMatcher() {
+    return new RequestMatcherImpl();
+  }
+
+  /**
+   * Produces an instance of RequestBodyExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestBodyExtractor getRequestBodyExtractor() {
+    return new RequestBodyExtractorImpl();
   }
 }

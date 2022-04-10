@@ -3,7 +3,6 @@ package com.octopus.githubrepo.domain.entities;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -12,16 +11,14 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * Represents an JSONAPI resource requesting the creation of a new Octopus service account.
- * Note this resource encapsulates the details of the cloud instance to create the account in
- * as well as the details of the new account.
+ * Represents an JSONAPI resource requesting the creation of a new GitHub repo.
  */
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@Type("creategithubrepo")
+@Type("populategithubrepo")
 @Jacksonized
-public class CreateGithubRepo  {
+public class PopulateGithubRepo {
 
   @Id
   private String id;
@@ -29,11 +26,12 @@ public class CreateGithubRepo  {
   @NotBlank
   private String githubRepository;
 
+  @NotBlank
+  private String branch;
+
   private String generator;
 
   private Map<String, String> options;
 
   private Collection<Secret> secrets;
-
-  private boolean createNewRepo;
 }

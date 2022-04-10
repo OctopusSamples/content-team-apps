@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 /** WHen this app is run as a web server, this class defines the REST API endpoints. */
 @Path("/api")
 @RequestScoped
-public class GitHubRepoResource {
+public class GitHubCommitResource {
 
   @Inject
   GitHubRepoHandler gitHubRepoHandler;
@@ -39,7 +39,7 @@ public class GitHubRepoResource {
    *     resource.
    */
   @POST
-  @Path("/populategithubrepo")
+  @Path("/githubcommit")
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Transactional
@@ -52,7 +52,7 @@ public class GitHubRepoResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(
+    return Response.accepted(
             gitHubRepoHandler.create(
                 document,
                 authorizationHeader,

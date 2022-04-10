@@ -3,10 +3,9 @@ package com.octopus.githubrepo.domain.handlers;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
@@ -28,7 +27,7 @@ public class BadInputHandlerTests extends BaseGitHubTest {
   @Test
   @Transactional
   public void testCreateBadResource() {
-    final CreateGithubRepo resource = new CreateGithubRepo();
+    final PopulateGithubRepo resource = new PopulateGithubRepo();
     assertThrows(InvalidInputException.class, () ->
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),

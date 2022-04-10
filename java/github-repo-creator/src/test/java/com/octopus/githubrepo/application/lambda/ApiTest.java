@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class ApiTest {
   private static final String API_ENDPOINT = "/api/populategithubrepo";
   private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
-  private static final ServiceAccountApi API = new ServiceAccountApi();
+  private static final PopulateGithubRepoApi API = new PopulateGithubRepoApi();
 
   @ParameterizedTest
   @ValueSource(strings = {HEALTH_ENDPOINT + "/POST"})

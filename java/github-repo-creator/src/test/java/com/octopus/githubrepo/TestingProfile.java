@@ -12,6 +12,7 @@ public class TestingProfile implements QuarkusTestProfile {
         .put("github.encryption", "12345678901234567890123456789012")
         .put("github.salt", "12345678901234567890123456789012")
         .put("client.private-key-base64", "blah")
+        .put("quarkus.lambda.handler", "PopulateGithubRepo")
         .build();
   }
 }

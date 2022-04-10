@@ -7,7 +7,7 @@ import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -41,7 +41,7 @@ public class HandlerAuthorizedTests extends BaseTest {
   @Transactional
   public void testCreateResource() {
     assertThrows(UnauthorizedException.class, () -> handler.create(
-        resourceToResourceDocument(resourceConverter, new CreateGithubRepo()),
+        resourceToResourceDocument(resourceConverter, new PopulateGithubRepo()),
         null, null, null, "blah"));
   }
 }

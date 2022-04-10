@@ -1,12 +1,12 @@
 package com.octopus.githubrepo.domain.utils.impl;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.octopus.githubrepo.domain.entities.CreateGithubRepo;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 
 /**
  * A concrete implementation for the CreateServiceAccount type.
  */
-public class JsonApiServiceUtilsCreateGithubRepo extends JsonApiResourceUtilsImpl<CreateGithubRepo> {
+public class JsonApiServiceUtilsCreateGithubRepo extends JsonApiResourceUtilsImpl<PopulateGithubRepo> {
   /**
    * Constructor.
    *
