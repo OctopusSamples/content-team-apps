@@ -80,7 +80,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const populateGitHubRepo = (apiKey: string, apiKeyEncrypted: boolean, server: string) => {
         const populateRepoBody = {
             "data": {
-                "type": "creategithubrepo",
+                "type": "githubcommit",
                 "attributes": {
                     githubRepository: createRepoName(),
                     createNewRepo: false,
@@ -123,12 +123,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             }
         }
 
-        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true, () => {
-            // Call this endpoint async
-            const headers = new Headers();
-            headers.set("Invocation-Type", "Event");
-            return headers;
-        })
+        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true)
             .then(body => {
                 props.machine.send("NEXT")
             })

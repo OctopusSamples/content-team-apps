@@ -7,7 +7,7 @@
   "octofrontOauthEndpoint": "http://localhost:10000/oauth/octopus/login",
   "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
   "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
-  "githubRepoEndpoint": "http://localhost:13000/api/populategithubrepo",
+  "githubRepoEndpoint": "http://localhost:13000/api/githubcommit",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
   "healthEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/health",
   "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
