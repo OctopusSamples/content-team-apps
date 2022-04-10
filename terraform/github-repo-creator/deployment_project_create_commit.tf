@@ -46,7 +46,7 @@ resource "octopusdeploy_variable" "create_commit_debug_evaluated_variable" {
   value = "False"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_project" {
+resource "octopusdeploy_deployment_process" "create_commit_project" {
   project_id = octopusdeploy_project.create_commit_project.id
   step {
     condition           = "Success"
