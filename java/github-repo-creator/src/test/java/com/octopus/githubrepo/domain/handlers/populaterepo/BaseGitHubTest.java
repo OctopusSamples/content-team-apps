@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.handlers;
+package com.octopus.githubrepo.domain.handlers.populaterepo;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
-import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
 import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;

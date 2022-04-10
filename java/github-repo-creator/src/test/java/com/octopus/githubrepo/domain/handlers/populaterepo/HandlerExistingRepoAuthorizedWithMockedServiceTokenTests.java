@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.handlers;
+package com.octopus.githubrepo.domain.handlers.populaterepo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,6 +12,7 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;
@@ -32,18 +33,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.kohsuke.github.GitHubBuilder;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 
 /**
- * Simulate tests when a user token has been passed in.
+ * Simulate tests the population of a repo when the repo already exists.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
-
-  @Inject
-  GitHubRepoHandler gitHubRepoHandler;
+public class HandlerExistingRepoAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest  {
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -64,6 +61,9 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   AsymmetricDecryptor asymmetricDecryptor;
 
   @Inject
+  GitHubRepoHandler handler;
+
+  @Inject
   ResourceConverter resourceConverter;
 
   @InjectMock
@@ -80,13 +80,12 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, false);
+    mockGithubClient(gitHubClient, true, true);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
-    Mockito.when(zipFileResponse.readEntity(InputStream.class))
-        .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
-            Resources.toByteArray(Resources.getResource("template.zip"))));
+    Mockito.when(zipFileResponse.readEntity(InputStream.class)).thenReturn(new ByteArrayInputStream(
+        Resources.toByteArray(Resources.getResource("template.zip"))));
 
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
@@ -101,7 +100,8 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final PopulateGithubRepo resource = createResource(gitHubRepoHandler, resourceConverter);
+    // This test does not include secrets to verify another path
+    final PopulateGithubRepo resource = createResource(handler, resourceConverter, false);
     assertEquals("myrepo", resource.getGithubRepository());
   }
 }

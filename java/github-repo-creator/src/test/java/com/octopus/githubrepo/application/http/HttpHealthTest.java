@@ -2,7 +2,7 @@ package com.octopus.githubrepo.application.http;
 
 import static io.restassured.RestAssured.given;
 
-import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.domain.handlers.populaterepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;

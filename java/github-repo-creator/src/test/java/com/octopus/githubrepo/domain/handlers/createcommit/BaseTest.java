@@ -1,24 +1,25 @@
-package com.octopus.githubrepo;
+package com.octopus.githubrepo.domain.handlers.createcommit;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.Secret;
+import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.NonNull;
 
 public class BaseTest {
-  protected PopulateGithubRepo createResource() {
+  protected CreateGithubCommit createResource() {
     return createResource(true);
   }
 
-  protected PopulateGithubRepo createResource(final boolean addSecrets) {
-    final PopulateGithubRepo resource = new PopulateGithubRepo();
+  protected CreateGithubCommit createResource(final boolean addSecrets) {
+    final CreateGithubCommit resource = new CreateGithubCommit();
     resource.setGithubRepository("myrepo");
-    resource.setBranch("main");
     if (addSecrets) {
       resource.setSecrets(List.of(
         Secret.builder().name("secret").value("secret").encrypted(false).build(),
@@ -30,47 +31,47 @@ public class BaseTest {
     return resource;
   }
 
-  protected PopulateGithubRepo createResource(
-      @NonNull final GitHubRepoHandler handler,
+  protected CreateGithubCommit createResource(
+      @NonNull final GitHubCommitHandler handler,
       @NonNull final ResourceConverter resourceConverter) throws DocumentSerializationException {
     return createResource(handler, resourceConverter, true);
   }
 
-  protected PopulateGithubRepo createResource(
-      @NonNull final GitHubRepoHandler handler,
+  protected CreateGithubCommit createResource(
+      @NonNull final GitHubCommitHandler handler,
       @NonNull final ResourceConverter resourceConverter,
       final boolean addSecrets)
       throws DocumentSerializationException {
-    final PopulateGithubRepo resource = createResource(addSecrets);
+    final CreateGithubCommit resource = createResource(addSecrets);
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
             null, null, null, "blah");
-    final PopulateGithubRepo resultObject = getResourceFromDocument(resourceConverter, result);
+    final CreateGithubCommit resultObject = getResourceFromDocument(resourceConverter, result);
     return resultObject;
   }
 
-  protected PopulateGithubRepo getResourceFromDocument(
+  protected CreateGithubCommit getResourceFromDocument(
       @NonNull final ResourceConverter resourceConverter, @NonNull final String document) {
-    final JSONAPIDocument<PopulateGithubRepo> resourceDocument =
-        resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), PopulateGithubRepo.class);
-    final PopulateGithubRepo resource = resourceDocument.get();
+    final JSONAPIDocument<CreateGithubCommit> resourceDocument =
+        resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), CreateGithubCommit.class);
+    final CreateGithubCommit resource = resourceDocument.get();
     return resource;
   }
 
-  protected List<PopulateGithubRepo> getResourcesFromDocument(
+  protected List<CreateGithubCommit> getResourcesFromDocument(
       @NonNull final ResourceConverter resourceConverter, @NonNull final String document) {
-    final JSONAPIDocument<List<PopulateGithubRepo>> resourceDocument =
+    final JSONAPIDocument<List<CreateGithubCommit>> resourceDocument =
         resourceConverter.readDocumentCollection(
-            document.getBytes(StandardCharsets.UTF_8), PopulateGithubRepo.class);
-    final List<PopulateGithubRepo> resources = resourceDocument.get();
+            document.getBytes(StandardCharsets.UTF_8), CreateGithubCommit.class);
+    final List<CreateGithubCommit> resources = resourceDocument.get();
     return resources;
   }
 
   protected String resourceToResourceDocument(
-      @NonNull final ResourceConverter resourceConverter, @NonNull final PopulateGithubRepo audit)
+      @NonNull final ResourceConverter resourceConverter, @NonNull final CreateGithubCommit audit)
       throws DocumentSerializationException {
-    final JSONAPIDocument<PopulateGithubRepo> document = new JSONAPIDocument<PopulateGithubRepo>(audit);
+    final JSONAPIDocument<CreateGithubCommit> document = new JSONAPIDocument<CreateGithubCommit>(audit);
     return new String(resourceConverter.writeDocument(document));
   }
 }

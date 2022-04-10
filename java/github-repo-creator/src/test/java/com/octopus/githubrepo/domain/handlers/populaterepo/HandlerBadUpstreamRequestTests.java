@@ -1,10 +1,9 @@
-package com.octopus.githubrepo.domain.handlers;
+package com.octopus.githubrepo.domain.handlers.populaterepo;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
@@ -12,7 +11,7 @@ import com.octopus.exceptions.InvalidInputException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.github.GitHubUser;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;

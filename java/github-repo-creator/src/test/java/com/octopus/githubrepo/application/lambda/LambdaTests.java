@@ -8,7 +8,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.features.DisableSecurityFeature;
-import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.domain.handlers.populaterepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;

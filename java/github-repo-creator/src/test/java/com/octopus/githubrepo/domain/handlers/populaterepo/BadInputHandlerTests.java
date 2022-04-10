@@ -1,4 +1,4 @@
-package com.octopus.githubrepo.domain.handlers;
+package com.octopus.githubrepo.domain.handlers.populaterepo;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.TestInstance;
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class BadInputHandlerTests extends BaseGitHubTest {
+public class BadInputHandlerTests extends BaseTest {
 
   @Inject
   GitHubRepoHandler handler;

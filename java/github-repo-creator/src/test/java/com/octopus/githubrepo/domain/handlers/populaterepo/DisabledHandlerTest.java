@@ -1,14 +1,14 @@
-package com.octopus.githubrepo.domain.handlers;
+package com.octopus.githubrepo.domain.handlers.populaterepo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.githubrepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;

@@ -7,7 +7,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.githubrepo.BaseTest;
+import com.octopus.githubrepo.domain.handlers.populaterepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
