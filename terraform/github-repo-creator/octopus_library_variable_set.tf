@@ -179,6 +179,15 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_templategenera
   value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
 }
 
+resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator" {
+  name = "ExternalService.RepoPopulator"
+  type = "String"
+  description = "The URL of the repo population service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
+}
+
 resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_production" {
   name = "Client.ClientPrivateKey"
   type = "String"
