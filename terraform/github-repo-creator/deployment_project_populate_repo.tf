@@ -1,4 +1,4 @@
-resource "octopusdeploy_repo_project" "populate_repo_project" {
+resource "octopusdeploy_project" "populate_repo_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
@@ -25,7 +25,7 @@ resource "octopusdeploy_repo_project" "populate_repo_project" {
 }
 
 output "populate_repo_project_id" {
-  value = octopusdeploy_repo_project.populate_repo_project.id
+  value = octopusdeploy_project.populate_repo_project.id
 }
 
 resource "octopusdeploy_variable" "populate_repo_debug_variable" {
@@ -33,7 +33,7 @@ resource "octopusdeploy_variable" "populate_repo_debug_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_repo_project.populate_repo_project.id
+  owner_id = octopusdeploy_project.populate_repo_project.id
   value = "False"
 }
 
@@ -42,12 +42,12 @@ resource "octopusdeploy_variable" "populate_repo_debug_evaluated_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_repo_project.populate_repo_project.id
+  owner_id = octopusdeploy_project.populate_repo_project.id
   value = "False"
 }
 
 resource "octopusdeploy_deployment_process" "populate_repo_project" {
-  project_id = octopusdeploy_repo_project.populate_repo_project.id
+  project_id = octopusdeploy_project.populate_repo_project.id
   step {
     condition           = "Success"
     name                = "Create S3 bucket"
