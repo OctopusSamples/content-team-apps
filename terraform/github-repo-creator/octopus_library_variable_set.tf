@@ -41,8 +41,17 @@ resource "octopusdeploy_variable" "aws_region" {
   value = var.aws_region
 }
 
-resource "octopusdeploy_variable" "aws_s3_bucket" {
-  name = "CloudFormation.S3Bucket"
+resource "octopusdeploy_variable" "aws_repo_populator_s3_bucket" {
+  name = "CloudFormation.RepoPopulatorS3Bucket"
+  type = "String"
+  description = "The name of the stack creating the GitHub Repo Creator proxy S3 bucket."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "GitHubRepoCreatorBucket"
+}
+
+resource "octopusdeploy_variable" "aws_commit-creator_s3_bucket" {
+  name = "CloudFormation.CommitCreatorS3Bucket"
   type = "String"
   description = "The name of the stack creating the GitHub Repo Creator proxy S3 bucket."
   is_sensitive = false
@@ -51,12 +60,21 @@ resource "octopusdeploy_variable" "aws_s3_bucket" {
 }
 
 resource "octopusdeploy_variable" "aws_cloudformation_code" {
-  name = "CloudFormation.OctopusServiceAccountCreator"
+  name = "CloudFormation.OctopusPopulateGithubRepo"
   type = "String"
   description = "The name of the stack hosting lambda."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "GitHubRepoCreator"
+}
+
+resource "octopusdeploy_variable" "aws_cloudformation_code" {
+  name = "CloudFormation.OctopusCreateGithubCommit"
+  type = "String"
+  description = "The name of the stack hosting lambda."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "GitHubCreateCommit"
 }
 
 resource "octopusdeploy_variable" "cloudformation_apigateway" {

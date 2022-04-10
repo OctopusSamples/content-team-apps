@@ -1,4 +1,4 @@
-resource "octopusdeploy_project" "deploy_project" {
+resource "octopuspopulate_repo_project" "populate_repo_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
@@ -24,8 +24,8 @@ resource "octopusdeploy_project" "deploy_project" {
   }
 }
 
-output "deploy_project_id" {
-  value = octopusdeploy_project.deploy_project.id
+output "populate_repo_project_id" {
+  value = octopuspopulate_repo_project.populate_repo_project.id
 }
 
 resource "octopusdeploy_variable" "debug_variable" {
@@ -33,7 +33,7 @@ resource "octopusdeploy_variable" "debug_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
+  owner_id = octopuspopulate_repo_project.populate_repo_project.id
   value = "False"
 }
 
@@ -42,12 +42,12 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
+  owner_id = octopuspopulate_repo_project.populate_repo_project.id
   value = "False"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_project" {
-  project_id = octopusdeploy_project.deploy_project.id
+resource "octopusdeploy_deployment_process" "populate_repo_project" {
+  project_id = octopuspopulate_repo_project.populate_repo_project.id
   step {
     condition           = "Success"
     name                = "Create S3 bucket"
@@ -62,7 +62,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy Octopus Service Account Creator\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.RepoPopulatorS3Bucket}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Resources:
             LambdaS3Bucket:
@@ -222,7 +222,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Octopus Service Account Creator"
+    name                = "Deploy GitHub Repo Populator"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
@@ -235,7 +235,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole": "False"
         "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub OAuth Backend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.OctopusServiceAccountCreator}"
+        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.OctopusPopulateGithubRepo}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Parameters:
             EnvironmentName:
@@ -400,6 +400,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     GITHUB_DISABLE_REPO_CREATION: !Ref GitHubDisableRepoCreation
                     TEMPLATE_GENERATOR: !Ref TemplateGenerator
                     CLIENT_PRIVATE_KEY: !Ref ClientPrivateKey
+                    LAMBDA_HANDLER: PopulateGithubRepo
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
                 MemorySize: 512
