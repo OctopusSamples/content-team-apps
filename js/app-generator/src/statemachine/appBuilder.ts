@@ -39,7 +39,8 @@ function getInitialStateContext() {
             generator: state.generator || "",
             developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
-            githubRepo: state.githubRepo || ""
+            githubRepo: state.githubRepo || "",
+            repoId: state.repoId || ""
         }
     }
 
@@ -52,7 +53,8 @@ function getInitialStateContext() {
         generator: "",
         developmentFramework: "",
         octopusServer: "",
-        githubRepo: ""
+        githubRepo: "",
+        repoId: ""
     }
 }
 
@@ -163,7 +165,11 @@ export interface StateContext {
     /**
      * The github repository that was just populated
      */
-    githubRepo: string
+    githubRepo: string,
+    /**
+     * The ID of the repo created by the backend service
+     */
+    repoId: string
 }
 
 /**

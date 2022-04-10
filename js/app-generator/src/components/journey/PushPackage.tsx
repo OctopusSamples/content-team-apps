@@ -125,6 +125,10 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
         postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubRepoEndpoint, context.settings, null, true)
             .then(body => {
+                if (props.machine.state) {
+                    const bodyObject = body as any;
+                    props.machine.state.context.repoId = bodyObject.id;
+                }
                 props.machine.send("NEXT")
             })
             .catch(() => {
