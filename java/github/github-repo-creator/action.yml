@@ -179,6 +179,7 @@ runs:
         octo create-release
         --project "GitHub Repo Populator"
         --version 1.0.${{ inputs.run_number }}
+        --defaultPackageVersion 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
@@ -191,6 +192,7 @@ runs:
         octo create-release
         --project "GitHub Commit Creator"
         --version 1.0.${{ inputs.run_number }}
+        --defaultPackageVersion 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
