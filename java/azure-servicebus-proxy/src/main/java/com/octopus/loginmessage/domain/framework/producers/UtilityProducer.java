@@ -2,6 +2,10 @@ package com.octopus.loginmessage.domain.framework.producers;
 
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
+import com.octopus.lambda.impl.RequestBodyExtractorImpl;
+import com.octopus.lambda.impl.RequestMatcherImpl;
 import com.octopus.loginmessage.domain.servicebus.AzureServiceBus;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
@@ -202,5 +206,25 @@ public class UtilityProducer {
   @Produces
   public AwsXrayParser getAwsXrayParser() {
     return new AwsXrayParserImpl();
+  }
+
+
+
+  /**
+   * Produces an instance of RequestMatcher.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestMatcher getRequestMatcher() {
+    return new RequestMatcherImpl();
+  }
+
+  /**
+   * Produces an instance of RequestBodyExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestBodyExtractor getRequestBodyExtractor() {
+    return new RequestBodyExtractorImpl();
   }
 }

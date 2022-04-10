@@ -1,6 +1,7 @@
 package com.octopus.lambda.impl;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -51,5 +52,20 @@ public class RequestMatcherImplTest {
             .withHttpMethod("GET"),
         Pattern.compile("/api/blah"),
         "GET"));
+  }
+
+  @Test
+  public void testNullParams() {
+    assertThrows(NullPointerException.class, () -> {
+      REQUEST_MATCHER.requestIsMatch(new APIGatewayProxyRequestEvent(), Pattern.compile("/api/blah"), null);
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      REQUEST_MATCHER.requestIsMatch(new APIGatewayProxyRequestEvent(), null, "");
+    });
+
+    assertThrows(NullPointerException.class, () -> {
+      REQUEST_MATCHER.requestIsMatch(null, Pattern.compile("/api/blah"), "");
+    });
   }
 }

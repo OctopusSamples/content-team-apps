@@ -15,6 +15,8 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import com.octopus.githubrepo.domain.handlers.ServiceAccountHandler;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -60,6 +62,12 @@ public class ServiceAccountApi implements
 
   @Inject
   ProxyResponseBuilder proxyResponseBuilder;
+
+  @Inject
+  RequestMatcher requestMatcher;
+
+  @Inject
+  RequestBodyExtractor requestBodyExtractor;
 
 
   /**
@@ -117,7 +125,7 @@ public class ServiceAccountApi implements
   private Optional<APIGatewayProxyResponseEvent> checkHealth(
       final APIGatewayProxyRequestEvent input) {
 
-    if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
+    if (requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       try {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
@@ -143,13 +151,13 @@ public class ServiceAccountApi implements
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     serviceAccountHandler.create(
-                        getBody(input),
+                        requestBodyExtractor.getBody(input),
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
                             .orElse(null),
                         lambdaHttpHeaderExtractor.getFirstHeader(input,
@@ -165,44 +173,9 @@ public class ServiceAccountApi implements
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, getBody(input)));
+      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Determine if the Lambda request matches path and method.
-   *
-   * @param input  The Lambda request.
-   * @param regex  The path regex.
-   * @param method The HTTP method.
-   * @return true if this request matches the supplied values, and false otherwise.
-   */
-  public boolean requestIsMatch(
-      @NonNull final APIGatewayProxyRequestEvent input,
-      @NonNull final Pattern regex,
-      @NonNull final String method) {
-    final String path = ObjectUtils.defaultIfNull(input.getPath(), "");
-    final String requestMethod = ObjectUtils.defaultIfNull(input.getHttpMethod(), "").toLowerCase();
-    return regex.matcher(path).matches() && method.toLowerCase().equals(requestMethod);
-  }
-
-  /**
-   * Get the request body, and deal with the fact that it may be base64 encoded.
-   *
-   * @param input The Lambda request
-   * @return The decoded request body
-   */
-  private String getBody(final APIGatewayProxyRequestEvent input) {
-    final String body = ObjectUtils.defaultIfNull(input.getBody(), "");
-    final String isBase64Encoded =
-        ObjectUtils.defaultIfNull(input.getIsBase64Encoded(), "").toString().toLowerCase();
-
-    if ("true".equals(isBase64Encoded)) {
-      return new String(Base64.getDecoder().decode(body));
-    }
-
-    return body;
   }
 }

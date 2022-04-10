@@ -1,6 +1,7 @@
 package com.octopus.lambda.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.octopus.lambda.RequestBodyExtractor;
@@ -20,5 +21,12 @@ public class RequestBodyExtractorImplTest {
     assertEquals("body", REQUEST_BODY_EXTRACTOR.getBody(
         new APIGatewayProxyRequestEvent().withBody(Base64.getEncoder().encodeToString("body".getBytes(StandardCharsets.UTF_8)))
             .withIsBase64Encoded(true)));
+  }
+
+  @Test
+  public void testNullParams() {
+    assertThrows(NullPointerException.class, () -> {
+      REQUEST_BODY_EXTRACTOR.getBody(null);
+    });
   }
 }
