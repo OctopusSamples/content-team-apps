@@ -62,7 +62,7 @@ resource "octopusdeploy_variable" "aws_commit-creator_s3_bucket" {
 resource "octopusdeploy_variable" "aws_cloudformation_repo_populator" {
   name = "CloudFormation.OctopusPopulateGithubRepo"
   type = "String"
-  description = "The name of the stack hosting lambda."
+  description = "The name of the stack hosting lambda that populates GitHub repos."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "GitHubRepoCreator"
@@ -71,7 +71,7 @@ resource "octopusdeploy_variable" "aws_cloudformation_repo_populator" {
 resource "octopusdeploy_variable" "aws_cloudformation_commit_creator" {
   name = "CloudFormation.OctopusCreateGithubCommit"
   type = "String"
-  description = "The name of the stack hosting lambda."
+  description = "The name of the stack hosting lambda that creates GitHub commits."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "GitHubCreateCommit"
