@@ -82,7 +82,7 @@ runs:
         octo push --package azure-servicebus-proxy-lambda.1.0.${{ inputs.run_number }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
-        --overwriteMode OverwriteExisting 
+         --replace-existing OverwriteExisting 
         --space "Content Team"
       shell: bash
       working-directory: java
