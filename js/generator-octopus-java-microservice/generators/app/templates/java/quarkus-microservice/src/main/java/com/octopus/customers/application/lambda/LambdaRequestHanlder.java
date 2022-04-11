@@ -102,14 +102,15 @@ public class LambdaRequestHanlder implements
   /**
    * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the
    * API, but with an additional path that indicates the http method. So, for example, a GET request
-   * to /health/resources/GET will return 200 OK if the service responding to /api/resources is able to
-   * service a GET request, and a GET request to /health/resources/1/DELETE will return 200 OK if the
-   * service responding to /api/resources/1 is available to service a DELETE request.
+   * to /health/resources/GET will return 200 OK if the service responding to /api/resources is able
+   * to service a GET request, and a GET request to /health/resources/1/DELETE will return 200 OK if
+   * the service responding to /api/resources/1 is available to service a DELETE request.
    *
    * <p>This approach was taken to support the fact that Lambdas may well have unique services
    * responding to each individual endpoint. For example, you may have a dedicated lambda fetching
-   * resource collections (i.e. /api/resources), and a dedicated lambda fetching individual resources
-   * (i.e. /api/resources/1). The health of these lambdas may be independent of one another.
+   * resource collections (i.e. /api/resources), and a dedicated lambda fetching individual
+   * resources (i.e. /api/resources/1). The health of these lambdas may be independent of one
+   * another.
    *
    * <p>This is unlike a traditional web service, where it is usually taken for granted that a
    * single application responds to all these requests, and therefore a single health endpoint can
@@ -131,21 +132,22 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> checkHealth(
       final APIGatewayProxyRequestEvent input) {
 
-    if (requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
-      try {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
-                .withBody(healthHandler.getHealth(
-                    input.getPath().substring(0, input.getPath().lastIndexOf("/")),
-                    input.getPath().substring(input.getPath().lastIndexOf("/")))));
-      } catch (final Exception e) {
-        e.printStackTrace();
-        return Optional.of(proxyResponseBuilder.buildError(e));
-      }
+    if (!requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
+      return Optional.empty();
     }
 
-    return Optional.empty();
+    try {
+      return Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(200)
+              .withBody(healthHandler.getHealth(
+                  input.getPath().substring(0, input.getPath().lastIndexOf("/")),
+                  input.getPath().substring(input.getPath().lastIndexOf("/")))));
+    } catch (final Exception e) {
+      e.printStackTrace();
+      return Optional.of(proxyResponseBuilder.buildError(e));
+    }
+
   }
 
   /**
@@ -156,27 +158,31 @@ public class LambdaRequestHanlder implements
    */
   private Optional<APIGatewayProxyResponseEvent> getAll(final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
-                .withBody(
-                    resourceHandler.getAll(
-                        lambdaHttpHeaderExtractor.getAllHeaders(input,
-                            Constants.DATA_PARTITION_HEADER),
-                        lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.FILTER_QUERY_PARAM)
-                            .orElse(null),
-                        lambdaHttpValueExtractor.getQueryParam(input,
-                                Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM)
-                            .orElse(null),
-                        lambdaHttpValueExtractor.getQueryParam(input,
-                                Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
+        return Optional.empty();
       }
+
+      return Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(200)
+              .withBody(
+                  resourceHandler.getAll(
+                      lambdaHttpHeaderExtractor.getAllHeaders(input,
+                          Constants.DATA_PARTITION_HEADER),
+                      lambdaHttpValueExtractor.getQueryParam(input,
+                              Constants.JsonApi.FILTER_QUERY_PARAM)
+                          .orElse(null),
+                      lambdaHttpValueExtractor.getQueryParam(input,
+                              Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM)
+                          .orElse(null),
+                      lambdaHttpValueExtractor.getQueryParam(input,
+                              Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM)
+                          .orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                          .orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input,
+                          Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final RSQLParserException e) {
@@ -185,8 +191,6 @@ public class LambdaRequestHanlder implements
       e.printStackTrace();
       return Optional.of(proxyResponseBuilder.buildError(e));
     }
-
-    return Optional.empty();
   }
 
   /**
@@ -198,24 +202,27 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
-      if (requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
-        final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
-
-        if (id.isPresent()) {
-          final String entity =
-              resourceHandler.getOne(
-                  id.get(),
-                  lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                  lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                      .orElse(null),
-                  lambdaHttpHeaderExtractor.getFirstHeader(input,
-                      Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
-
-          return Optional.of(
-              new ApiGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
-        }
-        return Optional.of(proxyResponseBuilder.buildNotFound());
+      if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
+        return Optional.empty();
       }
+
+      final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
+
+      if (id.isPresent()) {
+        final String entity =
+            resourceHandler.getOne(
+                id.get(),
+                lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+                lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                    .orElse(null),
+                lambdaHttpHeaderExtractor.getFirstHeader(input,
+                    Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
+
+        return Optional.of(
+            new ApiGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
+      }
+      return Optional.of(proxyResponseBuilder.buildNotFound());
+
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final EntityNotFoundException ex) {
@@ -225,7 +232,7 @@ public class LambdaRequestHanlder implements
       return Optional.of(proxyResponseBuilder.buildError(e));
     }
 
-    return Optional.empty();
+
   }
 
   /**
@@ -237,20 +244,23 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(200)
-                .withBody(
-                    resourceHandler.create(
-                        requestBodyExtractor.getBody(input),
-                        lambdaHttpHeaderExtractor.getAllHeaders(input,
-                            Constants.DATA_PARTITION_HEADER),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+        return Optional.empty();
       }
+
+      return Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(200)
+              .withBody(
+                  resourceHandler.create(
+                      requestBodyExtractor.getBody(input),
+                      lambdaHttpHeaderExtractor.getAllHeaders(input,
+                          Constants.DATA_PARTITION_HEADER),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
+                          .orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input,
+                          Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final InvalidInputException e) {
@@ -259,7 +269,5 @@ public class LambdaRequestHanlder implements
       e.printStackTrace();
       return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
     }
-
-    return Optional.empty();
   }
 }
