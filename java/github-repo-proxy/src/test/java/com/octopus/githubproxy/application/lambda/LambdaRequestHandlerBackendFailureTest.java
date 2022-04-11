@@ -75,5 +75,4 @@ public class LambdaRequestHandlerBackendFailureTest {
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(500, postResponse.getStatusCode());
   }
-
 }
