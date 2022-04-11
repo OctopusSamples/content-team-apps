@@ -99,7 +99,7 @@ public class PopulateGithubRepoApi implements
     */
     return createOne(input)
         .or(() -> checkHealth(input))
-        .orElse(notFound(input));
+        .orElseGet(() -> notFound(input));
   }
 
   /**

@@ -100,7 +100,7 @@ public class CreateGithubCommitApi implements
     */
     return createOne(input)
         .or(() -> checkHealth(input))
-        .orElse(notFound(input));
+        .orElseGet(() -> notFound(input));
   }
 
   /**
