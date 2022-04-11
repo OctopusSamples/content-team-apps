@@ -26,38 +26,6 @@ public class HealthRootResource {
    *     resource.
    */
   @GET
-  @Path("GET")
-  @Transactional
-  public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response
-        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "GET"))
-        .build();
-  }
-
-  /**
-   * The health check.
-   *
-   * @return a HTTP response object.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *     resource.
-   */
-  @GET
-  @Path("POST")
-  @Transactional
-  public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response
-        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "POST"))
-        .build();
-  }
-
-  /**
-   * The health check.
-   *
-   * @return a HTTP response object.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *     resource.
-   */
-  @GET
   @Path("{id}/GET")
   @Transactional
   public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {

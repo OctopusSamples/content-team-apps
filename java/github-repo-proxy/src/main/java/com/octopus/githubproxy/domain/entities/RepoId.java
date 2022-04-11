@@ -22,7 +22,7 @@ public class RepoId {
    * @return An optional containing the owner and repo, or empty if the string could not be parsed.
    */
   public static Optional<RepoId> fromId(@NonNull final String id) {
-    final String[] split = id.trim().split("/");
+    final String[] split = id.trim().split("/|%2F");
     if (split.length == 2) {
       return Optional.of(RepoId.builder()
           .owner(split[0])

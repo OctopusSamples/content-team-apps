@@ -2,6 +2,7 @@ package com.octopus.githubproxy.application.lambda;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -9,10 +10,17 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubproxy.application.Paths;
+import com.octopus.githubproxy.domain.entities.Repo;
+import com.octopus.githubproxy.domain.entities.RepoOwner;
+import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,15 +33,38 @@ public class LambdaRequestHandlerTest {
   @Inject
   LambdaRequestHanlder api;
 
-  @Inject
-  ResourceConverter resourceConverter;
-
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
+
+  @InjectMock
+  @RestClient
+  GitHubClient gitHubClient;
+
 
   @BeforeEach
   public void beforeEach() {
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+
+    Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
+
+    final Response missingResponse = Mockito.mock(Response.class);
+    Mockito.when(missingResponse.getStatus()).thenReturn(404);
+    Mockito.when(missingResponse.getStatusInfo()).thenReturn(Mockito.mock(StatusType.class));
+
+    // Mock the response from the GitHub API to either return a repo or a 404
+    Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenAnswer(invocation -> {
+      final String owner = invocation.getArgument(0, String.class);
+      final String repo = invocation.getArgument(1, String.class);
+
+      if ("owner".equals(owner) && "repo".equals(repo)) {
+        return Repo
+            .builder()
+            .owner(RepoOwner.builder().login("owner").build())
+            .name("repo").build();
+      }
+
+      throw new ClientWebApplicationException(missingResponse);
+    });
   }
 
   @Test
@@ -45,6 +76,40 @@ public class LambdaRequestHandlerTest {
     assertThrows(NullPointerException.class, () -> {
       api.handleRequest(new APIGatewayProxyRequestEvent(), null);
     });
+  }
+
+  @Test
+  public void testGetEntity() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put("Accept", "application/vnd.api+json");
+          }
+        });
+    apiGatewayProxyRequestEvent.setHttpMethod("GET");
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/owner%2Frepo");
+    final APIGatewayProxyResponseEvent postResponse =
+        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals(200, postResponse.getStatusCode());
+  }
+
+  @Test
+  public void testMissingEntity() {
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
+        new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(
+        new HashMap<>() {
+          {
+            put("Accept", "application/vnd.api+json");
+          }
+        });
+    apiGatewayProxyRequestEvent.setHttpMethod("GET");
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/owner%2Fmyrepo");
+    final APIGatewayProxyResponseEvent postResponse =
+        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    assertEquals(404, postResponse.getStatusCode());
   }
 
   @Test

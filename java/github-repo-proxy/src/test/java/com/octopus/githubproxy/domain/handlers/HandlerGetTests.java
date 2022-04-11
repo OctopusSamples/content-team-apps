@@ -28,7 +28,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
 /**
- * These tests are mostly focused on the retrieval of new resources through GET operations.
+ * These tests are  focused on the retrieval of resources through GET operations.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -50,6 +50,7 @@ public class HandlerGetTests {
     Mockito.when(missingResponse.getStatus()).thenReturn(404);
     Mockito.when(missingResponse.getStatusInfo()).thenReturn(Mockito.mock(StatusType.class));
 
+    // Mock the response from the GitHub API to either return a repo or a 404
     Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenAnswer(invocation -> {
       final String owner = invocation.getArgument(0, String.class);
       final String repo = invocation.getArgument(1, String.class);

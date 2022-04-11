@@ -37,13 +37,9 @@ public class LambdaRequestHanlder implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
   /**
-   * A regular expression matching the collection of entities.
-   */
-  public static final Pattern ROOT_RE = Pattern.compile(Paths.API_ENDPOINT + "/?");
-  /**
    * A regular expression matching a single entity.
    */
-  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>\\d+)");
+  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>.+)");
   /**
    * A regular expression matching a health endpoint.
    */
