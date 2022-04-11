@@ -18,6 +18,7 @@ import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
+import io.quarkus.logging.Log;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -99,7 +100,7 @@ public class CreateGithubCommitApi implements
     */
     return createOne(input)
         .or(() -> checkHealth(input))
-        .orElse(proxyResponseBuilder.buildNotFound());
+        .orElse(notFound(input));
   }
 
   /**
@@ -188,5 +189,10 @@ public class CreateGithubCommitApi implements
     }
 
     return Optional.empty();
+  }
+
+  private APIGatewayProxyResponseEvent notFound(@NonNull final APIGatewayProxyRequestEvent input) {
+    Log.info("Path to " + input.getPath() + " was not found");
+    return proxyResponseBuilder.buildNotFound();
   }
 }

@@ -17,6 +17,7 @@ import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
+import io.quarkus.logging.Log;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -98,7 +99,7 @@ public class PopulateGithubRepoApi implements
     */
     return createOne(input)
         .or(() -> checkHealth(input))
-        .orElse(proxyResponseBuilder.buildNotFound());
+        .orElse(notFound(input));
   }
 
   /**
@@ -187,5 +188,10 @@ public class PopulateGithubRepoApi implements
     }
 
     return Optional.empty();
+  }
+
+  private APIGatewayProxyResponseEvent notFound(@NonNull final APIGatewayProxyRequestEvent input) {
+    Log.info("Path to " + input.getPath() + " was not found");
+    return proxyResponseBuilder.buildNotFound();
   }
 }
