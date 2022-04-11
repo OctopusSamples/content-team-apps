@@ -87,7 +87,7 @@ public class ResourceHandler {
       throw new UnauthorizedException();
     }
 
-    // split the combined id like "matt/repo" into the owner and repo
+    // split the repo URL into the owner and repo
     final Optional<RepoId> repoId = RepoId.fromId(id);
 
     // If the ID was not valid, return a 404
@@ -109,7 +109,7 @@ public class ResourceHandler {
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo
           .builder()
-          .id("https://api.github.com/repos/" + repo.getOwner().getLogin() + "/" + repo.getName())
+          .id(id)
           .meta(GitHubRepoMeta
               .builder()
               .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())

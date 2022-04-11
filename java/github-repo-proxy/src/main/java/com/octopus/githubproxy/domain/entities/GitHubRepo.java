@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * A JSONAPI resource representing the GitHub Repo. This is a much simplified version of what the
@@ -24,6 +25,7 @@ public class GitHubRepo {
    * The ID of an external resource is the URL to the GET endpoint that represents the resource.
    */
   @Id
+  @URL
   private String id;
 
   /**
