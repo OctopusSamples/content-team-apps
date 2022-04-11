@@ -16,6 +16,8 @@ locals {
   lambda_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaVersion}-#{Octopus.Deployment.Id | Replace -}"
   api_gateway_cloudformation_name = "#{CloudFormation.Application}"
   cloudformation_stage_name = "#{CloudFormationName.AppBuilderApiGatewayStage}"
+  cloudformation_shared_api_gateway = "#{CloudFormationName.AppBuilderApiGateway}"
+  cloudformation_shared_cognito = "#{CloudFormation.Cognito}"
   cloudformation_lambda_version_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
   cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
 }
@@ -206,7 +208,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           API_RESOURCE=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
+              --stack-name ${local.cloudformation_shared_api_gateway} \
               --query "Stacks[0].Outputs[?OutputKey=='Api'].OutputValue" \
               --output text)
 
@@ -221,7 +223,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           REST_API=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGateway} \
+              --stack-name ${local.cloudformation_shared_api_gateway} \
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
@@ -236,7 +238,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           COGNITO_POOL_ID=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormation.Cognito} \
+              --stack-name ${local.cloudformation_shared_cognito} \
               --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
               --output text)
           echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
