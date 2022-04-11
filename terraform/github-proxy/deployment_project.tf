@@ -289,10 +289,6 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Type: String
             LambdaDescription:
               Type: String
-            CognitoJwk:
-              Type: String
-            CognitoClientId:
-              Type: String
             #####################################################
             # This is the start of the lambda specific env vars #
             #####################################################
