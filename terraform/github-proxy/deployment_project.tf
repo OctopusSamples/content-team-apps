@@ -15,6 +15,7 @@ locals {
   lambda_proxy_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaReverseProxyVersion}-#{Octopus.Deployment.Id | Replace -}"
   lambda_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaVersion}-#{Octopus.Deployment.Id | Replace -}"
   api_gateway_cloudformation_name = "#{CloudFormation.Application}"
+  cloudformation_stage_name = "#{CloudFormationName.AppBuilderApiGatewayStage}"
   cloudformation_lambda_version_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
   cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
 }
@@ -759,7 +760,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormationName.AppBuilderApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationStackName" : local.cloudformation_stage_name
         "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_tags
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # This template updates the stage with the deployment created in the previous step.
@@ -864,7 +865,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
+              --stack-name ${local.cloudformation_stage_name} \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
               --output text)
 
