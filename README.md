@@ -34,6 +34,9 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 ![Branches](.github/badges/repocreator.svg)
 ![Coverage](.github/badges/repocreatorbranches.svg)
 
+### GitHub Repo Proxy
+![Branches](.github/badges/githubrepoproxy.svg )
+![Coverage](.github/badges/githubrepoproxybranches.svg)
 
 ### Reverse Proxy
 [![Go Report Card](https://goreportcard.com/badge/github.com/OctopusSamples/content-team-apps/go/reverse-proxy)](https://goreportcard.com/report/github.com/OctopusSamples/content-team-apps/go/reverse-proxy)
