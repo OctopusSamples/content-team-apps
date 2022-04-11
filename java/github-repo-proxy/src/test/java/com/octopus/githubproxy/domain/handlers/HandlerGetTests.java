@@ -12,12 +12,16 @@ import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
+import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -42,12 +46,23 @@ public class HandlerGetTests {
 
   @BeforeEach
   public void setup() {
-    Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenReturn(
-        Repo
+    final Response missingResponse = Mockito.mock(Response.class);
+    Mockito.when(missingResponse.getStatus()).thenReturn(404);
+    Mockito.when(missingResponse.getStatusInfo()).thenReturn(Mockito.mock(StatusType.class));
+
+    Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenAnswer(invocation -> {
+      final String owner = invocation.getArgument(0, String.class);
+      final String repo = invocation.getArgument(1, String.class);
+
+      if ("owner".equals(owner) && "repo".equals(repo)) {
+        return Repo
             .builder()
-            .name("repo")
             .owner(RepoOwner.builder().login("owner").build())
-            .build());
+            .name("repo").build();
+      }
+
+      throw new ClientWebApplicationException(missingResponse);
+    });
   }
 
   @Test
@@ -89,6 +104,15 @@ public class HandlerGetTests {
           null,
           null,
           "")
+    );
+
+    assertThrows(EntityNotFoundException.class, () ->
+        handler.getOne(
+            "blah/blah",
+            List.of("main"),
+            null,
+            null,
+            "")
     );
   }
 
