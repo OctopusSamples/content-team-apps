@@ -88,7 +88,7 @@ runs:
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
-        jacoco-csv-file: java/github-repo-proxy/target/site/jacoco/jacoco.csv
+        jacoco-csv-file: java/github-repo-proxy/target/jacoco-report/jacoco.csv
         coverage-badge-filename: githubrepoproxy.svg
         branches-badge-filename: githubrepoproxybranches.svg
 
