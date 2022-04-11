@@ -7,10 +7,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.application.Paths;
 import com.octopus.githubproxy.domain.handlers.HealthHandler;
 import com.octopus.githubproxy.domain.handlers.ResourceHandler;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -24,6 +26,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaRequestHandlerBackendFailureTest {
 
   @Inject

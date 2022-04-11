@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubproxy.TestingProfile;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.List;
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HandlerAuthorizedGetTests {
 
   @Inject

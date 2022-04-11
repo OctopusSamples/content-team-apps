@@ -8,12 +8,15 @@ import static org.mockito.Mockito.doThrow;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,6 +36,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HandlerGetFailedUpstreamTests {
 
   @Inject
@@ -42,6 +46,9 @@ public class HandlerGetFailedUpstreamTests {
   @RestClient
   GitHubClient gitHubClient;
 
+  @InjectMock
+  CryptoUtils cryptoUtils;
+
   @BeforeEach
   public void setup() {
     final Response errorResponse = Mockito.mock(Response.class);
@@ -49,6 +56,7 @@ public class HandlerGetFailedUpstreamTests {
     Mockito.when(errorResponse.getStatusInfo()).thenReturn(Mockito.mock(StatusType.class));
     doThrow(new ClientWebApplicationException(errorResponse)).when(gitHubClient)
         .getRepo(any(), any(), any());
+    Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }
 
   @Test

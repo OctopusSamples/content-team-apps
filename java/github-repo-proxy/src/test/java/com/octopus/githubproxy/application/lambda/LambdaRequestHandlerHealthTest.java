@@ -6,8 +6,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.application.Paths;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaRequestHandlerHealthTest {
 
   @Inject

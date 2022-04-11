@@ -4,12 +4,15 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.application.Paths;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -26,6 +29,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class JsonApiRootResourceTest {
 
   @InjectMock
@@ -35,6 +39,8 @@ public class JsonApiRootResourceTest {
   @RestClient
   GitHubClient gitHubClient;
 
+  @InjectMock
+  CryptoUtils cryptoUtils;
 
   @BeforeEach
   public void beforeEach() {
@@ -58,6 +64,8 @@ public class JsonApiRootResourceTest {
 
       throw new ClientWebApplicationException(missingResponse);
     });
+
+    Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }
 
   @Test

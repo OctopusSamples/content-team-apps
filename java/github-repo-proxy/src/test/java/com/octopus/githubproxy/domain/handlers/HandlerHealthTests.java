@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.application.Paths;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HandlerHealthTests {
 
   @Inject

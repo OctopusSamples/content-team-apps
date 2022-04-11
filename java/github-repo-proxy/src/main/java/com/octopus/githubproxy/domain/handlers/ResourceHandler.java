@@ -3,6 +3,7 @@ package com.octopus.githubproxy.domain.handlers;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
@@ -32,6 +33,15 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
  */
 @ApplicationScoped
 public class ResourceHandler {
+
+  @Inject
+  CryptoUtils cryptoUtils;
+
+  @ConfigProperty(name = "github.encryption")
+  String githubEncryption;
+
+  @ConfigProperty(name = "github.salt")
+  String githubSalt;
 
   @Inject
   AdminJwtClaimFeature adminJwtClaimFeature;
@@ -85,11 +95,15 @@ public class ResourceHandler {
     }
 
     try {
+      // Decrypt the github token passed in as a cookie.
+      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
+          githubSalt);
+
       // Attempt to get the repo
       final Repo repo = gitHubClient.getRepo(
           repoId.get().getOwner(),
           repoId.get().getRepo(),
-          "token " + githubToken);
+          "token " + decryptedGithubToken);
 
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo

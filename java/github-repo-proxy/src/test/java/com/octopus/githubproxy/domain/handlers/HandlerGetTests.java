@@ -7,13 +7,16 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -32,6 +35,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class HandlerGetTests {
 
   @Inject
@@ -40,6 +44,9 @@ public class HandlerGetTests {
   @InjectMock
   @RestClient
   GitHubClient gitHubClient;
+
+  @InjectMock
+  CryptoUtils cryptoUtils;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -64,6 +71,8 @@ public class HandlerGetTests {
 
       throw new ClientWebApplicationException(missingResponse);
     });
+
+    Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }
 
   @Test

@@ -8,12 +8,15 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.DisableSecurityFeature;
+import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.application.Paths;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -28,6 +31,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestProfile(TestingProfile.class)
 public class LambdaRequestHandlerTest {
 
   @Inject
@@ -40,6 +44,8 @@ public class LambdaRequestHandlerTest {
   @RestClient
   GitHubClient gitHubClient;
 
+  @InjectMock
+  CryptoUtils cryptoUtils;
 
   @BeforeEach
   public void beforeEach() {
@@ -57,14 +63,14 @@ public class LambdaRequestHandlerTest {
       final String repo = invocation.getArgument(1, String.class);
 
       if ("owner".equals(owner) && "repo".equals(repo)) {
-        return Repo
-            .builder()
-            .owner(RepoOwner.builder().login("owner").build())
-            .name("repo").build();
+        return Repo.builder().owner(RepoOwner.builder().login("owner").build()).name("repo")
+            .build();
       }
 
       throw new ClientWebApplicationException(missingResponse);
     });
+
+    Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }
 
   @Test
@@ -80,71 +86,61 @@ public class LambdaRequestHandlerTest {
 
   @Test
   public void testGetEntity() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(new HashMap<>() {
+      {
+        put("Accept", "application/vnd.api+json");
+      }
+    });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
     apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/owner%2Frepo");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final APIGatewayProxyResponseEvent postResponse = api.handleRequest(apiGatewayProxyRequestEvent,
+        Mockito.mock(Context.class));
     assertEquals(200, postResponse.getStatusCode());
   }
 
   @Test
   public void testMissingEntity() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(new HashMap<>() {
+      {
+        put("Accept", "application/vnd.api+json");
+      }
+    });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
     apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/owner%2Fmyrepo");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final APIGatewayProxyResponseEvent postResponse = api.handleRequest(apiGatewayProxyRequestEvent,
+        Mockito.mock(Context.class));
     assertEquals(404, postResponse.getStatusCode());
   }
 
   @Test
   public void testMissingPath() {
-    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    apiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put("Accept", "application/vnd.api+json");
-          }
-        });
+    final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent();
+    apiGatewayProxyRequestEvent.setHeaders(new HashMap<>() {
+      {
+        put("Accept", "application/vnd.api+json");
+      }
+    });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
     apiGatewayProxyRequestEvent.setPath("/api/blah");
-    final APIGatewayProxyResponseEvent postResponse =
-        api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final APIGatewayProxyResponseEvent postResponse = api.handleRequest(apiGatewayProxyRequestEvent,
+        Mockito.mock(Context.class));
     assertEquals(404, postResponse.getStatusCode());
   }
 
   @Test
   public void testGetMissingEntity() {
-    final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
-        new APIGatewayProxyRequestEvent();
-    getApiGatewayProxyRequestEvent.setHeaders(
-        new HashMap<>() {
-          {
-            put(
-                "Accept",
-                "application/vnd.api+json");
-          }
-        });
+    final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent();
+    getApiGatewayProxyRequestEvent.setHeaders(new HashMap<>() {
+      {
+        put("Accept", "application/vnd.api+json");
+      }
+    });
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
     getApiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/10000000000000000000");
-    final APIGatewayProxyResponseEvent getResponse =
-        api.handleRequest(getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
+    final APIGatewayProxyResponseEvent getResponse = api.handleRequest(
+        getApiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     assertEquals(404, getResponse.getStatusCode());
   }
 }

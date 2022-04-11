@@ -1,5 +1,7 @@
 package com.octopus.githubproxy.domain.framework.producers;
 
+import com.octopus.encryption.CryptoUtils;
+import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -38,6 +40,17 @@ import javax.enterprise.inject.Produces;
  */
 @ApplicationScoped
 public class UtilityProducer {
+
+  /**
+   * Produces the crypto utils instance.
+   *
+   * @return An implementation of CryptoUtils.
+   */
+  @ApplicationScoped
+  @Produces
+  public CryptoUtils getCryptoUtils() {
+    return new AesCryptoUtils();
+  }
 
   /**
    * Produces the Lambda cookie extractor.
