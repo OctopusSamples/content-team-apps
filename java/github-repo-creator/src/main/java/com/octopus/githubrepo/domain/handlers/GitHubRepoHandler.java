@@ -93,9 +93,9 @@ public class GitHubRepoHandler {
 
   /**
    * The branch we place any subsequent app builder deployments into. Doing so ensures we don't
-   * overwrite any updates users may have made between running the app-builder. The workflows
-   * are also configured to not run on this branch, so any manual updates made to Octopus
-   * won't be reverted.
+   * overwrite any updates users may have made between running the app-builder. The workflows are
+   * also configured to not run on this branch, so any manual updates made to Octopus won't be
+   * reverted.
    */
   private static final String UPDATE_BRANCH = "app-builder-update";
 
@@ -182,7 +182,8 @@ public class GitHubRepoHandler {
       throws DocumentSerializationException {
 
     Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
-    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken), "githubToken can not be blank");
+    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken),
+        "githubToken can not be blank");
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
@@ -216,18 +217,21 @@ public class GitHubRepoHandler {
 
       /*
        Ensure the repo exists. We do expect that the repo was created by an upstream service
-       before we get here, but we also support creating the repo as part of this rquest.
+       before we get here, but we also support creating the repo as part of this request.
        */
       createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository());
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository());
+      createSecrets(decryptedGithubToken, populateGithubRepo, user,
+          populateGithubRepo.getGithubRepository());
 
       // Ensure there is an initial commit in the repo to use as the basis of other commits
-      populateInitialFile(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository());
+      populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
+          populateGithubRepo.getGithubRepository());
 
       // ensure the branch exists
-      createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch());
+      createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(),
+          populateGithubRepo.getBranch());
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
@@ -238,22 +242,25 @@ public class GitHubRepoHandler {
               routingHeader));
 
       // Commit the files
-      final String commit = commitFiles(
-          decryptedGithubToken,
-          user,
-          populateGithubRepo.getGithubRepository(),
-          templateDir,
-          populateGithubRepo.getBranch());
+      final String commit = Failsafe.with(RETRY_POLICY)
+          .get(() -> commitFiles(
+              decryptedGithubToken,
+              user,
+              populateGithubRepo.getGithubRepository(),
+              templateDir,
+              populateGithubRepo.getBranch()));
 
       // return the details of the new commit
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(PopulateGithubRepo
           .builder()
-          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/" + commit)
+          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/"
+              + commit)
           .githubRepository(populateGithubRepo.getGithubRepository())
           .build());
     } catch (final ClientWebApplicationException ex) {
-      Try.run(() -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-          + ex.getResponse().readEntity(String.class), ex));
+      Try.run(
+          () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
+              + ex.getResponse().readEntity(String.class), ex));
       throw new InvalidInputException();
     } catch (final InvalidInputException | IllegalArgumentException ex) {
       Log.error(
