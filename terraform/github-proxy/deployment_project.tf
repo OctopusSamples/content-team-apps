@@ -1,6 +1,7 @@
 locals {
   # These change with every project
   project_name = "GitHub Proxy"
+  project_description = "which exposes a small subset of the GitHub API (just enough to know if a repo is created and if workflows have completed) accepting the encrypted token stored as a frontend client cookie. It is exposed under /api/${local.api_endpoint_name}.}"
   lambda_package = "github-repo-proxy-lambda"
   lambda_sbom_package = "github-repo-proxy-lambda-sbom"
   api_endpoint_name = "githubrepo"
@@ -22,7 +23,7 @@ resource "octopusdeploy_project" "deploy_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the ${local.project_name}. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  description                          = "Deploys the ${local.project_name}, ${local.project_description} Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
