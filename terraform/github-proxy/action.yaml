@@ -1,5 +1,5 @@
 name: GitHub Proxy
-description: Deploys the Octopus Service Account creator
+description: Deploys the GitHub Proxy
 inputs:
   octopus_server:
     description: "The Octopus server"
@@ -116,7 +116,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         TF_INPUT: "0"
       run: terraform init
-      working-directory: terraform/azure-servicebus-proxy
+      working-directory: terraform/github-proxy
       shell: bash
 
     - name: Terraform Apply
@@ -152,5 +152,5 @@ runs:
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
         -var="github_actions_library_variable_set_id=${{ inputs.github_actions_library_variable_set_id }}"
-      working-directory: terraform/azure-servicebus-proxy
+      working-directory: terraform/github-proxy
       shell: bash
