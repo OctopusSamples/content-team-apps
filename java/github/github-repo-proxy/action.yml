@@ -176,28 +176,30 @@ runs:
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
 
-#    - name: Trigger deployment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo create-release
-#        --project "Octopus Service Account Creator"
-#        --deployTo "Development"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --waitForDeployment
-#        --deploymentTimeout 00:30:00
-#      shell: bash
-#
-#    - name: Trigger deployment to security environment
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo promote-release
-#        --project "Octopus Service Account Creator"
-#        --from "Development"
-#        --deployTo "Development (Security)"
-#        --server ${{ inputs.octopus_server_url }}
-#        --apiKey ${{ inputs.octopus_api_token }}
-#        --space "Content Team"
-#        --latestSuccessful
-#      shell: bash
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "GitHub Proxy"
+        --deployTo "Development"
+        --package github-repo-proxy-lambda:0.1.${{ inputs.run_number }}
+        --package github-repo-proxy-lambda-sbom:0.1.${{ inputs.run_number }}
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
+    - name: Trigger deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo promote-release
+        --project "GitHub Proxy"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
