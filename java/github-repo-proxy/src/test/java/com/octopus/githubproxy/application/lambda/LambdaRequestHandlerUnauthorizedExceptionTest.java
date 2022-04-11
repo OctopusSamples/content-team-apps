@@ -37,7 +37,6 @@ public class LambdaRequestHandlerUnauthorizedExceptionTest {
     Mockito.when(handler.getOne(any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
   }
 
-
   @Test
   public void testUnauthorizedExceptionGetOne() {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent =
