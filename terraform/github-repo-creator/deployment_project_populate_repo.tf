@@ -50,6 +50,30 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
   project_id = octopusdeploy_project.populate_repo_project.id
   step {
     condition           = "Success"
+    name                = "Capture Local Dev Settings"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.Script"
+      name           = "Capture Local Dev Settings"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      target_roles = ["LocalDevelopment"]
+
+    properties = {
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
+          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=PopulateGithubRepo"
+        EOT
+        "Octopus.Action.Script.ScriptSource": "Inline"
+        "Octopus.Action.Script.Syntax": "Bash"
+        "OctopusUseBundledTooling": "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "Create S3 bucket"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
