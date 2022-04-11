@@ -118,7 +118,7 @@ public class HandlerGetTests {
 
     assertThrows(EntityNotFoundException.class, () ->
         handler.getOne(
-            "blah/blah",
+            "https://api.github.com/repos/blah/blah",
             List.of("main"),
             null,
             null,
@@ -129,7 +129,7 @@ public class HandlerGetTests {
   @Test
   public void getResource() throws DocumentSerializationException {
     final String result = handler.getOne(
-        "owner/repo",
+        "https://api.github.com/repos/owner/repo",
         List.of("main"),
         null,
         null,

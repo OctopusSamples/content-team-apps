@@ -2,6 +2,8 @@ package com.octopus.githubproxy.domain.entities;
 
 import io.vavr.control.Try;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +27,7 @@ public class RepoId {
    */
   public static Optional<RepoId> fromId(@NonNull final String id) {
     // The ID must be a valid URL like https://api.github.com/repos/owner/repo
-    return Optional.ofNullable(Try.of(() -> new URL(id))
+    return Optional.ofNullable(Try.of(() -> new URL(URLDecoder.decode(id, StandardCharsets.UTF_8)))
         // The repo and owner are in the path
         .map(URL::getPath)
         // We expect to find a repos prefix

@@ -18,6 +18,9 @@ import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -85,7 +88,7 @@ public class LambdaRequestHandlerTest {
   }
 
   @Test
-  public void testGetEntity() {
+  public void testGetEntity() throws UnsupportedEncodingException {
     final APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent();
     apiGatewayProxyRequestEvent.setHeaders(new HashMap<>() {
       {
@@ -93,7 +96,8 @@ public class LambdaRequestHandlerTest {
       }
     });
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
-    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/owner%2Frepo");
+    apiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/"
+        + URLEncoder.encode("https://api.github.com/repos/owner/repo", StandardCharsets.UTF_8.toString()));
     final APIGatewayProxyResponseEvent postResponse = api.handleRequest(apiGatewayProxyRequestEvent,
         Mockito.mock(Context.class));
     assertEquals(200, postResponse.getStatusCode());

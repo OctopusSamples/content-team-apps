@@ -63,7 +63,7 @@ public class HandlerGetFailedUpstreamTests {
   public void getResource() {
     assertThrows(ClientWebApplicationException.class,
         () -> handler.getOne(
-            "owner/repo",
+            "https://api.github.com/repos/owner/repo",
             List.of("main"),
             null,
             null,

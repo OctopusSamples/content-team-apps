@@ -14,6 +14,9 @@ import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
@@ -85,7 +88,6 @@ public class JsonApiRootResourceTest {
         .accept("application/vnd.api+json")
         .header("data-partition", "main")
         .cookie("GitHubUserSession", "blah")
-        .contentType("application/vnd.api+json")
         .when()
         .get(Paths.API_ENDPOINT + "/100000000000")
         .then()
@@ -93,14 +95,14 @@ public class JsonApiRootResourceTest {
   }
 
   @Test
-  public void testGetEntity() {
+  public void testGetEntity() throws UnsupportedEncodingException {
     given()
         .accept("application/vnd.api+json")
         .header("data-partition", "main")
         .cookie("GitHubUserSession", "blah")
-        .contentType("application/vnd.api+json")
         .when()
-        .get(Paths.API_ENDPOINT + "/owner%2Frepo")
+        .get(Paths.API_ENDPOINT + "/"
+            + URLEncoder.encode("https://api.github.com/repos/owner/repo", StandardCharsets.UTF_8.toString()))
         .then()
         .statusCode(200);
   }
