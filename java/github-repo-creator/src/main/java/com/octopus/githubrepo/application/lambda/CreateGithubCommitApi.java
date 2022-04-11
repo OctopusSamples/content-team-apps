@@ -192,7 +192,7 @@ public class CreateGithubCommitApi implements
   }
 
   private APIGatewayProxyResponseEvent notFound(@NonNull final APIGatewayProxyRequestEvent input) {
-    Log.info("Path to " + input.getPath() + " was not found");
+    Log.info("CreateGithubCommitApi reported path to " + input.getPath() + " was not found");
     return proxyResponseBuilder.buildNotFound();
   }
 }

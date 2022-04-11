@@ -191,7 +191,7 @@ public class PopulateGithubRepoApi implements
   }
 
   private APIGatewayProxyResponseEvent notFound(@NonNull final APIGatewayProxyRequestEvent input) {
-    Log.info("Path to " + input.getPath() + " was not found");
+    Log.info("PopulateGithubRepoApi reported path to " + input.getPath() + " was not found");
     return proxyResponseBuilder.buildNotFound();
   }
 }
