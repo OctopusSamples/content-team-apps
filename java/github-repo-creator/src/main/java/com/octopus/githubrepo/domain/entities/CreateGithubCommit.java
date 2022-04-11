@@ -1,6 +1,7 @@
 package com.octopus.githubrepo.domain.entities;
 
 import com.github.jasminb.jsonapi.annotations.Id;
+import com.github.jasminb.jsonapi.annotations.Meta;
 import com.github.jasminb.jsonapi.annotations.Type;
 import java.util.Collection;
 import java.util.Map;
@@ -37,4 +38,7 @@ public class CreateGithubCommit {
   private Collection<Secret> secrets;
 
   private boolean createNewRepo;
+
+  @Meta
+  private CreateGithubCommitMeta meta;
 }

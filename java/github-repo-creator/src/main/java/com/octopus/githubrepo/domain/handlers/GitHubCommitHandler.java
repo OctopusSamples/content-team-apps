@@ -8,6 +8,7 @@ import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.GlobalConstants;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
+import com.octopus.githubrepo.domain.entities.CreateGithubCommitMeta;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
@@ -21,6 +22,7 @@ import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -202,10 +204,22 @@ public class GitHubCommitHandler {
       // return the details of the new repo
       return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
           .builder()
-          .id(user.getLogin() + "/" + repoName)
+          /*
+            Every object needs an ID. For addressable resources, the ID is either internally
+            managed and unique, or an external URL to a GET endpoint that identifies the resource.
+            In this case though the CreateGithubCommit "resource" is an action rather than a
+            traditional resource. It is given a unique ID, but this is never recorded anywhere
+            and there is no way to look this ID up again.
+           */
+          .id(UUID.randomUUID().toString())
           .githubRepository(repoName)
           .githubOwner(user.getLogin())
           .githubBranch(branch)
+          .meta(CreateGithubCommitMeta
+              .builder()
+              .browsableRepoUrl("https://github.com/" + user.getLogin() + "/" + repoName)
+              .apiRepoUrl("https://api.github.com/repos/" + user.getLogin() + "/" + repoName)
+              .build())
           .build());
     } catch (final ClientWebApplicationException ex) {
       Try.run(

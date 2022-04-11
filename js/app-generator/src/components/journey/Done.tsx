@@ -43,7 +43,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>You're all done.</h2>
                         <p>
-                            The sample application is being pushed to <a href={"https://github.com/" + props.machine.state.context.repoId} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
+                            The sample application is being pushed to <a href={props.machine.state.context.browsableRepoUrl} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
                             repository called <strong>{props.machine.state.context.githubRepo}</strong>. In a minute or so the sample project files will be
                             uploaded and the initial GitHub Actions workflow will start automatically.
                         </p>

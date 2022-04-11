@@ -1,6 +1,7 @@
 package com.octopus.githubproxy.domain.entities;
 
 import com.github.jasminb.jsonapi.annotations.Id;
+import com.github.jasminb.jsonapi.annotations.Meta;
 import com.github.jasminb.jsonapi.annotations.Type;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,9 @@ import lombok.NoArgsConstructor;
 @Type("githubrepos")
 public class GitHubRepo {
 
+  /**
+   * The ID of an external resource is the URL to the GET endpoint that represents the resource.
+   */
   @Id
   private String id;
 
@@ -33,4 +37,10 @@ public class GitHubRepo {
    */
   @NotBlank
   private String repo;
+
+  /**
+   * The metadata associated with the repo.
+   */
+  @Meta
+  private GitHubRepoMeta meta;
 }

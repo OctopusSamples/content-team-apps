@@ -9,6 +9,7 @@ import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
+import com.octopus.githubproxy.domain.entities.GitHubRepoMeta;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoId;
 import com.octopus.githubproxy.domain.features.impl.DisableSecurityFeatureImpl;
@@ -108,6 +109,11 @@ public class ResourceHandler {
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo
           .builder()
+          .id("https://api.github.com/repos/" + repo.getOwner().getLogin() + "/" + repo.getName())
+          .meta(GitHubRepoMeta
+              .builder()
+              .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
+              .build())
           .owner(repo.getOwner().getLogin())
           .repo(repo.getName())
           .build());

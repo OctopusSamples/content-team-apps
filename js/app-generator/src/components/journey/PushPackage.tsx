@@ -127,7 +127,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             .then(body => {
                 if (props.machine.state) {
                     const bodyObject = body as any;
-                    props.machine.state.context.repoId = bodyObject.data.id;
+                    props.machine.state.context.browsableRepoUrl = bodyObject.meta.browsableRepoUrl;
                 }
                 props.machine.send("NEXT")
             })
