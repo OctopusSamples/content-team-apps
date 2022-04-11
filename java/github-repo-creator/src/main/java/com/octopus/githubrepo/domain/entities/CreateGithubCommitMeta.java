@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Metadata associated with a GitHub commit
+ * Metadata associated with a GitHub commit.
  */
 @Data
 @Builder
