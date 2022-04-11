@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./java/github/octopus-service-account-creator
+        uses: ./java/github/github-repo-proxy
         with:
           octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
           octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
