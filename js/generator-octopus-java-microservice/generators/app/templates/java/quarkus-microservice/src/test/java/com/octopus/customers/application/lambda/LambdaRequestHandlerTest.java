@@ -101,7 +101,7 @@ public class LambdaRequestHandlerTest extends BaseTest {
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer postEntity = getResourceFromDocument(resourceConverter, postResponse.getBody());
     assertEquals("testCreateAndGetResource", postEntity.getFirstName());
-    assertEquals(200, postResponse.getStatusCode());
+    assertEquals(201, postResponse.getStatusCode());
 
     final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
@@ -140,7 +140,7 @@ public class LambdaRequestHandlerTest extends BaseTest {
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer postEntity = getResourceFromDocument(resourceConverter, postResponse.getBody());
     assertEquals("testCreateAndGetResource", postEntity.getFirstName());
-    assertEquals(200, postResponse.getStatusCode());
+    assertEquals(201, postResponse.getStatusCode());
 
     final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
         new APIGatewayProxyRequestEvent();
@@ -193,7 +193,7 @@ public class LambdaRequestHandlerTest extends BaseTest {
         api.handleRequest(apiGatewayProxyRequestEvent, Mockito.mock(Context.class));
     final Customer postEntity = getResourceFromDocument(resourceConverter, postResponse.getBody());
     assertEquals("testCreateAndGetResource", postEntity.getFirstName());
-    assertEquals(200, postResponse.getStatusCode());
+    assertEquals(201, postResponse.getStatusCode());
 
     {
       final APIGatewayProxyRequestEvent getApiGatewayProxyRequestEvent =
