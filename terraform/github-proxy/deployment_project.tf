@@ -1,7 +1,7 @@
 locals {
   # These change with every project
   project_name = "GitHub Proxy"
-  project_description = "which exposes a small subset of the GitHub API (just enough to know if a repo is created and if workflows have completed) accepting the encrypted token stored as a frontend client cookie. It is exposed under /api/${local.api_endpoint_name}.}"
+  project_description = "which exposes a small subset of the GitHub API (just enough to know if a repo is created and if workflows have completed) accepting the encrypted token stored as a frontend client cookie. It is exposed under /api/${local.api_endpoint_name}."
   lambda_package = "github-repo-proxy-lambda"
   lambda_sbom_package = "github-repo-proxy-lambda-sbom"
   api_endpoint_name = "githubrepo"
