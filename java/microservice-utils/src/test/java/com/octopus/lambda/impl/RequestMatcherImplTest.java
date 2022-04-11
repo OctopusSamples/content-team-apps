@@ -29,6 +29,20 @@ public class RequestMatcherImplTest {
         new APIGatewayProxyRequestEvent()
             .withPath("/api/test")
             .withHttpMethod("GET"),
+        Pattern.compile("/api/test/?"),
+        "GET"));
+
+    assertTrue(REQUEST_MATCHER.requestIsMatch(
+        new APIGatewayProxyRequestEvent()
+            .withPath("/api/test/")
+            .withHttpMethod("GET"),
+        Pattern.compile("/api/test/?"),
+        "GET"));
+
+    assertTrue(REQUEST_MATCHER.requestIsMatch(
+        new APIGatewayProxyRequestEvent()
+            .withPath("/api/test")
+            .withHttpMethod("GET"),
         Pattern.compile("/api/test"),
         "GeT"));
 
