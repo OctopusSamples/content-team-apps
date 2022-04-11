@@ -6,7 +6,6 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
-import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import io.quarkus.test.junit.QuarkusTest;

@@ -1,9 +1,9 @@
 package com.octopus.githubrepo.domain.features.impl;
 
+import com.octopus.features.AdminJwtGroupFeature;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import com.octopus.features.AdminJwtGroupFeature;
 
 /**
  * Simple wrapper around a property setting to aid with mocking in tests.

@@ -4,9 +4,9 @@ import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.SerializationFeature;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
-import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
+import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import javax.enterprise.inject.Produces;
 
 /**

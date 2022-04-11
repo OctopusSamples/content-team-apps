@@ -2,10 +2,10 @@ package com.octopus.githubrepo.domain.utils.impl;
 
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
-import com.octopus.jwt.JwtInspector;
-import com.octopus.jwt.JwtUtils;
 import com.octopus.githubrepo.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
+import com.octopus.jwt.JwtInspector;
+import com.octopus.jwt.JwtUtils;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.infrastructure.clients;
 
+import com.octopus.githubrepo.GlobalConstants;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -9,7 +10,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import com.octopus.githubrepo.GlobalConstants;
 
 /**
   A REST client accessing the template generator service.

@@ -9,16 +9,15 @@ import com.octopus.Constants;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.githubrepo.domain.ServiceConstants;
+import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
+import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
-import com.octopus.githubrepo.domain.handlers.HealthHandler;
-import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import io.quarkus.logging.Log;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -26,7 +25,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import lombok.NonNull;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * The Lambda entry point used to populate a GitHub repo.

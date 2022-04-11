@@ -2,14 +2,13 @@ package com.octopus.githubrepo.application.lambda;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.features.DisableSecurityFeature;
-import com.octopus.githubrepo.domain.handlers.populaterepo.BaseTest;
 import com.octopus.githubrepo.TestingProfile;
+import com.octopus.githubrepo.domain.handlers.populaterepo.BaseTest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
