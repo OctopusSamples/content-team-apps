@@ -36,9 +36,9 @@ resource "octopusdeploy_project" "deploy_project" {
   versioning_strategy {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
-  included_library_variable_sets       = [
+  included_library_variable_sets = [
     octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id,
-    var.content_team_library_variable_set_id, var.github_actions_library_variable_set_id
+    var.content_team_library_variable_set_id
   ]
 
   connectivity_policy {
@@ -759,7 +759,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormationName.ApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormationName.AppBuilderApiGatewayStage}"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_tags
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # This template updates the stage with the deployment created in the previous step.
@@ -864,7 +864,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.ApiGatewayStage} \
+              --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
               --output text)
 
