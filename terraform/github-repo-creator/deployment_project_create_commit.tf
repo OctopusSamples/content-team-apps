@@ -60,7 +60,7 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
     action {
       action_type    = "Octopus.Script"
       name           = "Capture Local Dev Settings"
-      run_on_server  = true
+      run_on_server  = false
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
