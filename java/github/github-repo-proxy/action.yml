@@ -78,37 +78,29 @@ runs:
       shell: bash
       working-directory: java/github-repo-proxy
 
-#    - name: Test Backend
-#      run: ./mvnw --batch-mode test
-#      env:
-#        LAMBDA_HANDLER: login
-#        GITHUB_REDIRECT: https://development.githubactionworkflows.com/oauth/github/code
-#        GITHUB_CLIENT_ID: ${{ inputs.oauth_client_id }}
-#        GITHUB_CLIENT_SECRET: ${{ inputs.oauth_client_secret }}
-#        GITHUB_ENCRYPTION: 1234567890123456789012345678901234567890
-#        GITHUB_SALT: 1234567890123456789012345678901234567890
-#        GITHUB_LOGIN_REDIRECT: https://development.githubactionworkflows.com/
-#      shell: bash
-#      working-directory: java/github-repo-proxy
-#
-#    - name: Generate JaCoCo Badges
-#      id: jacocoMod1
-#      uses: cicirello/jacoco-badge-generator@v2
-#      with:
-#        generate-branches-badge: true
-#        jacoco-csv-file: java/github-repo-proxy/target/site/jacoco/jacoco.csv
-#        coverage-badge-filename: githubrepoproxy.svg
-#        branches-badge-filename: githubrepoproxybranches.svg
-#
-#    - name: Update resources
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      uses: test-room-7/action-update-file@v1.6.0
-#      with:
-#        file-path: |
-#          .github/badges/azure-servicebus-proxy-coverage.svg
-#          .github/badges/azure-servicebus-proxy-branches.svg
-#        commit-msg: Update badges
-#        github-token: ${{ inputs.github_token }}
+    - name: Test Backend
+      run: ./mvnw --batch-mode test
+      shell: bash
+      working-directory: java/github-repo-proxy
+
+    - name: Generate JaCoCo Badges
+      id: jacocoMod1
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: java/github-repo-proxy/target/site/jacoco/jacoco.csv
+        coverage-badge-filename: githubrepoproxy.svg
+        branches-badge-filename: githubrepoproxybranches.svg
+
+    - name: Update resources
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      uses: test-room-7/action-update-file@v1.6.0
+      with:
+        file-path: |
+          .github/badges/azure-servicebus-proxy-coverage.svg
+          .github/badges/azure-servicebus-proxy-branches.svg
+        commit-msg: Update badges
+        github-token: ${{ inputs.github_token }}
 
     - name: Create Release
       id: create_release
