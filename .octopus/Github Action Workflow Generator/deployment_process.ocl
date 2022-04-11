@@ -5,6 +5,7 @@ step "Capture Local Dev Settings" {
 
     action {
         action_type = "Octopus.Script"
+        environments = ["Development", "Production"]
         properties = {
             Octopus.Action.RunOnServer = "false"
             Octopus.Action.Script.ScriptBody = <<-EOT
