@@ -61,7 +61,6 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       action_type    = "Octopus.Script"
       name           = "Capture Local Dev Settings"
       run_on_server  = false
-      worker_pool_id = var.octopus_worker_pool_id
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
@@ -73,7 +72,6 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
-        "OctopusUseBundledTooling" : "False"
       }
     }
   }
