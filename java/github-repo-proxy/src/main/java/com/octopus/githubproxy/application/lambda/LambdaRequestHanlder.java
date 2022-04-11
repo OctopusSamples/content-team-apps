@@ -1,4 +1,4 @@
-package com.octopus.customers.application.lambda;
+package com.octopus.githubproxy.application.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -6,20 +6,20 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.customers.application.Paths;
-import com.octopus.customers.domain.handlers.HealthHandler;
-import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.exceptions.EntityNotFoundException;
-import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
+import com.octopus.githubproxy.ServiceConstants;
+import com.octopus.githubproxy.application.Paths;
+import com.octopus.githubproxy.domain.handlers.HealthHandler;
+import com.octopus.githubproxy.domain.handlers.ResourceHandler;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
+import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import com.octopus.utilties.RegExUtils;
-import cz.jirutka.rsql.parser.RSQLParserException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -63,6 +63,9 @@ public class LambdaRequestHanlder implements
   LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
 
   @Inject
+  LambdaHttpCookieExtractor lambdaHttpCookieExtractor;
+
+  @Inject
   ProxyResponseBuilder proxyResponseBuilder;
 
   @Inject
@@ -92,9 +95,7 @@ public class LambdaRequestHanlder implements
      comes out of preview), so we are on our own with functionality such as routing requests to
      handlers. This code simply calls each handler to find the first one that responds to the request.
     */
-    return getAll(input)
-        .or(() -> getOne(input))
-        .or(() -> createOne(input))
+    return getOne(input)
         .or(() -> checkHealth(input))
         .orElseGet(() -> proxyResponseBuilder.buildNotFound());
   }
@@ -151,57 +152,6 @@ public class LambdaRequestHanlder implements
   }
 
   /**
-   * Get a collection of resources.
-   *
-   * @param input The Lambda request.
-   * @return The Lambda response.
-   */
-  private Optional<APIGatewayProxyResponseEvent> getAll(final APIGatewayProxyRequestEvent input) {
-    try {
-      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
-        return Optional.empty();
-      }
-
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(200)
-              .withBody(
-                  resourceHandler.getAll(
-                      lambdaHttpHeaderExtractor.getAllHeaders(
-                          input,
-                          Constants.DATA_PARTITION_HEADER),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.FILTER_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(
-                              input,
-                              HttpHeaders.AUTHORIZATION)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(
-                              input,
-                              Constants.SERVICE_AUTHORIZATION_HEADER)
-                          .orElse(null))));
-
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final RSQLParserException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e));
-    }
-  }
-
-  /**
    * Return a resources.
    *
    * @param input The Lambda request.
@@ -228,7 +178,11 @@ public class LambdaRequestHanlder implements
                 lambdaHttpHeaderExtractor.getFirstHeader(
                         input,
                         Constants.SERVICE_AUTHORIZATION_HEADER)
-                    .orElse(null));
+                    .orElse(null),
+                lambdaHttpCookieExtractor.getCookieValue(
+                        input,
+                        ServiceConstants.GITHUB_SESSION_COOKIE)
+                    .orElse(""));
 
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
@@ -242,44 +196,6 @@ public class LambdaRequestHanlder implements
     } catch (final Exception e) {
       e.printStackTrace();
       return Optional.of(proxyResponseBuilder.buildError(e));
-    }
-
-
-  }
-
-  /**
-   * Create a resources.
-   *
-   * @param input The Lambda request.
-   * @return The Lambda response.
-   */
-  private Optional<APIGatewayProxyResponseEvent> createOne(
-      final APIGatewayProxyRequestEvent input) {
-    try {
-      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.empty();
-      }
-
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(201)
-              .withBody(
-                  resourceHandler.create(
-                      requestBodyExtractor.getBody(input),
-                      lambdaHttpHeaderExtractor.getAllHeaders(input,
-                          Constants.DATA_PARTITION_HEADER),
-                      lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(input,
-                          Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
-
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInputException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
     }
   }
 }

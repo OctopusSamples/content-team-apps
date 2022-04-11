@@ -1,0 +1,26 @@
+name: github-repo-proxy
+
+on:
+  push:
+    paths:
+    - 'java/github-repo-proxy/**'
+    - '.github/workflows/github-repo-proxy.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./java/github/octopus-service-account-creator
+        with:
+          octopus_server_url: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_api_token: ${{ secrets.OCTOPUS_APIKEY }}
+          run_number: ${{ github.run_number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}

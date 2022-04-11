@@ -1,4 +1,4 @@
-package com.octopus.customers.domain.framework.producers;
+package com.octopus.githubproxy.domain.framework.producers;
 
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
