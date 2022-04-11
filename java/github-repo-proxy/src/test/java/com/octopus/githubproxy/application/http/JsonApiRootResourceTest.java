@@ -71,6 +71,7 @@ public class JsonApiRootResourceTest {
   @Test
   public void failWithoutPlainAcceptForGet() {
         given()
+            .cookie("GitHubUserSession", "blah")
             .accept("application/vnd.api+json; something")
             .when()
             .get(Paths.API_ENDPOINT + "/1")
