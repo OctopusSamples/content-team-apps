@@ -97,8 +97,8 @@ runs:
       uses: test-room-7/action-update-file@v1.6.0
       with:
         file-path: |
-          .github/badges/azure-servicebus-proxy-coverage.svg
-          .github/badges/azure-servicebus-proxy-branches.svg
+          .github/badges/githubrepoproxy.svg
+          .github/badges/githubrepoproxybranches.svg
         commit-msg: Update badges
         github-token: ${{ inputs.github_token }}
 
