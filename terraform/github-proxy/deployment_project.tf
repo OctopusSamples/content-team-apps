@@ -1,7 +1,11 @@
 locals {
+  # These change with every project
   project_name = "GitHub Proxy"
   lambda_package = "github-repo-proxy-lambda"
   lambda_sbom_package = "github-repo-proxy-lambda-sbom"
+  api_endpoint_name = "githubrepo"
+
+  # These should be relatively stable
   reverse_proxy_package = "com.octopus:reverse-proxy"
   s3_bucket_cloudformation_name = "#{CloudFormation.S3Bucket}"
   lambda_cloudformation_name = "#{CloudFormation.ApplicationLambda}"
@@ -9,11 +13,9 @@ locals {
   lambda_proxy_cloudformation_name = "#{CloudFormation.ApplicationLambdaReverseProxy}"
   lambda_proxy_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaReverseProxyVersion}-#{Octopus.Deployment.Id | Replace -}"
   lambda_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaVersion}-#{Octopus.Deployment.Id | Replace -}"
-  lambda_cloudformation_name = "#{CloudFormation.ApplicationLambda}"
   api_gateway_cloudformation_name = "#{CloudFormation.Application}"
   cloudformation_lambda_version_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
   cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-  api_endpoint_name = "githubrepo"
 }
 
 resource "octopusdeploy_project" "deploy_project" {
