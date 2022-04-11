@@ -15,7 +15,10 @@ resource "octopusdeploy_project" "create_commit_project" {
   versioning_strategy {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
-  included_library_variable_sets       = [octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id, var.content_team_library_variable_set_id]
+  included_library_variable_sets = [
+    octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id,
+    var.content_team_library_variable_set_id
+  ]
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
@@ -29,21 +32,21 @@ output "deploy_create_commit_project_id" {
 }
 
 resource "octopusdeploy_variable" "create_commit_debug_variable" {
-  name = "OctopusPrintVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.create_commit_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.create_commit_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_variable" "create_commit_debug_evaluated_variable" {
-  name = "OctopusPrintEvaluatedVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintEvaluatedVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.create_commit_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.create_commit_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_deployment_process" "create_commit_project" {
@@ -53,22 +56,24 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
     name                = "Capture Local Dev Settings"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
+    target_roles        = ["LocalDevelopment"]
     action {
       action_type    = "Octopus.Script"
       name           = "Capture Local Dev Settings"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
-      target_roles = ["LocalDevelopment"]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
           echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};REPO_POPULATOR=#{ExternalService.RepoPopulator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=CreateGithubCommit"
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -82,7 +87,9 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Create S3 bucket"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
       properties     = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy Octopus Service Account Creator\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
@@ -117,28 +124,30 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Upload Lambda"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       primary_package {
         acquisition_location = "Server"
-        feed_id = var.octopus_built_in_feed_id
-        package_id = "github-repo-creator-lambda"
-        properties = {
-          "SelectionMode": "immediate"
+        feed_id              = var.octopus_built_in_feed_id
+        package_id           = "github-repo-creator-lambda"
+        properties           = {
+          "SelectionMode" : "immediate"
         }
       }
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
-        "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
-        "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Package.DownloadOnTentacle": "False"
-        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId": "github-repo-creator-lambda"
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+        "Octopus.Action.Aws.S3.PackageOptions" : "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+        "Octopus.Action.Aws.S3.TargetMode" : "EntirePackage"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Package.DownloadOnTentacle" : "False"
+        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId" : "github-repo-creator-lambda"
       }
     }
   }
@@ -152,28 +161,30 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Upload Lambda Proxy"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       primary_package {
         acquisition_location = "Server"
-        feed_id = var.octopus_content_team_maven_feed_id
-        package_id = "com.octopus:reverse-proxy"
-        properties = {
-          "SelectionMode": "immediate"
+        feed_id              = var.octopus_content_team_maven_feed_id
+        package_id           = "com.octopus:reverse-proxy"
+        properties           = {
+          "SelectionMode" : "immediate"
         }
       }
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
-        "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
-        "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Package.DownloadOnTentacle": "False"
-        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId": "com.octopus:reverse-proxy"
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+        "Octopus.Action.Aws.S3.PackageOptions" : "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+        "Octopus.Action.Aws.S3.TargetMode" : "EntirePackage"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Package.DownloadOnTentacle" : "False"
+        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId" : "com.octopus:reverse-proxy"
       }
     }
   }
@@ -187,14 +198,16 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Get Stack Outputs"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           API_RESOURCE=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGateway} \
@@ -238,9 +251,9 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
             exit 1
           fi
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -254,13 +267,15 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Octopus Service Account Creator"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub OAuth Backend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.OctopusCreateGithubCommit}"
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"GitHub OAuth Backend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.OctopusCreateGithubCommit}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
               Type: String
@@ -509,14 +524,14 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
               Description: The Lambda description
               Value: !Ref LambdaDescription
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
-        "Octopus.Action.Aws.IamCapabilities": "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
+        "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
@@ -530,12 +545,14 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Update Stage"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.AppBuilderApiGatewayStage}"
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormationName.AppBuilderApiGatewayStage}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
               Type: String
@@ -572,13 +589,13 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
                     - Ref: Stage
                     - /
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Octopus Service Account Creator].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Octopus Service Account Creator].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Octopus Service Account Creator].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"DeploymentId\",\"ParameterValue\":\"#{Octopus.Action[Octopus Service Account Creator].Output.AwsOutputs[DeploymentId]}\"},{\"ParameterKey\":\"ApiGatewayId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"}]"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
@@ -592,14 +609,16 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Get Stage URL"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
@@ -610,9 +629,9 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
 
           echo "Stage URL: $${STAGE_URL}"
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -626,25 +645,28 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       name           = "Check for vulnerabilities"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_security_environment_id, var.octopus_development_security_environment_id]
+      environments   = [
+        var.octopus_production_security_environment_id,
+        var.octopus_development_security_environment_id
+      ]
 
       package {
-        acquisition_location = "Server"
-        feed_id = var.octopus_built_in_feed_id
-        name = "github-repo-creator-lambda-sbom"
-        package_id = "github-repo-creator-lambda-sbom"
+        acquisition_location      = "Server"
+        feed_id                   = var.octopus_built_in_feed_id
+        name                      = "github-repo-creator-lambda-sbom"
+        package_id                = "github-repo-creator-lambda-sbom"
         extract_during_deployment = true
-        properties = {
+        properties                = {
           SelectionMode = "immediate"
         }
       }
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
           for x in **/bom.xml; do
@@ -688,9 +710,9 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
 
           exit 0
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
