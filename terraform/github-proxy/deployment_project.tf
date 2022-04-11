@@ -341,13 +341,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     GITHUB_ENCRYPTION: !Ref GitHubEncryption
                     GITHUB_SALT: !Ref GitHubSalt
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
-                Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 512
+                Handler: not.used.in.provided.runtime
+                MemorySize: 128
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
                   - Arn
-                Runtime: java11
+                Runtime: provided
                 Timeout: 600
           Outputs:
             ApplicationLambda:
