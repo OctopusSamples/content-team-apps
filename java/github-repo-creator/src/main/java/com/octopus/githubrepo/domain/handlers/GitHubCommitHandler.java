@@ -195,7 +195,8 @@ public class GitHubCommitHandler {
           routingHeader,
           authorizationHeader,
           null,
-          GlobalConstants.ASYNC_INVOCATION_TYPE)) {
+          GlobalConstants.ASYNC_INVOCATION_TYPE,
+          githubToken)) {
         if (response.getStatus() != 202) {
           Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus() + " but expected a 202");
         }

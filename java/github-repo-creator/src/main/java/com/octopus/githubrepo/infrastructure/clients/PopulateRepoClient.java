@@ -2,7 +2,9 @@ package com.octopus.githubrepo.infrastructure.clients;
 
 import com.octopus.Constants.JsonApi;
 import com.octopus.githubrepo.GlobalConstants;
+import com.octopus.githubrepo.domain.ServiceConstants;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,5 +28,6 @@ public interface PopulateRepoClient {
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,
       @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) String serviceAuth,
-      @HeaderParam(GlobalConstants.INVOCATION_TYPE) String invocationType);
+      @HeaderParam(GlobalConstants.INVOCATION_TYPE) String invocationType,
+      @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken);
 }
