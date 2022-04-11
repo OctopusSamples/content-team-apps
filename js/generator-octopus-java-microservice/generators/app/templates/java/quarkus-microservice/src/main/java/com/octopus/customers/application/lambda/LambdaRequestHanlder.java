@@ -250,7 +250,7 @@ public class LambdaRequestHanlder implements
 
       return Optional.of(
           new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(200)
+              .withStatusCode(201)
               .withBody(
                   resourceHandler.create(
                       requestBodyExtractor.getBody(input),

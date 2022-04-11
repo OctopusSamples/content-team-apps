@@ -131,7 +131,7 @@ public class CustomersRepository {
    * @return The newly created entity.
    */
   public Customer save(@NonNull final Customer customer) {
-    customer.id = null;
+    customer.setId(null);
 
     validateEntity(customer);
 

@@ -29,7 +29,9 @@ public class HealthRootResource {
   @Path("GET")
   @Transactional
   public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "GET")).build();
+    return Response
+        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "GET"))
+        .build();
   }
 
   /**
@@ -43,7 +45,9 @@ public class HealthRootResource {
   @Path("POST")
   @Transactional
   public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "POST")).build();
+    return Response
+        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "POST"))
+        .build();
   }
 
   /**
@@ -57,6 +61,8 @@ public class HealthRootResource {
   @Path("{id}/GET")
   @Transactional
   public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT + id, "GET")).build();
+    return Response
+        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT + id, "GET"))
+        .build();
   }
 }

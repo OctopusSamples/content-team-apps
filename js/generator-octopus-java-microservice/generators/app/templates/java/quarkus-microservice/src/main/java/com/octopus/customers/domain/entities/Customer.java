@@ -2,6 +2,7 @@ package com.octopus.customers.domain.entities;
 
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.annotations.Type;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,12 +11,20 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 
 /**
  * Represents an JSONAPI resource and database entity.
  */
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Table(name = "customer")
 @Type("customers")
 public class Customer {
@@ -24,39 +33,55 @@ public class Customer {
   @com.github.jasminb.jsonapi.annotations.Id(IntegerIdHandler.class)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
-  public Integer id;
+  private Integer id;
 
   @NotBlank
-  public String dataPartition;
+  private String dataPartition;
 
   /**
    * The customers first name.
    */
   @NotBlank
-  public String firstName;
+  private String firstName;
 
   /**
    * The customers last name.
    */
   @NotBlank
-  public String lastName;
+  private String lastName;
 
   /**
    * The customers address.
    */
   @NotBlank
-  public String addressLine1;
+  private String addressLine1;
 
   /**
    * The customers address.
    */
   @NotBlank
-  public String addressLine2;
+  private String addressLine2;
 
   /**
    * The customers city.
    */
   @NotBlank
-  public String city;
+  private String city;
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+      return false;
+    }
+    Customer customer = (Customer) o;
+    return id != null && Objects.equals(id, customer.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }

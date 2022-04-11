@@ -125,9 +125,9 @@ public class ResourceHandler {
 
     final Customer customer = getResourceFromDocument(document);
 
-    customer.dataPartition = partitionIdentifier.getPartition(
+    customer.setDataPartition(partitionIdentifier.getPartition(
         dataPartitionHeaders,
-        jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
+        jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null)));
 
     repository.save(customer);
 
@@ -179,8 +179,8 @@ public class ResourceHandler {
        The ID of a resource is determined by the URL, while the partition comes froms
        the headers. If either of these values was sent by the client, strip them out.
       */
-      customer.id = null;
-      customer.dataPartition = null;
+      customer.setId(null);
+      customer.setDataPartition(null);
       return customer;
     } catch (final Exception ex) {
       // Assume the JSON is unable to be parsed.

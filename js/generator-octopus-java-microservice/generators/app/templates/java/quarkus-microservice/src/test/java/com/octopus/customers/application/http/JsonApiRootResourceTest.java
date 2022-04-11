@@ -60,7 +60,7 @@ public class JsonApiRootResourceTest extends BaseTest {
                     resourceConverter, createResource("testCreateAndGetResource")))
             .post(Paths.API_ENDPOINT)
             .then()
-            .statusCode(200)
+            .statusCode(201)
             .body(
                 new LambdaMatcher<String>(
                     a -> getResourceFromDocument(resourceConverter, a) != null,
@@ -112,7 +112,7 @@ public class JsonApiRootResourceTest extends BaseTest {
                     resourceConverter, createResource("testCreateAndGetResource")))
             .post(Paths.API_ENDPOINT)
             .then()
-            .statusCode(200);
+            .statusCode(201);
 
     final Customer created =
         getResourceFromDocument(resourceConverter, response.extract().body().asString());
@@ -197,7 +197,7 @@ public class JsonApiRootResourceTest extends BaseTest {
                     resourceConverter, createResource("testCreateAndGetResource")))
             .post(Paths.API_ENDPOINT)
             .then()
-            .statusCode(200)
+            .statusCode(201)
             .body(
                 new LambdaMatcher<String>(
                     a -> getResourceFromDocument(resourceConverter, a.toString()) != null,

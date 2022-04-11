@@ -88,7 +88,9 @@ public class JsonApiRootResource {
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(resourceHandler.create(
+    return Response
+        .status(201)
+        .entity(resourceHandler.create(
             document,
             dataPartitionHeaders,
             authorizationHeader,
