@@ -2,7 +2,6 @@ package com.octopus.utilties;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
-import lombok.NonNull;
 
 /**
  * Service for working with regexes.

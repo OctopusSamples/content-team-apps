@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
-import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jsonapi.impl.PagedResultsLinksBuilderImpl;
 import com.octopus.wrappers.FilteredResultWrapper;
 import java.util.List;

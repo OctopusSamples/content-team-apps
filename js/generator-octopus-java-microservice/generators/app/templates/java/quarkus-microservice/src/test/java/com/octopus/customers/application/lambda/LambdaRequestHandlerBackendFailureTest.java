@@ -9,8 +9,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.customers.BaseTest;
 import com.octopus.customers.application.Paths;
-import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
+import com.octopus.customers.domain.handlers.ResourceHandler;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;

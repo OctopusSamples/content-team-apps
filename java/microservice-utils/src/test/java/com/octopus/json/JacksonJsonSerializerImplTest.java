@@ -2,7 +2,6 @@ package com.octopus.json;
 
 import com.octopus.exceptions.JsonSerializationException;
 import com.octopus.json.impl.JacksonJsonSerializerImpl;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

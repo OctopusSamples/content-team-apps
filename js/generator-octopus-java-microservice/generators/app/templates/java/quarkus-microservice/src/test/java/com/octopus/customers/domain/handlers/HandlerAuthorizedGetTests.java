@@ -2,9 +2,7 @@ package com.octopus.customers.domain.handlers;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.customers.BaseTest;
-import com.octopus.customers.domain.entities.Customer;
 import com.octopus.customers.infrastructure.utilities.LiquidbaseUpdater;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.DisableSecurityFeature;

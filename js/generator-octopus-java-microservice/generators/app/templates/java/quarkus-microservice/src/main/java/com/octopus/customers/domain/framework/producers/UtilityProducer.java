@@ -17,9 +17,13 @@ import com.octopus.jwt.impl.JwtValidatorImpl;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
 import com.octopus.lambda.impl.CaseInsensitiveHttpHeaderExtractor;
 import com.octopus.lambda.impl.CaseInsensitiveLambdaHttpValueExtractor;
 import com.octopus.lambda.impl.ProxyResponseBuilderImpl;
+import com.octopus.lambda.impl.RequestBodyExtractorImpl;
+import com.octopus.lambda.impl.RequestMatcherImpl;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
@@ -152,5 +156,25 @@ public class UtilityProducer {
       AdminJwtGroupFeature adminJwtGroupFeature,
       DisableSecurityFeature disableSecurityFeature) {
     return new PartitionIdentifierImpl(jwtInspector, adminJwtGroupFeature, disableSecurityFeature);
+  }
+
+
+
+  /**
+   * Produces an instance of RequestMatcher.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestMatcher getRequestMatcher() {
+    return new RequestMatcherImpl();
+  }
+
+  /**
+   * Produces an instance of RequestBodyExtractor.
+   */
+  @ApplicationScoped
+  @Produces
+  public RequestBodyExtractor getRequestBodyExtractor() {
+    return new RequestBodyExtractorImpl();
   }
 }

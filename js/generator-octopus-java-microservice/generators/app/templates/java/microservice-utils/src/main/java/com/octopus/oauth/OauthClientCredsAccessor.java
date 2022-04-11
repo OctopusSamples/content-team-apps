@@ -1,7 +1,6 @@
 package com.octopus.oauth;
 
 import io.vavr.control.Try;
-import lombok.NonNull;
 
 /**
  * Represents a service used to generate access tokens.

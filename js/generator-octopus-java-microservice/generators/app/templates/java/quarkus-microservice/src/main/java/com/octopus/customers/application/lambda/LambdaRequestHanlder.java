@@ -7,8 +7,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
 import com.octopus.customers.application.Paths;
-import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.customers.domain.handlers.HealthHandler;
+import com.octopus.customers.domain.handlers.ResourceHandler;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
@@ -16,9 +16,10 @@ import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
+import com.octopus.lambda.RequestBodyExtractor;
+import com.octopus.lambda.RequestMatcher;
 import com.octopus.utilties.RegExUtils;
 import cz.jirutka.rsql.parser.RSQLParserException;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -26,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import lombok.NonNull;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * The Lambda entry point used to return resources.
@@ -68,6 +68,12 @@ public class LambdaRequestHanlder implements
   @Inject
   RegExUtils regExUtils;
 
+  @Inject
+  RequestMatcher requestMatcher;
+
+  @Inject
+  RequestBodyExtractor requestBodyExtractor;
+
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
    *
@@ -90,7 +96,7 @@ public class LambdaRequestHanlder implements
         .or(() -> getOne(input))
         .or(() -> createOne(input))
         .or(() -> checkHealth(input))
-        .orElse(proxyResponseBuilder.buildNotFound());
+        .orElseGet(() -> proxyResponseBuilder.buildNotFound());
   }
 
   /**
@@ -125,7 +131,7 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> checkHealth(
       final APIGatewayProxyRequestEvent input) {
 
-    if (requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
+    if (requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       try {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
@@ -150,7 +156,7 @@ public class LambdaRequestHanlder implements
    */
   private Optional<APIGatewayProxyResponseEvent> getAll(final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
+      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
@@ -192,7 +198,7 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
-      if (requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
+      if (requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
         final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
         if (id.isPresent()) {
@@ -231,13 +237,13 @@ public class LambdaRequestHanlder implements
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
         return Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(200)
                 .withBody(
                     resourceHandler.create(
-                        getBody(input),
+                        requestBodyExtractor.getBody(input),
                         lambdaHttpHeaderExtractor.getAllHeaders(input,
                             Constants.DATA_PARTITION_HEADER),
                         lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
@@ -251,44 +257,9 @@ public class LambdaRequestHanlder implements
       return Optional.of(proxyResponseBuilder.buildBadRequest(e));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, getBody(input)));
+      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Determine if the Lambda request matches path and method.
-   *
-   * @param input  The Lambda request.
-   * @param regex  The path regex.
-   * @param method The HTTP method.
-   * @return true if this request matches the supplied values, and false otherwise.
-   */
-  public boolean requestIsMatch(
-      @NonNull final APIGatewayProxyRequestEvent input,
-      @NonNull final Pattern regex,
-      @NonNull final String method) {
-    final String path = ObjectUtils.defaultIfNull(input.getPath(), "");
-    final String requestMethod = ObjectUtils.defaultIfNull(input.getHttpMethod(), "").toLowerCase();
-    return regex.matcher(path).matches() && method.toLowerCase().equals(requestMethod);
-  }
-
-  /**
-   * Get the request body, and deal with the fact that it may be base64 encoded.
-   *
-   * @param input The Lambda request
-   * @return The decoded request body
-   */
-  private String getBody(final APIGatewayProxyRequestEvent input) {
-    final String body = ObjectUtils.defaultIfNull(input.getBody(), "");
-    final String isBase64Encoded =
-        ObjectUtils.defaultIfNull(input.getIsBase64Encoded(), "").toString().toLowerCase();
-
-    if ("true".equals(isBase64Encoded)) {
-      return new String(Base64.getDecoder().decode(body));
-    }
-
-    return body;
   }
 }

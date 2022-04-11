@@ -3,7 +3,6 @@ package com.octopus.jsonapi;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.octopus.wrappers.FilteredResultWrapper;
 import java.util.List;
-import lombok.NonNull;
 
 /**
  * A service used to build paged links in JSONAPI responses.
