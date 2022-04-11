@@ -255,7 +255,7 @@ public class GitHubRepoHandler {
       Try.run(() -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
           + ex.getResponse().readEntity(String.class), ex));
       throw new InvalidInputException();
-    } catch (final InvalidInputException ex) {
+    } catch (final InvalidInputException | IllegalArgumentException ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
