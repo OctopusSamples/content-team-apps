@@ -59,7 +59,7 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
     target_roles        = ["LocalDevelopment"]
     action {
       action_type    = "Octopus.Script"
-      name           = "Capture Local Dev Settings ${var.run_number"
+      name           = "Capture Local Dev Settings ${var.run_number}"
       run_on_server  = false
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
