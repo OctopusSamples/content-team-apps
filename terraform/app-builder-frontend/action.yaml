@@ -16,6 +16,9 @@ inputs:
   octopus_application_lifecycle_id:
     description: 'The application deployment lifecycle'
     required: true
+  octopus_security_lifecycle_id:
+    description: 'The security deployment lifecycle'
+    required: true
   octopus_development_environment_id:
     description: 'The development environment'
     required: true
@@ -104,6 +107,7 @@ runs:
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}"
+        -var="octopus_security_lifecycle_id=${{ inputs.octopus_security_lifecycle_id }}"
         -var="aws_region=${{ inputs.aws_region }}"
         -var="octopus_development_aws_account_id=${{ inputs.octopus_development_aws_account_id }}"
         -var="octopus_production_aws_account_id=${{ inputs.octopus_production_aws_account_id }}"

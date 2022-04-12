@@ -22,6 +22,11 @@ variable "octopus_application_lifecycle_id" {
   nullable = false
 }
 
+variable "octopus_security_lifecycle_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_development_aws_account_id" {
   type = string
   nullable = false

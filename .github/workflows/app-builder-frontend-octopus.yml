@@ -25,6 +25,7 @@ jobs:
           # WorkerPools-1282 is Hosted Ubuntu
           octopus_worker_pool_id: WorkerPools-1301 
           octopus_application_lifecycle_id: Lifecycles-2221
+          octopus_security_lifecycle_id: Lifecycles-2441
           octopus_development_environment_id: Environments-3322
           octopus_development_security_environment_id: Environments-3341
           octopus_production_environment_id: Environments-3342
