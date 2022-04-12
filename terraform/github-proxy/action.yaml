@@ -1,6 +1,9 @@
 name: GitHub Proxy
 description: Deploys the GitHub Proxy
 inputs:
+  run_number:
+    description: The GitHub Actions run number
+    required: true
   octopus_server:
     description: "The Octopus server"
     required: true
@@ -146,5 +149,6 @@ runs:
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
         -var="github_actions_library_variable_set_id=${{ inputs.github_actions_library_variable_set_id }}"
+        -var="run_number=${{ inputs.run_number }}"
       working-directory: terraform/github-proxy
       shell: bash

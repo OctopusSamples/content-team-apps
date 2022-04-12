@@ -77,13 +77,13 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
   project_id = octopusdeploy_project.deploy_project.id
   step {
     condition           = "Success"
-    name                = "Capture Local Dev Settings"
+    name                = "Capture Local Dev Settings ${var.run_number}"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["LocalDevelopment"]
     action {
       action_type   = "Octopus.Script"
-      name          = "Capture Local Dev Settings"
+      name          = "Capture Local Dev Settings ${var.run_number}"
       run_on_server = false
       notes         = "This step captures a script that prints the environment variables used to run the application in the given environment. The password for the offline drop is saved under \"Content Team Apps Offline Drop\" in the password manager."
       environments  = [

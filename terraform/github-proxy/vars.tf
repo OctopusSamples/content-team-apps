@@ -93,3 +93,8 @@ variable "github_proxy_encryption_key_production" {
   nullable = false
   sensitive = true
 }
+
+variable "run_number" {
+  type = string
+  nullable = false
+}
