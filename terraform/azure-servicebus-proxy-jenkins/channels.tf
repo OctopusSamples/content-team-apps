@@ -35,7 +35,7 @@ resource "octopusdeploy_channel" "security" {
   rule {
     tag = "^$"
     action_package {
-      deployment_action = "Upload Frontend"
+      deployment_action = "Upload Lambda"
     }
   }
 }
