@@ -7,10 +7,13 @@ import com.octopus.exceptions.InvalidInputException;
 import com.octopus.githubrepo.TestingProfile;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
+import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.mockito.InjectMock;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 

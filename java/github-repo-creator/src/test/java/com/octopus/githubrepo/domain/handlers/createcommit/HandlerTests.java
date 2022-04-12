@@ -18,6 +18,7 @@ import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
+import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,6 +77,10 @@ public class HandlerTests extends BaseGitHubTest {
   @InjectMock
   GitHubClient gitHubClient;
 
+  @RestClient
+  @InjectMock
+  PopulateRepoClient populateRepoClient;
+
   @BeforeAll
   public void setup() throws IOException {
     mockGitHubClient(gitHubClient);
@@ -85,6 +91,10 @@ public class HandlerTests extends BaseGitHubTest {
     Mockito.when(cognitoAdminClaim.getAdminClaim()).thenReturn(Optional.of("admin-claim"));
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
     Mockito.when(asymmetricDecryptor.decrypt(any(), any())).thenReturn("decrypted");
+
+    final Response acceptedResponse = Mockito.mock(Response.class);
+    Mockito.when(acceptedResponse.getStatus()).thenReturn(202);
+    Mockito.when(populateRepoClient.populateRepo(any(), any(), any(), any(), any(), any())).thenReturn(acceptedResponse);
   }
 
   @ParameterizedTest

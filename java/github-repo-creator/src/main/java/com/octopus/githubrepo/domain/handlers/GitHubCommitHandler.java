@@ -4,6 +4,7 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.base.Preconditions;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.GlobalConstants;
@@ -12,6 +13,7 @@ import com.octopus.githubrepo.domain.entities.CreateGithubCommitMeta;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
+import com.octopus.githubrepo.domain.exceptions.UnexpectedResponseException;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
@@ -198,6 +200,7 @@ public class GitHubCommitHandler {
           githubToken)) {
         if (response.getStatus() != 202) {
           Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus() + " but expected a 202");
+          throw new UnexpectedResponseException();
         }
       }
 
@@ -232,7 +235,7 @@ public class GitHubCommitHandler {
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
-      throw new InvalidInputException();
+      throw new ServerErrorException();
     }
   }
 

@@ -11,6 +11,7 @@ import com.octopus.githubrepo.domain.framework.providers.EntityNotFoundMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidAcceptHeadersMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidInputExceptionMapper;
 import com.octopus.githubrepo.domain.framework.providers.InvalidJsonApiResourceExceptionMapper;
+import com.octopus.githubrepo.domain.framework.providers.ServerErrorExceptionMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import javax.inject.Inject;
@@ -27,6 +28,9 @@ public class MapperTest {
   
   @Inject
   InvalidJsonApiResourceExceptionMapper invalidJsonApiResourceExceptionMapper;
+
+  @Inject
+  ServerErrorExceptionMapper serverErrorExceptionMapper;
   
   @Inject
   InvalidAcceptHeadersMapper invalidAcceptHeadersMapper;
@@ -36,6 +40,13 @@ public class MapperTest {
 
   @Inject
   InvalidInputExceptionMapper invalidInputExceptionMapper;
+
+  @Test
+  public void verifyServerErrorExceptionMapperNullInputs() {
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      serverErrorExceptionMapper.toResponse(null);
+    });
+  }
 
   @Test
   public void verifyInvalidAcceptHeadersMapperNullInputs() {
