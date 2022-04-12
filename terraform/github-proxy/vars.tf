@@ -67,54 +67,6 @@ variable "octopus_production_security_environment_id" {
   nullable = false
 }
 
-variable "servicebus_application_id_production" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_application_id_development" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_secret_production" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_secret_development" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_tenant_production" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_tenant_development" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_namespace_production" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
-variable "servicebus_namespace_development" {
-  type = string
-  nullable = false
-  sensitive = true
-}
-
 variable "cognito_library_variable_set_id" {
   type = string
   nullable = false
