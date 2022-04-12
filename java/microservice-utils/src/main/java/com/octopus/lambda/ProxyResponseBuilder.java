@@ -33,6 +33,13 @@ public interface ProxyResponseBuilder {
   APIGatewayProxyResponseEvent buildNotFound();
 
   /**
+   * Build a error object for a 404 not found error. This is used to indicate that no lambda matched the path. https://jsonapi.org/format/#error-objects
+   *
+   * @return The ProxyResponse representing the error.
+   */
+  APIGatewayProxyResponseEvent buildPathNotFound();
+
+  /**
    * Build an error object including the exception name. https://jsonapi.org/format/#error-objects
    *
    * @param ex The exception

@@ -38,6 +38,13 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   }
 
   @Override
+  public APIGatewayProxyResponseEvent buildPathNotFound() {
+    return new ApiGatewayProxyResponseEventWithCors()
+        .withStatusCode(404)
+        .withBody("{\"errors\": [{\"title\": \"Path not found\"}]}");
+  }
+
+  @Override
   public APIGatewayProxyResponseEvent buildBadRequest(@NonNull final Exception ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(400)

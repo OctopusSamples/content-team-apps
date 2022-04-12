@@ -53,9 +53,6 @@ public class LambdaRequestHanlder implements
   HealthHandler healthHandler;
 
   @Inject
-  LambdaHttpValueExtractor lambdaHttpValueExtractor;
-
-  @Inject
   LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;
 
   @Inject
@@ -70,8 +67,6 @@ public class LambdaRequestHanlder implements
   @Inject
   RequestMatcher requestMatcher;
 
-  @Inject
-  RequestBodyExtractor requestBodyExtractor;
 
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
@@ -93,7 +88,7 @@ public class LambdaRequestHanlder implements
     */
     return getOne(input)
         .or(() -> checkHealth(input))
-        .orElseGet(() -> proxyResponseBuilder.buildNotFound());
+        .orElseGet(() -> proxyResponseBuilder.buildPathNotFound());
   }
 
   /**
