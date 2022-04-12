@@ -5,7 +5,7 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
