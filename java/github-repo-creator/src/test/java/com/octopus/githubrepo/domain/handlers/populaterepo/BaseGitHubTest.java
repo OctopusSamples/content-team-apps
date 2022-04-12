@@ -72,7 +72,11 @@ public class BaseGitHubTest extends BaseTest {
    * @param repoExists true if the repo should be found to exist, and false otherwise
    * @param linksExist true if the list of shas should return a paged response, and false otherwise
    */
-  protected void mockGithubClient(final GitHubClient gitHubClient, final boolean repoExists, final boolean linksExist) {
+  protected void mockGithubClient(
+      final GitHubClient gitHubClient,
+      final boolean repoExists,
+      final boolean linksExist,
+      final boolean branchExist) {
 
     final Response notFoundResponse = Mockito.mock(Response.class);
     Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
@@ -116,12 +120,19 @@ public class BaseGitHubTest extends BaseTest {
     Mockito.when(gitHubClient.getCommits(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(List.of(
             GitHubCommit.builder().sha("sha12345").build()));
-    Mockito.when(gitHubClient.getBranch(any(), any(), any(), any())).thenThrow(notFoundException);
+
+    if (branchExist) {
+      Mockito.when(gitHubClient.getBranch(any(), any(), any(), any())).thenReturn(foundResponse);
+    } else {
+      Mockito.when(gitHubClient.getBranch(any(), any(), any(), any())).thenThrow(notFoundException);
+    }
+
     if (repoExists) {
       Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenReturn(foundResponse);
     } else {
       Mockito.when(gitHubClient.getRepo(any(), any(), any())).thenThrow(notFoundException);
     }
+
     Mockito.when(gitHubClient.getUser(any()))
         .thenReturn(GitHubUser.builder().login("testuser").build());
     Mockito.when(gitHubClient.getPublicKey(any(), any(), any()))

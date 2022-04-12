@@ -1,6 +1,5 @@
 package com.octopus.githubrepo.domain.handlers.populaterepo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
@@ -8,10 +7,10 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
@@ -28,6 +27,8 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,15 +37,15 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 
 /**
- * Simulate tests when a user token has been passed in.
+ * Tests the population of a repo when the request to find the existing branch fails.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
+public class HandlerBranchApiCallFailedTests extends BaseGitHubTest {
 
   @Inject
-  GitHubRepoHandler gitHubRepoHandler;
+  GitHubRepoHandler handler;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -81,14 +82,21 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, false, false);
+    mockGithubClient(gitHubClient, true, false, true);
+
+    // fail the request to find a branch
+    final Response errorResponse = Mockito.mock(Response.class);
+    Mockito.when(errorResponse.getStatus()).thenReturn(500);
+    final ClientWebApplicationException errorException = Mockito.mock(
+        ClientWebApplicationException.class);
+    Mockito.when(errorException.getResponse()).thenReturn(errorResponse);
+    Mockito.when(gitHubClient.getBranch(any(), any(), any(), any())).thenThrow(errorException);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
     Mockito.when(zipFileResponse.readEntity(InputStream.class))
         .thenAnswer((InvocationOnMock invocation) -> new ByteArrayInputStream(
             Resources.toByteArray(Resources.getResource("template.zip"))));
-
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
     Mockito.when(jwtInspector.jwtContainsScope(any(), any(), any())).thenReturn(true);
@@ -102,7 +110,7 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final PopulateGithubRepo resource = createResource(gitHubRepoHandler, resourceConverter);
-    assertEquals("myrepo", resource.getGithubRepository());
+    Assertions.assertThrows(ServerErrorException.class,
+        () -> createResource(handler, resourceConverter));
   }
 }

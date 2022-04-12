@@ -7,7 +7,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
@@ -81,7 +81,7 @@ public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, false);
+    mockGithubClient(gitHubClient, true, false, false);
 
     final Response notFoundResponse = Mockito.mock(Response.class);
     Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
@@ -115,6 +115,6 @@ public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
   @Transactional
   public void testCreateResource() {
     assertThrows(
-        InvalidInputException.class, () -> createResource(gitHubRepoHandler, resourceConverter));
+        ServerErrorException.class, () -> createResource(gitHubRepoHandler, resourceConverter));
   }
 }

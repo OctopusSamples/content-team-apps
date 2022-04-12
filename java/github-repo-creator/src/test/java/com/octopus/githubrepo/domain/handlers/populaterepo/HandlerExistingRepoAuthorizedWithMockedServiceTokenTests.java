@@ -80,7 +80,7 @@ public class HandlerExistingRepoAuthorizedWithMockedServiceTokenTests extends Ba
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, true);
+    mockGithubClient(gitHubClient, true, true, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);

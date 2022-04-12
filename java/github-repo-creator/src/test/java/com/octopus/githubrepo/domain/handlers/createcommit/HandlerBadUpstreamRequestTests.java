@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.exceptions.InvalidInputException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import com.octopus.exceptions.ServerErrorException;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -101,6 +101,6 @@ public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
   @Transactional
   public void testCreateResource() {
     assertThrows(
-        InvalidInputException.class, () -> createResource(gitHubCommitHandler, resourceConverter));
+        ServerErrorException.class, () -> createResource(gitHubCommitHandler, resourceConverter));
   }
 }

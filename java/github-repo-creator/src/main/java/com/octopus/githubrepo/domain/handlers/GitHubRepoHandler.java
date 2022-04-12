@@ -13,6 +13,7 @@ import com.goterl.lazysodium.utils.LibraryLoader.Mode;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInputException;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.files.TemporaryResources;
@@ -161,6 +162,9 @@ public class GitHubRepoHandler {
   @Inject
   GitHubBuilder gitHubBuilder;
 
+  @Inject
+  ScopeVerifier scopeVerifier;
+
   /**
    * Creates a new service account in the Octopus cloud instance.
    *
@@ -211,7 +215,7 @@ public class GitHubRepoHandler {
           githubSalt);
 
       // Ensure we have the required scopes
-      verifyScopes(decryptedGithubToken);
+      scopeVerifier.verifyScopes(decryptedGithubToken);
 
       // Get the GitHub login name
       final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
@@ -262,38 +266,14 @@ public class GitHubRepoHandler {
       Try.run(
           () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
               + ex.getResponse().readEntity(String.class), ex));
-      throw new InvalidInputException();
+      throw new ServerErrorException();
     } catch (final InvalidInputException | IllegalArgumentException ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
-      throw new InvalidInputException();
-    }
-  }
-
-  /**
-   * This tool won't work without certain scopes granted in the OAuth token. This method verifies
-   * the appropriate scopes are available by making a request to a no-op endpoint and reading the
-   * headers in the response.
-   */
-  private void verifyScopes(final String decryptedGithubToken) {
-    try (final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken)) {
-      final List<String> scopes =
-          Arrays.stream(response
-                  .getHeaderString("X-OAuth-Scopes")
-                  .split(","))
-              .map(String::trim)
-              .collect(Collectors.toList());
-
-      if (!scopes.contains("workflow")) {
-        throw new InvalidInputException("GitHub token did not have the workflow scope");
-      }
-
-      if (!scopes.contains("repo")) {
-        throw new InvalidInputException("GitHub token did not have the repo scope");
-      }
+      throw new ServerErrorException();
     }
   }
 
@@ -500,36 +480,38 @@ public class GitHubRepoHandler {
           "README.md",
           DEFAULT_BRANCH);
     } catch (ClientWebApplicationException ex) {
-      if (ex.getResponse().getStatus() == 404) {
-
-        gitHubClient.createFile(
-            GithubFile.builder()
-                .content(Base64.getEncoder().encodeToString(
-                    ("# App Builder\n"
-                        + "This repo was populated by the [Octopus App Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
-                        + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
-                        + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
-                        + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
-                        + "* `java`: The sample Java application.\n"
-                        + "* `js`: The sample JavaScript application.\n\n"
-                        + "If you have run the App Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
-                        + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
-                        + "To replace the `main` branch with the `app-builder-update` branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
-                        + "1. `git checkout app-builder-update`\n"
-                        + "2. `git merge -s ours main`\n"
-                        + "3. `git checkout main`\n"
-                        + "4. `git merge app-builder-update`\n\n"
-                        + "If you would rather see what has changed since you last ran the App Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
-                        .getBytes(StandardCharsets.UTF_8)))
-                .message("Adding the initial marker file")
-                .branch(DEFAULT_BRANCH)
-                .build(),
-            "token " + decryptedGithubToken,
-            user.getLogin(),
-            repoName,
-            "README.md"
-        );
+      // Anything other than a 404 is unexpected
+      if (ex.getResponse().getStatus() != 404) {
+        throw ex;
       }
+
+      gitHubClient.createFile(
+          GithubFile.builder()
+              .content(Base64.getEncoder().encodeToString(
+                  ("# App Builder\n"
+                      + "This repo was populated by the [Octopus App Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
+                      + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
+                      + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
+                      + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
+                      + "* `java`: The sample Java application.\n"
+                      + "* `js`: The sample JavaScript application.\n\n"
+                      + "If you have run the App Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
+                      + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
+                      + "To replace the `main` branch with the `app-builder-update` branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
+                      + "1. `git checkout app-builder-update`\n"
+                      + "2. `git merge -s ours main`\n"
+                      + "3. `git checkout main`\n"
+                      + "4. `git merge app-builder-update`\n\n"
+                      + "If you would rather see what has changed since you last ran the App Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
+                      .getBytes(StandardCharsets.UTF_8)))
+              .message("Adding the initial marker file")
+              .branch(DEFAULT_BRANCH)
+              .build(),
+          "token " + decryptedGithubToken,
+          user.getLogin(),
+          repoName,
+          "README.md"
+      );
     }
   }
 
@@ -598,31 +580,33 @@ public class GitHubRepoHandler {
           "refs/heads/" + branch,
           "token " + decryptedGithubToken);
     } catch (ClientWebApplicationException ex) {
-      // 404 means the branch does not exist.
-      if (ex.getResponse().getStatus() == 404) {
+      // anything other than a 404 is unexpected
+      if (ex.getResponse().getStatus() != 404) {
+        throw ex;
+      }
+
         /*
           Get the first sha for the default branch. Our new branches assume they forked the
           main repo from day one. This allows the end user to distinguish their changes
           from ours.
          */
-        final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
+      final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
 
-        if (sha.isPresent()) {
-          // create a new branch based on the first commit
-          gitHubClient.createBranch(
-              GithubRef.builder()
-                  .ref("refs/heads/" + branch)
-                  .sha(sha.get())
-                  .build(),
-              user.getLogin(),
-              repoName,
-              "token " + decryptedGithubToken);
-        } else {
-          // We shouldn't get here, but you never know...
-          Log.error(microserviceNameFeature.getMicroserviceName()
-              + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
-          throw new GitHubException("Failed to find the first SHA");
-        }
+      if (sha.isPresent()) {
+        // create a new branch based on the first commit
+        gitHubClient.createBranch(
+            GithubRef.builder()
+                .ref("refs/heads/" + branch)
+                .sha(sha.get())
+                .build(),
+            user.getLogin(),
+            repoName,
+            "token " + decryptedGithubToken);
+      } else {
+        // We shouldn't get here, but you never know...
+        Log.error(microserviceNameFeature.getMicroserviceName()
+            + "-GitHub-GetShaFailed Failed to locate the first SHA from the default branch.");
+        throw new GitHubException("Failed to find the first SHA");
       }
     }
   }

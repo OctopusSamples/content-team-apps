@@ -89,7 +89,7 @@ public class HandlerTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, false);
+    mockGithubClient(gitHubClient, true, false, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);

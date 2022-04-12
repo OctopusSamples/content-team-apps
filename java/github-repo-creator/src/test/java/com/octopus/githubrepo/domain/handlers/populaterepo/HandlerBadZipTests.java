@@ -8,7 +8,6 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.io.Resources;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
-import com.octopus.exceptions.InvalidInputException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
@@ -26,6 +25,7 @@ import java.io.InputStream;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import com.octopus.exceptions.ServerErrorException;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeAll;
@@ -81,7 +81,7 @@ public class HandlerBadZipTests extends BaseGitHubTest {
   @BeforeAll
   public void setup() throws IOException {
     mockGithubClient(gitHubBuilder);
-    mockGithubClient(gitHubClient, true, false);
+    mockGithubClient(gitHubClient, true, false, false);
 
     final Response zipFileResponse = Mockito.mock(Response.class);
     Mockito.when(zipFileResponse.getStatus()).thenReturn(200);
@@ -105,6 +105,6 @@ public class HandlerBadZipTests extends BaseGitHubTest {
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
     assertThrows(
-        InvalidInputException.class, () -> createResource(gitHubRepoHandler, resourceConverter));
+        ServerErrorException.class, () -> createResource(gitHubRepoHandler, resourceConverter));
   }
 }

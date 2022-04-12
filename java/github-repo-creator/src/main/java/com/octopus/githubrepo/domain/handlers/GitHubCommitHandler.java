@@ -232,7 +232,7 @@ public class GitHubCommitHandler {
       Try.run(
           () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
               + ex.getResponse().readEntity(String.class), ex));
-      throw new InvalidInputException();
+      throw new ServerErrorException();
     } catch (final InvalidInputException | IllegalArgumentException ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
