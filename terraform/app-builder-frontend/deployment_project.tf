@@ -585,4 +585,66 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Check for vulnerabilities"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Check for vulnerabilities"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+      environments   = [
+        var.octopus_production_security_environment_id,
+        var.octopus_development_security_environment_id
+      ]
+
+      package {
+        acquisition_location      = "Server"
+        feed_id                   = var.octopus_built_in_feed_id
+        name                      = "app-builder-frontend-sbom"
+        package_id                = "app-builder-frontend-sbom"
+        extract_during_deployment = true
+        properties                = {
+          SelectionMode = "immediate"
+        }
+      }
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          TIMESTAMP=$(date +%s%3N)
+          SUCCESS=0
+          for x in **/bom.xml; do
+              # Delete any existing report file
+              if [[ -f "$PWD/depscan-bom.json" ]]; then
+                rm "$PWD/depscan-bom.json"
+              fi
+
+              # Generate the report, capturing the output, and ensuring $? is set to the exit code
+              OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+
+              # Success is set to 1 if the exit code is not zero
+              if [[ $? -ne 0 ]]; then
+                  SUCCESS=1
+              fi
+
+              # Print the output stripped of ANSI colour codes
+              echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+          done
+
+          set_octopusvariable "VerificationResult" $SUCCESS
+
+          exit 0
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
 }
