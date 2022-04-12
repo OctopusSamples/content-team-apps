@@ -903,7 +903,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Script.ScriptBody": <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
-          for x in **/bom.xml; do
+          for x in $(find . -name bom.xml -type f -print); do
               # Delete any existing report file
               if [[ -f "$PWD/depscan-bom.json" ]]; then
                 rm "$PWD/depscan-bom.json"
