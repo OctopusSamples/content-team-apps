@@ -13,8 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class ApiTest {
-  private static final String API_ENDPOINT = "/api/populategithubrepo";
-  private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
+  private static final String API_ENDPOINT = "/api/githubrepo";
+  private static final String HEALTH_ENDPOINT = "/health/githubrepo";
   private static final RequestMatcher REQUEST_MATCHER = new RequestMatcherImpl();
 
   @ParameterizedTest
@@ -23,7 +23,7 @@ public class ApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(path);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, PopulateGithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, GithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
   }
 
   @ParameterizedTest
@@ -32,7 +32,7 @@ public class ApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("POST");
     event.setPath(path);
-    assertFalse(REQUEST_MATCHER.requestIsMatch(event, PopulateGithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
+    assertFalse(REQUEST_MATCHER.requestIsMatch(event, GithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
   }
 
   @ParameterizedTest
@@ -41,7 +41,7 @@ public class ApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GET");
     event.setPath(path);
-    assertFalse(REQUEST_MATCHER.requestIsMatch(event, PopulateGithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
+    assertFalse(REQUEST_MATCHER.requestIsMatch(event, GithubRepoApi.HEALTH_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
@@ -49,7 +49,7 @@ public class ApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(API_ENDPOINT);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, PopulateGithubRepoApi.ROOT_RE, Constants.Http.GET_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, GithubRepoApi.ROOT_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
@@ -57,13 +57,13 @@ public class ApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
     event.setPath(API_ENDPOINT);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, PopulateGithubRepoApi.ROOT_RE, Constants.Http.POST_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, GithubRepoApi.ROOT_RE, Constants.Http.POST_METHOD));
   }
 
   @Test
   public void testNullParams() {
     assertThrows(NullPointerException.class, () -> {
-      REQUEST_MATCHER.requestIsMatch(new APIGatewayProxyRequestEvent(), PopulateGithubRepoApi.ROOT_RE, null);
+      REQUEST_MATCHER.requestIsMatch(new APIGatewayProxyRequestEvent(), GithubRepoApi.ROOT_RE, null);
     });
 
     assertThrows(NullPointerException.class, () -> {
@@ -71,7 +71,7 @@ public class ApiTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      REQUEST_MATCHER.requestIsMatch(null, PopulateGithubRepoApi.ROOT_RE, "");
+      REQUEST_MATCHER.requestIsMatch(null, GithubRepoApi.ROOT_RE, "");
     });
   }
 }

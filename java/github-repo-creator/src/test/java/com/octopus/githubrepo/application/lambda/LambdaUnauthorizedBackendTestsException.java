@@ -29,7 +29,7 @@ public class LambdaUnauthorizedBackendTestsException extends BaseTest {
   private static final String API_ENDPOINT = "/api/populategithubrepo";
   
   @Inject
-  PopulateGithubRepoApi api;
+  GithubRepoApi api;
 
   @InjectMock
   GitHubRepoHandler handler;

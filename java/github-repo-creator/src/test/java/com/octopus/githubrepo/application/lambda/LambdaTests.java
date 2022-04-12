@@ -28,7 +28,7 @@ public class LambdaTests extends BaseTest {
   private static final String HEALTH_ENDPOINT = "/health/populategithubrepo";
 
   @Inject
-  PopulateGithubRepoApi api;
+  GithubRepoApi api;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
