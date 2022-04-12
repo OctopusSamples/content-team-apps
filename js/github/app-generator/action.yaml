@@ -172,6 +172,11 @@ runs:
         output_path: octopus
         octopus_space: "Content Team"
 
+    - name: Install CycloneDX
+      run: npm install -g @cyclonedx/bom
+      shell: bash
+      working-directory: js/octopus-template-generator
+
     - name: Generate SBOM
       run: cyclonedx-bom
       shell: bash

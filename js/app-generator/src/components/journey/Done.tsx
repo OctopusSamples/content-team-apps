@@ -17,6 +17,11 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const [spaceCreated] = useState<boolean>(false);
 
     const checkRepoExists = () => {
+        // If for some reason the api url was not returned, don't attempt to query it
+        if (!props.machine.state.context.apiRepoUrl) {
+            return;
+        }
+
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURI(props.machine.state.context.apiRepoUrl), context.settings, null)
             .then(body => {
                 const bodyObject = body as any;
