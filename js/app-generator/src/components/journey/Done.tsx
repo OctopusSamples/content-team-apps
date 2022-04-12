@@ -42,12 +42,14 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     useEffect(() => {
         const timer = setInterval(() => {
             if (!context.settings.disableExternalCalls) {
-                checkRepoExists();
+                if (!repoCreated) {
+                    checkRepoExists();
+                }
             } else {
                 // show a mock change after 1 second
                 setRepoCreated(true);
             }
-        }, 5000);
+        }, 10000);
         return () => clearInterval(timer);
     });
 
