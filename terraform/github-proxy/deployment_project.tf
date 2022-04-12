@@ -1,25 +1,25 @@
 locals {
   # These change with every project
-  project_name = "GitHub Proxy"
+  project_name        = "GitHub Proxy"
   project_description = "which exposes a small subset of the GitHub API (just enough to know if a repo is created and if workflows have completed) accepting the encrypted token stored as a frontend client cookie. It is exposed under /api/${local.api_endpoint_name}."
-  lambda_package = "github-repo-proxy-lambda"
+  lambda_package      = "github-repo-proxy-lambda"
   lambda_sbom_package = "github-repo-proxy-lambda-sbom"
-  api_endpoint_name = "githubrepo"
+  api_endpoint_name   = "githubrepo"
 
   # These should be relatively stable
-  reverse_proxy_package = "com.octopus:reverse-proxy"
-  s3_bucket_cloudformation_name = "#{CloudFormation.S3Bucket}"
-  lambda_cloudformation_name = "#{CloudFormation.ApplicationLambda}"
-  lambda_name = "#{Lambda.Name}"
-  lambda_proxy_cloudformation_name = "#{CloudFormation.ApplicationLambdaReverseProxy}"
+  reverse_proxy_package                    = "com.octopus:reverse-proxy"
+  s3_bucket_cloudformation_name            = "#{CloudFormation.S3Bucket}"
+  lambda_cloudformation_name               = "#{CloudFormation.ApplicationLambda}"
+  lambda_name                              = "#{Lambda.Name}"
+  lambda_proxy_cloudformation_name         = "#{CloudFormation.ApplicationLambdaReverseProxy}"
   lambda_proxy_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaReverseProxyVersion}-#{Octopus.Deployment.Id | Replace -}"
-  lambda_version_cloudformation_name = "#{CloudFormation.ApplicationLambdaVersion}-#{Octopus.Deployment.Id | Replace -}"
-  api_gateway_cloudformation_name = "#{CloudFormation.Application}"
-  cloudformation_stage_name = "#{CloudFormationName.AppBuilderApiGatewayStage}"
-  cloudformation_shared_api_gateway = "#{CloudFormationName.AppBuilderApiGateway}"
-  cloudformation_shared_cognito = "#{CloudFormation.Cognito}"
-  cloudformation_lambda_version_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-  cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+  lambda_version_cloudformation_name       = "#{CloudFormation.ApplicationLambdaVersion}-#{Octopus.Deployment.Id | Replace -}"
+  api_gateway_cloudformation_name          = "#{CloudFormation.Application}"
+  cloudformation_stage_name                = "#{CloudFormationName.AppBuilderApiGatewayStage}"
+  cloudformation_shared_api_gateway        = "#{CloudFormationName.AppBuilderApiGateway}"
+  cloudformation_shared_cognito            = "#{CloudFormation.Cognito}"
+  cloudformation_lambda_version_tags       = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+  cloudformation_tags                      = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
 }
 
 resource "octopusdeploy_project" "deploy_project" {
@@ -75,6 +75,31 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
 
 resource "octopusdeploy_deployment_process" "deploy_project" {
   project_id = octopusdeploy_project.deploy_project.id
+  step {
+    condition           = "Success"
+    name                = "Capture Local Dev Settings"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = ["LocalDevelopment"]
+    action {
+      action_type   = "Octopus.Script"
+      name          = "Capture Local Dev Settings"
+      run_on_server = false
+      notes         = "This step captures a script that prints the environment variables used to run the application in the given environment. The password for the offline drop is saved under \"Content Team Apps Offline Drop\" in the password manager."
+      environments  = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
+
+      properties = {
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
+          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt}"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+      }
+    }
+  }
   step {
     condition           = "Success"
     name                = "Create S3 bucket"
