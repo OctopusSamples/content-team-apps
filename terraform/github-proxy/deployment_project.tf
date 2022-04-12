@@ -708,7 +708,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ApiResource
-                PathPart: {proxy+}
+                PathPart: '{proxy+}'
             ApiMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
