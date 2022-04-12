@@ -157,29 +157,31 @@ public class LambdaRequestHanlder implements
 
       final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
-      if (id.isPresent()) {
-        final String entity =
-            resourceHandler.getOne(
-                id.get(),
-                lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                lambdaHttpHeaderExtractor.getFirstHeader(
-                        input,
-                        HttpHeaders.AUTHORIZATION)
-                    .orElse(null),
-                lambdaHttpHeaderExtractor.getFirstHeader(
-                        input,
-                        Constants.SERVICE_AUTHORIZATION_HEADER)
-                    .orElse(null),
-                lambdaHttpCookieExtractor.getCookieValue(
-                        input,
-                        ServiceConstants.GITHUB_SESSION_COOKIE)
-                    .orElse(""));
-
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors().withStatusCode(200).withBody(entity));
+      if (id.isEmpty()) {
+        return Optional.of(proxyResponseBuilder.buildNotFound());
       }
-      return Optional.of(proxyResponseBuilder.buildNotFound());
 
+      final String entity =
+          resourceHandler.getOne(
+              id.get(),
+              lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+              lambdaHttpHeaderExtractor.getFirstHeader(
+                      input,
+                      HttpHeaders.AUTHORIZATION)
+                  .orElse(null),
+              lambdaHttpHeaderExtractor.getFirstHeader(
+                      input,
+                      Constants.SERVICE_AUTHORIZATION_HEADER)
+                  .orElse(null),
+              lambdaHttpCookieExtractor.getCookieValue(
+                      input,
+                      ServiceConstants.GITHUB_SESSION_COOKIE)
+                  .orElse(""));
+
+      return Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(200)
+              .withBody(entity));
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
     } catch (final EntityNotFoundException ex) {
