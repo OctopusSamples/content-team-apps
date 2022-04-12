@@ -735,7 +735,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 AuthorizationType: NONE
                 HttpMethod: ANY
                 Integration:
-                  IntegrationHttpMethod: GET
+                  IntegrationHttpMethod: POST
                   TimeoutInMillis: 20000
                   Type: AWS_PROXY
                   Uri: !Join
