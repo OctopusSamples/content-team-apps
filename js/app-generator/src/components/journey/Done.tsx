@@ -27,7 +27,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURI(props.machine.state.context.apiRepoUrl), context.settings, null)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject.data.id) {
@@ -47,7 +47,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                 // show a mock change after 1 second
                 setRepoCreated(true);
             }
-        }, 1000);
+        }, 5000);
         return () => clearInterval(timer);
     });
 
