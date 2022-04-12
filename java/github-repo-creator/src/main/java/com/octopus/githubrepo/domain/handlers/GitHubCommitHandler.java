@@ -16,6 +16,7 @@ import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import com.octopus.githubrepo.domain.exceptions.UnexpectedResponseException;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
+import com.octopus.githubrepo.domain.utils.ScopeVerifier;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
@@ -117,6 +118,9 @@ public class GitHubCommitHandler {
   @Inject
   DisableServiceFeature disableServiceFeature;
 
+  @Inject
+  ScopeVerifier scopeVerifier;
+
   /**
    * Creates a new service account in the Octopus cloud instance.
    *
@@ -169,7 +173,7 @@ public class GitHubCommitHandler {
           githubSalt);
 
       // Ensure we have the required scopes
-      verifyScopes(decryptedGithubToken);
+      scopeVerifier.verifyScopes(decryptedGithubToken);
 
       // Get the GitHub login name
       final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
@@ -236,30 +240,6 @@ public class GitHubCommitHandler {
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
       throw new ServerErrorException();
-    }
-  }
-
-  /**
-   * This tool won't work without certain scopes granted in the OAuth token. This method verifies
-   * the appropriate scopes are available by making a request to a no-op endpoint and reading the
-   * headers in the response.
-   */
-  private void verifyScopes(final String decryptedGithubToken) {
-    try (final Response response = gitHubClient.checkRateLimit("token " + decryptedGithubToken)) {
-      final List<String> scopes =
-          Arrays.stream(response
-                  .getHeaderString("X-OAuth-Scopes")
-                  .split(","))
-              .map(String::trim)
-              .collect(Collectors.toList());
-
-      if (!scopes.contains("workflow")) {
-        throw new InvalidInputException("GitHub token did not have the workflow scope");
-      }
-
-      if (!scopes.contains("repo")) {
-        throw new InvalidInputException("GitHub token did not have the repo scope");
-      }
     }
   }
 

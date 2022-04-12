@@ -31,6 +31,7 @@ import com.octopus.githubrepo.domain.features.DisableServiceFeature;
 import com.octopus.githubrepo.domain.framework.producers.JsonApiConverter;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.LinksHeaderParsing;
+import com.octopus.githubrepo.domain.utils.ScopeVerifier;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
