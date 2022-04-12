@@ -39,5 +39,3 @@ jobs:
           github_proxy_encryption_key_production: ${{ secrets.APP_BUILDER_GITHUB_OAUTH_PROXY_ENCRYPTION_KEY_PRODUCTION }}
           cognito_library_variable_set_id: LibraryVariableSets-1262
           content_team_library_variable_set_id: LibraryVariableSets-1282
-          client_private_key_base64_development: ${{ secrets.APP_BUILDER_CLIENT_PRIVATE_KEY_DEVELOPMENT }}
-          client_private_key_base64_production: ${{ secrets.APP_BUILDER_CLIENT_PRIVATE_KEY_PRODUCTION }}
