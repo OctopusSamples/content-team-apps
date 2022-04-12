@@ -116,6 +116,24 @@ runs:
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
+    # deletes project releases.
+    - name: Delete existing projects
+      run: |
+        declare -a arr=("Jenkins Pipelines Azure Service Bus Proxy")
+        
+        for i in "${arr[@]}"
+        do
+          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=$i" | jq -r ".[0].Id")
+          if [[ -n "$ID" && "$ID" != "null" ]]; then
+            echo "Deleting project $i"
+            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          fi
+        done
+      shell: bash
+
     - name: Terraform Init
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
