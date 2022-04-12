@@ -53,13 +53,13 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
   project_id = octopusdeploy_project.populate_repo_project.id
   step {
     condition           = "Success"
-    name                = "Capture Local Dev Settings"
+    name                = "Capture Local Dev Settings ${var.run_number}"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["LocalDevelopment"]
     action {
       action_type    = "Octopus.Script"
-      name           = "Capture Local Dev Settings"
+      name           = "Capture Local Dev Settings ${var.run_number}"
       run_on_server  = false
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
