@@ -703,6 +703,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ResourceId
                 PathPart: ${local.api_endpoint_name}
+            ApiProxyResource:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiResource
+                PathPart: {proxy+}
             ApiMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
@@ -723,12 +729,33 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                       - /invocations
                 ResourceId: !Ref ApiResource
                 RestApiId: !Ref RestApi
+            ApiProxyMethod:
+              Type: 'AWS::ApiGateway::Method'
+              Properties:
+                AuthorizationType: NONE
+                HttpMethod: ANY
+                Integration:
+                  IntegrationHttpMethod: GET
+                  TimeoutInMillis: 20000
+                  Type: AWS_PROXY
+                  Uri: !Join
+                    - ''
+                    - - 'arn:'
+                      - !Ref 'AWS::Partition'
+                      - ':apigateway:'
+                      - !Ref 'AWS::Region'
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !Ref ProxyLambdaVersion
+                      - /invocations
+                ResourceId: !Ref ApiProxyResource
+                RestApiId: !Ref RestApi
             'Deployment#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::ApiGateway::Deployment'
               Properties:
                 RestApiId: !Ref RestApi
               DependsOn:
                 - ApiMethod
+                - ApiProxyMethod
           Outputs:
             DeploymentId:
               Description: The deployment id
