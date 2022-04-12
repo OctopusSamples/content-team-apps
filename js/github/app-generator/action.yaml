@@ -208,3 +208,15 @@ runs:
         wait_for_deployment: true
         timeout: 1800
         release_number: ${{ steps.determine_version.outputs.semVer }}
+
+    - name: Trigger deployment to Security env
+      run: >
+        octo promote-release
+        --project "App Builder Frontend"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
