@@ -104,7 +104,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("GitHub Commit Creator", "GitHub Repo Populator")
+        declare -a arr=("GitHub%20Commit%20Creator", "GitHub%20Repo%20Populator")
         
         for i in "${arr[@]}"
         do
