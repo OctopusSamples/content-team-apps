@@ -16,6 +16,10 @@ export const styles = makeStyles((theme) => {
             },
             helpText: {
                 color: theme.palette.text.primary
+            },
+            icon: {
+                width: "32px",
+                height: "32px"
             }
         }
     }

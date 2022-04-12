@@ -40,7 +40,8 @@ function getInitialStateContext() {
             developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
             githubRepo: state.githubRepo || "",
-            browsableRepoUrl: state.browsableRepoUrl || ""
+            browsableRepoUrl: state.browsableRepoUrl || "",
+            apiRepoUrl: state.apiRepoUrl || ""
         }
     }
 
@@ -54,7 +55,8 @@ function getInitialStateContext() {
         developmentFramework: "",
         octopusServer: "",
         githubRepo: "",
-        browsableRepoUrl: ""
+        browsableRepoUrl: "",
+        apiRepoUrl: ""
     }
 }
 
@@ -169,7 +171,11 @@ export interface StateContext {
     /**
      * The location of the repo created by the backend service
      */
-    browsableRepoUrl: string
+    browsableRepoUrl: string,
+    /**
+     * The API location of the repo created by the backend service
+     */
+    apiRepoUrl: string
 }
 
 /**

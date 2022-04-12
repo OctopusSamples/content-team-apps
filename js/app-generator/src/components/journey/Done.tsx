@@ -1,11 +1,45 @@
-import {FC, ReactElement} from "react";
-import {Button, Grid} from "@mui/material";
-import {journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
+import {FC, ReactElement, useContext, useEffect, useState} from "react";
+import {CircularProgress, Grid} from "@mui/material";
+import {journeyContainer, progressStyle, styles} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
+import {getJsonApi} from "../../utils/network";
+import {AppContext} from "../../App";
+import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+    const moreClasses = styles();
+
+    const context = useContext(AppContext);
+    const [repoCreated, setRepoCreated] = useState<boolean>(false);
+    const [workflowCompleted] = useState<boolean>(false);
+    const [spaceCreated] = useState<boolean>(false);
+
+    const checkRepoExists = () => {
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURI(props.machine.state.context.apiRepoUrl), context.settings, null)
+            .then(body => {
+                const bodyObject = body as any;
+                if (bodyObject.data.id) {
+                    setRepoCreated(true);
+                }
+            })
+            .catch(() => {
+                setRepoCreated(false);
+            });
+    }
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (!context.settings.disableExternalCalls) {
+                checkRepoExists();
+            } else {
+                // show a mock change after 1 second
+                setRepoCreated(true);
+            }
+        }, 1000);
+        return () => clearInterval(timer);
+    });
 
     // Make sure people don't exit away unexpectedly
     window.addEventListener("beforeunload", (ev) =>
@@ -43,34 +77,42 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>You're all done.</h2>
                         <p>
-                            The sample application is being pushed to <a href={props.machine.state.context.browsableRepoUrl} target={"_blank"} rel={"noreferrer"}>GitHub</a> in a
-                            repository called <strong>{props.machine.state.context.githubRepo}</strong>. In a minute or so the sample project files will be
-                            uploaded and the initial GitHub Actions workflow will start automatically.
+                            In the background a GitHub repository is being populated with a sample application and
+                            Terraform templates.
                         </p>
                         <p>
-                            <img src={"repo.png"} alt={"GitHub Repo"}/>
+                            The application code and Terraform templates are processed by
+                            a GitHub Actions workflow. The code is compiled into deployable artifacts (ZIP files or
+                            Docker images depending on the platform), while the Terraform templates are used to create
+                            and populate a new Octopus space. This is the CI half of the CI/CD pipeline.
                         </p>
                         <p>
-                            <img src={"github-workflow.png"} alt={"GitHub Workflow"}/>
+                            Once the Octopus space is populated, the projects it contains are used to deploy the sample
+                            application to the cloud. This is the CD half of the CI/CD pipeline.
                         </p>
                         <p>
-                            Once the GitHub Actions workflow has completed, the new space named <strong>{props.machine.state.context.targetPlatform}</strong> and
-                            ending with your GitHub account name in your <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Octopus instance</a> will
-                            be populated with a sample project and all other associated resources to complete a deployment.
+                            The progress of the various resources that are created by the App Builder is shown below:
                         </p>
-                        <p>
-                            <img src={"octopus-space.png"} alt={"Octopus Space"}/>
-                        </p>
-                        <p>
-                            If you would like to share some feedback about the App Builder, feel free to leave a comment
-                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"} target={"_blank"} rel={"noreferrer"}>this GitHub issue</a>.
-                        </p>
-                        <Button
-                            sx={nextButtonStyle}
-                            variant="outlined"
-                            onClick={() => window.open(getOctopusServer() + "/app#/configuration/spaces", "_blank")}>
-                            {"Open Octopus >"}
-                        </Button>
+                        <table>
+                            <tr>
+                                <td>{repoCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                    {!repoCreated && <CircularProgress size={32} />}</td>
+                                <td>Creating the GitHub repo</td>
+                                <td>{repoCreated && <a href={props.machine.state.context.browsableRepoUrl} target={"_blank"} rel={"noreferrer"}>Open</a>}</td>
+                            </tr>
+                            <tr>
+                                <td>{workflowCompleted && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                    {!workflowCompleted && <CircularProgress size={32}/>}</td>
+                                <td>Running the GitHub Actions workflow</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{spaceCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                    {!spaceCreated && <CircularProgress size={32}/>}</td>
+                                <td>Creating the Octopus space</td>
+                                <td>{spaceCreated && <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Open</a>}</td>
+                            </tr>
+                        </table>
                     </Grid>
                 </Grid>
                 <Grid item md={3} xs={0}/>

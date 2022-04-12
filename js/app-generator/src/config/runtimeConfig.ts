@@ -9,6 +9,7 @@ export interface RuntimeSettings {
     githubOauthEndpoint: string;
     serviceAccountEndpoint: string;
     githubRepoEndpoint: string;
+    githubCommitEndpoint: string;
     auditEndpoint: string;
     healthEndpoint: string;
     title: string;
