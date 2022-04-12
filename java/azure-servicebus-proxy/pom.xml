@@ -7,9 +7,8 @@
     <artifactId>content-team-apps</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>com.octopus</groupId>
   <artifactId>azure-servicebus-proxy</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <jacoco.minimum.coverage>0.90</jacoco.minimum.coverage>
@@ -20,7 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.7.5.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.8.0.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
