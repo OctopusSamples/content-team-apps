@@ -157,11 +157,20 @@ resource "octopusdeploy_variable" "config_json_serviceAccountEndpoint" {
   value = "/#{Octopus.Environment.Name}/api/serviceaccounts"
 }
 
-resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
-  name = "githubRepoEndpoint"
+resource "octopusdeploy_variable" "config_json_githubCommitEndpoint" {
+  name = "githubCommitEndpoint"
   type = "String"
   description = "The location of the GitHub Repo Creator API."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/api/githubcommit"
+}
+
+resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
+  name = "githubRepoEndpoint"
+  type = "String"
+  description = "The location of the GitHub Repo proxy API."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/#{Octopus.Environment.Name}/api/githubrepo"
 }
