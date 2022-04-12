@@ -105,19 +105,19 @@ runs:
     # associated with new steps. The easiest fix is to delete the projects before recreating them.
     # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
     # deletes project releases.
-    - name: Delete existing projects
-      run: |
-        declare -a arr=("GitHub%20Commit%20Creator", "GitHub%20Repo%20Populator")
-        
-        for i in "${arr[@]}"
-        do
-          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=$i" | jq -r ".[0].Id")
-          if [[ -n "$ID" && "$ID" != "null" ]]; then
-            echo "Deleting project $i - $ID"
-            curl -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
-          fi
-        done
-      shell: bash
+#    - name: Delete existing projects
+#      run: |
+#        declare -a arr=("GitHub%20Commit%20Creator", "GitHub%20Repo%20Populator")
+#
+#        for i in "${arr[@]}"
+#        do
+#          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" "${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=$i" | jq -r ".[0].Id")
+#          if [[ -n "$ID" && "$ID" != "null" ]]; then
+#            echo "Deleting project $i - $ID"
+#            curl -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+#          fi
+#        done
+#      shell: bash
 
     - name: Terraform Init
       env:
