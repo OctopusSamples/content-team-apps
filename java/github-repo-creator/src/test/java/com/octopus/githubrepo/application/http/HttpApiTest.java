@@ -40,9 +40,7 @@ public class HttpApiTest extends BaseTest {
             .accept("application/vnd.api+json")
             .header("data-partition", "main")
             .when()
-            .body(
-                resourceToResourceDocument(
-                    resourceConverter, createResource()))
+            .body(resourceToResourceDocument(resourceConverter, createResource()))
             .post(API_ENDPOINT)
             .then()
             .statusCode(415);
@@ -55,9 +53,7 @@ public class HttpApiTest extends BaseTest {
             .header("data-partition", "main")
             .contentType("application/vnd.api+json")
             .when()
-            .body(
-                resourceToResourceDocument(
-                    resourceConverter, createResource()))
+            .body(resourceToResourceDocument(resourceConverter, createResource()))
             .post(API_ENDPOINT)
             .then()
             .statusCode(406);

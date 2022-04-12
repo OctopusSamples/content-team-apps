@@ -1,17 +1,15 @@
 package com.octopus.githubrepo.domain.handlers.createcommit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.encryption.CryptoUtils;
+import com.octopus.exceptions.InvalidInputException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
-import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
-import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;
@@ -25,18 +23,22 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
 /**
- * Simulate tests when a machine-to-machine token has been passed in.
+ * Simulate tests when a request to an upstream service (like the GitHub API) fails.
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestProfile(TestingProfile.class)
-public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest {
+public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
+
+  @Inject
+  GitHubCommitHandler gitHubCommitHandler;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -57,19 +59,26 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest
   AsymmetricDecryptor asymmetricDecryptor;
 
   @Inject
-  GitHubCommitHandler handler;
-
-  @Inject
   ResourceConverter resourceConverter;
 
   @RestClient
   @InjectMock
   GitHubClient gitHubClient;
 
-
   @BeforeAll
   public void setup() throws IOException {
     mockGitHubClient(gitHubClient);
+
+    final Response notFoundResponse = Mockito.mock(Response.class);
+    Mockito.when(notFoundResponse.getStatus()).thenReturn(404);
+    Mockito.when(notFoundResponse.readEntity(String.class)).thenReturn("resource missing");
+
+    final ClientWebApplicationException notFoundException = Mockito.mock(
+        ClientWebApplicationException.class);
+    Mockito.when(notFoundException.getResponse()).thenReturn(notFoundResponse);
+
+    // Simulate a failed upstream call
+    Mockito.when(gitHubClient.getUser(any())).thenThrow(notFoundException);
 
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(false);
     Mockito.when(jwtUtils.getJwtFromAuthorizationHeader(any())).thenReturn(Optional.of(""));
@@ -81,8 +90,8 @@ public class HandlerAuthorizedWithMockedServiceTokenTests extends BaseGitHubTest
 
   @Test
   @Transactional
-  public void testCreateResource() throws DocumentSerializationException {
-    final CreateGithubCommit resource = createResource(handler, resourceConverter);
-    assertEquals("myrepo", resource.getGithubRepository());
+  public void testCreateResource() {
+    assertThrows(
+        InvalidInputException.class, () -> createResource(gitHubCommitHandler, resourceConverter));
   }
 }
