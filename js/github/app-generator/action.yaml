@@ -151,27 +151,6 @@ runs:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ inputs.github_token }}
 
-#    - env:
-#        GITHUB_TOKEN: ${{ inputs.github_token }}
-#      id: create_release
-#      name: Create Release
-#      uses: actions/create-release@v1
-#      with:
-#        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ inputs.run_number }}-attempt${{ inputs.run_attempt }}
-#        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ inputs.run_number }} Attempt ${{ inputs.run_attempt }}
-#        draft: 'false'
-#        prerelease: 'false'
-
-#    - env:
-#        GITHUB_TOKEN: ${{ inputs.github_token }}
-#      name: Upload Release Asset
-#      uses: actions/upload-release-asset@v1
-#      with:
-#        upload_url: ${{ steps.create_release.outputs.upload_url }}
-#        asset_path: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-#        asset_name: app-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
-#        asset_content_type: application/octet-stream
-
     - name: Push to Octopus
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
@@ -192,6 +171,16 @@ runs:
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
         octopus_space: "Content Team"
+
+    - name: Generate SBOM
+      run: cyclonedx-bom
+      shell: bash
+      working-directory: js/app-generator
+
+    - name: Create SBOM zip
+      run: zip app-builder-frontend-sbom.${{ steps.determine_version.outputs.semVer }}.zip bom.xml
+      shell: bash
+      working-directory: js/app-generator
 
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
