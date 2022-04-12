@@ -18,6 +18,8 @@ import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.utilties.PartitionIdentifier;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -109,7 +111,7 @@ public class ResourceHandler {
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo
           .builder()
-          .id(id)
+          .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
           .meta(GitHubRepoMeta
               .builder()
               .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
