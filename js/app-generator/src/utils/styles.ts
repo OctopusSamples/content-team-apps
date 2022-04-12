@@ -74,6 +74,11 @@ export const nextButtonStyle: SxProps<Theme> = {
     marginTop: '32px'
 }
 
+export const openResourceStyle: SxProps<Theme> = {
+    width: '192px',
+    minHeight: '32px'
+}
+
 export const formContainer: SxProps<Theme> = {
     alignItems: "center",
     justifyContent: "center"

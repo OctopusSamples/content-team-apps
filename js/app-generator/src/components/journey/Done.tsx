@@ -1,6 +1,6 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
-import {CircularProgress, Grid} from "@mui/material";
-import {journeyContainer, progressStyle, styles} from "../../utils/styles";
+import {Button, CircularProgress, Grid} from "@mui/material";
+import {journeyContainer, openResourceStyle, progressStyle, styles} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
@@ -42,8 +42,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     });
 
     // Make sure people don't exit away unexpectedly
-    window.addEventListener("beforeunload", (ev) =>
-    {
+    window.addEventListener("beforeunload", (ev) => {
         ev.preventDefault();
         return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the App Builder.';
     });
@@ -96,21 +95,42 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <table>
                             <tr>
                                 <td>{repoCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!repoCreated && <CircularProgress size={32} />}</td>
-                                <td>Creating the GitHub repo</td>
-                                <td>{repoCreated && <a href={props.machine.state.context.browsableRepoUrl} target={"_blank"} rel={"noreferrer"}>Open</a>}</td>
+                                    {!repoCreated && <CircularProgress size={32}/>}</td>
+                                <td>{repoCreated && <span>Created</span>}{!repoCreated && <span>Creating</span>} the
+                                    GitHub repo
+                                </td>
+                                <td>{repoCreated &&
+                                    <Button sx={openResourceStyle} variant="outlined"
+                                            onClick={() => window.open(props.machine.state.context.browsableRepoUrl, "_blank")}>
+                                        {"Open GitHub >"}
+                                    </Button>}
+                                </td>
                             </tr>
                             <tr>
-                                <td>{workflowCompleted && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                <td>{workflowCompleted &&
+                                    <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
                                     {!workflowCompleted && <CircularProgress size={32}/>}</td>
-                                <td>Running the GitHub Actions workflow</td>
-                                <td></td>
+                                <td>{workflowCompleted && <span>Completed</span>}{!workflowCompleted &&
+                                    <span>Running</span>} the GitHub Actions workflow
+                                </td>
+                                <td>{workflowCompleted && <Button sx={openResourceStyle} variant="outlined"
+                                                                  onClick={() => window.open(props.machine.state.context.browsableRepoUrl + "/actions", "_blank")}>
+                                    {"Open Workflows >"}
+                                </Button>}
+                                </td>
                             </tr>
                             <tr>
                                 <td>{spaceCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
                                     {!spaceCreated && <CircularProgress size={32}/>}</td>
-                                <td>Creating the Octopus space</td>
-                                <td>{spaceCreated && <a href={getOctopusServer() + "/app#/configuration/spaces"} target={"_blank"} rel={"noreferrer"}>Open</a>}</td>
+                                <td>{spaceCreated && <span>Created</span>}{!spaceCreated && <span>Creating</span>} the
+                                    Octopus space
+                                </td>
+                                <td>{spaceCreated &&
+                                    <Button sx={openResourceStyle} variant="outlined"
+                                            onClick={() => window.open(getOctopusServer() + "/app#/configuration/spaces", "_blank")}>
+                                        {"Open Workflows >"}
+                                    </Button>}
+                                </td>
                             </tr>
                         </table>
                     </Grid>
