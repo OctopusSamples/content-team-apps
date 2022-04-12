@@ -40,7 +40,7 @@ import lombok.NonNull;
  */
 @Named("PopulateGithubRepo")
 @ApplicationScoped
-public class GithubRepoApi implements
+public class PopulateGithubRepoApi implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
   private static final String API_PATH = "/api/githubrepo";
