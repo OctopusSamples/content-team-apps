@@ -27,6 +27,11 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
+        // No need to check once the repo is found
+        if (repoCreated) {
+            return true;
+        }
+
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
             .then(body => {
                 const bodyObject = body as any;
@@ -42,9 +47,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     useEffect(() => {
         const timer = setInterval(() => {
             if (!context.settings.disableExternalCalls) {
-                if (!repoCreated) {
-                    checkRepoExists();
-                }
+                checkRepoExists();
             } else {
                 // show a mock change after 1 second
                 setRepoCreated(true);
