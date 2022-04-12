@@ -633,30 +633,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   SUCCESS=1
               fi
 
-              # Report file is not generated if no threats found
-              # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
-              if [[ -f "$PWD/depscan-bom.json" ]]; then
-                new_octopusartifact "$PWD/depscan-bom.json"
-                # The number of lines in the report file equals the number of vulnerabilities found
-                COUNT=$(wc -l < "$PWD/depscan-bom.json")
-              else
-                COUNT=0
-              fi
-
-              # Push the result to the database
-              # This can be useful for tracking vulnerabilities over time.
-              # The AWS managed Grafana service can plot TimeStream values for easy visualizations.
-              #aws timestream-write write-records \
-              #    --database-name octopusMetrics \
-              #    --table-name vulnerabilities \
-              #    --common-attributes "{\"Dimensions\":[{\"Name\":\"Space\", \"Value\":\"Content Team\"}, {\"Name\":\"Project\", \"Value\":\"#{Octopus.Project.Name}\"}, {\"Name\":\"Environment\", \"Value\":\"#{Octopus.Environment.Name}\"}], \"Time\":\"$${TIMESTAMP}\",\"TimeUnit\":\"MILLISECONDS\"}" \
-              #    --records "[{\"MeasureName\":\"vulnerabilities\", \"MeasureValueType\":\"INT\",\"MeasureValue\":\"$${COUNT}\"}]" > /dev/null
-
               # Print the output stripped of ANSI colour codes
               echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
           done
 
           set_octopusvariable "VerificationResult" $SUCCESS
+
+          if [[  $SUCCESS -ne 0 ]]; then
+            >&2 echo "Vulnerabilities were detected"
+          fi
 
           exit 0
         EOT

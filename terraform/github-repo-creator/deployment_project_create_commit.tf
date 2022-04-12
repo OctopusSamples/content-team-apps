@@ -706,6 +706,10 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
 
           set_octopusvariable "VerificationResult" $SUCCESS
 
+          if [[  $SUCCESS -ne 0 ]]; then
+            >&2 echo "Vulnerabilities were detected"
+          fi
+
           exit 0
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
