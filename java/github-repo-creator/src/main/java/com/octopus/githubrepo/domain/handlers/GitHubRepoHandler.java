@@ -456,25 +456,6 @@ public class GitHubRepoHandler {
     return false;
   }
 
-  private String getUniqueRepoName(
-      final String decryptedGithubToken,
-      final PopulateGithubRepo populateGithubRepo,
-      final GitHubUser user) {
-    String repoName = populateGithubRepo.getGithubRepository();
-
-    // If we want to create a fresh repo every time, add a counter to the end of the repo name
-    for (int i = 1; i <= 100; ++i) {
-
-      if (doesRepoExist(decryptedGithubToken, user, repoName)) {
-        repoName = populateGithubRepo.getGithubRepository() + i;
-      } else {
-        break;
-      }
-    }
-
-    return repoName;
-  }
-
   private boolean doesRepoExist(
       final String decryptedGithubToken,
       final GitHubUser user,
