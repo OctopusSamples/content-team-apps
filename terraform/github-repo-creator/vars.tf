@@ -100,3 +100,8 @@ variable "client_private_key_base64_development" {
   nullable = false
   sensitive = true
 }
+
+variable "run_number" {
+  type = string
+  nullable = false
+}
