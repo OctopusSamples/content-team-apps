@@ -121,3 +121,51 @@ resource "octopusdeploy_variable" "cloudformation_lambda_login" {
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "GitHubProxyLambda"
 }
+
+resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {
+  name = "Client.EncryptionKey"
+  type = "String"
+  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.github_proxy_encryption_key_production
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_key_development" {
+  name = "Client.EncryptionKey"
+  type = "String"
+  description = "The key used to encrypt the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.github_proxy_encryption_key_development
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_salt_production" {
+  name = "Client.EncryptionSalt"
+  type = "String"
+  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "bMjahk2IHvEVz5XgIaO82SfaHjwGMZQ9"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_encryption_salt_development" {
+  name = "Client.EncryptionSalt"
+  type = "String"
+  description = "The salt used to when encrypting the GitHub Oauth token sent back to the client in a cookie."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "95FrLIDR5jFroc3MTD5QBd1EsnYKUh1e"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
