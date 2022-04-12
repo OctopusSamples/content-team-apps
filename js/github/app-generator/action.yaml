@@ -187,6 +187,15 @@ runs:
       shell: bash
       working-directory: js/app-generator
 
+    - name: Push SBOM to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/app-generator/app-builder-frontend-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:

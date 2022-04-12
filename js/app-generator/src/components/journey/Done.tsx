@@ -6,6 +6,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -16,9 +17,13 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const [workflowCompleted] = useState<boolean>(false);
     const [spaceCreated] = useState<boolean>(false);
 
+    const repoUrlValid = () => {
+        return !!props.machine.state.context.apiRepoUrl;
+    }
+
     const checkRepoExists = () => {
         // If for some reason the api url was not returned, don't attempt to query it
-        if (!props.machine.state.context.apiRepoUrl) {
+        if (!repoUrlValid()) {
             return;
         }
 
@@ -99,12 +104,22 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         </p>
                         <table>
                             <tr>
-                                <td>{repoCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!repoCreated && <CircularProgress size={32}/>}</td>
-                                <td>{repoCreated && <span>Created</span>}{!repoCreated && <span>Creating</span>} the
-                                    GitHub repo
+                                <td>{repoUrlValid() &&
+                                    <span>
+                                        {repoCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                        {!repoCreated && <CircularProgress size={32}/>}
+                                    </span>}
+                                    {!repoUrlValid() && <CancelIcon className={moreClasses.icon}/>}
                                 </td>
-                                <td>{repoCreated &&
+                                <td>{repoUrlValid() && <span>
+                                        {repoCreated && <span>Created </span>}
+                                        {!repoCreated && <span>Creating </span>}
+                                        the GitHub repo
+                                    </span>}
+                                    {!repoUrlValid() && <span>There was an error querying the GitHub repo. Please report
+                                        this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"}>here</a>.</span>}
+                                </td>
+                                <td>{repoUrlValid() && repoCreated &&
                                     <Button sx={openResourceStyle} variant="outlined"
                                             onClick={() => window.open(props.machine.state.context.browsableRepoUrl, "_blank")}>
                                         {"Open GitHub >"}
