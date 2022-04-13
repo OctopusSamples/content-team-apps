@@ -95,7 +95,7 @@ resource "octopusdeploy_deployment_process" "networking_project" {
                 RestApiId: !Ref RestApi
                 ParentId: !Ref Api
                 PathPart: pipeline
-            ApiPipeline:
+            ApiPipelineJenkins:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
@@ -105,7 +105,7 @@ resource "octopusdeploy_deployment_process" "networking_project" {
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
-                ParentId: !Ref ApiPipeline
+                ParentId: !Ref ApiPipelineJenkins
                 PathPart: generate
             ApiPipelineOAuth:
               Type: 'AWS::ApiGateway::Resource'
