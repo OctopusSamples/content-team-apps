@@ -1,10 +1,10 @@
 name: github-actions-workflows-octopus
 
 on:
-  push:
-    paths:
-    - 'terraform/github-actions-workflows/**'
-    - '.github/workflows/github-actions-workflows-octopus.yml'
+#  push:
+#    paths:
+#    - 'terraform/github-actions-workflows/**'
+#    - '.github/workflows/github-actions-workflows-octopus.yml'
   workflow_dispatch:
 
 jobs:

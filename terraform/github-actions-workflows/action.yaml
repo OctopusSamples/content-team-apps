@@ -4,6 +4,9 @@ description: Deploys the app builder frontend
   workflow_dispatch: {}
   push: {}
 inputs:
+  run_number:
+    description: The GitHub Actions run number
+    required: true
   octopus_server:
     description: "The Octopus server"
     required: true
@@ -103,6 +106,7 @@ runs:
       run: >
         terraform apply 
         -auto-approve 
+        -var="run_number=${{ inputs.run_number }}" 
         -var="octopus_server=${{ inputs.octopus_server }}" 
         -var="octopus_apikey=${{ inputs.octopus_apikey }}"
         -var="octopus_space_id=${{ inputs.octopus_space_id }}"

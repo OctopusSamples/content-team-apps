@@ -76,3 +76,8 @@ variable "content_team_library_variable_set_id" {
   type = string
   nullable = false
 }
+
+variable "run_number" {
+  type = string
+  nullable = false
+}
