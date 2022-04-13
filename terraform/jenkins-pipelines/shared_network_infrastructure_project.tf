@@ -67,7 +67,7 @@ resource "octopusdeploy_deployment_process" "networking_project" {
               Type: 'AWS::ApiGateway::RestApi'
               Properties:
                 Description: My API Gateway
-                Name: GitHub Actions API
+                Name: Jenkins Pipelines API
                 BinaryMediaTypes:
                   - '*/*'
                 EndpointConfiguration:
@@ -95,17 +95,17 @@ resource "octopusdeploy_deployment_process" "networking_project" {
                 RestApiId: !Ref RestApi
                 ParentId: !Ref Api
                 PathPart: pipeline
-            ApiPipelineGitHub:
+            ApiPipeline:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ApiPipeline
-                PathPart: github
-            ApiPipelineGitHubGenerate:
+                PathPart: jenkins
+            ApiPipelineGenerate:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
-                ParentId: !Ref ApiPipelineGitHub
+                ParentId: !Ref ApiPipeline
                 PathPart: generate
             ApiPipelineOAuth:
               Type: 'AWS::ApiGateway::Resource'
@@ -115,12 +115,12 @@ resource "octopusdeploy_deployment_process" "networking_project" {
                   - RestApi
                   - RootResourceId
                 PathPart: oauth
-            ApiPipelineOAuthGitHub:
+            ApiPipelineOAuthJenkins:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ApiPipelineOAuth
-                PathPart: github
+                PathPart: jenkins
           Outputs:
             RestApi:
               Description: The REST API
@@ -137,11 +137,11 @@ resource "octopusdeploy_deployment_process" "networking_project" {
               Description: ID of the resource exposing the Jenkins pipeline frontend
               Value: !Ref Web
             '#{CloudFormation.Output.PipelineEndpointVariableName}':
-              Description: ID of the resource exposing the GitHub Actions Workflow generate function
-              Value: !Ref ApiPipelineGitHubGenerate
+              Description: ID of the resource exposing the Jenkins Pipelines generate function
+              Value: !Ref ApiPipelineGenerate
             '#{CloudFormation.Output.OAuthGithubEndpointVariableName}':
               Description: ID of the resource exposing the GitHub OAuth proxy
-              Value: !Ref ApiPipelineOAuthGitHub
+              Value: !Ref ApiPipelineOAuthJenkins
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[]"
