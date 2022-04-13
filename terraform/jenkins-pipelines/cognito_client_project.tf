@@ -2,13 +2,13 @@ resource "octopusdeploy_project" "cognito_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the GitHub Workflow Cognito User Pool Client. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  description                          = "Deploys the Jenkins Pipelines Cognito User Pool Client. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "GitHub Workflow Cognito User Pool Client"
+  name                                 = "Jenkins Pipelines Cognito User Pool Client"
   project_group_id                     = octopusdeploy_project_group.project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -16,8 +16,8 @@ resource "octopusdeploy_project" "cognito_project" {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
   included_library_variable_sets = [
-    "LibraryVariableSets-1183", # GitHubActionBuilder
-    "LibraryVariableSets-1222", # GitHubActionShared
+    "LibraryVariableSets-1181", # JenkinsPipelineBuilder
+    "LibraryVariableSets-1223", # JenkinsPipelineShared
     "LibraryVariableSets-1243", # AWS Access
     "LibraryVariableSets-1282", # Content Team Apps
     "LibraryVariableSets-1262" # Cognito

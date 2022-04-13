@@ -22,10 +22,10 @@ resource "octopusdeploy_project" "oauth_project" {
   }
 
   included_library_variable_sets = [
-    "LibraryVariableSets-1222", # GitHubActionShared
+    "LibraryVariableSets-1223", # JenkinsPipelineShared
     "LibraryVariableSets-1243", # AWS Access
     "LibraryVariableSets-1282", # Content Team Apps
-    "LibraryVariableSets-1221", # GithubOAuthBackend
+    "LibraryVariableSets-1263", # JenkinsOAuthBackend
     "LibraryVariableSets-1262" # Cognito
   ]
   connectivity_policy {

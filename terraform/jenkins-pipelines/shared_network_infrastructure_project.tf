@@ -2,19 +2,19 @@ resource "octopusdeploy_project" "networking_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the github actions shared network infrastructure. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  description                          = "Deploys the Jenkins Pipelines shared network infrastructure. Don't edit this process directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "GitHub Actions Shared Network Infrastructure"
+  name                                 = "Jenkins Pipelines Shared Network Infrastructure"
   project_group_id                     = octopusdeploy_project_group.project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets = [
-    "LibraryVariableSets-1183", # GitHubActionBuilder
-    "LibraryVariableSets-1222", # GitHubActionShared
+    "LibraryVariableSets-1181", # JenkinsPipelineBuilder
+    "LibraryVariableSets-1223", # JenkinsPipelineShared
     "LibraryVariableSets-1243", # AWS Access
     "LibraryVariableSets-1282" # Content Team Apps
   ]

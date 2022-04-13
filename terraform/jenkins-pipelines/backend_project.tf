@@ -1,9 +1,9 @@
 locals {
   # These change with every project
-  project_name        = "Github Action Workflow Generator"
-  project_description = "which exposes an endpoint for creating GitHub Action workflows."
-  lambda_package      = "github-actions-builder-github-backend-lambda"
-  lambda_sbom_package = "github-actions-builder-github-backend-lambda-sbom"
+  project_name        = "Jenkins Pipelines Generator"
+  project_description = "which exposes an endpoint for creating Jenkins pipelines."
+  lambda_package      = "jenkins-pipeline-builder-github-backend-lambda"
+  lambda_sbom_package = "jenkins-pipeline-builder-github-backend-lambda-sbom"
 
   # These should be relatively stable
   reverse_proxy_package                    = "com.octopus:reverse-proxy"
@@ -37,8 +37,8 @@ resource "octopusdeploy_project" "backend_project" {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
   included_library_variable_sets = [
-    "LibraryVariableSets-1183", # GitHubActionBuilder
-    "LibraryVariableSets-1222", # GitHubActionShared
+    "LibraryVariableSets-1181", # JenkinsPipelineBuilder
+    "LibraryVariableSets-1223", # JenkinsPipelineShared
     "LibraryVariableSets-1243", # AWS Access
     "LibraryVariableSets-1282", # Content Team Apps
     "LibraryVariableSets-1262", # Cognito
