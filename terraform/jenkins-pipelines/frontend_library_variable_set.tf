@@ -31,9 +31,8 @@ resource "octopusdeploy_variable" "generate_api_path" {
   description = "The generate API endpoint - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "/api/pipeline/github/generate"
+  value = "/api/pipeline/jenkins/generate"
 }
-
 
 resource "octopusdeploy_variable" "google_tag" {
   name = "settings:google:tag"
@@ -41,7 +40,7 @@ resource "octopusdeploy_variable" "google_tag" {
   description = "The Google analytics tag - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "G-W98Y6CSSQ4"
+  value = "G-3R1GCNVJPX"
 }
 
 resource "octopusdeploy_variable" "github_login_development" {
@@ -50,7 +49,7 @@ resource "octopusdeploy_variable" "github_login_development" {
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "https://development.githubactionworkflows.com/oauth/github/login"
+  value = "https://development.jenkinspipelines.com/oauth/github/login"
   scope {
     environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
   }
@@ -62,7 +61,7 @@ resource "octopusdeploy_variable" "github_login_production" {
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "https://githubactionsworkflowgenerator.octopus.com/oauth/github/login"
+  value = "https://jenkinspipelinegenerator.octopus.com/oauth/github/login"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
@@ -74,7 +73,7 @@ resource "octopusdeploy_variable" "hostname_development" {
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "development.githubactionworkflows.com"
+  value = "development.jenkinspipelines.com"
   scope {
     environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
   }
@@ -86,7 +85,7 @@ resource "octopusdeploy_variable" "hostname_production" {
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "githubactionsworkflowgenerator.octopus.com"
+  value = "jenkinspipelinegenerator.octopus.com"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
@@ -98,7 +97,7 @@ resource "octopusdeploy_variable" "cognito_development" {
   description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=4r0atff7ovqbhrpe1773k37vk9&response_type=token&scope=email+openid+profile&redirect_uri=https://development.githubactionworkflows.com/"
+  value = "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=7njomlfi9v854u8e49q08qb8dv&response_type=token&scope=email+openid+profile&redirect_uri=https://development.jenkinspipelines.com/"
   scope {
     environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
   }
@@ -110,7 +109,7 @@ resource "octopusdeploy_variable" "cognito_production" {
   description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "https://content-team-octopus-production.auth.us-west-1.amazoncognito.com/login?client_id=44099ejdg4jgiko2cpfv9pun11&response_type=token&scope=email+openid+profile&redirect_uri=https://githubactionsworkflowgenerator.octopus.com"
+  value = "https://content-team-octopus-production.auth.us-west-1.amazoncognito.com/login?client_id=18rm59p0u74u4nkrlsrt8kg9hc&response_type=token&scope=email+openid+profile&redirect_uri=https://jenkinspipelinegenerator.octopus.com"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
