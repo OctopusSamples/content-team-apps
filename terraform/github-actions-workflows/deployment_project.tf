@@ -548,15 +548,15 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          STAGE_URL=$(aws cloudformation \
+          STARGE_URL=$(aws cloudformation \
               describe-stacks \
-              --stack-name #{CloudFormationName.AppBuilderApiGatewayStage} \
+              --stack-name #{CloudFormationName.ApiGatewayStage} \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
               --output text)
 
-          set_octopusvariable "StageURL" $${STAGE_URL}
+          set_octopusvariable "StageURL" $${STARGE_URL}
 
-          echo "Stage URL: $${STAGE_URL}"
+          echo "Stage URL: ${STARGE_URL}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
