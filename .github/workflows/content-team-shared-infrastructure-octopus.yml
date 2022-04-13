@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: App Builder Share Network Infrastructure
-        uses: ./terraform/app-builder-shared-infrastructure
+      - name: Content Team Shared Network Infrastructure
+        uses: ./terraform/content-team-shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
