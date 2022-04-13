@@ -228,18 +228,13 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormationName.ApiGateway} \
-              --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.PipelineEndpointVariableName}'].OutputValue" \
-              --output text
-
           PIPELINE_RESOURCE_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormationName.ApiGateway} \
               --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.PipelineEndpointVariableName}'].OutputValue" \
               --output text)
 
+          echo "Pipeline resource ID: $${PIPELINE_RESOURCE_ID}"
           set_octopusvariable "ApiPipelineJenkinsGenerate" $${PIPELINE_RESOURCE_ID}
 
           REST_API=$(aws cloudformation \
@@ -248,6 +243,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
+          echo "Rest API ID: $${REST_API}"
           set_octopusvariable "RestApi" $${REST_API}
 
           COGNITO_POOL_ID=$(aws cloudformation \
