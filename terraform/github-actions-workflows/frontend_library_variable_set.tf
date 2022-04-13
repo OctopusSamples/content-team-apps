@@ -7,9 +7,7 @@ output "library_variable_set_id" {
   value = octopusdeploy_library_variable_set.frontend_library_variable_set.id
 }
 
-
-
-resource "octopusdeploy_variable" "title" {
+resource "octopusdeploy_variable" "s3_directory" {
   name = "S3.Directory"
   type = "String"
   description = "The directory holding the frontend files - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
