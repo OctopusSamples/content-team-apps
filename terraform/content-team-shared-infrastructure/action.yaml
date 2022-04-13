@@ -83,7 +83,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         TF_INPUT: "0"
       run: terraform init
-      working-directory: terraform/app-builder-shared-infrastructure
+      working-directory: terraform/content-team-shared-infrastructure
       shell: bash
 
     - name: Terraform Apply
@@ -106,5 +106,5 @@ runs:
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}"
         -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}"
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
-      working-directory: terraform/app-builder-shared-infrastructure
+      working-directory: terraform/content-team-shared-infrastructure
       shell: bash
