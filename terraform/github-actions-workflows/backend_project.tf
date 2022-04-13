@@ -31,15 +31,17 @@ resource "octopusdeploy_project" "backend_project" {
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
   name                                 = local.project_name
-  project_group_id                     = octopusdeploy_project_group.appbuilder_github_oauth_project_group.id
+  project_group_id                     = octopusdeploy_project_group.project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   versioning_strategy {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
   included_library_variable_sets = [
-    octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id,
-    var.content_team_library_variable_set_id
+    "LibraryVariableSets-1183",
+    "LibraryVariableSets-1222",
+    "LibraryVariableSets-1243",
+    "LibraryVariableSets-1282"
   ]
 
   connectivity_policy {
