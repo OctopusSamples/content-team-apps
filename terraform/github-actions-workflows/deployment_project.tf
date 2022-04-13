@@ -23,7 +23,8 @@ resource "octopusdeploy_project" "deploy_project" {
   included_library_variable_sets = [
     "LibraryVariableSets-1183",
     "LibraryVariableSets-1222",
-    "LibraryVariableSets-1243"
+    "LibraryVariableSets-1243",
+    "LibraryVariableSets-1282"
   ]
 
   connectivity_policy {
