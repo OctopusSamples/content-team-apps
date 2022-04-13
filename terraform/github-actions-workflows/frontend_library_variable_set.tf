@@ -7,6 +7,24 @@ output "library_variable_set_id" {
   value = octopusdeploy_library_variable_set.frontend_library_variable_set.id
 }
 
+resource "octopusdeploy_variable" "title" {
+  name = "settings:title"
+  type = "String"
+  description = "The app title - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "GitHub Actions Workflow Generator"
+}
+
+resource "octopusdeploy_variable" "generate_api_path" {
+  name = "settings:generateApiPath"
+  type = "String"
+  description = "The generate API endpoint - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/api/pipeline/github/generate"
+}
+
 resource "octopusdeploy_variable" "github_login_development" {
   name = "settings:github:loginPath"
   type = "String"
