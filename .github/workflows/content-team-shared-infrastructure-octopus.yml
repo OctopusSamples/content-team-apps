@@ -1,4 +1,4 @@
-name: app-builder-shared-infrastructure-octopus
+name: content-team-shared-infrastructure-octopus
 
 on:
   push:
