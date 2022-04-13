@@ -22,10 +22,11 @@ resource "octopusdeploy_project" "deploy_project" {
   }
   included_library_variable_sets = [
     octopusdeploy_library_variable_set.frontend_library_variable_set.id,
-    "LibraryVariableSets-1183",
-    "LibraryVariableSets-1222",
-    "LibraryVariableSets-1243",
-    "LibraryVariableSets-1282"
+    "LibraryVariableSets-1183", # GitHubActionBuilder
+    "LibraryVariableSets-1222", # GitHubActionShared
+    "LibraryVariableSets-1243", # AWS Access
+    "LibraryVariableSets-1282", # Content Team Apps
+    "LibraryVariableSets-1262"  # Cognito
   ]
 
   connectivity_policy {
