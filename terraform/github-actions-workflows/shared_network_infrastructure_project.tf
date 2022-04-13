@@ -26,7 +26,7 @@ resource "octopusdeploy_project" "networking_project" {
   }
 }
 
-resource "octopusdeploy_variable" "debug_variable" {
+resource "octopusdeploy_variable" "networking_debug_variable" {
   name = "OctopusPrintVariables"
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -35,7 +35,7 @@ resource "octopusdeploy_variable" "debug_variable" {
   value = "False"
 }
 
-resource "octopusdeploy_variable" "debug_evaluated_variable" {
+resource "octopusdeploy_variable" "networking_debug_evaluated_variable" {
   name = "OctopusPrintEvaluatedVariables"
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -44,7 +44,7 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
   value = "False"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_project" {
+resource "octopusdeploy_deployment_process" "networking_project" {
   project_id = octopusdeploy_project.networking_project.id
   step {
     condition           = "Success"
