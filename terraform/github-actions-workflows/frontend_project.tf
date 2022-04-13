@@ -14,7 +14,7 @@ resource "octopusdeploy_project" "deploy_project" {
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
   name                                 = "GitHub Action Workflow Generator Frontend"
-  project_group_id                     = octopusdeploy_project_group.appbuilder_frontend_project_group.id
+  project_group_id                     = octopusdeploy_project_group.project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   versioning_strategy {
