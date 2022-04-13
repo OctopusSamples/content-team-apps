@@ -81,3 +81,27 @@ resource "octopusdeploy_variable" "hostname_production" {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "cognito_development" {
+  name = "settings:aws:cognitoLogin"
+  type = "String"
+  description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=4r0atff7ovqbhrpe1773k37vk9&response_type=token&scope=email+openid+profile&redirect_uri=https://development.githubactionworkflows.com/"
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cognito_production" {
+  name = "settings:aws:cognitoLogin"
+  type = "String"
+  description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://content-team-octopus-production.auth.us-west-1.amazoncognito.com/login?client_id=44099ejdg4jgiko2cpfv9pun11&response_type=token&scope=email+openid+profile&redirect_uri=https://githubactionsworkflowgenerator.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
