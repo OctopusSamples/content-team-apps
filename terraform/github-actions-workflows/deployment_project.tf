@@ -22,7 +22,8 @@ resource "octopusdeploy_project" "deploy_project" {
   }
   included_library_variable_sets = [
     "LibraryVariableSets-1183",
-    "LibraryVariableSets-1222"
+    "LibraryVariableSets-1222",
+    "LibraryVariableSets-1243"
   ]
 
   connectivity_policy {
@@ -135,7 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -169,7 +170,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.S3.FileSelections" : "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
         "Octopus.Action.Aws.S3.TargetMode" : "FileSelections"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId" : local.frontend_package_id
@@ -194,7 +195,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           WEB_RESOURCE_ID=$(aws cloudformation \
               describe-stacks \
@@ -462,7 +463,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -522,7 +523,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -544,7 +545,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
@@ -592,7 +593,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
