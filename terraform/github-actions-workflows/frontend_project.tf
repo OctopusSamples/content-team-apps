@@ -34,10 +34,6 @@ resource "octopusdeploy_project" "deploy_project" {
   }
 }
 
-output "deploy_project_id" {
-  value = octopusdeploy_project.deploy_project.id
-}
-
 resource "octopusdeploy_variable" "debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
