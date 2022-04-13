@@ -1,3 +1,7 @@
+locals {
+  cognito_cloudformation_name = "jenkins-pipeline-cognito-client"
+}
+
 resource "octopusdeploy_project" "cognito_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
@@ -102,7 +106,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"#{if WebApp.SubPath}#{WebApp.SubPath}#{/if}#{unless WebApp.SubPath}main#{/unless}\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "github-workflow-cognito-client"
+        "Octopus.Action.Aws.CloudFormationStackName" : local.cognito_cloudformation_name
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           AWSTemplateFormatVersion: "2010-09-09"
           Parameters:
