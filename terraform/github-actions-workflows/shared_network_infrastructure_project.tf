@@ -63,86 +63,85 @@ resource "octopusdeploy_deployment_process" "networking_project" {
         "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormationName.ApiGateway}"
         "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
           Resources:
-            Resources:
-              RestApi:
-                Type: 'AWS::ApiGateway::RestApi'
-                Properties:
-                  Description: My API Gateway
-                  Name: GitHub Actions API
-                  BinaryMediaTypes:
-                    - '*/*'
-                  EndpointConfiguration:
-                    Types:
-                      - REGIONAL
-              Web:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !GetAtt
-                    - RestApi
-                    - RootResourceId
-                  PathPart: '{proxy+}'
-              Api:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !GetAtt
-                    - RestApi
-                    - RootResourceId
-                  PathPart: api
-              ApiPipeline:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !Ref Api
-                  PathPart: pipeline
-              ApiPipelineGitHub:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !Ref ApiPipeline
-                  PathPart: github
-              ApiPipelineGitHubGenerate:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !Ref ApiPipelineGitHub
-                  PathPart: generate
-              ApiPipelineOAuth:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !GetAtt
-                    - RestApi
-                    - RootResourceId
-                  PathPart: oauth
-              ApiPipelineOAuthGitHub:
-                Type: 'AWS::ApiGateway::Resource'
-                Properties:
-                  RestApiId: !Ref RestApi
-                  ParentId: !Ref ApiPipelineOAuth
-                  PathPart: github
-            Outputs:
-              RestApi:
-                Description: The REST API
-                Value: !Ref RestApi
-              RootResourceId:
-                Description: ID of the resource exposing the Jenkins pipeline frontend
-                Value: !GetAtt
+            RestApi:
+              Type: 'AWS::ApiGateway::RestApi'
+              Properties:
+                Description: My API Gateway
+                Name: GitHub Actions API
+                BinaryMediaTypes:
+                  - '*/*'
+                EndpointConfiguration:
+                  Types:
+                    - REGIONAL
+            Web:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !GetAtt
                   - RestApi
                   - RootResourceId
-              Api:
-                Description: ID of the resource exposing the API
-                Value: !Ref Api
-              Web:
-                Description: ID of the resource exposing the Jenkins pipeline frontend
-                Value: !Ref Web
-              '#{CloudFormation.Output.PipelineEndpointVariableName}':
-                Description: ID of the resource exposing the GitHub Actions Workflow generate function
-                Value: !Ref ApiPipelineGitHubGenerate
-              '#{CloudFormation.Output.OAuthGithubEndpointVariableName}':
-                Description: ID of the resource exposing the GitHub OAuth proxy
-                Value: !Ref ApiPipelineOAuthGitHub
+                PathPart: '{proxy+}'
+            Api:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !GetAtt
+                  - RestApi
+                  - RootResourceId
+                PathPart: api
+            ApiPipeline:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref Api
+                PathPart: pipeline
+            ApiPipelineGitHub:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiPipeline
+                PathPart: github
+            ApiPipelineGitHubGenerate:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiPipelineGitHub
+                PathPart: generate
+            ApiPipelineOAuth:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !GetAtt
+                  - RestApi
+                  - RootResourceId
+                PathPart: oauth
+            ApiPipelineOAuthGitHub:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiPipelineOAuth
+                PathPart: github
+          Outputs:
+            RestApi:
+              Description: The REST API
+              Value: !Ref RestApi
+            RootResourceId:
+              Description: ID of the resource exposing the Jenkins pipeline frontend
+              Value: !GetAtt
+                - RestApi
+                - RootResourceId
+            Api:
+              Description: ID of the resource exposing the API
+              Value: !Ref Api
+            Web:
+              Description: ID of the resource exposing the Jenkins pipeline frontend
+              Value: !Ref Web
+            '#{CloudFormation.Output.PipelineEndpointVariableName}':
+              Description: ID of the resource exposing the GitHub Actions Workflow generate function
+              Value: !Ref ApiPipelineGitHubGenerate
+            '#{CloudFormation.Output.OAuthGithubEndpointVariableName}':
+              Description: ID of the resource exposing the GitHub OAuth proxy
+              Value: !Ref ApiPipelineOAuthGitHub
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[]"
