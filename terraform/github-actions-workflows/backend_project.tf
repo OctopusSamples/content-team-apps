@@ -129,7 +129,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -163,7 +163,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.S3.PackageOptions" : "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
         "Octopus.Action.Aws.S3.TargetMode" : "EntirePackage"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId" : local.lambda_package
@@ -200,7 +200,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.S3.PackageOptions" : "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
         "Octopus.Action.Aws.S3.TargetMode" : "EntirePackage"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_content_team_maven_feed_id
         "Octopus.Action.Package.PackageId" : local.reverse_proxy_package
@@ -410,7 +410,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -481,7 +481,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -632,7 +632,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -704,7 +704,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -847,7 +847,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
       }
     }
   }
@@ -870,7 +870,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           OLD_STACKS=$(aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusTransient` && Value == `True`] && Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}`]].{StackName: StackName}' --output text)
 
@@ -904,7 +904,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
@@ -952,7 +952,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           TIMESTAMP=$(date +%s%3N)
           SUCCESS=0
