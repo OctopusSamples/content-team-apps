@@ -48,3 +48,27 @@ resource "octopusdeploy_variable" "github_login_production" {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "hostname_development" {
+  name = "WebApp.Hostname"
+  type = "String"
+  description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "development.githubactionworkflows.com"
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "hostname_production" {
+  name = "WebApp.Hostname"
+  type = "String"
+  description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "githubactionsworkflowgenerator.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
