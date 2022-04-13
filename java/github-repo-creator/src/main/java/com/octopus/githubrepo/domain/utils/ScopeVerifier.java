@@ -7,6 +7,7 @@ public interface ScopeVerifier {
 
   /**
    * Verifies the scopes on a GitHub token.
+   *
    * @param decryptedGithubToken the GitHub token.
    */
   void verifyScopes(final String decryptedGithubToken);
