@@ -189,7 +189,7 @@ resource "octopusdeploy_deployment_process" "oauth_project" {
               --query "Stacks[0].Outputs[?OutputKey=='#{CloudFormation.Output.OAuthGithubEndpointVariableName}'].OutputValue" \
               --output text)
 
-          set_octopusvariable "ApiPipelineResource" ${PIPELINE_RESOURCE_ID}
+          set_octopusvariable "ApiPipelineResource" $${PIPELINE_RESOURCE_ID}
 
           REST_API=$(aws cloudformation \
               describe-stacks \
@@ -197,55 +197,7 @@ resource "octopusdeploy_deployment_process" "oauth_project" {
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
-          set_octopusvariable "RestApi" ${REST_API}
-
-          PREVIOUS_LOGIN_LAMBDA_VERSION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendLoginStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaVersion'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLoginLambdaVersion" ${PREVIOUS_LOGIN_LAMBDA_VERSION}
-
-          PREVIOUS_LOGIN_LAMBDA_REF=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendLoginStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaRef'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLoginLambdaReference" ${PREVIOUS_LOGIN_LAMBDA_REF}
-
-          PREVIOUS_LOGIN_LAMBDA_DESCRIPTION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendLoginStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousLoginLambdaDescription" ${PREVIOUS_LOGIN_LAMBDA_DESCRIPTION}
-
-          PREVIOUS_CODE_EXCHANGE_LAMBDA_VERSION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendCodeExchangeStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaVersion'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousCodeExchangeLambdaVersion" ${PREVIOUS_CODE_EXCHANGE_LAMBDA_VERSION}
-
-          PREVIOUS_CODE_EXCHANGE_LAMBDA_REF=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendCodeExchangeStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaRef'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousCodeExchangeLambdaReference" ${PREVIOUS_CODE_EXCHANGE_LAMBDA_REF}
-
-          PREVIOUS_CODE_EXCHANGE_LAMBDA_DESCRIPTION=$(aws cloudformation \
-              describe-stacks \
-              --stack-name #{CloudFormation.BackendCodeExchangeStack} \
-              --query "Stacks[0].Outputs[?OutputKey=='LambdaDescription'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "PreviousCodeExchangeLambdaDescription" ${PREVIOUS_CODE_EXCHANGE_LAMBDA_DESCRIPTION}
+          set_octopusvariable "RestApi" $${REST_API}
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
