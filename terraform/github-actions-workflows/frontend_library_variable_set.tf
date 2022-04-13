@@ -8,7 +8,7 @@ output "library_variable_set_id" {
 }
 
 resource "octopusdeploy_variable" "github_login_development" {
-  name = "github:loginPath"
+  name = "settings:github:loginPath"
   type = "String"
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
@@ -20,7 +20,7 @@ resource "octopusdeploy_variable" "github_login_development" {
 }
 
 resource "octopusdeploy_variable" "github_login_production" {
-  name = "github:loginPath"
+  name = "settings:github:loginPath"
   type = "String"
   description = "The path to redirect to when performing a GitHub Login - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
