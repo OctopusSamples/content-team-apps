@@ -119,7 +119,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
         "Octopus.Action.Aws.TemplateSource": "Inline"
         "Octopus.Action.Aws.WaitForCompletion": "True"
         "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable": "AWS"
       }
     }
   }
