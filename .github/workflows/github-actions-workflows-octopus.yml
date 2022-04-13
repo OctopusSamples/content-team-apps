@@ -18,6 +18,7 @@ jobs:
       - name: Build
         uses: ./terraform/github-actions-workflows
         with:
+          run_number: ${{ github.run_number }}
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: Spaces-882
