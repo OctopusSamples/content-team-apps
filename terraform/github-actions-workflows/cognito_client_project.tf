@@ -138,7 +138,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"#{Cognito.CallbackUrl}\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"#{Cognito.CallbackUrl}\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"}]"
-        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.Region" : "#{Cognito.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
