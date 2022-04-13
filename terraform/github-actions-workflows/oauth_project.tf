@@ -193,7 +193,21 @@ resource "octopusdeploy_deployment_process" "oauth_project" {
               --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
               --output text)
 
+          echo "Rest API ID: $${REST_API}"
           set_octopusvariable "RestApi" $${REST_API}
+
+          COGNITO_POOL_ID=$(aws cloudformation \
+              describe-stacks \
+              --stack-name #{CloudFormation.Cognito} \
+              --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
+              --output text)
+          echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
+          set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
+
+          if [[ -z "$${COGNITO_POOL_ID}" ]]; then
+            echo "Run the Cognito project first"
+            exit 1
+          fi
         EOT
         "Octopus.Action.Script.ScriptSource": "Inline"
         "Octopus.Action.Script.Syntax": "Bash"
