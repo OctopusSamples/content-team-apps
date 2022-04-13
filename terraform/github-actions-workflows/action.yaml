@@ -92,7 +92,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         TF_INPUT: "0"
       run: terraform init
-      working-directory: terraform/github-actions-workflows-frontend
+      working-directory: terraform/github-actions-workflows
       shell: bash
 
     - name: Terraform Apply
@@ -119,5 +119,5 @@ runs:
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
         -var="cognito_library_variable_set_id=${{ inputs.cognito_library_variable_set_id }}"
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
-      working-directory: terraform/github-actions-workflows-frontend
+      working-directory: terraform/github-actions-workflows
       shell: bash
