@@ -318,14 +318,6 @@ resource "octopusdeploy_deployment_process" "backend_project" {
               Type: String
             AuditService:
               Type: String
-            CognitoRegion:
-              Type: String
-            CognitoPool:
-              Type: String
-            CognitoJwk:
-              Type: String
-            CognitoRequiredGroup:
-              Type: String
             ServiceBusProxyClientId:
               Type: String
             ServiceBusProxyClientSecret:
