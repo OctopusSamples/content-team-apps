@@ -1,8 +1,5 @@
 name: Octopus Service Account creator
 description: Deploys the Octopus Service Account creator
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   octopus_server:
     description: "The Octopus server"

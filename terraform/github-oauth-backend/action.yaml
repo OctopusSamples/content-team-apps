@@ -1,8 +1,5 @@
 name: App Builder GitHub OAuth proxy
 description: Deploys the app builder frontend
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   run_number:
     description: The GitHub Actions run number

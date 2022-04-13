@@ -1,8 +1,5 @@
 name: Octopus Template Generator
 description: Deploys the Octopus Template Generator
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   octopus_server:
     description: "The Octopus server"

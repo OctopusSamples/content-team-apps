@@ -1,8 +1,5 @@
 name: App Builder Share Network Infrastructure
 description: Deploys the shared network infrastructure project
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   octopus_server:
     description: "The Octopus server"

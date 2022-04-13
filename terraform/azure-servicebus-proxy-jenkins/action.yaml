@@ -1,8 +1,5 @@
 name: Azure service bux proxy for Jenkins
 description: Deploys the Azure service bux proxy for Jenkins
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   octopus_server:
     description: "The Octopus server"
