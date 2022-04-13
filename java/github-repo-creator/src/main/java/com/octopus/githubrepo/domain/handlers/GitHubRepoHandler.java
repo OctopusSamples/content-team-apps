@@ -585,11 +585,11 @@ public class GitHubRepoHandler {
         throw ex;
       }
 
-    /*
-      Get the first sha for the default branch. Our new branches assume they forked the
-      main repo from day one. This allows the end user to distinguish their changes
-      from ours.
-     */
+      /*
+        Get the first sha for the default branch. Our new branches assume they forked the
+        main repo from day one. This allows the end user to distinguish their changes
+        from ours.
+       */
       final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
 
       if (sha.isPresent()) {
