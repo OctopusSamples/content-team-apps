@@ -25,6 +25,15 @@ resource "octopusdeploy_variable" "title" {
   value = "Jenkins Pipelines Generator"
 }
 
+resource "octopusdeploy_variable" "format" {
+  name = "settings:editorFormat"
+  type = "String"
+  description = "The editor format - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "groovy"
+}
+
 resource "octopusdeploy_variable" "generate_api_path" {
   name = "settings:generateApiPath"
   type = "String"
