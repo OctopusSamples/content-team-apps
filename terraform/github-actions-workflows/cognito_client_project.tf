@@ -75,8 +75,8 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
               --stack-name #{CloudFormation.Cognito} \
               --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolID'].OutputValue" \
               --output text)
-          echo "Cognito Pool ID: ${COGNITO_POOL_ID}"
-          set_octopusvariable "CognitoPoolId" ${COGNITO_POOL_ID}
+          echo "Cognito Pool ID: $${COGNITO_POOL_ID}"
+          set_octopusvariable "CognitoPoolId" $${COGNITO_POOL_ID}
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -133,7 +133,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
               Value: !Ref UserPoolClient
               Description: The app client
             HostedUIURL:
-              Value: !Sub https://${CognitoDomain}.auth.us-west-2.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=${CallbackUrl}
+              Value: !Sub https://$${CognitoDomain}.auth.us-west-2.amazoncognito.com/login?client_id=$${UserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=$${CallbackUrl}
               Description: The hosted UI URL
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"#{Cognito.CallbackUrl}\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"}]"
