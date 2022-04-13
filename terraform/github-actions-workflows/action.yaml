@@ -37,6 +37,9 @@ inputs:
   octopus_built_in_feed_id:
     description: 'The built in feed ID'
     required: true
+  octopus_content_team_maven_feed_id:
+    description: 'The GitHub Repo hosted maven feed ID'
+    required: true
   octopus_development_aws_account_id:
     description: 'The development AWS account id'
     required: true
@@ -117,6 +120,7 @@ runs:
         -var="octopus_production_aws_account_id=${{ inputs.octopus_production_aws_account_id }}"
         -var="octopus_worker_pool_id=${{ inputs.octopus_worker_pool_id }}"
         -var="octopus_built_in_feed_id=${{ inputs.octopus_built_in_feed_id }}"
+        -var="octopus_content_team_maven_feed_id=${{ inputs.octopus_content_team_maven_feed_id }}"
         -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}"
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}"
         -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}"

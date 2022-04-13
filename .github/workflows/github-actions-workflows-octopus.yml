@@ -22,6 +22,7 @@ jobs:
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
           octopus_space_id: Spaces-882
           octopus_built_in_feed_id: Feeds-2301
+          octopus_content_team_maven_feed_id: Feeds-2481
           # WorkerPools-1282 is Hosted Ubuntu
           octopus_worker_pool_id: WorkerPools-1301 
           octopus_application_lifecycle_id: Lifecycles-2221

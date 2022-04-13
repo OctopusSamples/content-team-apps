@@ -42,6 +42,11 @@ variable "octopus_built_in_feed_id" {
   nullable = false
 }
 
+variable "octopus_content_team_maven_feed_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_development_environment_id" {
   type = string
   nullable = false
