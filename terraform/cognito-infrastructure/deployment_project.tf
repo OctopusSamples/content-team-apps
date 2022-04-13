@@ -13,6 +13,7 @@ resource "octopusdeploy_project" "deploy_project" {
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = [
+    "LibraryVariableSets-1243", # AWS Access
     "LibraryVariableSets-1262", # Cognito
     "LibraryVariableSets-1261" # Google
   ]
