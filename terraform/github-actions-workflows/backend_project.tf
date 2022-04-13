@@ -767,7 +767,6 @@ resource "octopusdeploy_deployment_process" "backend_project" {
                 RestApiId: !Ref RestApi
               DependsOn:
                 - ApiMethod
-                - ApiProxyMethod
           Outputs:
             DeploymentId:
               Description: The deployment id
