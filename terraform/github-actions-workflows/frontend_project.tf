@@ -552,7 +552,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
 
           set_octopusvariable "StageURL" $${STARGE_URL}
 
-          echo "Stage URL: ${STARGE_URL}"
+          echo "Stage URL: $${STARGE_URL}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
