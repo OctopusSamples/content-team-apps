@@ -41,7 +41,8 @@ resource "octopusdeploy_project" "backend_project" {
     "LibraryVariableSets-1183",
     "LibraryVariableSets-1222",
     "LibraryVariableSets-1243",
-    "LibraryVariableSets-1282"
+    "LibraryVariableSets-1282",
+    "LibraryVariableSets-1262"
   ]
 
   connectivity_policy {
