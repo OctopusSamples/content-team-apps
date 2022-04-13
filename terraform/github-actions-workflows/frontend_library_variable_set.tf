@@ -34,6 +34,16 @@ resource "octopusdeploy_variable" "generate_api_path" {
   value = "/api/pipeline/github/generate"
 }
 
+
+resource "octopusdeploy_variable" "google_tag" {
+  name = "settings:google:tag"
+  type = "String"
+  description = "The Google analytics tag - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "G-W98Y6CSSQ4"
+}
+
 resource "octopusdeploy_variable" "github_login_development" {
   name = "settings:github:loginPath"
   type = "String"
@@ -125,6 +135,30 @@ resource "octopusdeploy_variable" "audit_production" {
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "https://dodwbeqe6g.execute-api.us-west-1.amazonaws.com/Production/api/audits"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "health_development" {
+  name = "settings:healthEndpoint"
+  type = "String"
+  description = "The audit health endpoint - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/health"
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "health_production" {
+  name = "settings:healthEndpoint"
+  type = "String"
+  description = "The audit health endpoint - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://dodwbeqe6g.execute-api.us-west-1.amazonaws.com/Production/health"
   scope {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
