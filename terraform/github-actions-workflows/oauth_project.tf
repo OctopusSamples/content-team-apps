@@ -25,7 +25,8 @@ resource "octopusdeploy_project" "oauth_project" {
     "LibraryVariableSets-1222",
     "LibraryVariableSets-1243",
     "LibraryVariableSets-1282",
-    "LibraryVariableSets-1221"
+    "LibraryVariableSets-1221",
+    "LibraryVariableSets-1262"
   ]
   connectivity_policy {
     allow_deployments_to_no_targets = false
