@@ -1,4 +1,4 @@
-resource "octopusdeploy_project" "deploy_project" {
+resource "octopusdeploy_project" "networking_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
@@ -31,7 +31,7 @@ resource "octopusdeploy_variable" "debug_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
+  owner_id = octopusdeploy_project.networking_project.id
   value = "False"
 }
 
@@ -40,12 +40,12 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
   type = "String"
   description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.deploy_project.id
+  owner_id = octopusdeploy_project.networking_project.id
   value = "False"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_project" {
-  project_id = octopusdeploy_project.deploy_project.id
+  project_id = octopusdeploy_project.networking_project.id
   step {
     condition           = "Success"
     name                = "Create API Gateway"
