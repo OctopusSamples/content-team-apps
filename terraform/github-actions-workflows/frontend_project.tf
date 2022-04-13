@@ -21,7 +21,7 @@ resource "octopusdeploy_project" "deploy_project" {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
   included_library_variable_sets = [
-    octopusdeploy_library_variable_set.frontend_library_variable_set,
+    octopusdeploy_library_variable_set.frontend_library_variable_set.id,
     "LibraryVariableSets-1183",
     "LibraryVariableSets-1222",
     "LibraryVariableSets-1243",
