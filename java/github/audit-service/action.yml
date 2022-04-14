@@ -214,16 +214,3 @@ runs:
         --space "Content Team"
         --gitRef main
       shell: bash
-
-    - name: Trigger branch deployment
-      if: ${{ env.BRANCH_NAME != 'main' }}
-      run: >
-        octo create-release
-        --project "Audit Service Branch"
-        --deployTo "Development"
-        --waitForDeployment
-        --server ${{ inputs.octopus_server_url }}
-        --apiKey ${{ inputs.octopus_api_token }}
-        --space "Content Team"
-        --gitRef main
-      shell: bash
