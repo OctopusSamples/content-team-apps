@@ -20,7 +20,7 @@ API Gateway also has some limited functionality for selecting the backend Lambda
 Unfortunately, stage variables are static, meaning Lambdas can only be selected per stage rather than dynamically
 selected per request. This limitation prevents anything more than simple routing rules.
 
-What OctoPub required to support feature branch deployments of microservices was something like a reverse proxy
+What we required to support feature branch deployments of microservices was something like a reverse proxy
 or service mesh routing each request. Platforms like Kubernetes have a wealth of options, while traditional VM based
 application hosting can make use of tools like NGINX, but there were no good examples of this kind of functionality
 that could be run as a Lambda.
