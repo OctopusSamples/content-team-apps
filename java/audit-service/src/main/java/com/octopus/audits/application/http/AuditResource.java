@@ -1,16 +1,11 @@
 package com.octopus.audits.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.audits.application.Constants;
-import com.octopus.audits.domain.exceptions.InvalidAcceptHeaders;
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.handlers.AuditsHandler;
 import com.octopus.audits.domain.jsonapi.AcceptHeaderVerifier;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -24,7 +19,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import lombok.NonNull;
 
 /**
  * WHen this app is run as a web server, this class defines the REST API endpoints.
@@ -49,16 +43,16 @@ public class AuditResource {
    *                                        resource.
    */
   @GET
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   @Transactional
   public Response getAll(
-      @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
-      @HeaderParam(Constants.ACCEPT) final List<String> acceptHeader,
-      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader,
-      @QueryParam(Constants.FILTER_QUERY_PARAM) final String filter,
-      @QueryParam(Constants.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
-      @QueryParam(Constants.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
+      @HeaderParam(GlobalConstants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
+      @HeaderParam(GlobalConstants.ACCEPT) final List<String> acceptHeader,
+      @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader,
+      @QueryParam(GlobalConstants.FILTER_QUERY_PARAM) final String filter,
+      @QueryParam(GlobalConstants.PAGE_OFFSET_QUERY_PARAM) final String pageOffset,
+      @QueryParam(GlobalConstants.PAGE_LIMIT_QUERY_PARAM) final String pageLimit)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.getAll(
@@ -81,15 +75,15 @@ public class AuditResource {
    *                                        resource.
    */
   @POST
-  @Consumes(Constants.JSONAPI_CONTENT_TYPE)
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Consumes(GlobalConstants.JSONAPI_CONTENT_TYPE)
+  @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   @Transactional
   public Response create(
       final String document,
-      @HeaderParam(Constants.ACCEPT) final List<String> acceptHeader,
-      @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
-      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
+      @HeaderParam(GlobalConstants.ACCEPT) final List<String> acceptHeader,
+      @HeaderParam(GlobalConstants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
+      @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Response.ok(auditsHandler.create(
@@ -110,15 +104,15 @@ public class AuditResource {
    *                                        resource.
    */
   @GET
-  @Produces(Constants.JSONAPI_CONTENT_TYPE)
+  @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
   @Path("{id}")
   @Transactional
   public Response getOne(
       @PathParam("id") final String id,
-      @HeaderParam(Constants.ACCEPT) final List<String> acceptHeader,
-      @HeaderParam(Constants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
-      @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
-      @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
+      @HeaderParam(GlobalConstants.ACCEPT) final List<String> acceptHeader,
+      @HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) final List<String> authorizationHeader,
+      @HeaderParam(GlobalConstants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,
+      @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
     return Optional.ofNullable(auditsHandler.getOne(id, dataPartitionHeaders,

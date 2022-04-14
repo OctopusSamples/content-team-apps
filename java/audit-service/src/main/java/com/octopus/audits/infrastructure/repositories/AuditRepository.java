@@ -1,7 +1,7 @@
 package com.octopus.audits.infrastructure.repositories;
 
 import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
-import com.octopus.audits.application.Constants;
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
@@ -107,8 +107,8 @@ public class AuditRepository {
 
     // Deal with paging
     final TypedQuery<Audit> query = em.createQuery(criteria);
-    final int pageLimitParsed = NumberUtils.toInt(pageLimit, Constants.DEFAULT_PAGE_LIMIT);
-    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, Constants.DEFAULT_PAGE_OFFSET);
+    final int pageLimitParsed = NumberUtils.toInt(pageLimit, GlobalConstants.DEFAULT_PAGE_LIMIT);
+    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, GlobalConstants.DEFAULT_PAGE_OFFSET);
     query.setFirstResult(pageOffsetParsed);
     query.setMaxResults(pageLimitParsed);
     final List<Audit> results = query.getResultList();

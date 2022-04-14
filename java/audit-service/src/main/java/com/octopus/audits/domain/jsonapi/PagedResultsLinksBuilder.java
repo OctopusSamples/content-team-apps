@@ -3,7 +3,7 @@ package com.octopus.audits.domain.jsonapi;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.Link;
 import com.google.common.collect.ImmutableMap;
-import com.octopus.audits.domain.entities.Audit;
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +29,8 @@ public class PagedResultsLinksBuilder {
       final String pageLimit,
       final String pageOffset,
       @NonNull final FilteredResultWrapper<T> resources) {
-    final int pageLimitParsed = NumberUtils.toInt(pageLimit, com.octopus.audits.application.Constants.DEFAULT_PAGE_LIMIT);
-    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, com.octopus.audits.application.Constants.DEFAULT_PAGE_OFFSET);
+    final int pageLimitParsed = NumberUtils.toInt(pageLimit, GlobalConstants.DEFAULT_PAGE_LIMIT);
+    final int pageOffsetParsed = NumberUtils.toInt(pageOffset, GlobalConstants.DEFAULT_PAGE_OFFSET);
     final long lastOffset = Math.max(resources.getCount() - pageLimitParsed, 0);
 
     // See https://jsonapi.org/format/#document-links for an example of link metadata including a count

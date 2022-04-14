@@ -3,7 +3,7 @@ package com.octopus.audits.application.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.octopus.audits.application.Constants;
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
@@ -104,7 +104,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    */
   private Optional<ProxyResponse> checkHealth(final APIGatewayProxyRequestEvent input) {
 
-    if (requestIsMatch(input, HEALTH_RE, Constants.GET_METHOD)) {
+    if (requestIsMatch(input, HEALTH_RE, GlobalConstants.GET_METHOD)) {
       try {
         return Optional.of(
             new ProxyResponse(
@@ -129,17 +129,17 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    */
   private Optional<ProxyResponse> getAll(final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.GET_METHOD)) {
+      if (requestIsMatch(input, ROOT_RE, GlobalConstants.GET_METHOD)) {
         return Optional.of(
             new ProxyResponse(
                 "200",
                 auditsHandler.getAll(
-                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.FILTER_QUERY_PARAM).orElse(null),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_OFFSET_QUERY_PARAM).orElse(null),
-                    lambdaHttpValueExtractor.getQueryParam(input, Constants.PAGE_LIMIT_QUERY_PARAM).orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getAllHeaders(input, GlobalConstants.DATA_PARTITION_HEADER),
+                    lambdaHttpValueExtractor.getQueryParam(input, GlobalConstants.FILTER_QUERY_PARAM).orElse(null),
+                    lambdaHttpValueExtractor.getQueryParam(input, GlobalConstants.PAGE_OFFSET_QUERY_PARAM).orElse(null),
+                    lambdaHttpValueExtractor.getQueryParam(input, GlobalConstants.PAGE_LIMIT_QUERY_PARAM).orElse(null),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
@@ -162,16 +162,16 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
   private Optional<ProxyResponse> getOne(final APIGatewayProxyRequestEvent input) {
     try {
 
-      if (requestIsMatch(input, INDIVIDUAL_RE, Constants.GET_METHOD)) {
+      if (requestIsMatch(input, INDIVIDUAL_RE, GlobalConstants.GET_METHOD)) {
         final Optional<String> id = RegExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
         if (id.isPresent()) {
           final String entity =
               auditsHandler.getOne(
                   id.get(),
-                  lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                  lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                  lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
+                  lambdaHttpHeaderExtractor.getAllHeaders(input, GlobalConstants.DATA_PARTITION_HEADER),
+                  lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
+                  lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
           return Optional.of(new ProxyResponse("200", entity));
         }
@@ -197,15 +197,15 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    */
   private Optional<ProxyResponse> createOne(final APIGatewayProxyRequestEvent input) {
     try {
-      if (requestIsMatch(input, ROOT_RE, Constants.POST_METHOD)) {
+      if (requestIsMatch(input, ROOT_RE, GlobalConstants.POST_METHOD)) {
         return Optional.of(
             new ProxyResponse(
                 "200",
                 auditsHandler.create(
                     getBody(input),
-                    lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getAllHeaders(input, GlobalConstants.DATA_PARTITION_HEADER),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
       }
     } catch (final Unauthorized e) {
       return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));

@@ -1,6 +1,6 @@
 package com.octopus.audits.domain.jsonapi.impl;
 
-import com.octopus.audits.application.Constants;
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.exceptions.InvalidAcceptHeaders;
 import com.octopus.audits.domain.jsonapi.AcceptHeaderVerifier;
 import java.util.Arrays;
@@ -26,10 +26,10 @@ public class VersionOneAcceptHeaderVerifier implements AcceptHeaderVerifier {
             .filter(Objects::nonNull)
             .flatMap(h -> Arrays.stream(h.split(",")))
             .map(String::trim)
-            .filter(h -> h.startsWith(Constants.JSONAPI_CONTENT_TYPE))
+            .filter(h -> h.startsWith(GlobalConstants.JSONAPI_CONTENT_TYPE))
             .collect(Collectors.toList());
 
-    if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(Constants.JSONAPI_CONTENT_TYPE)) {
+    if (!jsonApiAcceptHeaders.isEmpty() && !jsonApiAcceptHeaders.contains(GlobalConstants.JSONAPI_CONTENT_TYPE)) {
       throw new InvalidAcceptHeaders();
     }
   }

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.octopus.audits.application.Constants;
+import com.octopus.audits.GlobalConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -18,7 +18,7 @@ public class AuditApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(path);
-    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.HEALTH_RE, Constants.GET_METHOD));
+    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.HEALTH_RE, GlobalConstants.GET_METHOD));
   }
 
   @Test
@@ -26,7 +26,7 @@ public class AuditApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath("/api/audits");
-    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.ROOT_RE, Constants.GET_METHOD));
+    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.ROOT_RE, GlobalConstants.GET_METHOD));
   }
 
   @Test
@@ -34,7 +34,7 @@ public class AuditApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath("/api/audits/1");
-    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.INDIVIDUAL_RE, Constants.GET_METHOD));
+    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.INDIVIDUAL_RE, GlobalConstants.GET_METHOD));
   }
 
   @Test
@@ -42,7 +42,7 @@ public class AuditApiTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
     event.setPath("/api/audits");
-    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.ROOT_RE, Constants.POST_METHOD));
+    assertTrue(AUDIT_API.requestIsMatch(event, AuditApi.ROOT_RE, GlobalConstants.POST_METHOD));
   }
 
   @Test

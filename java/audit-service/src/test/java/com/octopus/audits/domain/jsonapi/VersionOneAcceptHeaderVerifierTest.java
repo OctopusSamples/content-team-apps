@@ -2,6 +2,7 @@ package com.octopus.audits.domain.jsonapi;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.octopus.audits.GlobalConstants;
 import com.octopus.audits.domain.Constants;
 import com.octopus.audits.domain.exceptions.InvalidAcceptHeaders;
 import com.octopus.audits.domain.jsonapi.impl.VersionOneAcceptHeaderVerifier;
@@ -24,21 +25,21 @@ public class VersionOneAcceptHeaderVerifierTest {
 
   @Test
   public void verifyOnePlainJsonAPIAcceptHeader() {
-    VERSION_ONE_ACCEPT_HEADER_VERIFIER.checkAcceptHeader(List.of(Constants.JSONAPI_CONTENT_TYPE));
+    VERSION_ONE_ACCEPT_HEADER_VERIFIER.checkAcceptHeader(List.of(GlobalConstants.JSONAPI_CONTENT_TYPE));
   }
 
   @Test
   public void verifyMixedPlainJsonAPIAcceptHeaders() {
     VERSION_ONE_ACCEPT_HEADER_VERIFIER.checkAcceptHeader(List.of(
-        Constants.JSONAPI_CONTENT_TYPE,
-        Constants.JSONAPI_CONTENT_TYPE + "; version=2"));
+        GlobalConstants.JSONAPI_CONTENT_TYPE,
+        GlobalConstants.JSONAPI_CONTENT_TYPE + "; version=2"));
   }
 
   @Test
   public void verifyBadJsonAPIAcceptHeaders() {
     assertThrows(InvalidAcceptHeaders.class, () -> {
       VERSION_ONE_ACCEPT_HEADER_VERIFIER.checkAcceptHeader(
-          List.of(Constants.JSONAPI_CONTENT_TYPE + "; version=2"));
+          List.of(GlobalConstants.JSONAPI_CONTENT_TYPE + "; version=2"));
     });
   }
 }
