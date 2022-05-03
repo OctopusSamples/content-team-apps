@@ -213,7 +213,7 @@ runs:
       shell: bash
 
     - name: Trigger deployment
-      if: ${{ env.BRANCH_NAME == 'main' }}
+      if: ${{ env.BRANCH_NAME != 'main' }}
       run: >
         octo create-release
         --project "Github Action Workflow Generator Feature Branch"
