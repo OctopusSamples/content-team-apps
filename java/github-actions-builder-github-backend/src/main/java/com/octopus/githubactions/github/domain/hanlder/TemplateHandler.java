@@ -21,6 +21,7 @@ import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -200,21 +201,20 @@ public class TemplateHandler {
 
     // Log second to the Azure service bus proxy service
     try {
-      for (final GitHubEmail email : emails) {
-        if (publicEmailTester.isPublicEmail(email.getEmail())) {
-          serviceBusMessageGenerator.sendLoginMessage(
+      Arrays.stream(emails)
+          .map(GitHubEmail::getEmail)
+          .filter(publicEmailTester::isPublicEmail)
+          .forEach(email -> serviceBusMessageGenerator.sendLoginMessage(
               GithubUserLoggedInForFreeToolsEventV1.builder()
                   .id("")
-                  .emailAddress(email.getEmail())
+                  .emailAddress(email)
                   .utmParameters(utms.getMap())
                   .toolName(microserviceNameFeature.getMicroserviceName())
                   .build(),
               xray,
               routingHeaders,
               dataPartitionHeaders,
-              authHeaders);
-        }
-      }
+              authHeaders));
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-ServiceBus-RecordLoginFailed",
