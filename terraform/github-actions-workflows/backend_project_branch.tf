@@ -1,15 +1,10 @@
 locals {
   # These change with every project
-  project_name        = "Github Action Workflow Generator Feature Branch"
-  project_description = "which exposes an endpoint for creating GitHub Action workflows."
-  lambda_package      = "github-actions-builder-github-backend-lambda"
+  project_name_featurebranch        = "Github Action Workflow Generator Feature Branch"
+  project_description_featurebranch = "which exposes an endpoint for creating GitHub Action workflows."
 
-  # These should be relatively stable
-  s3_bucket_cloudformation_name            = "#{CloudFormation.BackendS3Bucket}"
-  lambda_cloudformation_name               = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
-  lambda_name                              = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
-  cloudformation_lambda_version_tags       = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
-  cloudformation_tags                      = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"${octopusdeploy_project.deploy_project.name}\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
+  lambda_cloudformation_name_featurebranch = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
+  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
 }
 
 resource "octopusdeploy_project" "backend_project_featurebranch" {
@@ -45,7 +40,7 @@ resource "octopusdeploy_project" "backend_project_featurebranch" {
   }
 }
 
-resource "octopusdeploy_variable" "backend_debug_variable" {
+resource "octopusdeploy_variable" "backend_featurebranch_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -54,7 +49,7 @@ resource "octopusdeploy_variable" "backend_debug_variable" {
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "backend_debug_evaluated_variable" {
+resource "octopusdeploy_variable" "backend_featurebranch_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
