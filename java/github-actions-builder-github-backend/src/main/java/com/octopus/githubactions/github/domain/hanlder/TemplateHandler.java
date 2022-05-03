@@ -19,6 +19,7 @@ import com.octopus.githubactions.github.infrastructure.client.GitHubUser;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Base64;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -111,11 +112,12 @@ public class TemplateHandler {
       final Utms utms) {
 
     try {
-      if (StringUtils.isNotBlank(token)) {
-        final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
+      final GitHubEmail[] emails = StringUtils.isNotBlank(token) ?
+          Try.of(() -> gitHubUser.publicEmails("token " + token))
+              .getOrElse(() -> new GitHubEmail[]{})
+          : new GitHubEmail[]{};
 
         recordEmailInOctofront(
-            token,
             xray,
             emails,
             routingHeaders,
@@ -124,7 +126,6 @@ public class TemplateHandler {
             utms);
 
         auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
-      }
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
@@ -182,23 +183,17 @@ public class TemplateHandler {
   /**
    * Query the users email addresses, encrypt them, and log them to Octofront.
    *
-   * @param token                The GitHub access token.
    * @param routingHeaders       The routing headers.
    * @param dataPartitionHeaders The data-partition headers.
    * @param authHeaders          The authorization headers.
    */
-  private void recordEmailInOctofront(final String token,
+  private void recordEmailInOctofront(
       final String xray,
       final GitHubEmail[] emails,
       final String routingHeaders,
       final String dataPartitionHeaders,
       final String authHeaders,
       final Utms utms) {
-
-    // We may not have a token to use.
-    if (StringUtils.isEmpty(token)) {
-      return;
-    }
 
     // Log second to the Azure service bus proxy service
     try {
