@@ -279,12 +279,12 @@ resource "octopusdeploy_deployment_process" "backend_project_featurebranch" {
   }
   step {
     condition           = "Success"
-    name                = "Get Stage URL"
+    name                = "Print Routing Info"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Get Stage URL"
+      name           = "Print Routing Info"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
       environments   = [
