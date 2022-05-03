@@ -4,7 +4,8 @@ locals {
   project_description_featurebranch = "which exposes an endpoint for creating GitHub Action workflows."
 
   lambda_cloudformation_name_featurebranch = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
-  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
+  # Note we need to limit the length of this string to keep the whole value to 64 characters at most
+  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Truncate 10}"
 }
 
 resource "octopusdeploy_project" "backend_project_featurebranch" {
