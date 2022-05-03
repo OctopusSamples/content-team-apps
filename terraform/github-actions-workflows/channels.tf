@@ -2,7 +2,7 @@ resource "octopusdeploy_channel" "backend_feature_branch" {
   name        = "Feature Branches"
   project_id  = octopusdeploy_project.backend_project_featurebranch.id
   description = "The channel through which feature branches are deployed"
-  depends_on = [octopusdeploy_deployment_process.deploy_project]
+  depends_on = [octopusdeploy_deployment_process.backend_project_featurebranch]
   is_default  = true
   rule {
     tag = ".+"
@@ -16,7 +16,7 @@ resource "octopusdeploy_channel" "backend_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.backend_project.id
   description = "The channel through which mainline releases are deployed"
-  depends_on = [octopusdeploy_deployment_process.deploy_project]
+  depends_on = [octopusdeploy_deployment_process.backend_project]
   is_default  = true
   rule {
     tag = "^$"
