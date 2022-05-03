@@ -41,6 +41,13 @@ runs:
       with:
         version: latest
 
+    - name: Creating a prerelease from the branch
+      run: |
+        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        PRERELEASE=${PRERELEASE/_/-}
+        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+      shell: bash
+
     - name: Set up JDK 1.17
       uses: actions/setup-java@v2
       with:
@@ -68,7 +75,7 @@ runs:
       working-directory: java
 
     - name: Update version
-      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}
+      run: mvn --batch-mode build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.${{ github.run_number }}${{ env.PRERELEASE }}
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
@@ -123,8 +130,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
-        tag_name: github-actions-pipeline-backend.1.0.${{ inputs.run_number }}
-        release_name: GitHub Actions Backend Release 1.0.${{ inputs.run_number }}
+        tag_name: github-actions-pipeline-backend.1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
+        release_name: GitHub Actions Backend Release 1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         draft: false
         prerelease: false
 
@@ -142,13 +149,13 @@ runs:
     - name: Rename zip
       run: >
         mv github-actions-builder-github-backend/target/function.zip
-        github-actions-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
+        github-actions-builder-github-backend-lambda.1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}.zip
       shell: bash
       working-directory: java
 
     - name: Push Package
       run: >
-        octo push --package github-actions-builder-github-backend-lambda.1.0.${{ inputs.run_number }}.zip
+        octo push --package github-actions-builder-github-backend-lambda.1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -164,7 +171,7 @@ runs:
       run: >
         octo pack
         --id github-actions-builder-github-backend-lambda-sbom
-        --version 1.0.${{ inputs.run_number }}
+        --version 1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         --format zip
         --include **/bom.xml
       shell: bash
@@ -172,7 +179,7 @@ runs:
 
     - name: Push SBOM Package
       run: >
-        octo push --package github-actions-builder-github-backend-lambda-sbom.1.0.${{ inputs.run_number }}.zip
+        octo push --package github-actions-builder-github-backend-lambda-sbom.1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}.zip
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -186,7 +193,7 @@ runs:
         octopus_project: Github Action Workflow Generator
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
-        push_version: 1.0.${{ inputs.run_number }}
+        push_version: 1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         push_package_ids: github-actions-builder-github-backend-lambda
         push_overwrite_mode: OverwriteExisting
         output_path: octopus
@@ -195,9 +202,22 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --gitRef "main"
         --project "Github Action Workflow Generator"
         --version 1.0.${{ inputs.run_number }}
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Github Action Workflow Generator Feature Branch"
+        --version 1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}

@@ -195,7 +195,6 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --gitRef "main"
         --project "Jenkins Pipeline Generator"
         --deployTo "Development"
         --version 1.0.${{ inputs.run_number }}
