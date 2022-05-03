@@ -32,4 +32,6 @@ public class GithubUserLoggedInForFreeToolsEventV1Upstream {
   private String firstName;
   @JsonProperty("LastName")
   private String lastName;
+  @JsonProperty("ToolName")
+  private String toolName;
 }

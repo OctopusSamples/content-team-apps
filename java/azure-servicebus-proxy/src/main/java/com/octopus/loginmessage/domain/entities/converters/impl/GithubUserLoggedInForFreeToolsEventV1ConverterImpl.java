@@ -23,6 +23,7 @@ public class GithubUserLoggedInForFreeToolsEventV1ConverterImpl implements
         .gitHubUsername(api.getGitHubUsername())
         .firstName(api.getFirstName())
         .lastName(api.getLastName())
+        .toolName(api.getToolName())
         .build();
   }
 }

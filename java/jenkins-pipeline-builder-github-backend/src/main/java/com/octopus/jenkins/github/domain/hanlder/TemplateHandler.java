@@ -264,6 +264,7 @@ public class TemplateHandler {
                 .id("")
                 .emailAddress(email.getEmail())
                 .utmParameters(utms.getMap())
+                .toolName(microserviceNameFeature.getMicroserviceName())
                 .build(),
             xray,
             routingHeaders,
