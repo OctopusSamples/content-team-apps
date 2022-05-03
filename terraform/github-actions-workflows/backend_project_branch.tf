@@ -5,7 +5,7 @@ locals {
 
   lambda_cloudformation_name_featurebranch = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
   # Note we need to limit the length of this string to keep the whole value to 64 characters at most
-  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Truncate 10}"
+  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Substring 10}"
 }
 
 resource "octopusdeploy_project" "backend_project_featurebranch" {
@@ -275,6 +275,42 @@ resource "octopusdeploy_deployment_process" "backend_project_featurebranch" {
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Get Stage URL"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stage URL"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          LAMBDA_NAME=$(aws cloudformation \
+              describe-stacks \
+              --stack-name ${local.lambda_cloudformation_name_featurebranch} \
+              --query "Stacks[0].Outputs[?OutputKey=='ApplicationLambda'].OutputValue" \
+              --output text)
+
+          echo "Lambda Name: $${LAMBDA_NAME}"
+          echo "To call this Lambda, use a routing header like:"
+          echo "route[/api/pipeline/github/generate:GET]=lambda[$${LAMBDA_NAME}]"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
