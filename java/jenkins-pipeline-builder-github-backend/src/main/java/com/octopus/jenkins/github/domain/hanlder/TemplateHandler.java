@@ -7,6 +7,7 @@ import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.github.PublicEmailTester;
 import com.octopus.jenkins.github.GlobalConstants;
 import com.octopus.jenkins.github.domain.audits.AuditGenerator;
 import com.octopus.jenkins.github.domain.entities.Audit;
@@ -67,6 +68,9 @@ public class TemplateHandler {
 
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
+
+  @Inject
+  PublicEmailTester publicEmailTester;
 
   /**
    * Generate a github repo.
@@ -259,18 +263,20 @@ public class TemplateHandler {
     // Log second to the Azure service bus proxy service
     try {
       for (final GitHubEmail email : emails) {
-        serviceBusMessageGenerator.sendLoginMessage(
-            GithubUserLoggedInForFreeToolsEventV1.builder()
-                .id("")
-                .emailAddress(email.getEmail())
-                .utmParameters(utms.getMap())
-                .toolName(microserviceNameFeature.getMicroserviceName())
-                .build(),
-            xray,
-            routingHeaders,
-            dataPartitionHeaders,
-            authHeaders);
+        if (publicEmailTester.isPublicEmail(email.getEmail())) {
 
+          serviceBusMessageGenerator.sendLoginMessage(
+              GithubUserLoggedInForFreeToolsEventV1.builder()
+                  .id("")
+                  .emailAddress(email.getEmail())
+                  .utmParameters(utms.getMap())
+                  .toolName(microserviceNameFeature.getMicroserviceName())
+                  .build(),
+              xray,
+              routingHeaders,
+              dataPartitionHeaders,
+              authHeaders);
+        }
       }
     } catch (final Exception ex) {
       Log.error(
