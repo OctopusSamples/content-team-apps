@@ -96,12 +96,11 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
-
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElseGet(() -> buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElseGet(() -> buildPipeline(accessor, auth, xray, routingHeaders, dataPartitionHeaders,
+            authHeaders, utms));
   }
 
   private void logUserDetails(final String token,
@@ -225,10 +224,15 @@ public class TemplateHandler {
 
   private SimpleResponse buildPipeline(
       final RepoClient accessor,
+      final String auth,
       final String xray,
       final String routingHeaders,
       final String dataPartitionHeaders,
-      final String authHeaders) {
+      final String authHeaders,
+      final Utms utms) {
+    // Audit the details of the user generating the template
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
+
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))

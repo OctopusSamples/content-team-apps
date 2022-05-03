@@ -70,11 +70,11 @@ public class TemplateHandler {
   /**
    * Generate a github repo.
    *
-   * @param repo The repo URL.
-   * @param sessionCookie The session cookie holding the GitHub access token.
-   * @param routingHeaders The "Routing" headers.
+   * @param repo                 The repo URL.
+   * @param sessionCookie        The session cookie holding the GitHub access token.
+   * @param routingHeaders       The "Routing" headers.
    * @param dataPartitionHeaders The "Data-Partition" headers.
-   * @param authHeaders The "Authorization" headers.
+   * @param authHeaders          The "Authorization" headers.
    * @return The response code and body.
    */
   public SimpleResponse generatePipeline(
@@ -94,22 +94,24 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
-
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElseGet(() -> buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElseGet(() -> buildPipeline(accessor, auth, xray, routingHeaders, dataPartitionHeaders,
+            authHeaders, utms));
   }
-
-
 
   private SimpleResponse buildPipeline(
       final RepoClient accessor,
+      final String auth,
       final String xray,
       final String routingHeaders,
       final String dataPartitionHeaders,
-      final String authHeaders) {
+      final String authHeaders,
+      final Utms utms) {
+    // Log the details of the user generating the template
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
+
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
