@@ -173,8 +173,8 @@ public class TemplateHandler {
       final Utms utms) {
 
     try {
-      final GitHubEmail[] emails = StringUtils.isNotBlank(token) ?
-          Try.of(() -> gitHubUser.publicEmails("token " + token))
+      final GitHubEmail[] emails = StringUtils.isNotBlank(token)
+          ? Try.of(() -> gitHubUser.publicEmails("token " + token))
               .getOrElse(() -> new GitHubEmail[]{})
           : new GitHubEmail[]{};
 
