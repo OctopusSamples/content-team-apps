@@ -17,7 +17,7 @@ resource "octopusdeploy_project" "backend_project_featurebranch" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = local.project_name
+  name                                 = local.project_name_featurebranch
   project_group_id                     = octopusdeploy_project_group.project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
