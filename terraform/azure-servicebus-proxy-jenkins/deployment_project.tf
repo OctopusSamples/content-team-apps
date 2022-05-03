@@ -330,7 +330,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     SERVICEBUS_NAMESPACE: !Ref ServiceBusNamespace
                     COGNITO_JWK: !Ref CognitoJwk
                     COGNITO_CLIENT_ID: !Ref CognitoClientId
-                    MICROSERVICE_NAME: GitHub Actions Workflow Generator
+                    UPSTREAM_SERVICE_NAME: Jenkins Pipelines Generator
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
                 MemorySize: 512
