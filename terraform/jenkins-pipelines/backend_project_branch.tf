@@ -4,7 +4,7 @@ locals {
   project_description_featurebranch = "which exposes an endpoint for creating Jenkins pipelines."
 
   lambda_cloudformation_name_featurebranch = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
-  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
+  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Substring 22}"
 }
 
 resource "octopusdeploy_project" "backend_project_featurebranch" {
