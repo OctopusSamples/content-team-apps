@@ -112,20 +112,19 @@ public class TemplateHandler {
       final Utms utms) {
 
     try {
-      final GitHubEmail[] emails = StringUtils.isNotBlank(token) ?
-          Try.of(() -> gitHubUser.publicEmails("token " + token))
-              .getOrElse(() -> new GitHubEmail[]{})
+      final GitHubEmail[] emails = StringUtils.isNotBlank(token)
+          ? Try.of(() -> gitHubUser.publicEmails("token " + token)).getOrElse(() -> new GitHubEmail[]{})
           : new GitHubEmail[]{};
 
-        recordEmailInOctofront(
-            xray,
-            emails,
-            routingHeaders,
-            dataPartitionHeaders,
-            authHeaders,
-            utms);
+      recordEmailInOctofront(
+          xray,
+          emails,
+          routingHeaders,
+          dataPartitionHeaders,
+          authHeaders,
+          utms);
 
-        auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+      auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
