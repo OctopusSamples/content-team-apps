@@ -277,4 +277,40 @@ resource "octopusdeploy_deployment_process" "backend_project_featurebranch" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Get Stage URL"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stage URL"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          LAMBDA_NAME=$(aws cloudformation \
+              describe-stacks \
+              --stack-name ${local.lambda_cloudformation_name_featurebranch} \
+              --query "Stacks[0].Outputs[?OutputKey=='ApplicationLambda'].OutputValue" \
+              --output text)
+
+          echo "Lambda Name: $${LAMBDA_NAME}"
+          echo "To call this Lambda, use a routing header like:"
+          echo "route[/api/pipeline/jenkins/generate:GET]=lambda[$${LAMBDA_NAME}]"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
 }
