@@ -5,7 +5,7 @@ locals {
 
   lambda_cloudformation_name_featurebranch = "#{CloudFormation.Backend}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease}"
   # Note we need to limit the length of this string to keep the whole value to 64 characters at most
-  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Substring 10}"
+  lambda_name_featurebranch                = "#{Lambda.Name}-#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Substring 22}"
 }
 
 resource "octopusdeploy_project" "backend_project_featurebranch" {
