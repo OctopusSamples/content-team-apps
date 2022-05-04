@@ -241,8 +241,9 @@ public class TemplateHandler {
               .utmParameters(utms.getMap())
               .toolName(microserviceNameFeature.getMicroserviceName())
               .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
-              .firstName(usernameSplitter.getFirstName(user.getUser()))
-              .lastName(usernameSplitter.getLastName(user.getUser()))
+              .firstName(usernameSplitter.getFirstName(user.getName()))
+              .lastName(usernameSplitter.getLastName(user.getName()))
+              .gitHubUsername(user.getLogin())
               .build(),
           xray,
           routingHeaders,

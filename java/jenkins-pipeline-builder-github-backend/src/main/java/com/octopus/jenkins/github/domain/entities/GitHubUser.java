@@ -15,6 +15,6 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Jacksonized
 public class GitHubUser {
-  private String user;
+  private String name;
   private String login;
 }
