@@ -21,7 +21,7 @@ public interface GitHubApi {
    * @param auth The Authorization header.
    * @return The users email addresses.
    */
-  @Path("user/public_emails")
+  @Path("/user/public_emails")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   GitHubEmail[] publicEmails(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);
@@ -32,7 +32,7 @@ public interface GitHubApi {
    * @param auth The Authorization header.
    * @return The users details.
    */
-  @Path("user")
+  @Path("/user")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   GitHubUser user(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);

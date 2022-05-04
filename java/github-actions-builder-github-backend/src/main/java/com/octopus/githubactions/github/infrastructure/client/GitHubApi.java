@@ -14,6 +14,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * A REST client to query GitHub users.
  */
 @RegisterRestClient
+@Path("/")
 public interface GitHubApi {
 
   /**
