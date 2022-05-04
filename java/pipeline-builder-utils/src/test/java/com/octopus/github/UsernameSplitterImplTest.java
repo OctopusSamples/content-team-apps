@@ -15,9 +15,10 @@ public class UsernameSplitterImplTest {
       "john h doe,john,doe",
       "john a b c doe,john,doe",
       " john  doe ,john,doe",
+      "john,john,"
   })
   public void regexTests(final String combined, final String first, final String last) {
-    Assertions.assertEquals(first, USERNAME_SPLITTER.getFirstName(combined));
-    Assertions.assertEquals(last, USERNAME_SPLITTER.getLastName(combined));
+    Assertions.assertEquals(first == null ? "" : first, USERNAME_SPLITTER.getFirstName(combined));
+    Assertions.assertEquals(last == null ? "" : last, USERNAME_SPLITTER.getLastName(combined));
   }
 }

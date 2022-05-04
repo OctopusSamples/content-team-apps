@@ -40,6 +40,10 @@ public class UsernameSplitterImpl implements UsernameSplitter {
     }
 
     final List<String> splitName = new ArrayList<>(List.of(username.split(" ")));
+    if (splitName.size() < 2) {
+      return "";
+    }
+
     Collections.reverse(splitName);
     return splitName.stream().findFirst().orElse("");
   }
