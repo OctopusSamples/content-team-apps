@@ -2,6 +2,7 @@ package com.octopus.jenkins.github.domain.hanlder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -10,10 +11,11 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.jenkins.github.domain.TestingProfile;
 import com.octopus.jenkins.github.domain.audits.AuditGenerator;
 import com.octopus.jenkins.github.domain.entities.GitHubEmail;
+import com.octopus.jenkins.github.domain.entities.GitHubUser;
 import com.octopus.jenkins.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.jenkins.github.domain.entities.Utms;
 import com.octopus.jenkins.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.jenkins.github.infrastructure.client.GitHubUser;
+import com.octopus.jenkins.github.infrastructure.client.GitHubApi;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.repoclients.RepoClientFactory;
 import com.octopus.test.repoclients.MavenTestRepoClient;
@@ -36,6 +38,8 @@ public class TemplateHandlerTest {
 
   private static final String REPO = "https://github.com/OctopusSamples/RandomQuotes-Java";
   private static final String TEST_EMAIL = "a@example.org";
+  private static final String LOGIN = "login";
+  private static final String NAME = "my name";
   private static final String XRAY = "sample_xray";
 
   @Inject
@@ -55,7 +59,7 @@ public class TemplateHandlerTest {
 
   @InjectMock
   @RestClient
-  GitHubUser gitHubUser;
+  GitHubApi gitHubApi;
 
   @InjectMock
   CryptoUtils cryptoUtils;
@@ -66,8 +70,10 @@ public class TemplateHandlerTest {
         .thenReturn(new MavenTestRepoClient(REPO, false));
     Mockito.when(oauthClientCredsAccessor.getAccessToken(any()))
         .thenReturn(Try.of(() -> "accesstoken"));
-    Mockito.when(gitHubUser.publicEmails(any()))
+    Mockito.when(gitHubApi.publicEmails(any()))
         .thenReturn(new GitHubEmail[]{GitHubEmail.builder().email(TEST_EMAIL).build()});
+    Mockito.when(gitHubApi.user(any()))
+        .thenReturn(GitHubUser.builder().login(LOGIN).name(NAME).build());
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
     doNothing().when(auditGenerator).createAuditEvent(any(), any(), any(), any(), any());
 
@@ -78,7 +84,10 @@ public class TemplateHandlerTest {
     doAnswer(invocation -> {
       final GithubUserLoggedInForFreeToolsEventV1 message = invocation.getArgument(0);
       final String xray = invocation.getArgument(1);
-      assertEquals(TEST_EMAIL, message.getEmailAddress());
+      assertTrue(TEST_EMAIL.equals(message.getEmailAddress()) || StringUtils.isBlank(message.getEmailAddress()));
+      assertTrue(LOGIN.equals(message.getGitHubUsername()) || StringUtils.isBlank(message.getGitHubUsername()));
+      assertTrue("my".equals(message.getFirstName()) || StringUtils.isBlank(message.getFirstName()));
+      assertTrue("name".equals(message.getLastName()) || StringUtils.isBlank(message.getLastName()));
       assertEquals(XRAY, xray);
       assertEquals("content", message.getUtmParameters().get("utm_content"));
       assertEquals("term", message.getUtmParameters().get("utm_term"));

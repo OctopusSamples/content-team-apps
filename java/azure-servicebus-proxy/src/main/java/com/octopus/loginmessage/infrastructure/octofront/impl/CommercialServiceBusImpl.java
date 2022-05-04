@@ -5,6 +5,7 @@ import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.google.common.base.Preconditions;
 import com.octopus.loginmessage.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.loginmessage.domain.features.DisableServiceBus;
+import com.octopus.loginmessage.domain.features.UpstreamServiceName;
 import com.octopus.loginmessage.infrastructure.octofront.CommercialServiceBus;
 import com.octopus.features.MicroserviceNameFeature;
 import io.quarkus.logging.Log;
@@ -34,10 +35,10 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
   ServiceBusSenderClient serviceBusSenderClient;
 
   @Inject
-  MicroserviceNameFeature microserviceNameFeature;
+  DisableServiceBus disableServiceBus;
 
   @Inject
-  DisableServiceBus disableServiceBus;
+  UpstreamServiceName upstreamServiceName;
 
   @Override
   public void sendUserDetails(final String traceId, @NonNull final String body) {
@@ -55,7 +56,7 @@ public class CommercialServiceBusImpl implements CommercialServiceBus {
     message.setCorrelationId(traceId);
     message.setContentType("application/json");
     message.getApplicationProperties()
-        .put(SOURCE_KEY, microserviceNameFeature.getMicroserviceName());
+        .put(SOURCE_KEY, upstreamServiceName.upstreamServiceName());
     message.getApplicationProperties().put(CONTEXT_KEY, CONTEXT);
     message.getApplicationProperties().put(TYPE_KEY, GithubUserLoggedInForFreeToolsEventV1.class.getSimpleName().toLowerCase());
     message.getApplicationProperties().put(OCCURRED_TIME_UTC_KEY, Instant.now().toString());

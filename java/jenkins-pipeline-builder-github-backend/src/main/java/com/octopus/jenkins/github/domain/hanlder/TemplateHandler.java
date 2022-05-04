@@ -7,19 +7,26 @@ import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.github.PublicEmailTester;
+import com.octopus.github.UsernameSplitter;
 import com.octopus.jenkins.github.GlobalConstants;
 import com.octopus.jenkins.github.domain.audits.AuditGenerator;
 import com.octopus.jenkins.github.domain.entities.Audit;
 import com.octopus.jenkins.github.domain.entities.GitHubEmail;
+import com.octopus.jenkins.github.domain.entities.GitHubUser;
 import com.octopus.jenkins.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.jenkins.github.domain.entities.Utms;
 import com.octopus.jenkins.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.jenkins.github.infrastructure.client.GitHubUser;
+import com.octopus.jenkins.github.infrastructure.client.GitHubApi;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -59,7 +66,7 @@ public class TemplateHandler {
   AuditGenerator auditGenerator;
 
   @RestClient
-  GitHubUser gitHubUser;
+  GitHubApi gitHubApi;
 
   @Inject
   ServiceBusMessageGenerator serviceBusMessageGenerator;
@@ -67,14 +74,20 @@ public class TemplateHandler {
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
+  @Inject
+  PublicEmailTester publicEmailTester;
+
+  @Inject
+  UsernameSplitter usernameSplitter;
+
   /**
    * Generate a github repo.
    *
-   * @param repo The repo URL.
-   * @param sessionCookie The session cookie holding the GitHub access token.
-   * @param routingHeaders The "Routing" headers.
+   * @param repo                 The repo URL.
+   * @param sessionCookie        The session cookie holding the GitHub access token.
+   * @param routingHeaders       The "Routing" headers.
    * @param dataPartitionHeaders The "Data-Partition" headers.
-   * @param authHeaders The "Authorization" headers.
+   * @param authHeaders          The "Authorization" headers.
    * @return The response code and body.
    */
   public SimpleResponse generatePipeline(
@@ -94,28 +107,31 @@ public class TemplateHandler {
         ? ""
         : cryptoUtils.decrypt(sessionCookie, githubEncryption, githubSalt);
 
-    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
-
     final RepoClient accessor = repoClientFactory.buildRepoClient(repo, auth);
 
     return checkForPublicRepo(accessor)
-        .orElseGet(() -> buildPipeline(accessor, xray, routingHeaders, dataPartitionHeaders, authHeaders));
+        .orElseGet(() -> buildPipeline(accessor, auth, xray, routingHeaders, dataPartitionHeaders,
+            authHeaders, utms));
   }
-
-
 
   private SimpleResponse buildPipeline(
       final RepoClient accessor,
+      final String auth,
       final String xray,
       final String routingHeaders,
       final String dataPartitionHeaders,
-      final String authHeaders) {
+      final String authHeaders,
+      final Utms utms) {
+
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .parallel()
         .filter(b -> b.canBuild(accessor))
         .findFirst();
+
+    // Log the details of the user generating the template
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms, builder);
 
     // Write an audit message
     builder.ifPresent(b ->
@@ -167,23 +183,32 @@ public class TemplateHandler {
       final String routingHeaders,
       final String dataPartitionHeaders,
       final String authHeaders,
-      final Utms utms) {
+      final Utms utms,
+      final Optional<PipelineBuilder> builder) {
 
     try {
-      if (StringUtils.isNotBlank(token)) {
-        final GitHubEmail[] emails = gitHubUser.publicEmails("token " + token);
+      // Make a best effort to get the users details. We don't break for any errors here though.
+      final GitHubEmail[] emails = StringUtils.isNotBlank(token)
+          ? Try.of(() -> gitHubApi.publicEmails("token " + token))
+              .getOrElse(() -> new GitHubEmail[]{})
+          : new GitHubEmail[]{};
 
-        recordEmailInOctofront(
-            token,
-            xray,
-            emails,
-            routingHeaders,
-            dataPartitionHeaders,
-            authHeaders,
-            utms);
+      final GitHubUser user = StringUtils.isNotBlank(token)
+          ? Try.of(() -> gitHubApi.user("token " + token))
+            .getOrElse(GitHubUser::new)
+          : new GitHubUser();
 
-        auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
-      }
+      recordEmailInOctofront(
+          xray,
+          emails,
+          routingHeaders,
+          dataPartitionHeaders,
+          authHeaders,
+          utms,
+          builder,
+          user);
+
+      auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
@@ -241,39 +266,51 @@ public class TemplateHandler {
   /**
    * Query the users email addresses, encrypt them, and log them to Octofront.
    *
-   * @param token                The GitHub access token.
    * @param routingHeaders       The routing headers.
    * @param dataPartitionHeaders The data-partition headers.
    * @param authHeaders          The authorization headers.
    */
-  private void recordEmailInOctofront(final String token,
+  private void recordEmailInOctofront(
       final String xray,
       final GitHubEmail[] emails,
       final String routingHeaders,
       final String dataPartitionHeaders,
       final String authHeaders,
-      final Utms utms) {
-
-    // We may not have a token to use.
-    if (StringUtils.isEmpty(token)) {
-      return;
-    }
+      final Utms utms,
+      final Optional<PipelineBuilder> builder,
+      final GitHubUser user) {
 
     // Log second to the Azure service bus proxy service
     try {
-      for (final GitHubEmail email : emails) {
-        serviceBusMessageGenerator.sendLoginMessage(
-            GithubUserLoggedInForFreeToolsEventV1.builder()
-                .id("")
-                .emailAddress(email.getEmail())
-                .utmParameters(utms.getMap())
-                .build(),
-            xray,
-            routingHeaders,
-            dataPartitionHeaders,
-            authHeaders);
+      // Get all the public emails
+      final List<String> emailStrings = Arrays.stream(emails)
+          .map(GitHubEmail::getEmail)
+          .filter(publicEmailTester::isPublicEmail)
+          .collect(Collectors.toList());
 
+      /*
+       If there are none, send through a blank email. This allows us to collect UTMs even if
+       we don't have email addresses.
+       */
+      if (emailStrings.isEmpty()) {
+        emailStrings.add("");
       }
+
+      emailStrings.forEach(email -> serviceBusMessageGenerator.sendLoginMessage(
+          GithubUserLoggedInForFreeToolsEventV1.builder()
+              .id("")
+              .emailAddress(email)
+              .utmParameters(utms.getMap())
+              .toolName(microserviceNameFeature.getMicroserviceName())
+              .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
+              .firstName(usernameSplitter.getFirstName(user.getName()))
+              .lastName(usernameSplitter.getLastName(user.getName()))
+              .gitHubUsername(user.getLogin())
+              .build(),
+          xray,
+          routingHeaders,
+          dataPartitionHeaders,
+          authHeaders));
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-ServiceBus-RecordLoginFailed",

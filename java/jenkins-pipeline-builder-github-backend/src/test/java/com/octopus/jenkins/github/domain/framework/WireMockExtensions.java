@@ -45,7 +45,7 @@ public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
         .put("github.salt", "12345678901234567890123456789012")
         .put("cognito.client-id", "clientid")
         .put("cognito.client-secret", "secret")
-        .put("quarkus.rest-client.\"com.octopus.jenkins.github.infrastructure.client.GitHubUser\".url",
+        .put("quarkus.rest-client.\"com.octopus.jenkins.github.infrastructure.client.GitHubApi\".url",
             wireMockServer.baseUrl())
         .build();
   }

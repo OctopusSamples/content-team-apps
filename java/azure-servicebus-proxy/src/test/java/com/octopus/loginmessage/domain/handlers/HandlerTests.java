@@ -53,7 +53,8 @@ public class HandlerTests extends BaseTest {
       "ProgrammingLanguage",
       "GitHubUsername",
       "FirstName",
-      "LastName");
+      "LastName",
+      "ToolName");
 
   @Inject
   ResourceHandler handler;

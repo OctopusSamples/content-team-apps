@@ -10,11 +10,10 @@ import com.octopus.githubactions.github.domain.TestingProfile;
 import com.octopus.githubactions.github.domain.audits.AuditGenerator;
 import com.octopus.githubactions.github.domain.entities.GitHubEmail;
 import com.octopus.githubactions.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.githubactions.github.infrastructure.client.GitHubUser;
+import com.octopus.githubactions.github.infrastructure.client.GitHubApi;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
-import com.octopus.test.repoclients.MavenTestRepoClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -54,7 +53,7 @@ public class PipelineResourceUnauthorizedTest {
 
   @InjectMock
   @RestClient
-  GitHubUser gitHubUser;
+  GitHubApi gitHubApi;
 
   @InjectMock
   CryptoUtils cryptoUtils;
@@ -123,7 +122,7 @@ public class PipelineResourceUnauthorizedTest {
         });
     Mockito.when(oauthClientCredsAccessor.getAccessToken(any()))
         .thenReturn(Try.of(() -> "accesstoken"));
-    Mockito.when(gitHubUser.publicEmails(any()))
+    Mockito.when(gitHubApi.publicEmails(any()))
         .thenReturn(new GitHubEmail[]{GitHubEmail.builder().email(TEST_EMAIL).build()});
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
     doNothing().when(auditGenerator).createAuditEvent(any(), any(), any(), any(), any());

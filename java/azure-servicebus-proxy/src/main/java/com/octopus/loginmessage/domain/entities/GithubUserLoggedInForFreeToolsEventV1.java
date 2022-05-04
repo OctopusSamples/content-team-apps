@@ -27,4 +27,5 @@ public class GithubUserLoggedInForFreeToolsEventV1 {
   private String gitHubUsername;
   private String firstName;
   private String lastName;
+  private String toolName;
 }
