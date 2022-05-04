@@ -25,7 +25,9 @@ import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -126,12 +128,12 @@ public class TemplateHandler {
       // Make a best effort to get the users details. We don't break for any errors here though.
       final GitHubEmail[] emails = StringUtils.isNotBlank(token)
           ? Try.of(() -> gitHubApi.publicEmails("token " + token))
-            .getOrElse(() -> new GitHubEmail[]{})
+          .getOrElse(() -> new GitHubEmail[]{})
           : new GitHubEmail[]{};
 
       final GitHubUser user = StringUtils.isNotBlank(token)
           ? Try.of(() -> gitHubApi.user("token " + token))
-            .getOrElse(GitHubUser::new)
+          .getOrElse(GitHubUser::new)
           : new GitHubUser();
 
       recordEmailInOctofront(
@@ -218,23 +220,34 @@ public class TemplateHandler {
 
     // Log second to the Azure service bus proxy service
     try {
-      Arrays.stream(emails)
+      // Get all the public emails
+      final List<String> emailStrings = Arrays.stream(emails)
           .map(GitHubEmail::getEmail)
           .filter(publicEmailTester::isPublicEmail)
-          .forEach(email -> serviceBusMessageGenerator.sendLoginMessage(
-              GithubUserLoggedInForFreeToolsEventV1.builder()
-                  .id("")
-                  .emailAddress(email)
-                  .utmParameters(utms.getMap())
-                  .toolName(microserviceNameFeature.getMicroserviceName())
-                  .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
-                  .firstName(usernameSplitter.getFirstName(user.getUser()))
-                  .lastName(usernameSplitter.getLastName(user.getUser()))
-                  .build(),
-              xray,
-              routingHeaders,
-              dataPartitionHeaders,
-              authHeaders));
+          .collect(Collectors.toList());
+
+      /*
+       If there are none, send through a blank email. This allows us to collect UTMs even if
+       we don't have email addresses.
+       */
+      if (emailStrings.isEmpty()) {
+        emailStrings.add("");
+      }
+
+      emailStrings.forEach(email -> serviceBusMessageGenerator.sendLoginMessage(
+          GithubUserLoggedInForFreeToolsEventV1.builder()
+              .id("")
+              .emailAddress(email)
+              .utmParameters(utms.getMap())
+              .toolName(microserviceNameFeature.getMicroserviceName())
+              .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
+              .firstName(usernameSplitter.getFirstName(user.getUser()))
+              .lastName(usernameSplitter.getLastName(user.getUser()))
+              .build(),
+          xray,
+          routingHeaders,
+          dataPartitionHeaders,
+          authHeaders));
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-ServiceBus-RecordLoginFailed",
