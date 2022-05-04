@@ -2,6 +2,7 @@ package com.octopus.jenkins.github.domain.hanlder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -78,7 +79,7 @@ public class TemplateHandlerTest {
     doAnswer(invocation -> {
       final GithubUserLoggedInForFreeToolsEventV1 message = invocation.getArgument(0);
       final String xray = invocation.getArgument(1);
-      assertEquals(TEST_EMAIL, message.getEmailAddress());
+      assertTrue(TEST_EMAIL.equals(message.getEmailAddress()) || StringUtils.isBlank(message.getEmailAddress()));
       assertEquals(XRAY, xray);
       assertEquals("content", message.getUtmParameters().get("utm_content"));
       assertEquals("term", message.getUtmParameters().get("utm_term"));
