@@ -120,7 +120,7 @@ resource "octopusdeploy_deployment_process" "networking_project" {
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ApiPipelineOAuth
-                PathPart: jenkins
+                PathPart: github
           Outputs:
             RestApi:
               Description: The REST API
