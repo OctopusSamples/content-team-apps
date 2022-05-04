@@ -213,4 +213,5 @@ runs:
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
         --gitRef main
+        --deploymentTimeout 00:30:00
       shell: bash

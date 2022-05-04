@@ -183,7 +183,7 @@ runs:
       uses: xo-energy/action-octopus-build-information@v1.1.2
       with:
         octopus_api_key: ${{ inputs.octopus_api_token }}
-        octopus_project: Jenkins Pipeline Generator
+        octopus_project: Jenkins Pipelines Generator
         octopus_server: ${{ inputs.octopus_server_url }}
         octopus_space: Content Team
         push_version: 1.0.${{ inputs.run_number }}
@@ -195,7 +195,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Jenkins Pipeline Generator"
+        --project "Jenkins Pipelines Generator"
         --deployTo "Development"
         --version 1.0.${{ inputs.run_number }}
         --server ${{ inputs.octopus_server_url }}
@@ -210,7 +210,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
-        --project "Jenkins Pipeline Generator"
+        --project "Jenkins Pipelines Generator"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
