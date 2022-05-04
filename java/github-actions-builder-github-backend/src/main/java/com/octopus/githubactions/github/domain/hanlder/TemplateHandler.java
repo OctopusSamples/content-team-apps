@@ -8,15 +8,17 @@ import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.github.PublicEmailTester;
+import com.octopus.github.UsernameSplitter;
 import com.octopus.githubactions.github.GlobalConstants;
 import com.octopus.githubactions.github.application.lambda.PipelineLambda;
 import com.octopus.githubactions.github.domain.audits.AuditGenerator;
 import com.octopus.githubactions.github.domain.entities.Audit;
 import com.octopus.githubactions.github.domain.entities.GitHubEmail;
+import com.octopus.githubactions.github.domain.entities.GitHubUser;
 import com.octopus.githubactions.github.domain.entities.GithubUserLoggedInForFreeToolsEventV1;
 import com.octopus.githubactions.github.domain.entities.Utms;
 import com.octopus.githubactions.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.githubactions.github.infrastructure.client.GitHubUser;
+import com.octopus.githubactions.github.infrastructure.client.GitHubApi;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
@@ -66,13 +68,16 @@ public class TemplateHandler {
   ServiceBusMessageGenerator serviceBusMessageGenerator;
 
   @RestClient
-  GitHubUser gitHubUser;
+  GitHubApi gitHubApi;
 
   @Inject
   MicroserviceNameFeature microserviceNameFeature;
 
   @Inject
   PublicEmailTester publicEmailTester;
+
+  @Inject
+  UsernameSplitter usernameSplitter;
 
   /**
    * Generate a github repo.
@@ -118,9 +123,16 @@ public class TemplateHandler {
       final Optional<PipelineBuilder> builder) {
 
     try {
+      // Make a best effort to get the users details. We don't break for any errors here though.
       final GitHubEmail[] emails = StringUtils.isNotBlank(token)
-          ? Try.of(() -> gitHubUser.publicEmails("token " + token)).getOrElse(() -> new GitHubEmail[]{})
+          ? Try.of(() -> gitHubApi.publicEmails("token " + token))
+            .getOrElse(() -> new GitHubEmail[]{})
           : new GitHubEmail[]{};
+
+      final GitHubUser user = StringUtils.isNotBlank(token)
+          ? Try.of(() -> gitHubApi.user("token " + token))
+            .getOrElse(GitHubUser::new)
+          : new GitHubUser();
 
       recordEmailInOctofront(
           xray,
@@ -129,7 +141,8 @@ public class TemplateHandler {
           dataPartitionHeaders,
           authHeaders,
           utms,
-          builder);
+          builder,
+          user);
 
       auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
     } catch (final Exception ex) {
@@ -200,7 +213,8 @@ public class TemplateHandler {
       final String dataPartitionHeaders,
       final String authHeaders,
       final Utms utms,
-      final Optional<PipelineBuilder> builder) {
+      final Optional<PipelineBuilder> builder,
+      final GitHubUser user) {
 
     // Log second to the Azure service bus proxy service
     try {
@@ -214,6 +228,8 @@ public class TemplateHandler {
                   .utmParameters(utms.getMap())
                   .toolName(microserviceNameFeature.getMicroserviceName())
                   .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
+                  .firstName(usernameSplitter.getFirstName(user.getUser()))
+                  .lastName(usernameSplitter.getLastName(user.getUser()))
                   .build(),
               xray,
               routingHeaders,

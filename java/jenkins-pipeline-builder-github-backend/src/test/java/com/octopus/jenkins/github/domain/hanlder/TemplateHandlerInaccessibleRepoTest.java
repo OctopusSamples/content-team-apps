@@ -11,7 +11,7 @@ import com.octopus.jenkins.github.domain.audits.AuditGenerator;
 import com.octopus.jenkins.github.domain.entities.GitHubEmail;
 import com.octopus.jenkins.github.domain.entities.Utms;
 import com.octopus.jenkins.github.domain.servicebus.ServiceBusMessageGenerator;
-import com.octopus.jenkins.github.infrastructure.client.GitHubUser;
+import com.octopus.jenkins.github.infrastructure.client.GitHubApi;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
@@ -55,7 +55,7 @@ public class TemplateHandlerInaccessibleRepoTest {
 
   @InjectMock
   @RestClient
-  GitHubUser gitHubUser;
+  GitHubApi gitHubApi;
 
   @InjectMock
   CryptoUtils cryptoUtils;
@@ -70,7 +70,7 @@ public class TemplateHandlerInaccessibleRepoTest {
         .thenReturn(repoClient);
     Mockito.when(oauthClientCredsAccessor.getAccessToken(any()))
         .thenReturn(Try.of(() -> "accesstoken"));
-    Mockito.when(gitHubUser.publicEmails(any()))
+    Mockito.when(gitHubApi.publicEmails(any()))
         .thenReturn(new GitHubEmail[]{GitHubEmail.builder().email(TEST_EMAIL).build()});
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
     doNothing().when(auditGenerator).createAuditEvent(any(), any(), any(), any(), any());

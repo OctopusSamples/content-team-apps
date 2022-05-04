@@ -1,7 +1,8 @@
-package com.octopus.githubactions.github.infrastructure.client;
+package com.octopus.jenkins.github.infrastructure.client;
 
-import com.octopus.githubactions.github.GlobalConstants;
-import com.octopus.githubactions.github.domain.entities.GitHubEmail;
+import com.octopus.jenkins.github.GlobalConstants;
+import com.octopus.jenkins.github.domain.entities.GitHubEmail;
+import com.octopus.jenkins.github.domain.entities.GitHubUser;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -14,16 +15,27 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  */
 @Path("user")
 @RegisterRestClient
-public interface GitHubUser {
+public interface GitHubApi {
 
   /**
    * Get the users public email addresses.
    *
    * @param auth The Authorization header.
-   * @return The access and refresh tokens.
+   * @return The users email addresses.
    */
   @Path("public_emails")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   GitHubEmail[] publicEmails(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);
+
+  /**
+   * Get the users details.
+   *
+   * @param auth The Authorization header.
+   * @return The users details.
+   */
+  @Path("user")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  GitHubUser user(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);
 }

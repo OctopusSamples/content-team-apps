@@ -6,7 +6,9 @@ import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.github.PublicEmailTester;
+import com.octopus.github.UsernameSplitter;
 import com.octopus.github.impl.PublicEmailTesterImpl;
+import com.octopus.github.impl.UsernameSplitterImpl;
 import com.octopus.jenkins.shared.builders.dotnet.DotnetCoreBuilder;
 import com.octopus.jenkins.shared.builders.generic.GenericBuilder;
 import com.octopus.jenkins.shared.builders.go.GoBuilder;
@@ -313,5 +315,16 @@ public class PipelineProducer {
   @Produces
   public PublicEmailTester getPublicEmailTester() {
     return new PublicEmailTesterImpl();
+  }
+
+  /**
+   * Produces the name splitting service.
+   *
+   * @return An implementation of UsernameSplitter.
+   */
+  @ApplicationScoped
+  @Produces
+  public UsernameSplitter getUsernameSplitter() {
+    return new UsernameSplitterImpl();
   }
 }
