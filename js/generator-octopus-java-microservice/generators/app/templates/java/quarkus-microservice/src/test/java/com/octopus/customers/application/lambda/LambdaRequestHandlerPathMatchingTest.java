@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.octopus.Constants;
 import com.octopus.customers.application.Paths;
+import com.octopus.customers.application.lambda.impl.LambdaRequestHandlerGetAll;
+import com.octopus.customers.application.lambda.impl.LambdaRequestHandlerGetOne;
+import com.octopus.customers.application.lambda.impl.LambdaRequestHandlerHealth;
 import com.octopus.lambda.RequestMatcher;
 import com.octopus.lambda.impl.RequestMatcherImpl;
 import org.junit.jupiter.api.Test;
@@ -28,7 +31,7 @@ public class LambdaRequestHandlerPathMatchingTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(path);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHanlder.HEALTH_RE, Constants.Http.GET_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerHealth.HEALTH_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
@@ -36,7 +39,7 @@ public class LambdaRequestHandlerPathMatchingTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(Paths.API_ENDPOINT);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHanlder.ROOT_RE, Constants.Http.GET_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetAll.ROOT_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
@@ -44,7 +47,7 @@ public class LambdaRequestHandlerPathMatchingTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
     event.setPath(Paths.API_ENDPOINT + "/1");
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHanlder.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetOne.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
@@ -52,14 +55,14 @@ public class LambdaRequestHandlerPathMatchingTest {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("PoSt");
     event.setPath(Paths.API_ENDPOINT);
-    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHanlder.ROOT_RE, Constants.Http.POST_METHOD));
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetAll.ROOT_RE, Constants.Http.POST_METHOD));
   }
 
   @Test
   public void testNullParams() {
     assertThrows(NullPointerException.class, () -> {
       REQUEST_MATCHER.requestIsMatch(new APIGatewayProxyRequestEvent(),
-          LambdaRequestHanlder.ROOT_RE, null);
+          LambdaRequestHandlerGetAll.ROOT_RE, null);
     });
 
     assertThrows(NullPointerException.class, () -> {
@@ -67,7 +70,7 @@ public class LambdaRequestHandlerPathMatchingTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      REQUEST_MATCHER.requestIsMatch(null, LambdaRequestHanlder.ROOT_RE, "");
+      REQUEST_MATCHER.requestIsMatch(null, LambdaRequestHandlerGetAll.ROOT_RE, "");
     });
   }
 }

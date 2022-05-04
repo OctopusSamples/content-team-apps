@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class HealthRootResourceTest extends BaseTest {
+public class HealthRootResourceGetOneTest extends BaseTest {
   
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;

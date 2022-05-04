@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 public class LambdaRequestHandlerHealthTest extends BaseTest {
 
   @Inject
-  LambdaRequestHanlder api;
+  LambdaRequestEntryPoint api;
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;

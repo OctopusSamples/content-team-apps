@@ -27,7 +27,7 @@ import org.mockito.Mockito;
  */
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class JsonApiRootResourceTest extends BaseTest {
+public class JsonApiRootResourceGetAllTest extends BaseTest {
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;

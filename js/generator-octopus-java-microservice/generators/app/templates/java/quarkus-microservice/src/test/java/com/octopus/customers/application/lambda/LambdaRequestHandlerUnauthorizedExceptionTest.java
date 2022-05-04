@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 public class LambdaRequestHandlerUnauthorizedExceptionTest extends BaseTest {
 
   @Inject
-  LambdaRequestHanlder api;
+  LambdaRequestEntryPoint api;
 
   @InjectMock
   ResourceHandler handler;

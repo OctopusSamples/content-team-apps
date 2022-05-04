@@ -14,41 +14,9 @@ import javax.ws.rs.core.Response;
 /** A resource to respond to health check requests. */
 @Path(Paths.HEALTH_ENDPOINT)
 @RequestScoped
-public class HealthRootResource {
+public class HealthRootResourceGetOne {
 
   @Inject HealthHandler healthHandler;
-
-  /**
-   * The health check.
-   *
-   * @return a HTTP response object.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *     resource.
-   */
-  @GET
-  @Path("GET")
-  @Transactional
-  public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response
-        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "GET"))
-        .build();
-  }
-
-  /**
-   * The health check.
-   *
-   * @return a HTTP response object.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *     resource.
-   */
-  @GET
-  @Path("POST")
-  @Transactional
-  public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response
-        .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT, "POST"))
-        .build();
-  }
 
   /**
    * The health check.

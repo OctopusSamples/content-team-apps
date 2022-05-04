@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 public class LambdaRequestHandlerTest extends BaseTest {
 
   @Inject
-  LambdaRequestHanlder api;
+  LambdaRequestEntryPoint api;
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
