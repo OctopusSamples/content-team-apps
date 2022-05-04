@@ -114,7 +114,8 @@ public class TemplateHandler {
       final String routingHeaders,
       final String dataPartitionHeaders,
       final String authHeaders,
-      final Utms utms) {
+      final Utms utms,
+      final Optional<PipelineBuilder> builder) {
 
     try {
       final GitHubEmail[] emails = StringUtils.isNotBlank(token)
@@ -127,7 +128,8 @@ public class TemplateHandler {
           routingHeaders,
           dataPartitionHeaders,
           authHeaders,
-          utms);
+          utms,
+          builder);
 
       auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
     } catch (final Exception ex) {
@@ -197,7 +199,8 @@ public class TemplateHandler {
       final String routingHeaders,
       final String dataPartitionHeaders,
       final String authHeaders,
-      final Utms utms) {
+      final Utms utms,
+      final Optional<PipelineBuilder> builder) {
 
     // Log second to the Azure service bus proxy service
     try {
@@ -210,6 +213,7 @@ public class TemplateHandler {
                   .emailAddress(email)
                   .utmParameters(utms.getMap())
                   .toolName(microserviceNameFeature.getMicroserviceName())
+                  .programmingLanguage(builder.isPresent() ? builder.get().getName() : "")
                   .build(),
               xray,
               routingHeaders,
@@ -230,15 +234,15 @@ public class TemplateHandler {
       final String dataPartitionHeaders,
       final String authHeaders,
       final Utms utms) {
-    // Audit the details of the user generating the template
-    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms);
-
     // Get the builder
     final Optional<PipelineBuilder> builder = builders.stream()
         .sorted((o1, o2) -> o2.getPriority().compareTo(o1.getPriority()))
         .parallel()
         .filter(b -> b.canBuild(accessor))
         .findFirst();
+
+    // Audit the details of the user generating the template
+    logUserDetails(auth, xray, routingHeaders, dataPartitionHeaders, authHeaders, utms, builder);
 
     // Write an audit message
     builder.ifPresent(b ->
