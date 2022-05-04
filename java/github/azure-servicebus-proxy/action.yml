@@ -188,6 +188,7 @@ runs:
         octo create-release
         --project "Jenkins Pipelines Azure Service Bus Proxy"
         --deployTo "Development"
+        --version 1.0.${{ inputs.run_number }}
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
@@ -201,6 +202,7 @@ runs:
         octo promote-release
         --project "Jenkins Pipelines Azure Service Bus Proxy"
         --from "Development"
+        --version 1.0.${{ inputs.run_number }}
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
