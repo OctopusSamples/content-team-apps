@@ -432,8 +432,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                           'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
                           style-src * 'unsafe-inline'; img-src *; font-src *'
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
-                    - StatusCode: '301'
-                      SelectionPattern: '301'
+                    - StatusCode: '307'
+                      SelectionPattern: '307'
                       ResponseParameters:
                         method.response.header.Location: integration.response.header.Location
                   RequestParameters:
@@ -455,7 +455,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                   - ResponseModels:
                       text/html: Empty
                       text/css: Empty
-                    StatusCode: '301'
+                    StatusCode: '307'
                     ResponseParameters:
                       method.response.header.Location: true
                 ResourceId:
