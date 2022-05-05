@@ -16,6 +16,7 @@
     <module>github-oauth-backend</module>
     <module>audit-service</module>
     <module>octopus-oauth-backend</module>
+    <module>octopus-proxy</module>
     <module>github-repo-creator</module>
     <module>octopus-service-account-creator</module>
     <module>azure-servicebus-proxy</module>
