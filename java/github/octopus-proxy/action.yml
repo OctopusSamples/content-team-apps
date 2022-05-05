@@ -109,7 +109,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         tag_name: octopus-proxy.0.1.${{ inputs.run_number }}
-        release_name: GitHub OAuth Proxy Release 0.1.${{ inputs.run_number }}
+        release_name: Octopus Proxy Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 

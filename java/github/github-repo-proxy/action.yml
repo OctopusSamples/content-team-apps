@@ -1,5 +1,5 @@
 name: 'GitHub Repo proxy'
-description: Build and deploy the Octopus Service Account Creator
+description: Build and deploy the Github Proxy
 inputs:
   dockerhub_username:
     required: true
@@ -109,7 +109,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         tag_name: github-repo-proxy.0.1.${{ inputs.run_number }}
-        release_name: GitHub OAuth Proxy Release 0.1.${{ inputs.run_number }}
+        release_name: GitHub Proxy Release 0.1.${{ inputs.run_number }}
         draft: false
         prerelease: false
 
