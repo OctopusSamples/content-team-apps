@@ -67,6 +67,12 @@ inputs:
   github_actions_library_variable_set_id:
     description: 'The ID of the variable set containing github actions workflows values'
     required: true
+  client_private_key_base64_development:
+    description: 'The base 64 copy of the private key matching the public key used by the client to encrypt data'
+    required: true
+  client_private_key_base64_production:
+    description: 'The base 64 copy of the private key matching the public key used by the client to encrypt data'
+    required: true
 
 runs:
   using: "composite"
@@ -132,5 +138,7 @@ runs:
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
         -var="github_actions_library_variable_set_id=${{ inputs.github_actions_library_variable_set_id }}"
         -var="run_number=${{ inputs.run_number }}"
+        -var="client_private_key_base64_development=${{ inputs.client_private_key_base64_development }}"
+        -var="client_private_key_base64_production=${{ inputs.client_private_key_base64_production }}"
       working-directory: terraform/octopus-proxy
       shell: bash

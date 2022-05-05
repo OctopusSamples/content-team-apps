@@ -98,3 +98,15 @@ variable "run_number" {
   type = string
   nullable = false
 }
+
+variable "client_private_key_base64_production" {
+  type = string
+  nullable = false
+  sensitive = true
+}
+
+variable "client_private_key_base64_development" {
+  type = string
+  nullable = false
+  sensitive = true
+}
