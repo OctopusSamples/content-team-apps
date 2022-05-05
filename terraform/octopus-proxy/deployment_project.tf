@@ -1,7 +1,7 @@
 locals {
   # These change with every project
   project_name        = "Octopus Proxy"
-  project_description = "which exposes a small subset of the Octopus API (just enough to know if a repo is created and if workflows have completed). It is exposed under /api/${local.api_endpoint_name}."
+  project_description = "which exposes a small subset of the Octopus API for all hosted instances. It is exposed under /api/${local.api_endpoint_name}."
   lambda_package      = "octopus-proxy-lambda"
   lambda_sbom_package = "octopus-proxy-lambda-sbom"
   api_endpoint_name   = "octopusspace"
