@@ -58,6 +58,9 @@ public class LambdaRequestHandlerTest extends BaseTest {
             put("Accept", "application/vnd.api+json");
           }
         });
+    apiGatewayProxyRequestEvent.setQueryStringParameters(new HashMap<>() {{
+      put("apiKey", "blah");
+    }});
     apiGatewayProxyRequestEvent.setHttpMethod("GET");
     apiGatewayProxyRequestEvent.setPath("/api/blah");
     final APIGatewayProxyResponseEvent postResponse =
@@ -77,6 +80,9 @@ public class LambdaRequestHandlerTest extends BaseTest {
                 "application/vnd.api+json");
           }
         });
+    getApiGatewayProxyRequestEvent.setQueryStringParameters(new HashMap<>() {{
+      put("apiKey", "blah");
+    }});
     getApiGatewayProxyRequestEvent.setHttpMethod("GET");
     getApiGatewayProxyRequestEvent.setPath(Paths.API_ENDPOINT + "/10000000000000000000");
     final APIGatewayProxyResponseEvent getResponse =
