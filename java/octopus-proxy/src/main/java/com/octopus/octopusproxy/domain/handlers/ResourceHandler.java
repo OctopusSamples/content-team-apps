@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.base.Preconditions;
+import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.JsonSerializationException;
 import com.octopus.exceptions.UnauthorizedException;
@@ -14,6 +15,7 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.octopusproxy.domain.entities.Space;
+import com.octopus.octopusproxy.domain.features.ClientPrivateKey;
 import com.octopus.octopusproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import io.vavr.control.Try;
 import java.net.URI;
@@ -62,6 +64,12 @@ public class ResourceHandler {
   @Inject
   JwtUtils jwtUtils;
 
+  @Inject
+  ClientPrivateKey clientPrivateKey;
+
+  @Inject
+  AsymmetricDecryptor asymmetricDecryptor;
+
   /**
    * Returns the one resource that matches the supplied ID.
    *
@@ -94,7 +102,9 @@ public class ResourceHandler {
         .getOrElseThrow(() -> new EntityNotFoundException());
 
     // Set the default headers to send to the Octopus instance
-    final List<Header> headers = List.of(new BasicHeader("X-Octopus-ApiKey", apiKey));
+    final List<Header> headers = List.of(new BasicHeader(
+        "X-Octopus-ApiKey",
+        asymmetricDecryptor.decrypt(apiKey, clientPrivateKey.privateKeyBase64())));
 
     // Get the space resource
     final String spaceJson = Try.withResources(() -> HttpClients.custom().setDefaultHeaders(headers).build())

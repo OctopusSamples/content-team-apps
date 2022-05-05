@@ -1,5 +1,7 @@
 package com.octopus.octopusproxy.domain.framework.producers;
 
+import com.octopus.encryption.AsymmetricDecryptor;
+import com.octopus.encryption.impl.RsaCryptoUtilsDecryptor;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -30,6 +32,8 @@ import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.utilties.RegExUtils;
 import com.octopus.utilties.impl.PartitionIdentifierImpl;
 import com.octopus.utilties.impl.RegExUtilsImpl;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
@@ -189,5 +193,22 @@ public class UtilityProducer {
   @Produces
   public RequestBodyExtractor getRequestBodyExtractor() {
     return new RequestBodyExtractorImpl();
+  }
+
+  /**
+   * Produces the AsymmetricDecryptor utils instance.
+   *
+   * @return An implementation of AsymmetricDecryptor.
+   * @throws NoSuchAlgorithmException if the transformer used by RsaCryptoUtilsDecryptor is an
+   *                                  invalid format, or if no {@code Provider} supports a
+   *                                  {@code CipherSpi} implementation for the specified algorithm
+   * @throws NoSuchPaddingException   if the transformer used by RsaCryptoUtilsDecryptor contains a
+   *                                  padding scheme that is not available
+   */
+  @ApplicationScoped
+  @Produces
+  public AsymmetricDecryptor getAsymmetricDecryptor()
+      throws NoSuchPaddingException, NoSuchAlgorithmException {
+    return new RsaCryptoUtilsDecryptor();
   }
 }
