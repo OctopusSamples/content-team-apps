@@ -105,7 +105,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>quarkus-microservice</finalName>
+    <finalName>octopus-proxy</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
