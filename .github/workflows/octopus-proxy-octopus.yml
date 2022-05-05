@@ -3,8 +3,8 @@ name: octopus-proxy-octopus
 on:
   push:
     paths:
-    - 'terraform/github-proxy/**'
-    - '.github/workflows/github-proxy-octopus.yml'
+    - 'terraform/octopus-proxy/**'
+    - '.github/workflows/octopus-proxy-octopus.yml'
   workflow_dispatch:
 
 jobs:
