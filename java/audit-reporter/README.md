@@ -1,0 +1,1 @@
+This is a simple tool to query and analyse the audit logs from the template generators.
