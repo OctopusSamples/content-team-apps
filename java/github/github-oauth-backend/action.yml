@@ -183,7 +183,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "GitHub OAuth Backend"
+        --project "GitHub OAuth Proxy"
         --version 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
@@ -197,7 +197,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Jenkins OAuth Backend"
+        --project "Jenkins Pipelines GitHub OAuth Proxy"
         --version 1.0.${{ inputs.run_number }}
         --deployTo "Development"
         --server ${{ inputs.octopus_server_url }}
@@ -211,7 +211,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
-        --project "GitHub OAuth Backend"
+        --project "GitHub OAuth Proxy"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
@@ -224,7 +224,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
-        --project "Jenkins OAuth Backend"
+        --project "Jenkins Pipelines GitHub OAuth Proxy"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
