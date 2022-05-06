@@ -46,6 +46,11 @@ public class Space {
   private String id;
 
   /**
+   * The instance the space belongs to.
+   */
+  private String instance;
+
+  /**
    * This is the local space ID e.g. Space-1
    */
   @JsonProperty("Id")

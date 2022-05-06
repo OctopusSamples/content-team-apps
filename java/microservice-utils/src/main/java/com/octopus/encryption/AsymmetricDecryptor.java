@@ -8,7 +8,7 @@ public interface AsymmetricDecryptor {
   /**
    * Decrypt a value.
    *
-   * @param value            The value to encrypt.
+   * @param value            The value to decrypt.
    * @param privateKeyBase64 The private key to decrypt the value with.
    * @return The decrypted value.
    */
