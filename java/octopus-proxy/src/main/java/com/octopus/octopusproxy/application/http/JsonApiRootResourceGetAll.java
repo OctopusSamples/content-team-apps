@@ -36,7 +36,7 @@ public class JsonApiRootResourceGetAll {
   /**
    * The individual resource endpoint.
    *
-   * @param id           The ID of the resource to return.
+   * @param filter       The RSQL filter.
    * @param acceptHeader The "Accept" headers.
    * @return An HTTP response object with the matching resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI

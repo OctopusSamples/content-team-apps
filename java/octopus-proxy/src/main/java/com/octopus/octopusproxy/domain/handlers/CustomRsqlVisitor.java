@@ -43,7 +43,7 @@ public class CustomRsqlVisitor extends NoArgRSQLVisitorAdapter {
   }
 
   /**
-   * Unused visitor
+   * Parses anded nodes.
    *
    * @param node The RSQ "and" node.
    * @return null

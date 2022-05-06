@@ -138,7 +138,7 @@ public class ResourceHandler {
   }
 
   /**
-   * Returns the one resource that matches the supplied ID.
+   * Returns the space from the instance in the filter with the matching name.
    *
    * @param filter               The RSQL query filter.
    * @param dataPartitionHeaders The "data-partition" headers.
