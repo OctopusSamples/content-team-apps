@@ -29,7 +29,7 @@ public class CreateGithubCommitMeta {
    */
   private String owner;
   /**
-   * The repo name;
+   * The repo name.
    */
   private String repoName;
 }
