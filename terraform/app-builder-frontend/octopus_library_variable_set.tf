@@ -174,3 +174,12 @@ resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
   value = "/#{Octopus.Environment.Name}/api/githubrepo"
 }
+
+resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
+  name = "octopusSpaceEndpoint"
+  type = "String"
+  description = "The location of the Octopus space proxy API."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "/#{Octopus.Environment.Name}/api/octopusspace"
+}
