@@ -29,7 +29,7 @@ public class LambdaRequestHandlerGetAll implements LambdaRequestHandler {
   /**
    * A regular expression matching a single entity.
    */
-  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/?");
+  public static final Pattern COLLECTION_RE = Pattern.compile(Paths.API_ENDPOINT + "/?");
 
   @Inject
   RequestMatcher requestMatcher;
@@ -61,7 +61,7 @@ public class LambdaRequestHandlerGetAll implements LambdaRequestHandler {
       APIGatewayProxyRequestEvent input) {
     try {
 
-      if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
+      if (!requestMatcher.requestIsMatch(input, COLLECTION_RE, Constants.Http.GET_METHOD)) {
         return Optional.empty();
       }
 

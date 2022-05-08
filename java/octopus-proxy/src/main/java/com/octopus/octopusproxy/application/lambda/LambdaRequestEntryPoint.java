@@ -54,6 +54,6 @@ public class LambdaRequestEntryPoint implements
         // we only expect one of the handlers to provide a response, so get the first one
         .findFirst()
         // otherwise nothing handled the response, and we return a 404
-        .orElseGet(() -> proxyResponseBuilder.buildNotFound());
+        .orElseGet(() -> proxyResponseBuilder.buildPathNotFound());
   }
 }
