@@ -6,13 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.octopusproxy.BaseTest;
 import com.octopus.octopusproxy.application.Paths;
+import com.octopus.octopusproxy.domain.features.ClientPrivateKey;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
+import java.util.Optional;
 import javax.inject.Inject;
 import lombok.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 
 /**
  * These tests are focused on the health endpoints.
@@ -23,6 +28,14 @@ public class HandlerHealthTests extends BaseTest {
 
   @Inject
   HealthHandler healthHandler;
+
+  @InjectMock
+  ClientPrivateKey clientPrivateKey;
+
+  @BeforeEach
+  public void setup() {
+    Mockito.when(clientPrivateKey.privateKeyBase64()).thenReturn(Optional.of(""));
+  }
 
   @ParameterizedTest
   @CsvSource({

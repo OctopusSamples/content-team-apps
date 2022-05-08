@@ -1,6 +1,7 @@
 package com.octopus.octopusproxy.domain.features;
 
 import io.smallrye.config.ConfigMapping;
+import java.util.Optional;
 
 /**
  * Captures the private key setting used to decrypt data sent from the client.
@@ -13,5 +14,5 @@ public interface ClientPrivateKey {
    *
    * @return The private key base 64 encoded.
    */
-  String privateKeyBase64();
+  Optional<String> privateKeyBase64();
 }

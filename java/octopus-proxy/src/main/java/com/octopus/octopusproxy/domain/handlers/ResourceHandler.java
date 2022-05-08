@@ -108,7 +108,7 @@ public class ResourceHandler {
     // Set the default headers to send to the Octopus instance
     final List<Header> headers = List.of(new BasicHeader(
         "X-Octopus-ApiKey",
-        asymmetricDecryptor.decrypt(apiKey, clientPrivateKey.privateKeyBase64())));
+        asymmetricDecryptor.decrypt(apiKey, clientPrivateKey.privateKeyBase64().get())));
 
     // Get the space resource
     final String spaceJson = Try.withResources(
@@ -185,7 +185,7 @@ public class ResourceHandler {
     // Set the default headers to send to the Octopus instance
     final List<Header> headers = List.of(new BasicHeader(
         "X-Octopus-ApiKey",
-        asymmetricDecryptor.decrypt(apiKey, clientPrivateKey.privateKeyBase64())));
+        asymmetricDecryptor.decrypt(apiKey, clientPrivateKey.privateKeyBase64().get())));
 
     // Get the space resource
     final String spaceJson = Try.withResources(

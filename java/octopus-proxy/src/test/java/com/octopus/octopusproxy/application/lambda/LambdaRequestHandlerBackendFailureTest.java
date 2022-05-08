@@ -9,11 +9,13 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.octopusproxy.BaseTest;
 import com.octopus.octopusproxy.application.Paths;
+import com.octopus.octopusproxy.domain.features.ClientPrivateKey;
 import com.octopus.octopusproxy.domain.handlers.HealthHandler;
 import com.octopus.octopusproxy.domain.handlers.ResourceHandler;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +38,12 @@ public class LambdaRequestHandlerBackendFailureTest extends BaseTest {
   @InjectMock
   HealthHandler healthHandler;
 
+  @InjectMock
+  ClientPrivateKey clientPrivateKey;
+
   @BeforeEach
   public void setup() throws DocumentSerializationException {
+    Mockito.when(clientPrivateKey.privateKeyBase64()).thenReturn(Optional.of(""));
     Mockito.when(handler.getOne(any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
     Mockito.when(healthHandler.getHealth(any(), any())).thenThrow(new RuntimeException());
   }
