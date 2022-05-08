@@ -41,6 +41,14 @@ public class LambdaRequestHandlerPathMatchingTest {
   }
 
   @Test
+  public void testIndividualWithSlashRequestMatching() {
+    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
+    event.setHttpMethod("GeT");
+    event.setPath(Paths.API_ENDPOINT + "/https%3A%2F%2Fmattc.octopus.app%2Fapi%2Fspaces%2FSpaces-742/");
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetOne.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
+  }
+
+  @Test
   public void testCollectionRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");

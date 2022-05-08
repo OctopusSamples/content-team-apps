@@ -36,7 +36,7 @@ public class LambdaRequestHandlerHealthTest extends BaseTest {
   ClientPrivateKey clientPrivateKey;
 
   @BeforeEach
-  public void setup() throws DocumentSerializationException {
+  public void setup() {
     Mockito.when(clientPrivateKey.privateKeyBase64()).thenReturn(Optional.of(""));
     Mockito.when(cognitoDisableAuth.getCognitoAuthDisabled()).thenReturn(true);
   }

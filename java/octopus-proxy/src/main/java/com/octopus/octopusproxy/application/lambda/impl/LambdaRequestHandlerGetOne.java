@@ -29,7 +29,7 @@ public class LambdaRequestHandlerGetOne implements LambdaRequestHandler {
   /**
    * A regular expression matching a single entity.
    */
-  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>.+)");
+  public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>.+)/?");
 
   @Inject
   RequestMatcher requestMatcher;

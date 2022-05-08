@@ -14,7 +14,6 @@ import com.octopus.lambda.RequestMatcher;
 import com.octopus.octopusproxy.application.Paths;
 import com.octopus.octopusproxy.application.lambda.LambdaRequestHandler;
 import com.octopus.octopusproxy.domain.handlers.ResourceHandler;
-import com.octopus.utilties.RegExUtils;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
