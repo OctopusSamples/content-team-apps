@@ -175,7 +175,7 @@ resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
   value = "/#{Octopus.Environment.Name}/api/githubrepo"
 }
 
-resource "octopusdeploy_variable" "config_json_githubRepoEndpoint" {
+resource "octopusdeploy_variable" "config_json_octopusSpaceEndpoint" {
   name = "octopusSpaceEndpoint"
   type = "String"
   description = "The location of the Octopus space proxy API."
