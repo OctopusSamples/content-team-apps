@@ -206,7 +206,7 @@ runs:
         packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
         wait_for_deployment: true
-        timeout: 1800
+        deployment_timeout: 1800
         release_number: ${{ steps.determine_version.outputs.semVer }}
 
     - name: Trigger deployment to Security env
