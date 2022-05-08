@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.octopus.Constants;
 import com.octopus.octopusproxy.application.Paths;
+import com.octopus.octopusproxy.application.lambda.impl.LambdaRequestHandlerGetAll;
 import com.octopus.octopusproxy.application.lambda.impl.LambdaRequestHandlerGetOne;
 import com.octopus.octopusproxy.application.lambda.impl.LambdaRequestHandlerHealth;
 import com.octopus.lambda.RequestMatcher;
@@ -35,8 +36,16 @@ public class LambdaRequestHandlerPathMatchingTest {
   public void testIndividualRequestMatching() {
     final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
     event.setHttpMethod("GeT");
-    event.setPath(Paths.API_ENDPOINT + "/1");
+    event.setPath(Paths.API_ENDPOINT + "/https%3A%2F%2Fmattc.octopus.app%2Fapi%2Fspaces%2FSpaces-742");
     assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetOne.INDIVIDUAL_RE, Constants.Http.GET_METHOD));
+  }
+
+  @Test
+  public void testCollectionRequestMatching() {
+    final APIGatewayProxyRequestEvent event = new APIGatewayProxyRequestEvent();
+    event.setHttpMethod("GeT");
+    event.setPath(Paths.API_ENDPOINT + "/");
+    assertTrue(REQUEST_MATCHER.requestIsMatch(event, LambdaRequestHandlerGetAll.COLLECTION_RE, Constants.Http.GET_METHOD));
   }
 
   @Test
