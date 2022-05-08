@@ -25,7 +25,7 @@ public class LambdaRequestHandlerHealth implements LambdaRequestHandler {
    * A regular expression matching a health endpoint.
    */
   public static final Pattern HEALTH_RE =
-      Pattern.compile(Paths.HEALTH_ENDPOINT + "/[A-Za-z0-9]+/GET");
+      Pattern.compile(Paths.HEALTH_ENDPOINT + "/GET|/.+?/GET");
 
   @Inject
   RequestMatcher requestMatcher;

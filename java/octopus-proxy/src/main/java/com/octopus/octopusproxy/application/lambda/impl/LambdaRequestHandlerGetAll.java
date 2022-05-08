@@ -44,9 +44,6 @@ public class LambdaRequestHandlerGetAll implements LambdaRequestHandler {
   LambdaHttpValueExtractor lambdaHttpValueExtractor;
 
   @Inject
-  RegExUtils regExUtils;
-
-  @Inject
   ProxyResponseBuilder proxyResponseBuilder;
 
   /**
