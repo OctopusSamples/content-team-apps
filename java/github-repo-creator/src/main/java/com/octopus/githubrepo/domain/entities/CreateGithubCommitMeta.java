@@ -24,4 +24,12 @@ public class CreateGithubCommitMeta {
    * Represents the API address of the repo that contains the new commit.
    */
   private String apiRepoUrl;
+  /**
+   * The repo owner.
+   */
+  private String owner;
+  /**
+   * The repo name;
+   */
+  private String repoName;
 }

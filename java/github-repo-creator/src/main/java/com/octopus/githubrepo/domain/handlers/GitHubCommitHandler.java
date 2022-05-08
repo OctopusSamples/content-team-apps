@@ -226,6 +226,8 @@ public class GitHubCommitHandler {
               .builder()
               .browsableRepoUrl("https://github.com/" + user.getLogin() + "/" + repoName)
               .apiRepoUrl("https://api.github.com/repos/" + user.getLogin() + "/" + repoName)
+              .owner(user.getLogin())
+              .repoName(repoName)
               .build())
           .build());
     } catch (final ClientWebApplicationException ex) {
