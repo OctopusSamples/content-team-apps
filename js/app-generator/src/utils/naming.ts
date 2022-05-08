@@ -7,7 +7,7 @@ import {StateContext} from "../statemachine/appBuilder";
  * @param gitHubUser The github username.
  */
 export function generateSpaceName(platform: string, framework: string, gitHubUser: string): string {
-    return (platform + (framework ? " " + framework : "") + " " + gitHubUser).substring(20);
+    return (platform + (framework ? " " + framework : "") + " " + gitHubUser).substring(0, 20);
 }
 
 export function getOctopusServer(state: StateContext) {
