@@ -7,6 +7,8 @@ import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
+import {generateSpaceName, getOctopusServer} from "../../utils/naming";
+import Cookies from "js-cookie";
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -15,7 +17,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
     const [repoCreated, setRepoCreated] = useState<boolean>(false);
     const [workflowCompleted] = useState<boolean>(false);
-    const [spaceCreated] = useState<boolean>(false);
+    const [spaceCreated, setSpaceCreated] = useState<boolean>(false);
 
     const repoUrlValid = () => {
         return !!props.machine.state.context.apiRepoUrl;
@@ -44,13 +46,43 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             });
     }
 
+    const checkSpaceExists = () => {
+        // No need to check once the space is found
+        if (spaceCreated) {
+            return true;
+        }
+
+        const spaceName = generateSpaceName(
+            props.machine.state.context.targetPlatform,
+            props.machine.state.context.developmentFramework,
+            props.machine.state.context.owner);
+
+        const manuallyEnteredApiKey = Cookies.get("octopusApiKey");
+
+        const url = context.settings.octopusSpaceEndpoint + "?filter=name==" + encodeURIComponent(spaceName) + ";instance==" + getOctopusServer(props.machine.state.context)
+         + "apiKey=" + manuallyEnteredApiKey;
+
+        getJsonApi(url, context.settings, null)
+            .then(body => {
+                const bodyObject = body as any;
+                if (bodyObject.data.length !== 0) {
+                    setSpaceCreated(true);
+                }
+            })
+            .catch(() => {
+                setSpaceCreated(false);
+            });
+    }
+
     useEffect(() => {
         const timer = setInterval(() => {
             if (!context.settings.disableExternalCalls) {
                 checkRepoExists();
+                checkSpaceExists();
             } else {
                 // show a mock change after 1 second
                 setRepoCreated(true);
+                setSpaceCreated(true)
             }
         }, 10000);
         return () => clearInterval(timer);
@@ -61,19 +93,6 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
         ev.preventDefault();
         return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the App Builder.';
     });
-
-    function getOctopusServer() {
-        if (props.machine.state.context.octopusServer) {
-            try {
-                const url = new URL(props.machine.state.context.octopusServer);
-                return "https://" + url.hostname;
-            } catch {
-                return "https://" + props.machine.state.context.octopusServer.split("/")[0];
-            }
-        }
-        // Let the service return an error in its response code, and handle the response as usual.
-        return "";
-    }
 
     return (
         <>
@@ -152,7 +171,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                                 <td>{spaceCreated &&
                                     <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(getOctopusServer() + "/app#/configuration/spaces", "_blank")}>
+                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/configuration/spaces", "_blank")}>
                                         {"Open Workflows >"}
                                     </Button>}
                                 </td>

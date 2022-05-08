@@ -7,6 +7,7 @@ import lightDark from '../../images/spinnerDark.gif'
 import Cookies from "js-cookie";
 import {AppContext} from "../../App";
 import LinearProgress from "@mui/material/LinearProgress";
+import {getOctopusServer} from "../../utils/naming";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -20,19 +21,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         return "AppBuilder-" + props.machine.state.context.targetPlatform;
     }
 
-    function getOctopusServer() {
-        if (props.machine.state.context.octopusServer) {
-            try {
-                const url = new URL(props.machine.state.context.octopusServer);
-                return "https://" + url.hostname;
-            } catch {
-                return "https://" + props.machine.state.context.octopusServer.split("/")[0];
-            }
-        }
-        // Let the service return an error in its response code, and handle the response as usual.
-        return "";
-    }
-
     const createServiceAccount = (callback: (apiKey: string, apiKeyEncrypted: boolean, server: string) => void) => {
         const body = {
             "data": {
@@ -41,7 +29,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                     "username": "AppBuilder",
                     "displayName": "App Builder Service Account",
                     "isService": true,
-                    "octopusServer": getOctopusServer()
+                    "octopusServer": getOctopusServer(props.machine.state.context)
                 }
             }
         };
@@ -129,6 +117,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                     const bodyObject = body as any;
                     props.machine.state.context.browsableRepoUrl = bodyObject.data?.meta?.browsableRepoUrl;
                     props.machine.state.context.apiRepoUrl = bodyObject.data?.meta?.apiRepoUrl;
+                    props.machine.state.context.owner = bodyObject.data?.meta?.owner;
+                    props.machine.state.context.repoName = bodyObject.data?.meta?.repoName;
                 }
                 props.machine.send("NEXT")
             })
@@ -161,7 +151,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 from an octofront login.
              */
             if (manuallyEnteredApiKey) {
-                populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer());
+                populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer(props.machine.state.context));
             } else {
                 createServiceAccount(populateGitHubRepo);
             }

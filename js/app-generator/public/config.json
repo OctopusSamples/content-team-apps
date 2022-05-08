@@ -8,6 +8,7 @@
   "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
   "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
   "githubCommitEndpoint": "http://localhost:13000/api/githubcommit",
+  "octopusSpaceEndpoint": "http://localhost:8089/api/octopusspace",
   "githubRepoEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/api/githubrepo",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
   "healthEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/health",
