@@ -63,8 +63,9 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                 const bodyObject = body as any;
                 if (bodyObject?.data?.id) {
 
-                    const latestWorkflow = bodyObject?.data?.relationships?.workflowRuns?.data
-                        .sort((a: any, b: any) => a.runNumber > b.runNumber)
+                    const latestWorkflow = bodyObject?.data?.included
+                        ?.filter((i: any) => i.type === "workflowRuns")
+                        .sort((a: any, b: any) => a.attributes?.runNumber > b.attributes?.runNumber)
                         .pop();
 
                     if (latestWorkflow) {
