@@ -222,7 +222,7 @@ public class ResourceHandler {
       space.setInstance(sanitizedId.toString());
     });
 
-    return respondWithResources(spaceCollection.getItems());
+    return respondWithResources(items);
   }
 
   private CustomRsqlVisitor visitRsqlFilter(final String filter) {
