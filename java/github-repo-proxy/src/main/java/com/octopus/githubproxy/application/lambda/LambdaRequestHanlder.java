@@ -15,11 +15,10 @@ import com.octopus.githubproxy.domain.handlers.ResourceHandler;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
-import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
-import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import com.octopus.utilties.RegExUtils;
+import io.vavr.control.Try;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -40,6 +39,8 @@ public class LambdaRequestHanlder implements
    * A regular expression matching a single entity.
    */
   public static final Pattern INDIVIDUAL_RE = Pattern.compile(Paths.API_ENDPOINT + "/(?<id>.+)");
+  public static final Pattern WORKFLOW_RUNS_INDIVIDUAL_RE = Pattern.compile(
+      Paths.WORKFLOW_RUNS_API_ENDPOINT + "/(?<id>.+)");
   /**
    * A regular expression matching a health endpoint.
    */
@@ -66,6 +67,9 @@ public class LambdaRequestHanlder implements
 
   @Inject
   RequestMatcher requestMatcher;
+
+  @Inject
+  WorkflowRunsHandler workflowRunsHandler;
 
 
   /**
@@ -149,7 +153,6 @@ public class LambdaRequestHanlder implements
    * @return The Lambda response.
    */
   private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
-    try {
 
       if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
         return Optional.empty();
@@ -161,34 +164,19 @@ public class LambdaRequestHanlder implements
         return Optional.of(proxyResponseBuilder.buildNotFound());
       }
 
-      final String entity =
-          resourceHandler.getOne(
+      return Try.of(() -> resourceHandler.getOne(
               id.get(),
               lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-              lambdaHttpHeaderExtractor.getFirstHeader(
-                      input,
-                      HttpHeaders.AUTHORIZATION)
-                  .orElse(null),
-              lambdaHttpHeaderExtractor.getFirstHeader(
-                      input,
-                      Constants.SERVICE_AUTHORIZATION_HEADER)
-                  .orElse(null),
-              lambdaHttpCookieExtractor.getCookieValue(
-                      input,
-                      ServiceConstants.GITHUB_SESSION_COOKIE)
-                  .orElse(""));
-
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(200)
-              .withBody(entity));
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final EntityNotFoundException ex) {
-      return Optional.of(proxyResponseBuilder.buildNotFound());
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e));
-    }
+              lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+              lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+              lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse("")))
+          .map(entity -> Optional.of(
+              new ApiGatewayProxyResponseEventWithCors()
+                  .withStatusCode(200)
+                  .withBody(entity)))
+          .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+          .recover(EntityNotFoundException.class, e -> Optional.of(proxyResponseBuilder.buildNotFound()))
+          .recover(Exception.class, e -> Optional.of(proxyResponseBuilder.buildError(e)))
+          .get();
   }
 }

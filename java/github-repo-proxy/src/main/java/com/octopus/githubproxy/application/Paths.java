@@ -6,4 +6,7 @@ package com.octopus.githubproxy.application;
 public final class Paths {
   public static final String API_ENDPOINT = "/api/githubrepo";
   public static final String HEALTH_ENDPOINT = "/health/githubrepo";
+  public static final String WORKFLOW_RUNS_API_ENDPOINT = "/api/githubactionsruns";
+
+  public static final String WORKFLOW_RUNS_HEALTH_ENDPOINT = "/health/githubactionsruns";
 }

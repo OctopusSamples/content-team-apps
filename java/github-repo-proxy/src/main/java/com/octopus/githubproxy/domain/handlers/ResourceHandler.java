@@ -10,18 +10,19 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.GitHubRepoMeta;
+import com.octopus.githubproxy.domain.entities.WorkflowRuns;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoId;
+import com.octopus.githubproxy.domain.entities.GitHubWorkflowRun;
 import com.octopus.githubproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
-import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
-import com.octopus.utilties.PartitionIdentifier;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
@@ -31,8 +32,7 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 /**
  * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, and then pass the requests down
- * to repositories.
+ * inputs to POJOs, apply the security rules, and then pass the requests down to repositories.
  */
 @ApplicationScoped
 public class ResourceHandler {
@@ -108,13 +108,28 @@ public class ResourceHandler {
           repoId.get().getRepo(),
           "token " + decryptedGithubToken);
 
+      // Attempt to get the runs
+      final WorkflowRuns runs = gitHubClient.getWorkflowRuns(
+          repoId.get().getOwner(),
+          repoId.get().getRepo(),
+          "token " + decryptedGithubToken);
+
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo
           .builder()
           .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
+          .workflowRuns(runs.getWorkflowRuns()
+              .stream()
+              .map(w -> GitHubWorkflowRun.builder()
+                  .id(w.getId())
+                  .status(w.getStatus())
+                  .htmlUrl(w.getHtmlUrl())
+                  .build())
+              .collect(Collectors.toList()))
           .meta(GitHubRepoMeta
               .builder()
-              .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
+              .browsableUrl(
+                  "https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
               .build())
           .owner(repo.getOwner().getLogin())
           .repo(repo.getName())
@@ -126,6 +141,13 @@ public class ResourceHandler {
 
       throw ex;
     }
+  }
+
+  private String respondWithResources(final List<GitHubWorkflowRun> gitHubWorkflowRuns)
+      throws DocumentSerializationException {
+    final JSONAPIDocument<List<GitHubWorkflowRun>> document = new JSONAPIDocument<>(
+        gitHubWorkflowRuns);
+    return new String(resourceConverter.writeDocument(document));
   }
 
   private String respondWithResource(final GitHubRepo gitHubRepo)
@@ -164,7 +186,8 @@ public class ResourceHandler {
      */
     if (adminJwtClaimFeature.getAdminClaim().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(
             serviceAuthorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(), cognitoClientId))
+        .map(jwt -> jwtInspector.jwtContainsScope(jwt, adminJwtClaimFeature.getAdminClaim().get(),
+            cognitoClientId))
         .orElse(false)) {
       return true;
     }
@@ -172,8 +195,10 @@ public class ResourceHandler {
     /*
       Anyone assigned to the appropriate group is also granted access.
      */
-    return adminJwtGroupFeature.getAdminGroup().isPresent() && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
-        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt, adminJwtGroupFeature.getAdminGroup().get()))
+    return adminJwtGroupFeature.getAdminGroup().isPresent()
+        && jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader)
+        .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt,
+            adminJwtGroupFeature.getAdminGroup().get()))
         .orElse(false);
   }
 }

@@ -2,7 +2,9 @@ package com.octopus.githubproxy.domain.entities;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Meta;
+import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +41,12 @@ public class GitHubRepo {
    */
   @NotBlank
   private String repo;
+
+  /**
+   * The workflow runs associated with this repo.
+   */
+  @Relationship("workflowRuns")
+  private List<GitHubWorkflowRun> workflowRuns;
 
   /**
    * The metadata associated with the repo.
