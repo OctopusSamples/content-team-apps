@@ -57,7 +57,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             props.machine.state.context.developmentFramework,
             props.machine.state.context.owner);
 
-        const manuallyEnteredApiKey = Cookies.get("octopusApiKey");
+        const manuallyEnteredApiKey = Cookies.get("octopusApiKey") || "";
 
         const url = context.settings.octoSpaceEndpoint
             + "?filter=name==" + encodeURIComponent(spaceName)
