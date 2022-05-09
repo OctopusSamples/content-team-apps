@@ -65,8 +65,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
                     const latestWorkflow = bodyObject?.included
                         ?.filter((i: any) => i.type === "workflowruns")
-                        .sort((a: any, b: any) => a.attributes?.runNumber > b.attributes?.runNumber)
-                        .pop();
+                        ?.sort((a: any, b: any) => a.attributes?.runNumber > b.attributes?.runNumber)
+                        ?.pop();
 
                     if (latestWorkflow) {
                         setWorkflowUrl(latestWorkflow.attributes?.htmlUrl);
