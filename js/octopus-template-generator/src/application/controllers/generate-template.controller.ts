@@ -13,17 +13,15 @@ export class GenerateTemplateController {
     @post('/api/generatetemplate')
     async generateTemplate(
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        @requestBody({content: {'application/vnd.api+json': {}}}) requestBodyString: object,
+        @requestBody({content: {'application/vnd.api+json': {}}}) body: object,
         @inject(RestBindings.Http.RESPONSE) response: Response): Promise<Response> {
 
-        console.log(requestBodyString);
-
         // The incoming string is a JSONAPI object
-        const body = deserialise(JSON.stringify(requestBodyString));
+        const parsedBody = deserialise(body);
 
         const templateZip = await this.templateGenerator.generateTemplate(
-            body.data.attributes.generator,
-            body.data.attributes.options);
+            parsedBody.data.generator,
+            parsedBody.data.options);
         response.setHeader("Content-Type", "application/zip");
         response.download(templateZip, "template.zip", (err: Error) => {
             if (err) {
