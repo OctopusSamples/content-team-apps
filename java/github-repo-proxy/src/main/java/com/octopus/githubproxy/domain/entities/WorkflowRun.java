@@ -16,10 +16,10 @@ import lombok.extern.jackson.Jacksonized;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkflowRun {
-  private Integer id;
+  private Long id;
   @JsonProperty("html_url")
   private String htmlUrl;
   private String status;
   @JsonProperty("run_number")
-  private Integer runNumber;
+  private Long runNumber;
 }

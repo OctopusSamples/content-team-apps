@@ -1,6 +1,6 @@
 package com.octopus.githubproxy.domain.entities;
 
-import com.github.jasminb.jsonapi.IntegerIdHandler;
+import com.github.jasminb.jsonapi.LongIdHandler;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.AllArgsConstructor;
@@ -19,9 +19,9 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Type("workflowruns")
 public class GitHubWorkflowRun {
-  @Id(IntegerIdHandler.class)
-  private Integer id;
+  @Id(LongIdHandler.class)
+  private Long id;
   private String htmlUrl;
   private String status;
-  private Integer runNumber;
+  private Long runNumber;
 }
