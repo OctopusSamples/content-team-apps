@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.deser.std.DateDeserializers.TimestampDeser
 import com.github.jasminb.jsonapi.IntegerIdHandler;
 import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
+import com.github.jasminb.jsonapi.LongIdHandler;
 import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.GitHubRepoMeta;
+import com.octopus.githubproxy.domain.entities.GitHubWorkflowRun;
 import com.octopus.githubproxy.domain.entities.Health;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -20,8 +22,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     targets = {StringIdHandler.class,
         GitHubRepo.class,
         GitHubRepoMeta.class,
+        GitHubWorkflowRun.class,
         Health.class,
         IntegerIdHandler.class,
+        LongIdHandler.class,
         SerializationFeature.class,
         TimestampDeserializer.class,
         Link.class,
