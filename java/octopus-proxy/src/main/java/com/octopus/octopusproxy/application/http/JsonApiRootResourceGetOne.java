@@ -39,8 +39,7 @@ public class JsonApiRootResourceGetOne {
    * @param id           The ID of the resource to return.
    * @param acceptHeader The "Accept" headers.
    * @return An HTTP response object with the matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   @GET
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
@@ -55,13 +54,12 @@ public class JsonApiRootResourceGetOne {
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Optional.ofNullable(resourceHandler.getOne(
-            id,
-            apiKey,
-            dataPartitionHeaders,
-            authorizationHeader,
-            serviceAuthorizationHeader))
-        .map(d -> Response.ok(d).build())
-        .orElse(Response.status(Status.NOT_FOUND).build());
+    final String response = resourceHandler.getOne(
+        id,
+        apiKey,
+        dataPartitionHeaders,
+        authorizationHeader,
+        serviceAuthorizationHeader);
+    return Response.ok(response).build();
   }
 }

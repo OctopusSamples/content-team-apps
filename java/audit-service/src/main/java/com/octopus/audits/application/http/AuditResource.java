@@ -39,8 +39,7 @@ public class AuditResource {
    * @param acceptHeader The "Accept" headers.
    * @param filter       The RSQL query string.
    * @return a HTTP response object.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   @GET
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
@@ -71,8 +70,7 @@ public class AuditResource {
    * @param document     The JSONAPI resource to create.
    * @param acceptHeader The "Accept" headers.
    * @return An HTTP response object with the created resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   @POST
   @Consumes(GlobalConstants.JSONAPI_CONTENT_TYPE)
@@ -100,8 +98,7 @@ public class AuditResource {
    * @param id           The ID of the resource to return.
    * @param acceptHeader The "Accept" headers.
    * @return An HTTP response object with the matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   @GET
   @Produces(GlobalConstants.JSONAPI_CONTENT_TYPE)
@@ -115,10 +112,9 @@ public class AuditResource {
       @HeaderParam(GlobalConstants.SERVICE_AUTHORIZATION_HEADER) final List<String> serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Optional.ofNullable(auditsHandler.getOne(id, dataPartitionHeaders,
-            authorizationHeader.stream().findFirst().orElse(null),
-            serviceAuthorizationHeader.stream().findFirst().orElse(null)))
-        .map(d -> Response.ok(d).build())
-        .orElse(Response.status(Status.NOT_FOUND).build());
+    final String response = auditsHandler.getOne(id, dataPartitionHeaders,
+        authorizationHeader.stream().findFirst().orElse(null),
+        serviceAuthorizationHeader.stream().findFirst().orElse(null));
+    return Response.ok(response).build();
   }
 }

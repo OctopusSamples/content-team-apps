@@ -39,8 +39,7 @@ public class JsonApiRootResourceGetAll {
    * @param filter       The RSQL filter.
    * @param acceptHeader The "Accept" headers.
    * @return An HTTP response object with the matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   @GET
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
@@ -54,13 +53,12 @@ public class JsonApiRootResourceGetAll {
       @HeaderParam(Constants.SERVICE_AUTHORIZATION_HEADER) final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Optional.ofNullable(resourceHandler.getAll(
-            apiKey,
-            filter,
-            dataPartitionHeaders,
-            authorizationHeader,
-            serviceAuthorizationHeader))
-        .map(d -> Response.ok(d).build())
-        .orElse(Response.status(Status.NOT_FOUND).build());
+    final String response = resourceHandler.getAll(
+        apiKey,
+        filter,
+        dataPartitionHeaders,
+        authorizationHeader,
+        serviceAuthorizationHeader);
+    return Response.ok(response).build();
   }
 }
