@@ -20,4 +20,6 @@ public class WorkflowRun {
   @JsonProperty("html_url")
   private String htmlUrl;
   private String status;
+  @JsonProperty("run_number")
+  private Integer runNumber;
 }

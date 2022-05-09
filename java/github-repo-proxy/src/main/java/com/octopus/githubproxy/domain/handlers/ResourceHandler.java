@@ -124,6 +124,7 @@ public class ResourceHandler {
                   .id(w.getId())
                   .status(w.getStatus())
                   .htmlUrl(w.getHtmlUrl())
+                  .runNumber(w.getRunNumber())
                   .build())
               .collect(Collectors.toList()))
           .meta(GitHubRepoMeta

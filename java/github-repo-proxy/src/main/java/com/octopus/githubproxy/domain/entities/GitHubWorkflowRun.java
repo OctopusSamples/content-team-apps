@@ -23,4 +23,5 @@ public class GitHubWorkflowRun {
   private Integer id;
   private String htmlUrl;
   private String status;
+  private Integer runNumber;
 }
