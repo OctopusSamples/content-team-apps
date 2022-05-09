@@ -219,7 +219,7 @@ public class ResourceHandler {
     // Each space needs some additional fields added to indicate their global origin.
     items.forEach(space -> {
       // Set the global ID to the resource URL
-      space.setId(sanitizedId.toString() + "/spaces/" + space.getEntityId());
+      space.setId(sanitizedId.toString() + "/api/spaces/" + space.getEntityId());
 
       // Set the instance that the space belongs to
       space.setInstance(sanitizedId.toString());
