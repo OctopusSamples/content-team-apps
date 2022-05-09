@@ -45,7 +45,7 @@ public class GitHubRepo {
   /**
    * The workflow runs associated with this repo.
    */
-  @Relationship("workflowRuns")
+  @Relationship(value = "workflowRuns", resolve = true)
   private List<GitHubWorkflowRun> workflowRuns;
 
   /**
