@@ -260,8 +260,7 @@ public class ServiceAccountHandler {
       throw new InvalidInputException("The service attribute must be true");
     }
 
-    if (Try.of(() -> new URL(serviceAccount.getOctopusServer())).isFailure()) {
-      throw new InvalidInputException("The octopus server URL was not valid");
-    }
+    Try.of(() -> new URL(serviceAccount.getOctopusServer()))
+        .getOrElseThrow(e -> new InvalidInputException("The octopus server URL was not valid"));
   }
 }
