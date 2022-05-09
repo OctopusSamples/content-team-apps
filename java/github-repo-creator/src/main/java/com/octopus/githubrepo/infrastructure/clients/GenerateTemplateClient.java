@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.infrastructure.clients;
 
+import com.octopus.Constants;
 import com.octopus.githubrepo.GlobalConstants;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -20,7 +21,7 @@ public interface GenerateTemplateClient {
   @POST
   @Path("generatetemplate")
   @Produces("application/zip")
-  @Consumes(MediaType.APPLICATION_JSON)
+  @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   Response generateTemplate(
       String generateTemplate,
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
