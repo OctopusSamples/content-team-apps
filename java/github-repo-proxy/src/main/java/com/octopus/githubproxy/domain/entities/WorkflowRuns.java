@@ -1,6 +1,8 @@
 package com.octopus.githubproxy.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +20,6 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 public class WorkflowRuns {
   @JsonProperty("workflow_runs")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   private List<WorkflowRun> workflowRuns;
 }
