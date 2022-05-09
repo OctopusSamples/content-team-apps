@@ -17,7 +17,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const context = useContext(AppContext);
     const [repoCreated, setRepoCreated] = useState<boolean>(false);
     const [workflowCompleted] = useState<boolean>(false);
-    const [spaceCreated, setSpaceCreated] = useState<boolean>(false);
+    const [spaceId, setSpaceId] = useState<string | null>(null);
 
     const repoUrlValid = () => {
         return !!props.machine.state.context.apiRepoUrl;
@@ -48,7 +48,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
     const checkSpaceExists = () => {
         // No need to check once the space is found
-        if (spaceCreated) {
+        if (spaceId) {
             return true;
         }
 
@@ -70,11 +70,11 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject.data.length !== 0) {
-                    setSpaceCreated(true);
+                    setSpaceId(bodyObject.data[0].attributes.Id);
                 }
             })
             .catch(() => {
-                setSpaceCreated(false);
+                setSpaceId(null);
             });
     }
 
@@ -86,7 +86,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             } else {
                 // show a mock change after 1 second
                 setRepoCreated(true);
-                setSpaceCreated(true)
+                setSpaceId(getOctopusServer(props.machine.state.context))
             }
         }, 10000);
         return () => clearInterval(timer);
@@ -168,15 +168,15 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>{spaceCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!spaceCreated && <CircularProgress size={32}/>}</td>
-                                <td>{spaceCreated && <span>Created</span>}{!spaceCreated && <span>Creating</span>} the
+                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                    {!spaceId && <CircularProgress size={32}/>}</td>
+                                <td>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
                                     Octopus space
                                 </td>
-                                <td>{spaceCreated &&
+                                <td>{!!spaceId &&
                                     <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/configuration/spaces", "_blank")}>
-                                        {"Open Workflows >"}
+                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
+                                        {"Open Space >"}
                                     </Button>}
                                 </td>
                             </tr>
