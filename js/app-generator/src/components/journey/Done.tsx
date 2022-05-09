@@ -16,7 +16,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
     const context = useContext(AppContext);
     const [repoCreated, setRepoCreated] = useState<boolean>(false);
-    const [workflowCompleted] = useState<boolean>(false);
+    const [workflowUrl, setWorkflowUrl] = useState<string | null>(null);
+    const [workflowCompleted, setWorkflowCompleted] = useState<boolean>(false);
     const [spaceId, setSpaceId] = useState<string | null>(null);
 
     const repoUrlValid = () => {
@@ -43,6 +44,38 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             })
             .catch(() => {
                 setRepoCreated(false);
+            });
+    }
+
+    const checkWorkflowComplete = () => {
+        // If for some reason the api url was not returned, don't attempt to query it
+        if (!repoUrlValid()) {
+            return;
+        }
+
+        // No need to check once the repo is found
+        if (workflowCompleted) {
+            return true;
+        }
+
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
+            .then(body => {
+                const bodyObject = body as any;
+                if (bodyObject?.data?.id) {
+
+                    const latestWorkflow = bodyObject?.data?.relationships?.workflowRuns?.data
+                        .sort((a: any, b: any) => a.runNumber > b.runNumber)
+                        .pop();
+
+                    if (latestWorkflow) {
+                        setWorkflowUrl(latestWorkflow.htmlUrl);
+                        setWorkflowCompleted(latestWorkflow?.status === "completed");
+                    }
+                }
+            })
+            .catch(() => {
+                setWorkflowUrl(null);
+                setWorkflowCompleted(false);
             });
     }
 
@@ -83,10 +116,13 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             if (!context.settings.disableExternalCalls) {
                 checkRepoExists();
                 checkSpaceExists();
+                checkWorkflowComplete();
             } else {
                 // show a mock change after 1 second
                 setRepoCreated(true);
-                setSpaceId(getOctopusServer(props.machine.state.context))
+                setSpaceId(getOctopusServer(props.machine.state.context));
+                setWorkflowCompleted(true);
+                setWorkflowUrl(props.machine.state.context.browsableRepoUrl + "/actions")
             }
         }, 10000);
         return () => clearInterval(timer);
@@ -141,8 +177,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                                 <td>{repoUrlValid() && <span>
                                         {repoCreated && <span>Created </span>}
-                                        {!repoCreated && <span>Creating </span>}
-                                        the GitHub repo
+                                    {!repoCreated && <span>Creating </span>}
+                                    the GitHub repo
                                     </span>}
                                     {!repoUrlValid() && <span>There was an error querying the GitHub repo. Please report
                                         this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"}>here</a>.</span>}
@@ -155,14 +191,15 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>{workflowCompleted &&
+                                <td>{!!workflowUrl &&
                                     <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!workflowCompleted && <CircularProgress size={32}/>}</td>
-                                <td>{workflowCompleted && <span>Completed</span>}{!workflowCompleted &&
-                                    <span>Running</span>} the GitHub Actions workflow
+                                    {!workflowUrl && <CircularProgress size={32}/>}</td>
+                                <td>
+                                    {workflowCompleted && <span>Completed</span>}
+                                    {!workflowCompleted && <span>Running</span>} the GitHub Actions workflow
                                 </td>
-                                <td>{workflowCompleted && <Button sx={openResourceStyle} variant="outlined"
-                                                                  onClick={() => window.open(props.machine.state.context.browsableRepoUrl + "/actions", "_blank")}>
+                                <td>{!!workflowUrl && <Button sx={openResourceStyle} variant="outlined"
+                                                              onClick={() => window.open(workflowUrl, "_blank")}>
                                     {"Open Workflows >"}
                                 </Button>}
                                 </td>
