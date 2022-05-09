@@ -11,6 +11,7 @@ import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.GitHubRepoMeta;
+import com.octopus.githubproxy.domain.entities.WorkflowRun;
 import com.octopus.githubproxy.domain.entities.WorkflowRuns;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoId;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -109,26 +111,13 @@ public class ResourceHandler {
           "token " + decryptedGithubToken);
 
       // Attempt to get the runs
-      final WorkflowRuns runs = gitHubClient.getWorkflowRuns(
-          repoId.get().getOwner(),
-          repoId.get().getRepo(),
-          "token " + decryptedGithubToken);
+      final List<GitHubWorkflowRun> runs = getWorkflowRuns(repoId.get(), decryptedGithubToken);
 
       // Return the simplified copy of the response back to the client
       return respondWithResource(GitHubRepo
           .builder()
           .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
-          .workflowRuns(runs.getWorkflowRuns() == null
-              ? List.of()
-              : runs.getWorkflowRuns()
-                  .stream()
-                  .map(w -> GitHubWorkflowRun.builder()
-                      .id(w.getId())
-                      .status(w.getStatus())
-                      .htmlUrl(w.getHtmlUrl())
-                      .runNumber(w.getRunNumber())
-                      .build())
-                  .collect(Collectors.toList()))
+          .workflowRuns(runs)
           .meta(GitHubRepoMeta
               .builder()
               .browsableUrl(
@@ -144,6 +133,31 @@ public class ResourceHandler {
 
       throw ex;
     }
+  }
+
+  private List<GitHubWorkflowRun> getWorkflowRuns(final RepoId repoId, final String decryptedGithubToken) {
+    // Attempt to get the runs
+    final List<WorkflowRun> runs =
+        gitHubClient.getWorkflowRuns(
+                repoId.getOwner(),
+                repoId.getRepo(),
+                "token " + decryptedGithubToken)
+            .getWorkflowRuns();
+
+    // Deal with the possibility that there is no list
+    if (runs == null) {
+      return List.of();
+    }
+
+    // Convert the upstream objects into downstream objects
+    return runs.stream()
+        .map(w -> GitHubWorkflowRun.builder()
+            .id(w.getId())
+            .status(w.getStatus())
+            .htmlUrl(w.getHtmlUrl())
+            .runNumber(w.getRunNumber())
+            .build())
+        .collect(Collectors.toList());
   }
 
   private String respondWithResource(final GitHubRepo gitHubRepo)
