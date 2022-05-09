@@ -36,5 +36,19 @@ module.exports = class extends Generator {
             null,
             { globOptions: { dot: true } }
         );
+
+        this.fs.copyTpl(
+            this.templatePath('terraform/aws-ecr-existing/*.tf'),
+            this.destinationPath('terraform/aws-ecr-existing'),
+            {
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
+                aws_region: this.options["aws_region"],
+                framework: this.options["framework"],
+                platform: this.options["framework"]
+            },
+            null,
+            { globOptions: { dot: true } }
+        );
     }
 };
