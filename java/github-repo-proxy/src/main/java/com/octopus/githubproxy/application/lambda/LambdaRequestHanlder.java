@@ -20,6 +20,7 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import com.octopus.utilties.RegExUtils;
+import io.quarkus.logging.Log;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -187,7 +188,7 @@ public class LambdaRequestHanlder implements
     } catch (final EntityNotFoundException ex) {
       return Optional.of(proxyResponseBuilder.buildNotFound());
     } catch (final Exception e) {
-      e.printStackTrace();
+      Log.error("Failed to call GitHub API", e);
       return Optional.of(proxyResponseBuilder.buildError(e));
     }
   }
