@@ -123,6 +123,20 @@ public class ResourceHandler {
         .build());
   }
 
+  /**
+   * Deal with upstream GitHub exceptions.
+   *
+   * @param ex The exception thrown when calling the upstream service.
+   * @return The exception that needs to be rethrown.
+   */
+  private RuntimeException handleException(final ClientWebApplicationException ex) {
+    if (ex.getResponse().getStatus() == 404) {
+      return new EntityNotFoundException();
+    }
+
+    return ex;
+  }
+
   private Repo getRepo(final RepoId repoId, final String decryptedGithubToken) {
     try {
       return gitHubClient.getRepo(
@@ -130,11 +144,7 @@ public class ResourceHandler {
           repoId.getRepo(),
           "token " + decryptedGithubToken);
     } catch (final ClientWebApplicationException ex) {
-      if (ex.getResponse().getStatus() == 404) {
-        throw new EntityNotFoundException();
-      }
-
-      throw ex;
+      throw handleException(ex);
     }
   }
 
@@ -163,11 +173,7 @@ public class ResourceHandler {
               .build())
           .collect(Collectors.toList());
     } catch (final ClientWebApplicationException ex) {
-      if (ex.getResponse().getStatus() == 404) {
-        throw new EntityNotFoundException();
-      }
-
-      throw ex;
+      throw handleException(ex);
     }
   }
 
