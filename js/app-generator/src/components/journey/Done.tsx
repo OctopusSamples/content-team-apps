@@ -60,8 +60,10 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
         const manuallyEnteredApiKey = Cookies.get("octopusApiKey") || "";
 
         const url = context.settings.octoSpaceEndpoint
-            + "?filter=name==" + encodeURIComponent(spaceName)
-            + ";instance==" + encodeURIComponent(getOctopusServer(props.machine.state.context))
+            + "?filter="
+            + "name==" + encodeURIComponent(spaceName)
+            + encodeURIComponent(";")
+            + "instance==" + encodeURIComponent(getOctopusServer(props.machine.state.context))
             + "&apiKey=" + encodeURIComponent(manuallyEnteredApiKey);
 
         getJsonApi(url, context.settings, null)
