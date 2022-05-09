@@ -151,14 +151,17 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull amazon/aws-cli 2>&1
           docker pull imega/jq 2>&1
           docker pull weaveworks/eksctl 2>&1
-          docker pull jshimko/kube-tools-aws 2>&1
+          docker pull bitnami/kubectl 2>&1
           echo "##octopus[stdout-default]"
+
+          # Download the IAM authenticator
+          curl --silent -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
 
           # Alias the docker run commands
           shopt -s expand_aliases
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
-          alias kubectl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY jshimko/kube-tools-aws kubectl"
+          alias kubectl="docker run --rm -v $(pwd)/aws-iam-authenticator:/usr/local/bin/aws-iam-authenticator -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY bitnami/kubectl"
           alias jq="docker run --rm -i imega/jq"
 
           # Get the environment name, up to the first space
