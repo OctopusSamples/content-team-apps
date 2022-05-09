@@ -61,7 +61,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         const url = context.settings.octoSpaceEndpoint
             + "?filter="
-            + "name==" + encodeURIComponent(spaceName)
+            + "name==\"" + encodeURIComponent(spaceName) + "\""
             + encodeURIComponent(";")
             + "instance==" + encodeURIComponent(getOctopusServer(props.machine.state.context))
             + "&apiKey=" + encodeURIComponent(manuallyEnteredApiKey);
