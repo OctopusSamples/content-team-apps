@@ -27,6 +27,8 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   @Override
   public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex,
       @NonNull final String requestBody) {
+    LOGGER.log(Level.SEVERE, "System exception thrown", ex);
+
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(500)
         .withBody("{\"errors\": [{\"code\": \""
