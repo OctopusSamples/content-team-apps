@@ -192,6 +192,19 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                             <tr>
+                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
+                                    {!spaceId && <CircularProgress size={32}/>}</td>
+                                <td>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
+                                    Octopus space
+                                </td>
+                                <td>{!!spaceId &&
+                                    <Button sx={openResourceStyle} variant="outlined"
+                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
+                                        {"Open Space >"}
+                                    </Button>}
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>{!!workflowUrl &&
                                     <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
                                     {!workflowUrl && <CircularProgress size={32}/>}</td>
@@ -203,19 +216,6 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                                               onClick={() => window.open(workflowUrl, "_blank")}>
                                     {"Open Workflows >"}
                                 </Button>}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!spaceId && <CircularProgress size={32}/>}</td>
-                                <td>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
-                                    Octopus space
-                                </td>
-                                <td>{!!spaceId &&
-                                    <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
-                                        {"Open Space >"}
-                                    </Button>}
                                 </td>
                             </tr>
                         </table>
