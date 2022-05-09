@@ -38,7 +38,7 @@ public class OauthClientCredsAccessorImpl implements OauthClientCredsAccessor {
     }
 
     if (cred.clientId().isPresent() && cred.clientSecret().isPresent()) {
-      Try<Oauth> accessTokenResult =  Try.of(() -> oauthClient.getToken(
+      final Try<Oauth> accessTokenResult =  Try.of(() -> oauthClient.getToken(
               "Basic " + Base64.getEncoder()
                   .encodeToString(
                       (cred.clientId().get() + ":" + cred.clientSecret().get()).getBytes()),
