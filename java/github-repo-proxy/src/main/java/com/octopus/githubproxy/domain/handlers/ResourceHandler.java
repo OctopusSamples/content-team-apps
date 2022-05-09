@@ -20,6 +20,7 @@ import com.octopus.githubproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import io.vavr.control.Try;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -99,33 +100,35 @@ public class ResourceHandler {
       throw new EntityNotFoundException();
     }
 
+    // Decrypt the github token passed in as a cookie.
+    final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption, githubSalt);
+
+    // Attempt to get the repo
+    final Repo repo = getRepo(repoId.get(), decryptedGithubToken);
+
+    // Attempt to get the runs
+    final List<GitHubWorkflowRun> runs = getWorkflowRuns(repoId.get(), decryptedGithubToken);
+
+    // Return the simplified copy of the response back to the client
+    return respondWithResource(GitHubRepo
+        .builder()
+        .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
+        .workflowRuns(runs)
+        .meta(GitHubRepoMeta
+            .builder()
+            .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
+            .build())
+        .owner(repo.getOwner().getLogin())
+        .repo(repo.getName())
+        .build());
+  }
+
+  private Repo getRepo(final RepoId repoId, final String decryptedGithubToken) {
     try {
-      // Decrypt the github token passed in as a cookie.
-      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
-          githubSalt);
-
-      // Attempt to get the repo
-      final Repo repo = gitHubClient.getRepo(
-          repoId.get().getOwner(),
-          repoId.get().getRepo(),
+      return gitHubClient.getRepo(
+          repoId.getOwner(),
+          repoId.getRepo(),
           "token " + decryptedGithubToken);
-
-      // Attempt to get the runs
-      final List<GitHubWorkflowRun> runs = getWorkflowRuns(repoId.get(), decryptedGithubToken);
-
-      // Return the simplified copy of the response back to the client
-      return respondWithResource(GitHubRepo
-          .builder()
-          .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
-          .workflowRuns(runs)
-          .meta(GitHubRepoMeta
-              .builder()
-              .browsableUrl(
-                  "https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
-              .build())
-          .owner(repo.getOwner().getLogin())
-          .repo(repo.getName())
-          .build());
     } catch (final ClientWebApplicationException ex) {
       if (ex.getResponse().getStatus() == 404) {
         throw new EntityNotFoundException();
@@ -136,28 +139,36 @@ public class ResourceHandler {
   }
 
   private List<GitHubWorkflowRun> getWorkflowRuns(final RepoId repoId, final String decryptedGithubToken) {
-    // Attempt to get the runs
-    final List<WorkflowRun> runs =
-        gitHubClient.getWorkflowRuns(
-                repoId.getOwner(),
-                repoId.getRepo(),
-                "token " + decryptedGithubToken)
-            .getWorkflowRuns();
+    try {
+      // Attempt to get the runs
+      final List<WorkflowRun> runs =
+          gitHubClient.getWorkflowRuns(
+                  repoId.getOwner(),
+                  repoId.getRepo(),
+                  "token " + decryptedGithubToken)
+              .getWorkflowRuns();
 
-    // Deal with the possibility that there is no list
-    if (runs == null) {
-      return List.of();
+      // Deal with the possibility that there is no list
+      if (runs == null) {
+        return List.of();
+      }
+
+      // Convert the upstream objects into downstream objects
+      return runs.stream()
+          .map(w -> GitHubWorkflowRun.builder()
+              .id(w.getId())
+              .status(w.getStatus())
+              .htmlUrl(w.getHtmlUrl())
+              .runNumber(w.getRunNumber())
+              .build())
+          .collect(Collectors.toList());
+    } catch (final ClientWebApplicationException ex) {
+      if (ex.getResponse().getStatus() == 404) {
+        throw new EntityNotFoundException();
+      }
+
+      throw ex;
     }
-
-    // Convert the upstream objects into downstream objects
-    return runs.stream()
-        .map(w -> GitHubWorkflowRun.builder()
-            .id(w.getId())
-            .status(w.getStatus())
-            .htmlUrl(w.getHtmlUrl())
-            .runNumber(w.getRunNumber())
-            .build())
-        .collect(Collectors.toList());
   }
 
   private String respondWithResource(final GitHubRepo gitHubRepo)
