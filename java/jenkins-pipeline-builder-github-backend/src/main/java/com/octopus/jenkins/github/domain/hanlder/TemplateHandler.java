@@ -288,14 +288,6 @@ public class TemplateHandler {
           .filter(publicEmailTester::isPublicEmail)
           .collect(Collectors.toList());
 
-      /*
-       If there are none, send through a blank email. This allows us to collect UTMs even if
-       we don't have email addresses.
-       */
-      if (emailStrings.isEmpty()) {
-        emailStrings.add("");
-      }
-
       emailStrings.forEach(email -> serviceBusMessageGenerator.sendLoginMessage(
           GithubUserLoggedInForFreeToolsEventV1.builder()
               .id("")
