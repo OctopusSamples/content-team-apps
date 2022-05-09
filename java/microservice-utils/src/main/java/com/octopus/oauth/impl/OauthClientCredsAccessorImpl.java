@@ -1,6 +1,7 @@
 package com.octopus.oauth.impl;
 
 import com.octopus.features.OauthClientCreds;
+import com.octopus.oauth.Oauth;
 import com.octopus.oauth.OauthClient;
 import com.octopus.oauth.OauthClientCredsAccessor;
 import io.vavr.control.Try;
@@ -37,7 +38,7 @@ public class OauthClientCredsAccessorImpl implements OauthClientCredsAccessor {
     }
 
     if (cred.clientId().isPresent() && cred.clientSecret().isPresent()) {
-      return Try.of(() -> oauthClient.getToken(
+      Try<Oauth> accessTokenResult =  Try.of(() -> oauthClient.getToken(
               "Basic " + Base64.getEncoder()
                   .encodeToString(
                       (cred.clientId().get() + ":" + cred.clientSecret().get()).getBytes()),
@@ -45,13 +46,17 @@ public class OauthClientCredsAccessorImpl implements OauthClientCredsAccessor {
               cred.clientId().get(),
               scope))
           // We expect to see an access token. Fail if the value is empty.
-          .filter(oauth -> StringUtils.isNotBlank(oauth.getAccessToken()))
-          // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
-          .mapTry(oauth -> {
-            accessToken = oauth.getAccessToken();
-            expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
-            return accessToken;
-          });
+          .filter(oauth -> StringUtils.isNotBlank(oauth.getAccessToken()));
+
+      // save the cached values and return the access token
+      if (accessTokenResult.isSuccess()) {
+        accessToken = accessTokenResult.get().getAccessToken();
+        expiry = new Date().getTime() + ((long) accessTokenResult.get().getExpiresIn() * 1000) - (10 * 60 * 1000);
+        return Try.of(() -> accessToken);
+      }
+
+      // Return a failure
+      return Try.failure(accessTokenResult.getCause());
     }
 
     return Try.failure(new Exception("Cognito client ID or secret were not set"));
