@@ -23,6 +23,8 @@ import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import io.vavr.control.Try;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -192,7 +194,8 @@ public class ResourceHandler {
             () -> HttpClients.custom().setDefaultHeaders(headers).build())
         .of(client -> {
           final HttpResponse response = client.execute(new HttpGet(
-              sanitizedId.toString() + "/api/spaces?partialName=" + visitor.getNameArgument()));
+              sanitizedId.toString() + "/api/spaces?partialName="
+                  + URLEncoder.encode(visitor.getNameArgument(), StandardCharsets.UTF_8.toString())));
           if (response.getStatusLine().getStatusCode() == 200) {
             return EntityUtils.toString(response.getEntity());
           }
