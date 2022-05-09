@@ -3,6 +3,8 @@ package com.octopus.lambda.impl;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.ProxyResponseBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.NonNull;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -11,8 +13,12 @@ import org.apache.commons.text.StringEscapeUtils;
  */
 public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
 
+  private static final Logger LOGGER = Logger.getLogger(ProxyResponseBuilderImpl.class.getName());
+
   @Override
   public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex) {
+    LOGGER.log(Level.SEVERE, "System exception thrown", ex);
+
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(500)
         .withBody("{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
