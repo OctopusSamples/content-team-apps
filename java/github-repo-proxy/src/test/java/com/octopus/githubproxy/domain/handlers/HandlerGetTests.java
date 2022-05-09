@@ -13,6 +13,7 @@ import com.octopus.githubproxy.TestingProfile;
 import com.octopus.githubproxy.domain.entities.GitHubRepo;
 import com.octopus.githubproxy.domain.entities.Repo;
 import com.octopus.githubproxy.domain.entities.RepoOwner;
+import com.octopus.githubproxy.domain.entities.WorkflowRuns;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -71,6 +72,8 @@ public class HandlerGetTests {
 
       throw new ClientWebApplicationException(missingResponse);
     });
+
+    Mockito.when(gitHubClient.getWorkflowRuns(any(), any(), any())).thenReturn(WorkflowRuns.builder().build());
 
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }

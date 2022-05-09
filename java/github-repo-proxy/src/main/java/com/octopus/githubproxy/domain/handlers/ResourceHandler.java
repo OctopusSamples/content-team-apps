@@ -31,8 +31,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 /**
- * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, and then pass the requests down to repositories.
+ * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the inputs to POJOs, apply the security rules, and then pass the
+ * requests down to repositories.
  */
 @ApplicationScoped
 public class ResourceHandler {
@@ -76,8 +76,7 @@ public class ResourceHandler {
    * @param id                   The ID of the resource to return.
    * @param dataPartitionHeaders The "data-partition" headers.
    * @return The matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String getOne(@NonNull final String id,
       @NonNull final List<String> dataPartitionHeaders,
@@ -118,15 +117,17 @@ public class ResourceHandler {
       return respondWithResource(GitHubRepo
           .builder()
           .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
-          .workflowRuns(runs.getWorkflowRuns()
-              .stream()
-              .map(w -> GitHubWorkflowRun.builder()
-                  .id(w.getId())
-                  .status(w.getStatus())
-                  .htmlUrl(w.getHtmlUrl())
-                  .runNumber(w.getRunNumber())
-                  .build())
-              .collect(Collectors.toList()))
+          .workflowRuns(runs.getWorkflowRuns() == null
+              ? List.of()
+              : runs.getWorkflowRuns()
+                  .stream()
+                  .map(w -> GitHubWorkflowRun.builder()
+                      .id(w.getId())
+                      .status(w.getStatus())
+                      .htmlUrl(w.getHtmlUrl())
+                      .runNumber(w.getRunNumber())
+                      .build())
+                  .collect(Collectors.toList()))
           .meta(GitHubRepoMeta
               .builder()
               .browsableUrl(
