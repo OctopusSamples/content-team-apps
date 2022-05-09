@@ -69,8 +69,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         .pop();
 
                     if (latestWorkflow) {
-                        setWorkflowUrl(latestWorkflow.htmlUrl);
-                        setWorkflowCompleted(latestWorkflow?.status === "completed");
+                        setWorkflowUrl(latestWorkflow.attributes?.htmlUrl);
+                        setWorkflowCompleted(latestWorkflow?.attributes?.status === "completed");
                     }
                 }
             })
