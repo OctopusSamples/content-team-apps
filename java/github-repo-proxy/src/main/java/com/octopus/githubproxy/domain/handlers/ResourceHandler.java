@@ -2,6 +2,7 @@ package com.octopus.githubproxy.domain.handlers;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
+import com.github.jasminb.jsonapi.SerializationSettings;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.EntityNotFoundException;
@@ -145,17 +146,13 @@ public class ResourceHandler {
     }
   }
 
-  private String respondWithResources(final List<GitHubWorkflowRun> gitHubWorkflowRuns)
-      throws DocumentSerializationException {
-    final JSONAPIDocument<List<GitHubWorkflowRun>> document = new JSONAPIDocument<>(
-        gitHubWorkflowRuns);
-    return new String(resourceConverter.writeDocument(document));
-  }
-
   private String respondWithResource(final GitHubRepo gitHubRepo)
       throws DocumentSerializationException {
     final JSONAPIDocument<GitHubRepo> document = new JSONAPIDocument<GitHubRepo>(gitHubRepo);
-    return new String(resourceConverter.writeDocument(document));
+    final SerializationSettings serializationSettings = new SerializationSettings.Builder()
+        .includeRelationship("workflowRuns")
+        .build();
+    return new String(resourceConverter.writeDocument(document, serializationSettings));
   }
 
   /**
