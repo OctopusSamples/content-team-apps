@@ -68,9 +68,6 @@ public class LambdaRequestHanlder implements
   @Inject
   RequestMatcher requestMatcher;
 
-  @Inject
-  WorkflowRunsHandler workflowRunsHandler;
-
 
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
@@ -96,31 +93,25 @@ public class LambdaRequestHanlder implements
   }
 
   /**
-   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the
-   * API, but with an additional path that indicates the http method. So, for example, a GET request
-   * to /health/resources/GET will return 200 OK if the service responding to /api/resources is able
-   * to service a GET request, and a GET request to /health/resources/1/DELETE will return 200 OK if
-   * the service responding to /api/resources/1 is available to service a DELETE request.
+   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the API, but with an additional path that indicates the http
+   * method. So, for example, a GET request to /health/resources/GET will return 200 OK if the service responding to /api/resources is able to service a GET
+   * request, and a GET request to /health/resources/1/DELETE will return 200 OK if the service responding to /api/resources/1 is available to service a DELETE
+   * request.
    *
    * <p>This approach was taken to support the fact that Lambdas may well have unique services
-   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching
-   * resource collections (i.e. /api/resources), and a dedicated lambda fetching individual
-   * resources (i.e. /api/resources/1). The health of these lambdas may be independent of one
-   * another.
+   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching resource collections (i.e. /api/resources), and a dedicated
+   * lambda fetching individual resources (i.e. /api/resources/1). The health of these lambdas may be independent of one another.
    *
    * <p>This is unlike a traditional web service, where it is usually taken for granted that a
-   * single application responds to all these requests, and therefore a single health endpoint can
-   * represent the status of all endpoints.
+   * single application responds to all these requests, and therefore a single health endpoint can represent the status of all endpoints.
    *
    * <p>By ensuring every path has a matching health endpoint, we allow clients to verify the
-   * status of the service without having to know which lambdas respond to which requests. This does
-   * mean that a client may need to verify the health of half a dozen endpoints to fully determine
-   * the state of the client's dependencies, but this is a more accurate representation of the
-   * health of the system.
+   * status of the service without having to know which lambdas respond to which requests. This does mean that a client may need to verify the health of half a
+   * dozen endpoints to fully determine the state of the client's dependencies, but this is a more accurate representation of the health of the system.
    *
    * <p>This particular service will typically be deployed with one lambda responding to many
-   * endpoints, but clients can not assume this is always the case, and must check the health of
-   * each endpoint to accurately evaluate the health of the service.
+   * endpoints, but clients can not assume this is always the case, and must check the health of each endpoint to accurately evaluate the health of the
+   * service.
    *
    * @param input The request details
    * @return The optional proxy response
@@ -154,29 +145,29 @@ public class LambdaRequestHanlder implements
    */
   private Optional<APIGatewayProxyResponseEvent> getOne(final APIGatewayProxyRequestEvent input) {
 
-      if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
-        return Optional.empty();
-      }
+    if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
+      return Optional.empty();
+    }
 
-      final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
+    final Optional<String> id = regExUtils.getGroup(INDIVIDUAL_RE, input.getPath(), "id");
 
-      if (id.isEmpty()) {
-        return Optional.of(proxyResponseBuilder.buildNotFound());
-      }
+    if (id.isEmpty()) {
+      return Optional.of(proxyResponseBuilder.buildNotFound());
+    }
 
-      return Try.of(() -> resourceHandler.getOne(
-              id.get(),
-              lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
-              lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
-              lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
-              lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse("")))
-          .map(entity -> Optional.of(
-              new ApiGatewayProxyResponseEventWithCors()
-                  .withStatusCode(200)
-                  .withBody(entity)))
-          .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
-          .recover(EntityNotFoundException.class, e -> Optional.of(proxyResponseBuilder.buildNotFound()))
-          .recover(Exception.class, e -> Optional.of(proxyResponseBuilder.buildError(e)))
-          .get();
+    return Try.of(() -> resourceHandler.getOne(
+            id.get(),
+            lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+            lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+            lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+            lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse("")))
+        .map(entity -> Optional.of(
+            new ApiGatewayProxyResponseEventWithCors()
+                .withStatusCode(200)
+                .withBody(entity)))
+        .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+        .recover(EntityNotFoundException.class, e -> Optional.of(proxyResponseBuilder.buildNotFound()))
+        .recover(Exception.class, e -> Optional.of(proxyResponseBuilder.buildError(e)))
+        .get();
   }
 }
