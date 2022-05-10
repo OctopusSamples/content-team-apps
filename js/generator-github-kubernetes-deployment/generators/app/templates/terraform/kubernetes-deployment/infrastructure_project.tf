@@ -152,10 +152,10 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull imega/jq 2>&1
           docker pull weaveworks/eksctl 2>&1
           docker pull bitnami/kubectl 2>&1
-          echo "##octopus[stdout-default]"
 
           # Download the IAM authenticator
           curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator 2>&1
+          echo "##octopus[stdout-default]"
 
           # Let the bitnami/kubectl user execute this file
           chmod 755 aws-iam-authenticator
