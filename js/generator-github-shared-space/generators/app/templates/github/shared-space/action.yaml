@@ -49,9 +49,32 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    # Allow for the possibility that the space already exists. This allows the GitHub repo to be deleted,
+    # which in turn effectively means Terraform loses access to the backend state, and therefor "forgets"
+    # that it created a space.
+    - name: Check if space exists
+      id: space_exists
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        SPACE="${{ inputs.octopus_space }}"
+        OWNER="${{ inputs.github_repo_owner }}"
+        FULL_SPACE_NAME="${SPACE} ${OWNER}"
+        SPACE_NAME=${FULL_SPACE_NAME:0:20}
+        echo "Checking for ${SPACE_NAME}"
+        EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
+        SPACE_ID=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq -r ".Items[] | select(.Name == \"${SPACE_NAME}\") | .Id")
+        SPACE_NAME=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq -r ".Items[] | select(.Name == \"${SPACE_NAME}\") | .Name")
+        echo "::set-output name=EXISTS::${EXISTS}"
+        echo "::set-output name=SPACE_ID::${SPACE_ID}"
+        echo "::set-output name=SPACE_NAME::${SPACE_NAME}"
+      shell: bash
+
     # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
     # CLI tooling to create a unique bucket before Terraform is run.
     - name: Create Terraform state S3 bucket
+      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
@@ -71,6 +94,7 @@ runs:
     # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
     # environment variables. This allows us to generate a unique backend configuration with each deployment.
     - uses: danielr1996/envsubst-action@1.1.0
+      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
@@ -79,6 +103,7 @@ runs:
         output: terraform/shared-space/backend.tf
 
     - name: Terraform Init
+      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
@@ -87,6 +112,7 @@ runs:
       shell: bash
 
     - name: Terraform Apply
+      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
@@ -108,7 +134,12 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: terraform output -raw octopus_space_id
+      run: |
+        if [[ "${{ steps.space_exists.outputs.EXISTS }}" == "false" ]]; then
+          terraform output -raw octopus_space_id
+        else
+          echo "${{ steps.space_exists.outputs.SPACE_ID }}"
+        fi
       working-directory: terraform/shared-space
       shell: bash
 
@@ -117,6 +148,11 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: terraform output -raw octopus_space_name
+      run: |
+        if [[ "${{ steps.space_exists.outputs.EXISTS }}" == "false" ]]; then
+          terraform output -raw octopus_space_name
+        else
+          echo "${{ steps.space_exists.outputs.SPACE_NAME }}"
+        fi
       working-directory: terraform/shared-space
       shell: bash
