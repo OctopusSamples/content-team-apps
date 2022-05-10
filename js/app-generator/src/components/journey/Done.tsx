@@ -148,7 +148,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         className={classes.column}
                     >
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
-                        <h2>Your Octopus instance is now being configured.</h2>
+                        <h2>Your CI/CD pipeline is now being configured.</h2>
                         <p>
                             The progress of the various resources created by the App Builder are shown below:
                         </p>
