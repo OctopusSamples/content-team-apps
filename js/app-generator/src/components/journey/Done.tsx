@@ -1,6 +1,6 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Button, CircularProgress, Grid} from "@mui/material";
-import {iconStyle, journeyContainer, openResourceStyle, progressStyle, styles} from "../../utils/styles";
+import {iconStyle, journeyContainer, openResourceStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
