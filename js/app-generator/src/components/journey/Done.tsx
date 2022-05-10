@@ -176,11 +176,15 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                     </span>}
                                     {!repoUrlValid() && <CancelIcon className={moreClasses.icon}/>}
                                 </td>
-                                <td>{repoUrlValid() && <span>
+                                <td>{repoUrlValid() && <span><p>
                                         {repoCreated && <span>Created </span>}
                                     {!repoCreated && <span>Creating </span>}
                                     the GitHub repo
-                                    </span>}
+                                    </p>
+                                    <p>
+                                        This repo holds the Terraform templates used to create and populate the Octopus space, as well as the sample
+                                        application source code.
+                                    </p></span>}
                                     {!repoUrlValid() && <span>There was an error querying the GitHub repo. Please report
                                         this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"}>here</a>.</span>}
                                 </td>
@@ -195,7 +199,10 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
                                     {!spaceId && <CircularProgress size={32}/>}</td>
                                 <td>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
-                                    Octopus space
+                                    <p>Octopus space</p>
+                                    <p>This is the space that will host the deployment project and other resources required to deploy the sample
+                                        application.</p>
+                                    <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
                                 </td>
                                 <td>{!!spaceId &&
                                     <Button sx={openResourceStyle} variant="outlined"
@@ -209,8 +216,12 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                     <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
                                     {!workflowCompleted && <CircularProgress size={32}/>}</td>
                                 <td>
-                                    {workflowCompleted && <span>Completed</span>}
-                                    {!workflowCompleted && <span>Running</span>} the GitHub Actions workflow
+                                    <p>{workflowCompleted && <span>Completed</span>}
+                                        {!workflowCompleted && <span>Running</span>} the GitHub Actions workflow</p>
+                                    <p>
+                                        When this workflow is finished, the Octopus space will be populated, the sample application will be built and published,
+                                        and all other supporting resources (like Docker repositories) will be created.
+                                    </p>
                                 </td>
                                 <td>{!!workflowUrl && <Button sx={openResourceStyle} variant="outlined"
                                                               onClick={() => window.open(workflowUrl, "_blank")}>
