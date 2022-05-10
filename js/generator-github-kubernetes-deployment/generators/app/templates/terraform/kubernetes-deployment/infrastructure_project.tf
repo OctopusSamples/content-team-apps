@@ -157,11 +157,14 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # Download the IAM authenticator
           curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
 
+          # Let the bitnami/kubectl user execute this file
+          chmod 755 aws-iam-authenticator
+
           # Alias the docker run commands
           shopt -s expand_aliases
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
-          alias kubectl="docker run --rm -v $(pwd)/aws-iam-authenticator:/usr/local/bin/aws-iam-authenticator -v $(pwd)/kubeconfig:/.kube/config -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY bitnami/kubectl"
+          alias kubectl="docker run --rm -v $(pwd)/aws-iam-authenticator:/usr/local/bin/aws-iam-authenticator -v $(pwd):/build -v $(pwd)/kubeconfig:/.kube/config -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY bitnami/kubectl"
           alias jq="docker run --rm -i imega/jq"
 
           # Get the environment name, up to the first space
@@ -201,8 +204,20 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           aws eks update-kubeconfig --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --kubeconfig /build/kubeconfig
 
+          # The "aws eks update-kubeconfig" above uses the aws cli to generate the token. We want to use aws-iam-authenticator,
+          # because it is self contained and can be easily mounted in a Docker container.
+          # The arguments used by the aws command don't directly map to aws-iam-authenticator, but we can remove and replace
+          # the options to make it work.
+          sed -i.bak -e "s|      apiVersion: client.authentication.k8s.io/v1beta1|      apiVersion: client.authentication.k8s.io/v1alpha1|" ./kubeconfig
+          sed -i.bak -e "s|      - eks||" ./kubeconfig
+          sed -i.bak -e "s|      - get-token|      - token|" ./kubeconfig
+          sed -i.bak -e "s|      - --cluster-name|      - -i|" ./kubeconfig
+          sed -i.bak -e "s|      command: aws|      command: aws-iam-authenticator|" ./kubeconfig
+
+          # Let the bitnami/kubectl user read this file
+          chmod 644 kubeconfig
+
           kubectl apply \
-              --kubeconfig=/build/kubeconfig \
               --validate=false \
               -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
@@ -211,6 +226,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
           # Download the CRDs as a seperate step
           curl --silent -Lo v2_4_1_crd.yaml https://gist.githubusercontent.com/mcasperson/3338fdd21c1a5fe8668924f5d867830b/raw/6b12bb630bd5fbc2c186158a9107267288b7496b/v2_4_1_crd.yaml 2>&1
+
+          # Let the bitnami/kubectl user read this file
+          chmod 644 /v2_4_1_crd.yaml
 
           kubectl apply -f /build/v2_4_1_crd.yaml 2>&1
 
@@ -223,6 +241,9 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
           curl --silent -Lo v2_4_1_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.1/v2_4_1_full.yaml
           sed -i.bak -e "s|your-cluster-name|app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}|" ./v2_4_1_full.yaml
+
+          # Let the bitnami/kubectl user read this file
+          chmod 644 /v2_4_1_full.yaml
 
           # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
           kubectl apply -f /build/v2_4_1_full.yaml 2>&1
