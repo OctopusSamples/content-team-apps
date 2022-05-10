@@ -52,6 +52,12 @@ export const journeyContainer = makeStyles((theme) => {
     }
 });
 
+export const iconStyle: SxProps<Theme> = {
+    margin: "16px",
+    width: "32px",
+    height: "32px"
+}
+
 export const progressStyle: SxProps<Theme> = {
     marginBottom: "8px"
 }

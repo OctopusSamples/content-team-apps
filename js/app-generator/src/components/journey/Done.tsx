@@ -1,6 +1,6 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Button, CircularProgress, Grid} from "@mui/material";
-import {journeyContainer, openResourceStyle, progressStyle, styles} from "../../utils/styles";
+import {iconStyle, journeyContainer, openResourceStyle, progressStyle, styles} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
@@ -151,16 +151,16 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>You're all done.</h2>
                         <p>
-                            The progress of the various resources that are created by the App Builder is shown below:
+                            The progress of the various resources created by the App Builder are shown below:
                         </p>
                         <table>
                             <tr>
                                 <td>{repoUrlValid() &&
                                     <span>
-                                        {repoCreated && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                        {!repoCreated && <CircularProgress size={32}/>}
+                                        {repoCreated && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
+                                        {!repoCreated && <CircularProgress sx={iconStyle} size={32}/>}
                                     </span>}
-                                    {!repoUrlValid() && <CancelIcon className={moreClasses.icon}/>}
+                                    {!repoUrlValid() && <CancelIcon sx={iconStyle}/>}
                                 </td>
                                 <td>{repoUrlValid() && <span><h3>
                                         {repoCreated && <span>Created </span>}
@@ -182,8 +182,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!spaceId && <CircularProgress size={32}/>}</td>
+                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
+                                    {!spaceId && <CircularProgress size={32} sx={iconStyle}/>}</td>
                                 <td><h3>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
                                     Octopus space.</h3>
                                     <p>This is the space that will host the deployment project and other resources required to deploy the sample
@@ -199,8 +199,8 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             </tr>
                             <tr>
                                 <td>{workflowCompleted &&
-                                    <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!workflowCompleted && <CircularProgress size={32}/>}</td>
+                                    <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
+                                    {!workflowCompleted && <CircularProgress size={32} sx={iconStyle}/>}</td>
                                 <td>
                                     <h3>{workflowCompleted && <span>Completed</span>}
                                         {!workflowCompleted && <span>Running</span>} the GitHub Actions workflow.</h3>
