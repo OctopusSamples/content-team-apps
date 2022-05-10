@@ -205,9 +205,9 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>{!!workflowUrl &&
+                                <td>{workflowCompleted &&
                                     <CheckCircleOutlineOutlinedIcon className={moreClasses.icon}/>}
-                                    {!workflowUrl && <CircularProgress size={32}/>}</td>
+                                    {!workflowCompleted && <CircularProgress size={32}/>}</td>
                                 <td>
                                     {workflowCompleted && <span>Completed</span>}
                                     {!workflowCompleted && <span>Running</span>} the GitHub Actions workflow
