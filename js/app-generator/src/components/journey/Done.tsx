@@ -12,7 +12,6 @@ import Cookies from "js-cookie";
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
-    const moreClasses = styles();
 
     const context = useContext(AppContext);
     const [repoCreated, setRepoCreated] = useState<boolean>(false);
