@@ -155,13 +155,13 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "##octopus[stdout-default]"
 
           # Download the IAM authenticator
-          curl --silent -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+          curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
 
           # Alias the docker run commands
           shopt -s expand_aliases
           alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
           alias eksctl="docker run --rm -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY weaveworks/eksctl"
-          alias kubectl="docker run --rm -v $(pwd)/aws-iam-authenticator:/usr/local/bin/aws-iam-authenticator -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY bitnami/kubectl"
+          alias kubectl="docker run --rm -v $(pwd)/aws-iam-authenticator:/usr/local/bin/aws-iam-authenticator -v $(pwd)/kubeconfig:/.kube/config -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY bitnami/kubectl"
           alias jq="docker run --rm -i imega/jq"
 
           # Get the environment name, up to the first space
@@ -207,29 +207,29 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
           # Wait for deployment
-          kubectl --kubeconfig=/build/kubeconfig -n cert-manager rollout status deployment cert-manager
+          kubectl -n cert-manager rollout status deployment cert-manager
 
           # Download the CRDs as a seperate step
           curl --silent -Lo v2_4_1_crd.yaml https://gist.githubusercontent.com/mcasperson/3338fdd21c1a5fe8668924f5d867830b/raw/6b12bb630bd5fbc2c186158a9107267288b7496b/v2_4_1_crd.yaml 2>&1
 
-          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_crd.yaml 2>&1
+          kubectl apply -f /build/v2_4_1_crd.yaml 2>&1
 
           # Wait for the CRDs to be established. This prevents errors like:
           # no matches for kind "IngressClassParams" in version "elbv2.k8s.aws/v1beta1"
           # See https://github.com/OctopusSamples/content-team-apps/issues/14
-          kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/ingressclassparams.elbv2.k8s.aws
-          kubectl --kubeconfig=/build/kubeconfig wait --for condition=established --timeout=60s crd/targetgroupbindings.elbv2.k8s.aws
+          kubectl wait --for condition=established --timeout=60s crd/ingressclassparams.elbv2.k8s.aws
+          kubectl wait --for condition=established --timeout=60s crd/targetgroupbindings.elbv2.k8s.aws
 
           # The docs at provide instructions on downloading and modifying the ALB resources. The file in this GIST in the end result of those modifications.
           curl --silent -Lo v2_4_1_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.1/v2_4_1_full.yaml
           sed -i.bak -e "s|your-cluster-name|app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}|" ./v2_4_1_full.yaml
 
           # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
-          kubectl --kubeconfig=/build/kubeconfig apply -f /build/v2_4_1_full.yaml 2>&1
+          kubectl apply -f /build/v2_4_1_full.yaml 2>&1
           echo "##octopus[stdout-default]"
 
           echo "Displaying the aws-load-balancer-controller deployment"
-          kubectl --kubeconfig=/build/kubeconfig get deployment -n kube-system aws-load-balancer-controller
+          kubectl get deployment -n kube-system aws-load-balancer-controller
 
         EOT
       }
