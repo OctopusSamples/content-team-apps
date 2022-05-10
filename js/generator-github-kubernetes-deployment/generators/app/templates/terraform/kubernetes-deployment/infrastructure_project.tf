@@ -155,7 +155,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           echo "##octopus[stdout-default]"
 
           # Download the IAM authenticator
-          curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+          curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator 2>&1
 
           # Let the bitnami/kubectl user execute this file
           chmod 755 aws-iam-authenticator
