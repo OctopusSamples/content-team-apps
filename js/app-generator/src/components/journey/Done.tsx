@@ -151,20 +151,6 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>You're all done.</h2>
                         <p>
-                            In the background a GitHub repository is being populated with a sample application and
-                            Terraform templates.
-                        </p>
-                        <p>
-                            The application code and Terraform templates are processed by
-                            a GitHub Actions workflow. The code is compiled into deployable artifacts (ZIP files or
-                            Docker images depending on the platform), while the Terraform templates are used to create
-                            and populate a new Octopus space. This is the CI half of the CI/CD pipeline.
-                        </p>
-                        <p>
-                            Once the Octopus space is populated, the projects it contains are used to deploy the sample
-                            application to the cloud. This is the CD half of the CI/CD pipeline.
-                        </p>
-                        <p>
                             The progress of the various resources that are created by the App Builder is shown below:
                         </p>
                         <table>
