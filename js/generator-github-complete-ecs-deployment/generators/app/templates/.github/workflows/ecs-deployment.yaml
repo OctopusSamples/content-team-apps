@@ -1,8 +1,8 @@
 name: ECS Deployment
+permissions:
+  contents: write
 'on':
   workflow_dispatch: {}
-  permission:
-    contents: write
   push:
     paths:
       - '**/*'
