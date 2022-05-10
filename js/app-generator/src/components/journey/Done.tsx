@@ -148,7 +148,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         className={classes.column}
                     >
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
-                        <h2>You're all done.</h2>
+                        <h2>Your Octopus instance is now being configured.</h2>
                         <p>
                             The progress of the various resources created by the App Builder are shown below:
                         </p>
@@ -215,7 +215,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                 </td>
                             </tr>
                         </table>
-                        <h2>Next steps</h2>
+                        <h2>Next steps.</h2>
                         <p>
                             When the GitHub Actions workflow is completed, your Octopus instance is fully populated and ready to perform your first deployment.
                         </p>
