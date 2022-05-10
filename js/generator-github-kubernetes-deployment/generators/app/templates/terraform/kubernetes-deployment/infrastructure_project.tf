@@ -228,7 +228,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           curl --silent -Lo v2_4_1_crd.yaml https://gist.githubusercontent.com/mcasperson/3338fdd21c1a5fe8668924f5d867830b/raw/6b12bb630bd5fbc2c186158a9107267288b7496b/v2_4_1_crd.yaml 2>&1
 
           # Let the bitnami/kubectl user read this file
-          chmod 644 /v2_4_1_crd.yaml
+          chmod 644 v2_4_1_crd.yaml
 
           kubectl apply -f /build/v2_4_1_crd.yaml 2>&1
 
@@ -243,7 +243,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           sed -i.bak -e "s|your-cluster-name|app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}|" ./v2_4_1_full.yaml
 
           # Let the bitnami/kubectl user read this file
-          chmod 644 /v2_4_1_full.yaml
+          chmod 644 v2_4_1_full.yaml
 
           # Now deploy the full file. This includes the CRDs above, but they should remain unchanged.
           kubectl apply -f /build/v2_4_1_full.yaml 2>&1
