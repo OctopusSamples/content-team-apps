@@ -12,7 +12,7 @@ resource "octopusdeploy_space" "app_builder_space" {
   # In this case we want to create a new, unique space. This is achieved by scanning the Octopus instance
   # for any existing spaces with the same prefix, getting the count, adding 1, and using that as the suffix.
   # This is obviously not completely accurate, as spaces may have been renamed, but should catch most edge cases.
-  name                        = "${substr("${var.octopus_space} ${lower(var.github_repo_owner)}", 0, 19)}${data.octopusdeploy_spaces.app_builder_space.count == 0 ? substr("${var.octopus_space} ${lower(var.github_repo_owner)}", 20, 1) : data.octopusdeploy_spaces.app_builder_space.count + 1}"
+  name                        = "${substr("${var.octopus_space} ${lower(var.github_repo_owner)}", 0, 19)}${length(data.octopusdeploy_spaces.app_builder_space) == 0 ? substr("${var.octopus_space} ${lower(var.github_repo_owner)}", 20, 1) : data.octopusdeploy_spaces.app_builder_space.count + 1}"
   is_default                  = false
   is_task_queue_stopped       = false
   space_managers_teams        = ["teams-everyone"]
