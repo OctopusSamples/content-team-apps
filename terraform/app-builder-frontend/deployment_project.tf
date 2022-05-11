@@ -351,7 +351,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com; script-src 'self'
+                          *.google-analytics.com *.amazonaws.com *.youtube.com; script-src 'self'
                           'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
                           style-src * 'unsafe-inline'; img-src *; font-src *'
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
@@ -428,7 +428,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com; script-src 'self'
+                          *.google-analytics.com *.amazonaws.com *.youtube.com; script-src 'self'
                           'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
                           style-src * 'unsafe-inline'; img-src *; font-src *'
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
