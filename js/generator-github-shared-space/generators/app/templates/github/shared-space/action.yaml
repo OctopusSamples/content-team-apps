@@ -49,32 +49,9 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
-    # Allow for the possibility that the space already exists. This allows the GitHub repo to be deleted,
-    # which in turn effectively means Terraform loses access to the backend state, and therefor "forgets"
-    # that it created a space.
-    - name: Check if space exists
-      id: space_exists
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: |
-        SPACE="${{ inputs.octopus_space }}"
-        OWNER="${{ inputs.github_repo_owner }}"
-        FULL_SPACE_NAME="${SPACE} ${OWNER}"
-        SPACE_NAME=${FULL_SPACE_NAME:0:20}
-        echo "Checking for ${SPACE_NAME}"
-        EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
-        SPACE_ID=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq -r ".Items[] | select(.Name == \"${SPACE_NAME}\") | .Id")
-        SPACE_NAME=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq -r ".Items[] | select(.Name == \"${SPACE_NAME}\") | .Name")
-        echo "::set-output name=EXISTS::${EXISTS}"
-        echo "::set-output name=SPACE_ID::${SPACE_ID}"
-        echo "::set-output name=SPACE_NAME::${SPACE_NAME}"
-      shell: bash
-
     # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
     # CLI tooling to create a unique bucket before Terraform is run.
     - name: Create Terraform state S3 bucket
-      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
@@ -94,7 +71,6 @@ runs:
     # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
     # environment variables. This allows us to generate a unique backend configuration with each deployment.
     - uses: danielr1996/envsubst-action@1.1.0
-      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
@@ -103,7 +79,6 @@ runs:
         output: terraform/shared-space/backend.tf
 
     - name: Terraform Init
-      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
@@ -111,13 +86,67 @@ runs:
       working-directory: terraform/shared-space
       shell: bash
 
-    - name: Terraform Apply
-      if: ${{ steps.space_exists.outputs.EXISTS == 'false' }}
+    - name: Terraform Get State
+      id: terraform_state
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform state pull
+      working-directory: terraform/shared-space
+      shell: bash
+
+    # Allow for the possibility that the space we want to create already exists.
+    # By first checking for the existing space, we can remove conflicts where Terraform forgets the state
+    # e.g. the GitHub repo is deleted and recreated.
+    - name: Check if space exists
+      id: space_exists
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
-        terraform apply -auto-approve -var="octopus_server=${{ inputs.octopus_server }}" -var="octopus_apikey=${{ inputs.octopus_apikey }}" -var="octopus_space=${{ inputs.octopus_space }}" -var="github_repo=${{ inputs.github_repo }}" -var="github_repo_owner=${{ inputs.github_repo_owner }}"
+        # Check for the state file
+        aws s3api head-object --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --key appbuilder-shared-space --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
+        STATE_FILE_EXISTS=$?
+
+        if [[ ${STATE_FILE_EXISTS} == 0 ]]; then
+          echo "State file exists, so we reuse the existing name"
+
+          # If the state file exists, reuse the existing name
+          SPACE_NAME=$(echo '${{ steps.terraform_state.outputs.stdout }}' | jq -r '.outputs.octopus_space_name.value')
+          echo "Existing space name: ${SPACE_NAME}"
+          echo "::set-output name=SPACE_NAME::${SPACE_NAME}"
+        else
+          echo "State file does not exists, so we find a new space name"
+          
+          # If the state file does not exist, try and generate a new space name
+          SPACE="${{ inputs.octopus_space }}"
+          OWNER="${{ inputs.github_repo_owner }}"
+          FULL_SPACE_NAME="${SPACE} ${OWNER}"
+          SPACE_NAME=${FULL_SPACE_NAME:0:20}
+          echo "Checking for ${SPACE_NAME}"
+          EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
+
+          COUNTER=0
+          while [[ $EXISTS == "true" ]]
+          do
+            echo "Welcome $x times"
+            COUNTER=$(( $COUNTER + 1 ))
+            SPACE_NAME="${FULL_SPACE_NAME:0:18} ${COUNTER}"
+            EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
+          done
+
+          echo "New space name: ${SPACE_NAME}"
+          echo "::set-output name=SPACE_NAME::${SPACE_NAME}"
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        echo "Space name: ${{ steps.space_exists.outputs.SPACE_NAME }}"
+        terraform apply -auto-approve -var="octopus_server=${{ inputs.octopus_server }}" -var="octopus_apikey=${{ inputs.octopus_apikey }}" -var="octopus_space=${{ steps.space_exists.outputs.SPACE_NAME }}" -var="github_repo=${{ inputs.github_repo }}" -var="github_repo_owner=${{ inputs.github_repo_owner }}"
         
         if [[ $? -ne 0 ]]; then
           echo "AppBuilder-Infrastructure-OctopusSpaceFailed The build script failed to create an Octopus space. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusspacefailed for more information."
@@ -134,12 +163,7 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: |
-        if [[ "${{ steps.space_exists.outputs.EXISTS }}" == "false" ]]; then
-          terraform output -raw octopus_space_id
-        else
-          echo "${{ steps.space_exists.outputs.SPACE_ID }}"
-        fi
+      run: terraform output -raw octopus_space_id
       working-directory: terraform/shared-space
       shell: bash
 
@@ -148,11 +172,6 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: |
-        if [[ "${{ steps.space_exists.outputs.EXISTS }}" == "false" ]]; then
-          terraform output -raw octopus_space_name
-        else
-          echo "${{ steps.space_exists.outputs.SPACE_NAME }}"
-        fi
+      run: terraform output -raw octopus_space_name
       working-directory: terraform/shared-space
       shell: bash
