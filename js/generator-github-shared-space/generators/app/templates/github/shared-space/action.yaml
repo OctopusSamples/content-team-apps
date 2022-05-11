@@ -105,16 +105,12 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check for the state file
-        aws s3api head-object --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --key appbuilder-shared-space --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
-        STATE_FILE_EXISTS=$?
+        EXISTING_STATE_NAME=$(echo '${{ steps.terraform_state.outputs.stdout }}' | jq -r '.outputs.octopus_space_name.value')
 
-        if [[ ${STATE_FILE_EXISTS} == 0 ]]; then
+        if [[ ${EXISTING_STATE_NAME} != "null" ]]; then
           echo "State file exists, so we reuse the existing name"
-
-          # If the state file exists, reuse the existing name
-          SPACE_NAME=$(echo '${{ steps.terraform_state.outputs.stdout }}' | jq -r '.outputs.octopus_space_name.value')
-          echo "Existing space name: ${SPACE_NAME}"
-          echo "::set-output name=SPACE_NAME::${SPACE_NAME}"
+          echo "Existing space name: ${EXISTING_STATE_NAME}"
+          echo "::set-output name=SPACE_NAME::${EXISTING_STATE_NAME}"
         else
           echo "State file does not exists, so we find a new space name"
           
