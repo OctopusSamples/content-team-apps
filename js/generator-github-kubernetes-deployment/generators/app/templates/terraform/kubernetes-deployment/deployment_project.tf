@@ -169,43 +169,43 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         extract_during_deployment = true
       }
       script_body = <<-EOT
-          echo "##octopus[stdout-verbose]"
-          docker pull appthreat/dep-scan
-          echo "##octopus[stdout-default]"
+        TIMESTAMP=$(date +%s%3N)
+        SUCCESS=0
+        for x in $(find . -name bom.xml -type f -print); do
+            # Delete any existing report file
+            if [[ -f "$PWD/depscan-bom.json" ]]; then
+              rm "$PWD/depscan-bom.json"
+            fi
 
-          TIMESTAMP=$(date +%s%3N)
-          SUCCESS=0
-          for x in **/bom.xml; do
-              # Delete any existing report file
-              if [[ -f "$PWD/depscan-bom.json" ]]; then
-                rm "$PWD/depscan-bom.json"
-              fi
+            # Generate the report, capturing the output, and ensuring $? is set to the exit code
+            OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/$${x}\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
 
-              # Generate the report, capturing the output, and ensuring $? is set to the exit code
-              OUTPUT=$(bash -c "docker run --rm -v \"$PWD:/app\" appthreat/dep-scan scan --bom \"/app/bom.xml\" --type bom --report_file /app/depscan.json; exit \$?" 2>&1)
+            # Success is set to 1 if the exit code is not zero
+            if [[ $? -ne 0 ]]; then
+                SUCCESS=1
+            fi
 
-              # Success is set to 1 if the exit code is not zero
-              if [[ $? -ne 0 ]]; then
-                  SUCCESS=1
-              fi
+            # Report file is not generated if no threats found
+            # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
+            if [[ -f "$PWD/depscan-bom.json" ]]; then
+              new_octopusartifact "$PWD/depscan-bom.json"
+              # The number of lines in the report file equals the number of vulnerabilities found
+              COUNT=$(wc -l < "$PWD/depscan-bom.json")
+            else
+              COUNT=0
+            fi
 
-              # Report file is not generated if no threats found
-              # https://github.com/ShiftLeftSecurity/sast-scan/issues/168
-              if [[ -f "$PWD/depscan-bom.json" ]]; then
-                new_octopusartifact "$PWD/depscan-bom.json"
-                # The number of lines in the report file equals the number of vulnerabilities found
-                COUNT=$(wc -l < "$PWD/depscan-bom.json")
-              else
-                COUNT=0
-              fi
+            # Print the output stripped of ANSI colour codes
+            echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+        done
 
-              # Print the output stripped of ANSI colour codes
-              echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
-          done
+        set_octopusvariable "VerificationResult" $SUCCESS
 
-          set_octopusvariable "VerificationResult" $SUCCESS
+        if [[  $SUCCESS -ne 0 ]]; then
+          >&2 echo "Vulnerabilities were detected"
+        fi
 
-          exit 0
+        exit 0
         EOT
     }
   }
