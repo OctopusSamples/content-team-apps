@@ -50,8 +50,7 @@ public class LambdaRequestHandlerCreate implements LambdaRequestHandler {
    * Handle the lambda request.
    *
    * @param input The request event.
-   * @return A populated response event, or an empty optional if this service did not handle the
-   * event.
+   * @return A populated response event, or an empty optional if this service did not handle the event.
    */
   @Override
   public Optional<APIGatewayProxyResponseEvent> handleRequest(
