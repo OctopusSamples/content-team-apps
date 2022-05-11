@@ -124,8 +124,11 @@ runs:
           FULL_SPACE_NAME="${SPACE} ${OWNER}"
           SPACE_NAME=${FULL_SPACE_NAME:0:20}
           echo "Checking for ${SPACE_NAME}"
+        
+          # Start with the space name and owner as the full string, and check to see if it already exists.
           EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
 
+          # While the space name exists, increment a counter to find a unique name
           COUNTER=0
           while [[ $EXISTS == "true" ]]
           do
