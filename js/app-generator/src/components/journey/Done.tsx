@@ -220,9 +220,6 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             When the GitHub Actions workflow is completed, your Octopus instance is fully populated and ready to perform your first deployment.
                         </p>
                         <p>
-                            The <strong>Deploy Backend Service</strong> project is ready for you to deploy the sample application to your new cloud infrastructure.
-                        </p>
-                        <p>
                             Watch the video below to learn how to make the most of your Octopus instance.
                         </p>
                         <iframe width="100%" height="522" src="https://www.youtube.com/embed/rvhUkW2k10g" title="YouTube video player" frameBorder="0"
