@@ -128,7 +128,6 @@ runs:
           COUNTER=0
           while [[ $EXISTS == "true" ]]
           do
-            echo "Welcome $x times"
             COUNTER=$(( $COUNTER + 1 ))
             SPACE_NAME="${FULL_SPACE_NAME:0:18} ${COUNTER}"
             EXISTS=$(curl --get --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' --data-urlencode "partialName=${SPACE_NAME}" "${{ inputs.octopus_server }}/api/Spaces" | jq "any(.Items[] ; select(.Name == \"${SPACE_NAME}\"))")
