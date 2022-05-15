@@ -6,7 +6,7 @@ import { makeStyles } from '@mui/styles';
 // components
 import Header from "./Header";
 import Footer from "./Footer";
-import {AppContext} from "../../App";
+import {AppContext} from "../App";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) => {

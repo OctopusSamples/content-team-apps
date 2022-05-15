@@ -4,7 +4,7 @@ import {makeStyles} from '@mui/styles';
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness3Icon from "@mui/icons-material/Brightness3";
 import {FC, useContext} from "react";
-import {AppContext} from "../../App";
+import {AppContext} from "../App";
 import {History, LocalHospital, SettingsApplications, Share} from "@mui/icons-material";
 import {useHistory} from "react-router-dom";
 

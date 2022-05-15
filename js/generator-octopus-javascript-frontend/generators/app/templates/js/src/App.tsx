@@ -3,7 +3,7 @@ import {createTheme, responsiveFontSizes, StyledEngineProvider, Theme, ThemeProv
 import {Helmet} from "react-helmet";
 import {darkTheme, lightTheme} from "./theme/appTheme";
 import {RuntimeSettings} from "./config/runtimeConfig";
-import Layout from "./components/scaffold/Layout";
+import Layout from "./components/Layout";
 import {HashRouter, Route, Switch} from "react-router-dom";
 import {routes} from "./config";
 import RouteItem from "./model/RouteItem.model";
@@ -23,6 +23,9 @@ export const AppContext = createContext({
     useDefaultTheme: true,
     partition: "",
     setPartition: (mode: string) => {
+    },
+    allBookId: "",
+    setAllBookId: (bookId: string) => {
     }
 });
 
@@ -42,6 +45,7 @@ function App(settings: RuntimeSettings) {
 
     const [developerMode, setDeveloperMode] = useState<boolean>(false);
     const [partition, setPartition] = useState<string>("");
+    const [allBookId, setAllBookId] = useState<string>("");
 
     return <>
         <Helmet>
@@ -53,7 +57,9 @@ function App(settings: RuntimeSettings) {
             developerMode,
             setDeveloperMode,
             partition,
-            setPartition
+            setPartition,
+            allBookId,
+            setAllBookId
         }}>
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>

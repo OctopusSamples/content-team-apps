@@ -4,6 +4,37 @@ import {Theme} from "@mui/material/styles";
 
 export const styles = makeStyles((theme) => {
         return {
+            root: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                minWidth: "100%",
+                minHeight: "100%",
+                justifyContent: "center"
+            },
+            book: {
+                justifyContent: "center",
+                height: "40%",
+                width: "30%",
+                paddingBottom: "8px"
+            },
+            bookshelfImage: {
+                objectFit: "contain",
+                height: "100%",
+                cursor: "pointer",
+                overflow: "hidden"
+            },
+            image: {
+                objectFit: "contain",
+                padding: "64px",
+                width: "100%"
+            },
+            content: {
+
+                "& a": {
+                    color: theme.palette.text.primary
+                }
+            },
             container: {
                 height: "fit-content"
             },

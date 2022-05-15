@@ -2,7 +2,7 @@ import { IconButton, Link, Theme } from "@mui/material";
 import {makeStyles} from '@mui/styles';
 import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
 import {useContext} from "react";
-import {AppContext} from "../../App";
+import {AppContext} from "../App";
 
 const FOOTER_TEXT = `Built by Octopus. Happy Deployments!`
 const FOOTER_HEIGHT = 30
