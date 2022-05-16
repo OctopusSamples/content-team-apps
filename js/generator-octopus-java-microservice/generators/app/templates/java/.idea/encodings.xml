@@ -3,8 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/microservice-utils/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/microservice-utils/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/quarkus-microservice/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/quarkus-microservice/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/products-microservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/products-microservice/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

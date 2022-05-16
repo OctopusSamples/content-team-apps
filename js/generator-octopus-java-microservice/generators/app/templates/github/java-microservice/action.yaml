@@ -97,7 +97,7 @@ runs:
     - name: Test Backend
       run: mvn --batch-mode test
       shell: bash
-      working-directory: java/quarkus-microservice
+      working-directory: java/products-microservice
 
     - name: Test Shared Library
       run: mvn --batch-mode test
@@ -107,15 +107,15 @@ runs:
     - name: Build with Maven
       run: mvn --batch-mode package --file pom.xml -DskipTests
       shell: bash
-      working-directory: java/quarkus-microservice
+      working-directory: java/products-microservice
 
     - name: Generate JaCoCo Badges
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
-        jacoco-csv-file: java/quarkus-microservice/target/jacoco-report/jacoco.csv
-        coverage-badge-filename: quarkus-microservice.svg
-        branches-badge-filename: quarkus-microservice-branches.svg
+        jacoco-csv-file: java/products-microservice/target/jacoco-report/jacoco.csv
+        coverage-badge-filename: products-microservice.svg
+        branches-badge-filename: products-microservice-branches.svg
 
     - name: Generate JaCoCo Badges for Shared Library
       uses: cicirello/jacoco-badge-generator@v2
@@ -146,24 +146,24 @@ runs:
     - name: Build SBOM package
       run: >
         octo pack
-        --id quarkus-microservice-sbom
+        --id products-microservice-sbom
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
         --include **/bom.xml
       shell: bash
-      working-directory: java/quarkus-microservice
+      working-directory: java/products-microservice
 
     # The SBOM package is pushed to the Octopus built-in feed.
     - name: Push SBOM Package
       run: >
         octo push 
-        --package quarkus-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        --package products-microservice-sbom.${{ steps.determine_version.outputs.semVer }}.zip
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
         --overwrite-mode OverwriteExisting
       shell: bash
-      working-directory: java/quarkus-microservice
+      working-directory: java/products-microservice
 
     # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
     # two packages in Octopus.
@@ -172,7 +172,7 @@ runs:
         docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
         docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
       shell: bash
-      working-directory: java/quarkus-microservice
+      working-directory: java/products-microservice
 
     - name: Create a release
       if: ${{ env.BRANCH_NAME == 'main' }}

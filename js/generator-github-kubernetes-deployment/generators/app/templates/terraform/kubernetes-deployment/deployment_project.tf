@@ -163,7 +163,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       ]
       package {
         name                      = local.package_name
-        package_id                = "quarkus-microservice-sbom"
+        package_id                = "products-microservice-sbom"
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "Server"
         extract_during_deployment = true

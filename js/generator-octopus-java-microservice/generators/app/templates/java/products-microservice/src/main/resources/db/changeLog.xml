@@ -1,0 +1,80 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="mcasperson" id="1">
+        <createTable tableName="product">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="dataPartition" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="mcasperson" id="2">
+        <insert tableName="product">
+            <column name="name" value="The 10 Pillars of Pragmatic Kubernetes Deployments"/>
+            <column name="dataPartition" value="main"/>
+        </insert>
+    </changeSet>
+    <changeSet author="mcasperson" id="3">
+        <createTable tableName="REVINFO">
+            <column autoIncrement="true" name="REV" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="REVTSTMP" type="bigint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="mcasperson" id="4">
+        <createTable tableName="product_AUD">
+            <column name="REV" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="dataPartition" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="mcasperson" id="5">
+        <addColumn tableName="product">
+            <column name="pdf" type="varchar(255)"/>
+            <column name="epub" type="varchar(255)"/>
+            <column name="image" type="varchar(255)"/>
+            <column name="description" type="clob"/>
+        </addColumn>
+        <addColumn tableName="product_AUD">
+            <column name="pdf" type="varchar(255)"/>
+            <column name="epub" type="varchar(255)"/>
+            <column name="image" type="varchar(255)"/>
+            <column name="description" type="clob"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mcasperson" id="6">
+        <update tableName="product">
+            <column name="pdf"
+              value="https://github.com/OctopusDeploy/TenPillarsK8s/releases/latest/download/tenpillarsk8s.pdf"/>
+            <column name="epub"
+              value="https://github.com/OctopusDeploy/TenPillarsK8s/releases/latest/download/tenpillarsk8s.epub"/>
+            <column name="image"
+              value="https://raw.githubusercontent.com/OctopusDeploy/TenPillarsK8s/main/KubernetesPDFcover.png"/>
+            <column name="description"
+              value="Learn how to apply the 10 pillars of pragmatic deployments to your Kubernetes infrastructure with practical tips for configuring Octopus and managing your Kubernetes cluster."/>
+            <where>id = 1</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
+
