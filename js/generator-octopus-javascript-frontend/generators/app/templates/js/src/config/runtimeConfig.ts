@@ -4,6 +4,7 @@ export interface RuntimeSettings {
     disableExternalCalls: boolean;
     productEndpoint: string;
     auditEndpoint: string;
-    healthEndpoint: string;
+    productHealthEndpoint: string;
+    auditHealthEndpoint: string;
     title: string;
 }

@@ -29,9 +29,9 @@ const Book: FC = (): ReactElement => {
     const classes = useStyles();
 
     const endpoints = useMemo(() => [
-            context.settings.healthEndpoint + "/audits/GET",
-            context.settings.healthEndpoint + "/audits/POST",
-            context.settings.healthEndpoint + "/audits/x/GET"],
+            context.settings.productHealthEndpoint + "/GET",
+            context.settings.productHealthEndpoint + "/POST",
+            context.settings.productHealthEndpoint + "/x/GET"],
         [context]);
 
     const [health, setHealth] = useState<{ [key: string]: boolean }>({});

@@ -6,52 +6,50 @@ import Health from "../pages/developer/Health";
 import RouteItem from '../model/RouteItem.model';
 import Settings from "../pages/developer/Settings";
 import Home from "../pages/Home";
+import Book from "../pages/Book";
 
 // define app routes
 export const routes: Array<RouteItem> = [
     {
         key: "router-home",
-        title: "TargetSelection",
-        tooltip: "TargetSelection",
+        title: "Home",
         path: "/",
         enabled: true,
         component: () => () => <Home/>,
-        appendDivider: true
     },
     {
         key: "router-home-index",
-        title: "TargetSelection",
-        tooltip: "TargetSelection",
+        title: "Home",
         path: "/index.html",
         enabled: true,
         component: () => () => <Home/>,
-        appendDivider: true
     },
     {
         key: "router-settings",
         title: "Settings",
-        tooltip: "Settings",
         path: "/settings",
         enabled: true,
         component: () => () => <Settings/>,
-        appendDivider: true
     },
     {
         key: "router-health",
         title: "Health",
-        tooltip: "Health",
         path: "/health",
         enabled: true,
         component: () => () => <Health/>,
-        appendDivider: true
     },
     {
         key: "router-branching",
         title: "Branching",
-        tooltip: "Branching",
         path: "/branching",
         enabled: true,
         component: () => () => <Branching/>,
-        appendDivider: true
-    }
+    },
+    {
+        key: "router-book",
+        title: "Home",
+        path: "/book/:bookId",
+        enabled: true,
+        component: () => () => <Book/>,
+    },
 ]

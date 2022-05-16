@@ -34,12 +34,13 @@ const Home: FC = (): ReactElement => {
             <Grid
                 container={true}
                 className={classes.root}
-                xs={12}
             >
                 {!books && !error && <div>Loading...</div>}
                 {!books && error && <div>{error}</div>}
                 {books && books.data.map(b =>
-                    <Grid item md={3} sm={6} xs={12}
+                    <Grid item
+                          key={b.id}
+                          md={4} sm={6} xs={12}
                           className={classes.bookshelfImage}
                           container={true}
                           onClick={() => {
