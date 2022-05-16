@@ -64,7 +64,7 @@ jobs:
 
       - name: Create the Products ECR repository
         id: ecr_products_resources
-        uses: ./github/aws-ecr
+        uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
@@ -81,7 +81,7 @@ jobs:
 
       - name: Create the Frontend ECR repository
         id: ecr_frontend_resources
-        uses: ./github/aws-ecr
+        uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}

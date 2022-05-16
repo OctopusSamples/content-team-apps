@@ -45,9 +45,6 @@ outputs:
   aws_ecr_repository_name:
     description: 'The ECR Name'
     value: ${{ steps.aws_ecr_repository_name.outputs.stdout }}
-  ecr_feed_id:
-    description: 'The ECR Feed ID'
-    value: ${{ steps.ecr_feed_id.outputs.stdout }}
 
 runs:
   using: "composite"
