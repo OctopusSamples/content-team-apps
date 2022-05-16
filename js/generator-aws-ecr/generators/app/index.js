@@ -14,7 +14,7 @@ module.exports = class extends Generator {
     writing() {
         this.fs.copyTpl(
             this.templatePath('github/aws-ecr/action.yaml'),
-            this.destinationPath('github/aws-ecr/action.yaml'),
+            this.destinationPath('github/aws-ecr-' + this.options["repository"] + '/action.yaml'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
@@ -27,7 +27,7 @@ module.exports = class extends Generator {
 
         this.fs.copyTpl(
             this.templatePath('terraform/aws-ecr/*.tf'),
-            this.destinationPath('terraform/aws-ecr'),
+            this.destinationPath('terraform/aws-ecr-' + this.options["repository"]),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
@@ -37,12 +37,12 @@ module.exports = class extends Generator {
                 repository: this.options["repository"]
             },
             null,
-            { globOptions: { dot: true } }
+            {globOptions: {dot: true}}
         );
 
         this.fs.copyTpl(
             this.templatePath('terraform/aws-ecr-existing/*.tf'),
-            this.destinationPath('terraform/aws-ecr-existing'),
+            this.destinationPath('terraform/aws-ecr-existing-' + this.options["repository"]),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
@@ -52,7 +52,7 @@ module.exports = class extends Generator {
                 repository: this.options["repository"]
             },
             null,
-            { globOptions: { dot: true } }
+            {globOptions: {dot: true}}
         );
     }
 };

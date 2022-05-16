@@ -102,7 +102,7 @@ runs:
         ECR_EXISTS=$?
         echo "ECR Exists? ${ECR_EXISTS}"
         # Check for the state file
-        aws s3api head-object --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --key appbuilder-generator-aws-ecr --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
+        aws s3api head-object --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --key appbuilder-generator-aws-ecr-${{ inputs.aws_ecr_repository_name }} --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
         STATE_FILE_EXISTS=$?
         echo "State file exists? ${STATE_FILE_EXISTS}"
         # We want to know if the ecr repo exists, and is not managed by the current terraform state file
@@ -119,16 +119,16 @@ runs:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
       with:
-        input: terraform/aws-ecr/backend.tf
-        output: terraform/aws-ecr/backend.tf
+        input: terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}/backend.tf
+        output: terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}/backend.tf
 
     - uses: danielr1996/envsubst-action@1.1.0
       env:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
       with:
-        input: terraform/aws-ecr-existing/backend.tf
-        output: terraform/aws-ecr-existing/backend.tf
+        input: terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}/backend.tf
+        output: terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}/backend.tf
 
     # These steps are used when the registry does not exist
 
@@ -138,7 +138,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/aws-ecr
+      working-directory: terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}
       shell: bash
 
     - name: Terraform Apply
@@ -153,7 +153,7 @@ runs:
           echo "AppBuilder-Infrastructure-ECRFailed The build script failed to create an ECR instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfailed for more information."
           exit 1
         fi
-      working-directory: terraform/aws-ecr
+      working-directory: terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}
       shell: bash
 
     # These steps are used when the registry already exists
@@ -164,7 +164,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/aws-ecr-existing
+      working-directory: terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}
       shell: bash
 
     - name: Terraform Apply (Existing ECR)
@@ -179,7 +179,7 @@ runs:
           echo "AppBuilder-Infrastructure-ECRFailed The build script failed to create an ECR instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfailed for more information."
           exit 1
         fi
-      working-directory: terraform/aws-ecr-existing
+      working-directory: terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}
       shell: bash
 
     # Capture the output variables
@@ -191,9 +191,9 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         if [[ "${{ steps.ecr_exists.outputs.EXISTS }}" == "0" ]]; then
-          cd terraform/aws-ecr-existing
+          cd terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}
         else
-          cd terraform/aws-ecr
+          cd terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}
         fi
         terraform output -raw aws_ecr_repository_url
       shell: bash
@@ -205,9 +205,9 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         if [[ "${{ steps.ecr_exists.outputs.EXISTS }}" == "0" ]]; then
-          cd terraform/aws-ecr-existing
+          cd terraform/aws-ecr-existing-${{ inputs.aws_ecr_repository_name }}
         else
-          cd terraform/aws-ecr
+          cd terraform/aws-ecr-${{ inputs.aws_ecr_repository_name }}
         fi
         terraform output -raw aws_ecr_repository_name
       shell: bash

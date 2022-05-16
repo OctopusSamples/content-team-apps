@@ -64,7 +64,7 @@ jobs:
 
       - name: Create the Products ECR repository
         id: ecr_products_resources
-        uses: ./github/aws-ecr
+        uses: ./github/aws-ecr-<%= products_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
@@ -81,7 +81,7 @@ jobs:
 
       - name: Create the Frontend ECR repository
         id: ecr_frontend_resources
-        uses: ./github/aws-ecr
+        uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
@@ -97,18 +97,17 @@ jobs:
           platform: "<%= platform %>"
 
       - name: Create the ECR feed
-          id: ecr_feed
-          uses: ./github/ecr-feed
-          with:
-            octopus_server: ${{ secrets.OCTOPUS_SERVER }}
-            octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
-            octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
-            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws_region: "<%= aws_region %>"
-            aws_ecr_repository_name: "<%= frontend_repository %>"
-            terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
-            terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+        id: ecr_feed
+        uses: ./github/ecr-feed
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create ECS Deployment Project
         uses: ./github/ecs-deployment
