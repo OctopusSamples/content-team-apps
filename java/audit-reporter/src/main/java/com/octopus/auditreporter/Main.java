@@ -19,8 +19,8 @@ public class Main {
   public static void main(final String[] args) {
     try {
       final RsaCryptoUtilsDecryptor rsaCryptoUtilsDecryptor = new RsaCryptoUtilsDecryptor();
-      final String bearer = args[0];
-      final String privateKeyBase64 = args[1];
+      final String bearer = args[1];
+      final String privateKeyBase64 = args[0];
 
       CloseableHttpClient httpclient = HttpClients.createDefault();
       HttpGet httpget = new HttpGet(
