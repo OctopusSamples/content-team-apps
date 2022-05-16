@@ -26,22 +26,14 @@ module.exports = class extends Generator {
             aws_region: awsRegion
         };
 
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'), args);
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'), args);
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'), args);
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-github-kubernetes-deployment/generators/app'), args);
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-ecr-feed/generators/app'), args);
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'),
-            {...args, repository: "products-service"});
-        this.composeWith(
-            require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'),
-            {...args, repository: "octopus-frontend"});
+        this.composeWith(require.resolve('@octopus-content-team/generator-octopus-java-microservice/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-octopus-js-frontend/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-github-kubernetes-deployment/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-ecr-feed/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "products-service"});
+        this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "octopus-frontend"});
     }
 
     writing() {

@@ -19,11 +19,11 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             },
             null,
-            {globOptions: {ignore: ["**/build", "**/*.iml", "**/.idea"]}}
+            {globOptions: {ignore: ["**/node_modules", "**/build", "**/*.iml", "**/.idea"]}}
         );
 
         this.fs.copyTpl(
-            this.templatePath('github/java-frontend/action.yaml'),
+            this.templatePath('github/js-frontend/action.yaml'),
             this.destinationPath('github/js-frontend/action.yaml'),
             {
                 s3_bucket_suffix: this.options["s3_bucket_suffix"],

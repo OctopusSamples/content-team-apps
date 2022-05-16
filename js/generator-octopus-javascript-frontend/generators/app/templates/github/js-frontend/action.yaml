@@ -103,12 +103,12 @@ runs:
       working-directory: js/frontend
 
     - name: Install modules
-      run: npm install
+      run: yarn install
       shell: bash
       working-directory: js/frontend
 
     - name: Build App
-      run: npm run build
+      run: yarn run build
       shell: bash
       working-directory: js/frontend
 
@@ -124,11 +124,11 @@ runs:
 
     # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
     # two packages in Octopus.
-#    - name: Build, tag, and push image to Amazon ECR
-#      run: docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
-#      shell: bash
-#      working-directory: js/frontend
-#
+    - name: Build, tag, and push image to Amazon ECR
+      run: docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+      shell: bash
+      working-directory: js/frontend
+
 #    - name: Create a release
 #      if: ${{ env.BRANCH_NAME == 'main' }}
 #      run: >
