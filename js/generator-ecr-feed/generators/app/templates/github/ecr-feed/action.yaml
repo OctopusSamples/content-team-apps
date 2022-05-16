@@ -1,0 +1,109 @@
+name: Terraform Apply
+description: Create an ECR instance to hold Docker images
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  aws_ecr_repository_name:
+    description: 'The name of the ECR repository'
+    required: true
+  terraform_bucket_suffix:
+    description: 'The unique suffix applied to the Terraform state S3 bucket'
+    required: true
+  terraform_bucket_region:
+    description: 'The region in which the Terraform state bucket resides'
+    required: true
+
+outputs:
+  ecr_feed_id:
+    description: 'The ECR Feed ID'
+    value: ${{ steps.ecr_feed_id.outputs.stdout }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+          if [[ $? -ne 0 ]]; then
+            echo "AppBuilder-Infrastructure-S3Failed The build script failed to create an S3 bucket to hold the Terraform state. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-s3failed for more information."
+            exit 1
+          fi
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # Process variables in the backend terraform files
+
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
+      with:
+        input: terraform/ecr-feed/backend.tf
+        output: terraform/ecr-feed/backend.tf
+
+    # These steps are used when the registry does not exist
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/ecr-feed
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply -auto-approve -var="octopus_server=${{ inputs.octopus_server }}" -var="octopus_apikey=${{ inputs.octopus_apikey }}" -var="octopus_space_id=${{ inputs.octopus_space_id }}" -var="aws_access_key=${{ inputs.aws_access_key }}" -var="aws_secret_key=${{ inputs.aws_secret_key }}" -var="aws_region=${{ inputs.aws_region }}"
+        
+        if [[ $? -ne 0 ]]; then
+          echo "AppBuilder-Infrastructure-ECRFeedFailed The build script failed to create an ECR feed. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecrfeedfailed for more information."
+          exit 1
+        fi
+      working-directory: terraform/ecr-feed
+      shell: bash
+
+    - name: Terraform Collect ECR Feed ID
+      id: ecr_feed_id
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform output -raw ecr_feed_id
+      working-directory: terraform/ecr-feed
+      shell: bash

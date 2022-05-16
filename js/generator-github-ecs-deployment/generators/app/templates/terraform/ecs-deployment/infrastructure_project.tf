@@ -157,7 +157,15 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           read -r -d '' INPUTS <<EOF
           {
               "clusterName": "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}",
-              "awsAccount": "${var.octopus_aws_account_id}",
+              "authentication": {
+                "credentials" : {
+                  "type": "account",
+                  "account": "${var.octopus_aws_account_id}"
+                },
+                "role": {
+                  "type": "noAssumedRole"
+                }
+              },
               "region": "$${AWS_DEFAULT_REGION}"
           }
           EOF

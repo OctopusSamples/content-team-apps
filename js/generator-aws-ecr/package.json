@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-aws-ecr",
-  "version": "0.1.24",
+  "version": "0.1.26",
   "description": "A Yeoman generator to create an AWS ECR.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [

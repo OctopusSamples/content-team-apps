@@ -1,0 +1,8 @@
+{
+  "basename": "",
+  "branch": "main",
+  "title": "Octopub",
+  "productEndpoint": "/api/products",
+  "healthEndpoint": "/health",
+  "auditEndpoint": "/api/audits"
+}
