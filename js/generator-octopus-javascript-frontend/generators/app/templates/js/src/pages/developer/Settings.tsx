@@ -3,14 +3,14 @@ import {Helmet} from "react-helmet";
 import {Button, FormLabel, Grid, TextField} from "@mui/material";
 import {AppContext} from "../../App";
 import {styles} from "../../utils/styles";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const Settings: FC = (): ReactElement => {
 
     const context = useContext(AppContext);
 
     const classes = styles();
-    const history = useHistory();
+    const history = useNavigate();
     const [partition, setPartition] = useState<string | null>(context.partition);
 
     return (
@@ -55,7 +55,7 @@ const Settings: FC = (): ReactElement => {
         const fixedPartition = partition ? partition.trim() : "";
         localStorage.setItem("partition", fixedPartition);
         context.setPartition(fixedPartition);
-        history.push('/');
+        history('/');
     }
 }
 

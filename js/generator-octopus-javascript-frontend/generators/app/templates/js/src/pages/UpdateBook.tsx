@@ -2,16 +2,15 @@ import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {Errors, Product} from "../model/Product";
-import {useHistory, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {styles} from "../utils/styles";
 import {getJsonApi, isBranchingEnabled, patchJsonApi} from "../utils/network";
 import {Button, FormLabel, Grid, TextField} from "@mui/material";
-import {Params} from "../utils/params";
 
 const UpdateBook: FC<{}> = (): ReactElement => {
 
-    const {bookId} = useParams<Params>();
-    const history = useHistory();
+    const {bookId} = useParams();
+    const history = useNavigate();
     const context = useContext(AppContext);
     const classes = styles();
     const [disabled, setDisabled] = useState<boolean>(true);
@@ -145,7 +144,7 @@ const UpdateBook: FC<{}> = (): ReactElement => {
             }),
             context.settings.productEndpoint + "/" + bookId,
             context.partition)
-            .then(_ => history.push('/index.html'))
+            .then(_ => history('/index.html'))
             .catch(_ => {
                 setDisabled(false);
                 setError("An error occurred and the book was not updated.");

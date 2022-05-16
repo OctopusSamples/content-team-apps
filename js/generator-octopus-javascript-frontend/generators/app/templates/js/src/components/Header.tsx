@@ -6,7 +6,7 @@ import Brightness3Icon from "@mui/icons-material/Brightness3";
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
 import {History, LocalHospital, SettingsApplications, Share} from "@mui/icons-material";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) => {
         return {
@@ -54,7 +54,7 @@ const Header: FC<HeaderProps> = ({
                                  }: HeaderProps) => {
     const classes = useStyles();
     const context = useContext(AppContext);
-    const history = useHistory();
+    const history = useNavigate();
     return (
         <AppBar
             position="relative"
@@ -63,29 +63,29 @@ const Header: FC<HeaderProps> = ({
         >
             <Toolbar className={classes.toolbar}>
                 <div className={classes.title}>
-                    <Link href={`${process.env.PUBLIC_URL}/index.html`} className={classes.heading}>
+                    <Link href={`${process.env.PUBLIC_URL}/`} className={classes.heading}>
                         <Typography variant="h6">
                             {context.settings.title}
                         </Typography>
                     </Link>
                 </div>
                 {context.developerMode && <div>
-                    <IconButton onClick={() => history.push('/audits')} size="large">
+                    <IconButton onClick={() => history('/audits')} size="large">
                         <Tooltip title={"Audits"} placement={"bottom"}>
                             <History/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/branching')} size="large">
+                    <IconButton onClick={() => history('/branching')} size="large">
                         <Tooltip title={"Branching"} placement={"bottom"}>
                             <Share/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/settings')} size="large">
+                    <IconButton onClick={() => history('/settings')} size="large">
                         <Tooltip title={"Settings"} placement={"bottom"}>
                             <SettingsApplications/>
                         </Tooltip>
                     </IconButton>
-                    <IconButton onClick={() => history.push('/health')} size="large">
+                    <IconButton onClick={() => history('/health')} size="large">
                         <Tooltip title={"Health"} placement={"bottom"}>
                             <LocalHospital/>
                         </Tooltip>

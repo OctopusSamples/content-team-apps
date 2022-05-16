@@ -1,12 +1,13 @@
-import {FC, ReactNode, useContext} from "react";
+import React, {FC, useContext} from "react";
 import clsx from "clsx";
-import { CssBaseline, Theme } from "@mui/material";
-import { makeStyles } from '@mui/styles';
+import {CssBaseline, Theme} from "@mui/material";
+import {makeStyles} from '@mui/styles';
 
 // components
 import Header from "./Header";
 import Footer from "./Footer";
 import {AppContext} from "../App";
+import {Outlet} from "react-router-dom";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) => {
@@ -32,14 +33,10 @@ const useStyles = makeStyles((theme: Theme) => {
 // define interface to represent component props
 interface LayoutProps {
     toggleTheme: () => void;
-    children: ReactNode;
 }
 
 // functional component
-const Layout: FC<LayoutProps> = ({
-                                     toggleTheme,
-                                     children,
-                                 }: LayoutProps) => {
+const Layout: FC<LayoutProps> = ({toggleTheme}: LayoutProps) => {
     const classes = useStyles();
     const {useDefaultTheme} = useContext(AppContext);
     return (
@@ -52,7 +49,7 @@ const Layout: FC<LayoutProps> = ({
             <main
                 className={clsx(classes.content)}
             >
-                {children}
+                <Outlet />
             </main>
             <footer>
                 <Footer/>

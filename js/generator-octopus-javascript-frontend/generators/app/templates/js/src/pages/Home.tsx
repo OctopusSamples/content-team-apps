@@ -4,13 +4,13 @@ import {AppContext} from "../App";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {Grid} from "@mui/material";
 import {Products} from "../model/Product";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {styles} from "../utils/styles";
 
 const Home: FC = (): ReactElement => {
     const context = useContext(AppContext);
     const classes = styles();
-    const history = useHistory();
+    const history = useNavigate();
 
     const [books, setBooks] = useState<Products | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ const Home: FC = (): ReactElement => {
                           className={classes.bookshelfImage}
                           container={true}
                           onClick={() => {
-                              history.push('/book/' + b.id);
+                              history('/book/' + b.id);
                           }}>
                         <img className={classes.image}
                              src={b.attributes.image || "https://via.placeholder.com/300x400"}

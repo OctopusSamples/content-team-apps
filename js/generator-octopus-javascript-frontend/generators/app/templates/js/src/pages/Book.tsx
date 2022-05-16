@@ -6,7 +6,6 @@ import {useParams} from "react-router-dom";
 import {getJsonApi} from "../utils/network";
 import {Grid} from "@mui/material";
 import {styles} from "../utils/styles";
-import {Params} from "../utils/params";
 
 const Book: FC<{}> = (): ReactElement => {
 
@@ -14,9 +13,9 @@ const Book: FC<{}> = (): ReactElement => {
 
     const context = useContext(AppContext);
 
-    const { bookId } = useParams<Params>();
+    const { bookId } = useParams();
 
-    context.setAllBookId(bookId);
+    context.setAllBookId(bookId || "");
 
     const [book, setBook] = useState<Product | null>(null);
 

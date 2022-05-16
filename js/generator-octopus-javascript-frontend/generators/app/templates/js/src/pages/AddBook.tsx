@@ -5,10 +5,10 @@ import {Product} from "../model/Product";
 import {styles} from "../utils/styles";
 import {postJsonApi} from "../utils/network";
 import {Button, FormLabel, Grid, TextField} from "@mui/material";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const AddBook: FC<{}> = (): ReactElement => {
-    const history = useHistory();
+    const history = useNavigate();
     const context = useContext(AppContext);
     const classes = styles();
     const [disabled, setDisabled] = useState<boolean>(true);
@@ -113,7 +113,7 @@ const AddBook: FC<{}> = (): ReactElement => {
             }),
             context.settings.productEndpoint,
             context.partition)
-            .then(_ => history.push('/index.html'))
+            .then(_ => history('/index.html'))
             .catch(_ => {
                 setDisabled(false);
                 setError("An error occurred and the book was not saved.");
