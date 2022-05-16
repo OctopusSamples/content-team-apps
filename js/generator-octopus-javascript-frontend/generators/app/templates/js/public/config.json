@@ -2,6 +2,7 @@
   "basename": "",
   "branch": "main",
   "title": "Octopub",
-  "healthEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/health",
-  "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits"
+  "productEndpoint": "/api/products",
+  "healthEndpoint": "/health",
+  "auditEndpoint": "/api/audits"
 }

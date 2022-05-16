@@ -198,20 +198,6 @@ runs:
         terraform output -raw aws_ecr_repository_url
       shell: bash
 
-    - name: Terraform Collect ECR Feed ID
-      id: ecr_feed_id
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-      run: |
-        if [[ "${{ steps.ecr_exists.outputs.EXISTS }}" == "0" ]]; then
-          cd terraform/aws-ecr-existing
-        else
-          cd terraform/aws-ecr
-        fi
-        terraform output -raw ecr_feed_id
-      shell: bash
-
     - name: Terraform Collect ECR URL
       id: aws_ecr_repository_name
       env:

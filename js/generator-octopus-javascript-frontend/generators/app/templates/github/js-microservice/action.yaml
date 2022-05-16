@@ -1,0 +1,141 @@
+name: Docker Build and Push
+description: Build the JavaScript frontend
+inputs:
+  image_tag:
+    description: 'The ECR Docker image tag'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  run_number:
+    required: true
+    description: The GitHub Actions Workflow run number
+  octopus_space:
+    description: 'The Octopus space name'
+    required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+  github_token:
+    description: 'The github token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+
+    - name: Instance CycloneDX
+      run: npm install -g @cyclonedx/bom
+      shell: bash
+
+    # This step generates a Source Bill of Materials (SBOM) package that captures all the dependencies compiled
+    # into the application.
+    - name: Generate SBOM
+      run: cyclonedx-node -o bom.xml
+      shell: bash
+      working-directory: js/frontend
+
+    # We capture the SBOM, which is found in the file bom.xml, as a versioned ZIP package.
+    - name: Build SBOM package
+      run: >
+        octo pack
+        --id javascript-frontend-sbom
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --format zip
+        --include **/bom.xml
+      shell: bash
+      working-directory: js/frontend
+
+    # The SBOM package is pushed to the Octopus built-in feed.
+    - name: Push SBOM Package
+      run: >
+        octo push 
+        --package javascript-frontend-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --overwrite-mode OverwriteExisting
+      shell: bash
+      working-directory: js/frontend
+
+    - name: Install modules
+      run: npm install
+      shell: bash
+      working-directory: js/frontend
+
+    - name: Build App
+      run: npm run build
+      shell: bash
+      working-directory: js/frontend
+
+    - name: Build image
+      uses: mamezou-tech/buildpacks-action@master
+      with:
+        image: '${{ inputs.image_tag }}'
+        tag: '${{ steps.determine_version.outputs.semVer }}'
+        path: 'js/frontend'
+        builder: 'heroku/buildpacks:20'
+        buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
+        env: NODE_OPTIONS=--openssl-legacy-provider
+
+    # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
+    # two packages in Octopus.
+#    - name: Build, tag, and push image to Amazon ECR
+#      run: docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+#      shell: bash
+#      working-directory: js/frontend
+#
+#    - name: Create a release
+#      if: ${{ env.BRANCH_NAME == 'main' }}
+#      run: >
+#        octo create-release
+#        --project "Deploy Frontend"
+#        --server ${{ inputs.octopus_server }}
+#        --apiKey ${{ inputs.octopus_apikey }}
+#        --space "${{ inputs.octopus_space }}"
+#        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+#      shell: bash

@@ -62,8 +62,8 @@ jobs:
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
-      - name: Create the ECR repository and feed
-        id: ecr_resources
+      - name: Create the Products ECR repository
+        id: ecr_products_resources
         uses: ./github/aws-ecr
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -72,12 +72,43 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
-          aws_ecr_repository_name: "<%= repository %>"
+          aws_ecr_repository_name: "<%= products_repository %>"
           terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
           github_repo: ${{ github.repository }}
           github_repo_owner: ${{ github.repository_owner }}
           platform: "<%= platform %>"
+
+      - name: Create the Frontend ECR repository
+        id: ecr_frontend_resources
+        uses: ./github/aws-ecr
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= frontend_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
+
+      - name: Create the ECR feed
+          id: ecr_feed
+          uses: ./github/ecr-feed
+          with:
+            octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+            octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+            octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws_region: "<%= aws_region %>"
+            aws_ecr_repository_name: "<%= frontend_repository %>"
+            terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+            terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create Kubernetes Deployment Project
         uses: ./github/kubernetes-deployment
@@ -87,10 +118,10 @@ jobs:
           octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
           octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
           octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
-          octopus_k8s_feed_id: ${{ steps.ecr_resources.outputs.ecr_feed_id }}
+          octopus_k8s_feed_id: ${{ steps.ecr_feed.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
           octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
-          octopus_docker_image: ${{ steps.ecr_resources.outputs.aws_ecr_repository_name }}
+          octopus_docker_image: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_name }}
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -105,7 +136,7 @@ jobs:
       - name: Build Java Microservice
         uses: ./github/java-microservice
         with:
-          image_tag: ${{ steps.ecr_resources.outputs.aws_ecr_repository_url }}
+          image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"

@@ -8,6 +8,7 @@ module.exports = class extends Generator {
         this.option("aws_state_bucket_region", {type: String});
         this.option("platform", {type: String});
         this.option("framework", {type: String});
+        this.option("repository", {type: String});
     }
 
     writing() {
@@ -19,7 +20,8 @@ module.exports = class extends Generator {
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"],
                 framework: this.options["framework"],
-                platform: this.options["framework"]
+                platform: this.options["framework"],
+                repository: this.options["repository"]
             }
         );
 
@@ -31,7 +33,8 @@ module.exports = class extends Generator {
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"],
                 framework: this.options["framework"],
-                platform: this.options["framework"]
+                platform: this.options["framework"],
+                repository: this.options["repository"]
             },
             null,
             { globOptions: { dot: true } }
@@ -45,7 +48,8 @@ module.exports = class extends Generator {
                 aws_state_bucket_region: this.options["aws_state_bucket_region"],
                 aws_region: this.options["aws_region"],
                 framework: this.options["framework"],
-                platform: this.options["framework"]
+                platform: this.options["framework"],
+                repository: this.options["repository"]
             },
             null,
             { globOptions: { dot: true } }

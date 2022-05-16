@@ -35,14 +35,19 @@ module.exports = class extends Generator {
         this.composeWith(
             require.resolve('@octopus-content-team/generator-github-ecs-deployment/generators/app'), args);
         this.composeWith(
-            require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), args);
+            require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'),
+            {...args, repository: "products-service"});
+        this.composeWith(
+            require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'),
+            {...args, repository: "octopus-frontend"});
     }
 
     writing() {
         const framework = this.options["framework"];
         const platform = this.options["platform"];
         const spaceName = platform + (framework ? " " + framework : "");
-        const repository = "octopus-microservice" + (framework ? "-" + framework : "");
+        const productsRepository = "products-service" + (framework ? "-" + framework : "");
+        const frontendRepository = "octopus-frontend" + (framework ? "-" + framework : "");
 
         this.fs.copyTpl(
             this.templatePath('.github/workflows/ecs-deployment.yaml'),
@@ -53,7 +58,8 @@ module.exports = class extends Generator {
                 aws_region: this.options["awsRegion"],
                 framework,
                 platform,
-                repository
+                products_repository: productsRepository,
+                frontend_repository: frontendRepository
             }
         );
     }
