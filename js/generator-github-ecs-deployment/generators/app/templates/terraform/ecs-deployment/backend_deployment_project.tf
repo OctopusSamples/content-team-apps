@@ -103,12 +103,16 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
           SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
           VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
-          SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} | jq -r '.SecurityGroups[].GroupId')
+          SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} Name=group-name,Values=default | jq -r '.SecurityGroups[].GroupId')
+
+          # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
+          LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LoadBalancer-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text)
 
           echo "Found Security Group: $${SECURITYGROUP}"
           echo "Found Subnet A: $${SUBNETA}"
           echo "Found Subnet B: $${SUBNETB}"
           echo "Found VPC: $${VPC}"
+          echo "Found Listener: $${LISTENER}"
 
           set_octopusvariable "SecurityGroup" "$${SECURITYGROUP}"
           set_octopusvariable "SubnetA" "$${SUBNETA}"
@@ -116,6 +120,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "Vpc" "$${VPC}"
           set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
           set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
+          set_octopusvariable "Listener" $${LISTENER}
 
           if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
             echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
