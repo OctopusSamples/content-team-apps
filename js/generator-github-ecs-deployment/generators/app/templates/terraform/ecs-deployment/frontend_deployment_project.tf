@@ -168,14 +168,14 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 HealthCheckEnabled: true
                 HealthCheckIntervalSeconds: 5
                 HealthCheckPath: /
-                HealthCheckPort: '5000'
+                HealthCheckPort: '${local.frontend_port}'
                 HealthCheckProtocol: HTTP
                 HealthCheckTimeoutSeconds: 2
                 HealthyThresholdCount: 2
                 Matcher:
                   HttpCode: '200'
                 Name: OctopubFrontendTargetGroup
-                Port: 5000
+                Port: ${local.frontend_port}
                 Protocol: HTTP
                 TargetType: ip
                 UnhealthyThresholdCount: 5
@@ -226,7 +226,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                       - !Ref SubnetB
                 LoadBalancers:
                   - ContainerName: frontend
-                    ContainerPort: 5000
+                    ContainerPort: ${local.frontend_port}
                     TargetGroupArn: !Ref TargetGroup
                 DeploymentConfiguration:
                   MaximumPercent: 200

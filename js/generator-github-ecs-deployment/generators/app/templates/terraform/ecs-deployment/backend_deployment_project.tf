@@ -166,6 +166,45 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           # https://stackoverflow.com/a/69643388/157605
           AWSTemplateFormatVersion: '2010-09-09'
           Resources:
+            TargetGroup:
+              Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+              Properties:
+                HealthCheckEnabled: true
+                HealthCheckIntervalSeconds: 5
+                HealthCheckPath: /health/products/GET
+                HealthCheckPort: '${local.backend_port}'
+                HealthCheckProtocol: HTTP
+                HealthCheckTimeoutSeconds: 2
+                HealthyThresholdCount: 2
+                Matcher:
+                  HttpCode: '200'
+                Name: OctopubFrontendTargetGroup
+                Port: ${local.backend_port}
+                Protocol: HTTP
+                TargetType: ip
+                UnhealthyThresholdCount: 5
+                VpcId: !Ref Vpc
+            ListenerRule:
+              Type: 'AWS::ElasticLoadBalancingV2::ListenerRule'
+              Properties:
+                Actions:
+                  - ForwardConfig:
+                      TargetGroups:
+                        - TargetGroupArn: !Ref TargetGroup
+                          Weight: 100
+                    Order: 1
+                    Type: forward
+                Conditions:
+                  - Field: path-pattern
+                    PathPatternConfig:
+                      Values:
+                        - /api/products
+                        - /api/products/*
+                        - /health/products/*
+                ListenerArn: !Ref Listener
+                Priority: 100
+              DependsOn:
+                - TargetGroup
             CloudWatchLogsGroup:
               Type: AWS::Logs::LogGroup
               Properties:
@@ -191,6 +230,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     Subnets:
                       - !Ref SubnetA
                       - !Ref SubnetB
+                LoadBalancers:
+                  - ContainerName: backend
+                    ContainerPort: ${local.backend_port}
+                    TargetGroupArn: !Ref TargetGroup
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
