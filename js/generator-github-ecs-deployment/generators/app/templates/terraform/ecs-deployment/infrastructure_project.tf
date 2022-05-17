@@ -86,6 +86,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+          set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
 
           # Create the cluster using the instructions from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
           EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
@@ -186,7 +187,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Deploy Load Balancer"
-      notes          = "Deploy the load balancer via CloudFormation."
+      notes          = "Deploy the load balancer via CloudFormation. This is required to expose the frontend web app and backend services under a single hostname, when then allows them to communicate via relative URL paths."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -208,7 +209,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-LoadBalancer-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-LoadBalancer-${lower(var.github_repo_owner)}-#{Octopus.Action[Create an ECS Cluster].Output.FixedEnvironment}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             Vpc:
