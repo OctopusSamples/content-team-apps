@@ -76,53 +76,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          # Get the containers
-          echo "Downloading Docker images"
-          echo "##octopus[stdout-verbose]"
-          docker pull amazon/aws-cli 2>&1
-          docker pull imega/jq 2>&1
-          echo "##octopus[stdout-default]"
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-          alias jq="docker run --rm -i imega/jq"
-
-          # Get the environmen name (or at least up until the first space)
-          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
-          ENVIRONMENT_ARRAY=($ENVIRONMENT)
-          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
-
-          # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
-          # as we'll place our new ECS services in them.
-          SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
-          SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
-          VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
-          SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} Name=group-name,Values=default | jq -r '.SecurityGroups[].GroupId')
-
-          # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
-          LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LoadBalancer-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text)
-
-          echo "Found Security Group: $${SECURITYGROUP}"
-          echo "Found Subnet A: $${SUBNETA}"
-          echo "Found Subnet B: $${SUBNETB}"
-          echo "Found VPC: $${VPC}"
-          echo "Found Listener: $${LISTENER}"
-
-          set_octopusvariable "SecurityGroup" "$${SECURITYGROUP}"
-          set_octopusvariable "SubnetA" "$${SUBNETA}"
-          set_octopusvariable "SubnetB" "$${SUBNETB}"
-          set_octopusvariable "Vpc" "$${VPC}"
-          set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
-          set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
-          set_octopusvariable "Listener" $${LISTENER}
-
-          if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
-            echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
-            exit 1
-          fi
-        EOT
+        "Octopus.Action.Script.ScriptBody" : local.get_aws_resources
       }
     }
   }
@@ -332,8 +286,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 - ServiceBackend
                 - Name
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.ClusterName}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"ClusterName\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.ClusterName}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"Listener\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Listener}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"Listener\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Listener}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
@@ -385,34 +339,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           ENVIRONMENT_ARRAY=($ENVIRONMENT)
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
-          # Get the first task on the cluster
-          TASKS=$(aws ecs list-tasks --cluster app-builder-mcasperson-development | jq -r '[.taskArns[]]| join(" ")')
-          TASK=$(aws ecs describe-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --tasks $${TASKS} | jq -r '.tasks[] | select(.group | startswith("service:OctopubFrontend")) | .taskArn')
-          echo "Found Task $${TASK}"
+          DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
 
-          if [[ "$${TASK}" == "null" || -z "$${TASK}" ]]; then
-            echo "Unable to find the task"
-            exit 0
-          fi
-
-          # Get the network interface
-          ENI=$(aws ecs describe-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --tasks $${TASK} | jq -r '.tasks[0].attachments[].details[] | select(.name == "networkInterfaceId") | .value')
-          echo "Found Elastic Network Interface $${ENI}"
-
-          if [[ "$${ENI}" == "null" || -z "$${ENI}" ]]; then
-            echo "Unable to find the ENI"
-            exit 0
-          fi
-
-          # Get the public IP
-          IP=$(aws ec2 describe-network-interfaces --network-interface-ids $${ENI} | jq -r '.NetworkInterfaces[0].Association.PublicIp')
-
-          if [[ "$${IP}" == "null" || -z "$${IP}" ]]; then
-            echo "Unable to find the IP"
-            exit 0
-          fi
-
-          echo "Open [http://$${IP}:5000/index.html](http://$${IP}:5000/index.html) to view the frontend webapp."
+          echo "Open [http://$${DNSNAME}/index.html](http://$${DNSNAME}/index.html) to view the frontend webapp."
         EOT
       }
     }
