@@ -56,7 +56,7 @@
     "@loopback/rest-explorer": "^4.1.1",
     "@loopback/service-proxy": "^4.1.1",
     "@octopus-content-team/generator-github-complete-eks-deployment": "0.1.153",
-    "@octopus-content-team/generator-github-complete-ecs-deployment": "0.1.60",
+    "@octopus-content-team/generator-github-complete-ecs-deployment": "0.1.61",
     "@types/archiver": "^5.3.1",
     "@types/aws-lambda": "^8.10.93",
     "adm-zip": "^0.5.9",
