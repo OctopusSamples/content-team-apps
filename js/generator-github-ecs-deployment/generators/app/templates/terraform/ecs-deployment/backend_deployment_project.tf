@@ -202,7 +202,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                         - /api/products/*
                         - /health/products/*
                 ListenerArn: !Ref Listener
-                Priority: 100
+                Priority: 50
               DependsOn:
                 - TargetGroup
             CloudWatchLogsGroup:
