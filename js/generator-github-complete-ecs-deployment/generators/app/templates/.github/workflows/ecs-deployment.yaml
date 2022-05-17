@@ -120,7 +120,8 @@ jobs:
           octopus_k8s_feed_id: ${{ steps.ecr_feed.outputs.ecr_feed_id }}
           octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
           octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
-          octopus_docker_image: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_name }}
+          backend_docker_image: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_name }}
+          frontend_docker_image: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_name }}
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

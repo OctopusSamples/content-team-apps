@@ -5,7 +5,7 @@ const GET_RETRIES = 5;
 const JSON_TYPES = ["application/vnd.api+json", "application/json"];
 
 export function isBranchingEnabled() {
-    return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
+    return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
 }
 
 export function getBranchingRules() {

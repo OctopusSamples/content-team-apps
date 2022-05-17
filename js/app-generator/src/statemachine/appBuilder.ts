@@ -277,6 +277,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 loggedIntoOctopus: {
                     on: {
                         NEXT: {target: 'logIntoGitHub'},
+                        ALREADY_LOGGED_INTO_GITHUB: {target: 'enterAwsCredentials'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
                     },
                     entry: [
