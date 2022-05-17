@@ -1,14 +1,14 @@
-resource "octopusdeploy_project" "deploy_backend_project" {
+resource "octopusdeploy_project" "deploy_frontend_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the backend service to ECS."
+  description                          = "Deploys the frontend webapp to ECS."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Backend Service"
+  name                                 = "Deploy Frontend Service"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -24,42 +24,38 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   }
 }
 
-output "deploy_backend_project_id" {
-  value = octopusdeploy_project.deploy_backend_project.id
-}
-
-resource "octopusdeploy_variable" "debug_variable" {
+resource "octopusdeploy_variable" "frontend_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "debug_evaluated_variable" {
+resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
+resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
   name     = "AWS Account"
   type     = "AmazonWebServicesAccount"
   value    = var.octopus_aws_account_id
-  owner_id = octopusdeploy_project.deploy_backend_project.id
+  owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
 locals {
-  package_name = "backend"
-  port         = "8083"
+  frontend_package_name = "frontend"
+  frontend_port         = "5000"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_backend" {
-  project_id = octopusdeploy_project.deploy_backend_project.id
+resource "octopusdeploy_deployment_process" "deploy_frontend" {
+  project_id = octopusdeploy_project.deploy_frontend_project.id
   step {
     condition           = "Success"
     name                = "Get AWS Resources"
@@ -141,8 +137,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       package {
-        name                      = local.package_name
-        package_id                = var.octopus_docker_image
+        name                      = local.frontend_package_name
+        package_id                = var.frontend_docker_image
         feed_id                   = var.octopus_k8s_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -155,7 +151,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Task-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Frontend-Task-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # A handy checklist for accessing private ECR repositories:
           # https://stackoverflow.com/a/69643388/157605
@@ -169,6 +165,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             ServiceBackend:
               Type: AWS::ECS::Service
               Properties:
+                ServiceName: OctopubFrontend
                 Cluster:
                   Ref: ClusterName
                 TaskDefinition:
@@ -194,20 +191,20 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Properties:
                 ContainerDefinitions:
                   - Essential: true
-                    Image: '#{Octopus.Action.Package[${local.package_name}].Image}'
+                    Image: '#{Octopus.Action.Package[${local.frontend_package_name}].Image}'
                     Name: backend
                     ResourceRequirements: []
                     Environment:
                       - Name: PORT
-                        Value: !!str "${local.port}"
+                        Value: !!str "${local.frontend_port}"
                     EnvironmentFiles: []
                     DisableNetworking: false
                     DnsServers: []
                     DnsSearchDomains: []
                     ExtraHosts: []
                     PortMappings:
-                      - ContainerPort: ${local.port}
-                        HostPort: ${local.port}
+                      - ContainerPort: ${local.frontend_port}
+                        HostPort: ${local.frontend_port}
                         Protocol: tcp
                     LogConfiguration:
                       LogDriver: awslogs
@@ -339,6 +336,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Get the first task on the cluster
+          aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}
           TASK=$(aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
           echo "Found Task $${TASK}"
 
@@ -390,8 +388,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         data.octopusdeploy_environments.production_security.environments[0].id
       ]
       package {
-        name                      = local.package_name
-        package_id                = "products-microservice-sbom"
+        name                      = "javascript-frontend-sbom"
+        package_id                = "javascript-frontend-sbom"
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "Server"
         extract_during_deployment = true

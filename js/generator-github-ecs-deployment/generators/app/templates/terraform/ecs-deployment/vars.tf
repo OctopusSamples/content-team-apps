@@ -38,7 +38,12 @@ variable "octopus_infrastructure_lifecycle_id" {
   nullable = false
 }
 
-variable "octopus_docker_image" {
+variable "backend_docker_image" {
+  type = string
+  nullable = false
+}
+
+variable "frontend_docker_image" {
   type = string
   nullable = false
 }
