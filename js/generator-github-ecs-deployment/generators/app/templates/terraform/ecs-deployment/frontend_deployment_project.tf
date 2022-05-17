@@ -192,7 +192,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 ContainerDefinitions:
                   - Essential: true
                     Image: '#{Octopus.Action.Package[${local.frontend_package_name}].Image}'
-                    Name: backend
+                    Name: frontend
                     ResourceRequirements: []
                     Environment:
                       - Name: PORT
@@ -211,7 +211,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                       Options:
                         awslogs-group: !Ref CloudWatchLogsGroup
                         awslogs-region: !Ref AWS::Region
-                        awslogs-stream-prefix: backend
+                        awslogs-stream-prefix: frontend
                 Family:
                   Ref: TaskDefinitionName
                 Cpu:
@@ -262,7 +262,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               Default: app-builder-${lower(var.github_repo_owner)}
             TaskDefinitionName:
               Type: String
-              Default: backend
+              Default: frontend
             TaskDefinitionCPU:
               Type: String
               Default: '256'
@@ -336,8 +336,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Get the first task on the cluster
-          aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}
-          TASK=$(aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
+          TASKS=$(aws ecs list-tasks --cluster app-builder-mcasperson-development | jq -r '[.taskArns[]]| join(" ")')
+          TASK=$(aws ecs describe-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --tasks $${TASKS} | jq -r '.tasks[] | select(.group | startswith("service:OctopubFrontend")) | .taskArn')
           echo "Found Task $${TASK}"
 
           if [[ "$${TASK}" == "null" || -z "$${TASK}" ]]; then
@@ -362,7 +362,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             exit 0
           fi
 
-          echo "Open [http://$${IP}:8083/api/customers](http://$${IP}:8083/api/customers) to view the backend API."
+          echo "Open [http://$${IP}:5000/index.html](http://$${IP}:5000/index.html) to view the frontend webapp."
         EOT
       }
     }

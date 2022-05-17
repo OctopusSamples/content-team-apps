@@ -340,7 +340,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Get the first task on the cluster
-          TASK=$(aws ecs list-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} | jq -r '.taskArns[0]')
+          TASKS=$(aws ecs list-tasks --cluster app-builder-mcasperson-development | jq -r '[.taskArns[]]| join(" ")')
+          TASK=$(aws ecs describe-tasks --cluster app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} --tasks $${TASKS} | jq -r '.tasks[] | select(.group | startswith("service:OctopubProducts")) | .taskArn')
           echo "Found Task $${TASK}"
 
           if [[ "$${TASK}" == "null" || -z "$${TASK}" ]]; then
@@ -365,7 +366,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             exit 0
           fi
 
-          echo "Open [http://$${IP}:8083/api/customers](http://$${IP}:8083/api/customers) to view the backend API."
+          echo "Open [http://$${IP}:8083/api/products](http://$${IP}:8083/api/products) to view the backend API."
         EOT
       }
     }
