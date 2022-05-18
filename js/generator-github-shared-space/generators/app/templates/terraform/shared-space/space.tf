@@ -3,7 +3,7 @@ resource "octopusdeploy_space" "app_builder_space" {
   name                  = var.octopus_space
   is_default            = false
   is_task_queue_stopped = false
-  space_managers_teams  = ["teams-everyone"]
+  space_managers_teams  = ["teams-managers"]
 }
 
 output "octopus_space_id" {
