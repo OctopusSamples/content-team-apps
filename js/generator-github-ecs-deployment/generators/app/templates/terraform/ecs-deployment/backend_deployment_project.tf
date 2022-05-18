@@ -132,7 +132,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 HealthyThresholdCount: 2
                 Matcher:
                   HttpCode: '200'
-                Name: OctopubFrontendTargetGroup
+                Name: OctopubProductsTargetGroup
                 Port: ${local.backend_port}
                 Protocol: HTTP
                 TargetType: ip
