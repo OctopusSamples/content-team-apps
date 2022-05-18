@@ -20,6 +20,7 @@ import com.octopus.githubproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -132,6 +134,8 @@ public class ResourceHandler {
   private RuntimeException handleException(final ClientWebApplicationException ex) {
     if (ex.getResponse().getStatus() == 404) {
       return new EntityNotFoundException();
+    } else {
+      Log.error("HTTP Response: " + ex.getResponse().readEntity(String.class));
     }
 
     return ex;
