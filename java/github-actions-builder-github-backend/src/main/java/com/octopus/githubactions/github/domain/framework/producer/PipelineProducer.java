@@ -9,8 +9,11 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.github.LoginLogic;
 import com.octopus.github.PublicEmailTester;
 import com.octopus.github.UsernameSplitter;
+import com.octopus.github.impl.AlwaysLoginLogic;
+import com.octopus.github.impl.PrivateRepoLoginLogic;
 import com.octopus.github.impl.PublicEmailTesterImpl;
 import com.octopus.github.impl.UsernameSplitterImpl;
 import com.octopus.githubactions.shared.builders.DotNetCoreBuilder;
@@ -50,6 +53,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -339,5 +343,29 @@ public class PipelineProducer {
   @Produces
   public UsernameSplitter getUsernameSplitter() {
     return new UsernameSplitterImpl();
+  }
+
+  /**
+   * Produces the login logic service requesting a login for private repos.
+   *
+   * @return An implementation of LoginLogic.
+   */
+  @ApplicationScoped
+  @Produces
+  @Named("private")
+  public LoginLogic getPrivateRepoLoginLogic() {
+    return new PrivateRepoLoginLogic();
+  }
+
+  /**
+   * Produces the login logic service requesting a login for all repos.
+   *
+   * @return An implementation of LoginLogic.
+   */
+  @ApplicationScoped
+  @Produces
+  @Named("always")
+  public LoginLogic getAlwaysLoginLogic() {
+    return new AlwaysLoginLogic();
   }
 }

@@ -7,6 +7,7 @@ import com.octopus.builders.PipelineBuilder;
 import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.MicroserviceNameFeature;
+import com.octopus.github.LoginLogic;
 import com.octopus.github.PublicEmailTester;
 import com.octopus.github.UsernameSplitter;
 import com.octopus.githubactions.github.GlobalConstants;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Named;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -80,6 +82,10 @@ public class TemplateHandler {
 
   @Inject
   UsernameSplitter usernameSplitter;
+
+  @Inject
+  @Named("always")
+  LoginLogic loginLogic;
 
   /**
    * Generate a github repo.
@@ -294,18 +300,17 @@ public class TemplateHandler {
    * cookie.
    */
   public Optional<SimpleResponse> checkForPublicRepo(final RepoClient accessor) {
-    if (!accessor.testRepo()) {
-      if (accessor.hasAccessToken()) {
-        return Optional.of(new SimpleResponse(
-            404,
-            accessor.getRepo()
-                + " does not appear to be an accessible GitHub repository. Please try a different URL."));
-      } else {
-        return Optional.of(new SimpleResponse(
-            401,
-            accessor.getRepo()
-                + " does not appear to be a public GitHub repository. You must login to GitHub."));
-      }
+    if (loginLogic.proceedToLogin(accessor)) {
+      return Optional.of(new SimpleResponse(
+          401,
+          "You must login to GitHub."));
+    }
+
+    if (loginLogic.proceedToError(accessor)) {
+      return Optional.of(new SimpleResponse(
+          404,
+          accessor.getRepo()
+              + " does not appear to be an accessible GitHub repository. Please try a different URL."));
     }
 
     return Optional.empty();
