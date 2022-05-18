@@ -148,7 +148,14 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
         });
 }
 
-export function postJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, ignoreReturn?: boolean, getHeaders?: () => Headers): Promise<T> {
+export function postJsonApi<T>(
+    resource: string, url: string,
+    settings: RuntimeSettings, partition?: string | null,
+    ignoreReturn?: boolean | null,
+    getHeaders?: (() => Headers) | null,
+    retryServerSideErrors?: boolean | null,
+    retryCount?: number | null): Promise<T> {
+
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = getHeaders ? getHeaders() : new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -175,6 +182,12 @@ export function postJsonApi<T>(resource: string, url: string, settings: RuntimeS
 
                 return response.text();
             }
+
+            // We optionally allow the request to be retried if the server responded with an error
+            if (retryServerSideErrors && responseIsServerError(response.status) && (retryCount || 0) <= GET_RETRIES) {
+                return postJsonApi(resource, url, settings, partition, ignoreReturn, getHeaders, retryServerSideErrors, (retryCount || 0) + 1);
+            }
+
             return Promise.reject(response);
         });
 }

@@ -111,7 +111,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             }
         }
 
-        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubCommitEndpoint, context.settings, null, false)
+        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubCommitEndpoint, context.settings, null, false, null, true)
             .then(body => {
                 if (props.machine.state) {
                     const bodyObject = body as any;
