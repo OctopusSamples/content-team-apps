@@ -259,7 +259,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder-${lower(var.github_repo_owner)}
+              Default: app-builder-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
             TaskDefinitionName:
               Type: String
               Default: frontend
@@ -299,13 +299,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   }
   step {
     condition           = "Success"
-    name                = "Find the Task IP Address"
+    name                = "Find the LoadBalancer URL"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = []
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Find the Task IP Address"
+      name           = "Find the LoadBalancer URL"
       notes          = "Queries the task for the public IP address."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
