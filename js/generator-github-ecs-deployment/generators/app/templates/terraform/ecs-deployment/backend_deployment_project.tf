@@ -281,6 +281,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             SecurityGroup:
               Type: String
+            Vpc:
+              Type: String
+            Listener:
+              Type: String
           Outputs:
             ServiceName:
               Description: The service name
