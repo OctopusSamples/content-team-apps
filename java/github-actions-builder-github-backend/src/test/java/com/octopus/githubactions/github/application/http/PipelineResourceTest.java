@@ -78,7 +78,7 @@ public class PipelineResourceTest {
         .when()
         .get(ENDPOINT)
         .then()
-        .statusCode(200);
+        .statusCode(401);
   }
 
   @Test
