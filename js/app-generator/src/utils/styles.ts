@@ -82,7 +82,8 @@ export const nextButtonStyle: SxProps<Theme> = {
 
 export const openResourceStyle: SxProps<Theme> = {
     width: '192px',
-    minHeight: '32px'
+    minHeight: '32px',
+    marginLeft: '16px'
 }
 
 export const formContainer: SxProps<Theme> = {
