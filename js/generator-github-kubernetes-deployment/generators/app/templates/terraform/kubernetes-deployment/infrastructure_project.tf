@@ -153,8 +153,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull weaveworks/eksctl 2>&1
           docker pull bitnami/kubectl 2>&1
 
-          # Download the IAM authenticator
-          curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator 2>&1
+          # Download the IAM authenticator from https://github.com/kubernetes-sigs/aws-iam-authenticator
+          curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
           echo "##octopus[stdout-default]"
 
           # Let the bitnami/kubectl user execute this file
@@ -208,7 +208,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           # because it is self contained and can be easily mounted in a Docker container.
           # The arguments used by the aws command don't directly map to aws-iam-authenticator, but we can remove and replace
           # the options to make it work.
-          sed -i.bak -e "s|      apiVersion: client.authentication.k8s.io/v1beta1|      apiVersion: client.authentication.k8s.io/v1alpha1|" ./kubeconfig
           sed -i.bak -e "s|      - eks||" ./kubeconfig
           sed -i.bak -e "s|      - get-token|      - token|" ./kubeconfig
           sed -i.bak -e "s|      - --cluster-name|      - -i|" ./kubeconfig

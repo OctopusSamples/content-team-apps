@@ -113,7 +113,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
   }
   step {
     condition           = "Success"
-    name                = "Display the Service URL"
+    name                = "Display the Ingress URL"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Frontend"]
@@ -134,11 +134,47 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          INGRESS_HOSTNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
-          echo "Open [http://$INGRESS_HOSTNAME/index.html](http://$INGRESS_HOSTNAME/index.html) to view the web app."
+          DNSNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
+          set_octopusvariable "DNSName" "$${DNSNAME}"
+          echo "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
         EOT
         "OctopusUseBundledTooling" : "False"
       }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "HTTP Smoke Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "HTTP Smoke Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      script_body = <<-EOT
+          CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.FixedEnvironment}/index.html)
+
+          echo "response code:$code"
+          if [ "$code" == "200" ]
+          then
+            echo "success"
+            exit 0;
+          else
+            echo "error"
+            exit 1;
+          fi
+        EOT
     }
   }
   step {
