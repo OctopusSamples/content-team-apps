@@ -81,6 +81,8 @@ locals {
 
       if [[  $SUCCESS -ne 0 ]]; then
         >&2 echo "Vulnerabilities were detected"
+      else
+        echo "No vulnerabilities were detected"
       fi
 
       exit 0
