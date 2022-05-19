@@ -119,6 +119,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             TargetGroup:
               Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
               Properties:
+                TargetGroupAttributes:
+                - Key: deregistration_delay.timeout_seconds
+                  Value: '20'
                 HealthCheckEnabled: true
                 HealthCheckIntervalSeconds: 5
                 HealthCheckPath: /
