@@ -153,7 +153,6 @@ runs:
         --id octopub-frontend-cypress
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
-        --include **/*
         --outFolder ..
       shell: bash
       working-directory: js/cypress-frontend

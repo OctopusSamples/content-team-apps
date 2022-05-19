@@ -48,7 +48,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html"
+  value        = "http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}"
 }
 
 locals {
@@ -221,8 +221,11 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
       }
       script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
-          cypress run > output.txt
+          cypress run 2>&1
+          echo "##octopus[stdout-default]"
+
           RESULT=$?
           if [[ -f mochawesome.html ]]
           then

@@ -23,6 +23,7 @@ const AddBook: FC<{}> = (): ReactElement => {
                 image: "",
                 epub: "",
                 pdf: "",
+                web: "",
                 dataPartition: ""
             }
         }
