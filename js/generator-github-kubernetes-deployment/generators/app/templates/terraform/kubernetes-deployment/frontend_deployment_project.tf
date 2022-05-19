@@ -42,6 +42,14 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   value        = "False"
 }
 
+resource "octopusdeploy_variable" "cypress_baseurl_variable" {
+  name         = "baseUrl"
+  type         = "String"
+  description  = "A structured variable replacement for the Cypress test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value        = "http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html"
+}
 
 locals {
   frontend_package_name = "frontend"
@@ -174,6 +182,59 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
             echo "error"
             exit 1;
           fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Cypress E2E Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Cypress E2E Test"
+      notes                              = "Use cypress to perform an end to end test of the frontend web app."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.cypress_docker_image
+      }
+      package {
+        name                      = "octopub-frontend-cypress"
+        package_id                = "octopub-frontend-cypress"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+      }
+      script_body = <<-EOT
+          cd octopub-frontend-cypress
+          cypress run > output.txt
+          RESULT=$?
+          if [[ -f mochawesome.html ]]
+          then
+            inline-assets mochawesome.html selfcontained.html
+            new_octopusartifact "$${PWD}/selfcontained.html" "selfcontained.html"
+          fi
+          if [[ -d cypress/screenshots/sample_spec.js ]]
+          then
+            zip -r screenshots.zip cypress/screenshots/sample_spec.js
+            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
+          fi
+          exit $${RESULT}
         EOT
     }
   }
