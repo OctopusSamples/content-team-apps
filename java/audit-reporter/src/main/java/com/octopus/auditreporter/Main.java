@@ -80,7 +80,9 @@ public class Main {
           .filter(e -> !e.endsWith("users.noreply.github.com")).count());
 
       for (String email : emails) {
-        System.out.println(email);
+        if (!email.endsWith("@users.noreply.github.com") && !email.endsWith("@octopus.com")) {
+          System.out.println(email);
+        }
       }
 
     } catch (Exception e) {

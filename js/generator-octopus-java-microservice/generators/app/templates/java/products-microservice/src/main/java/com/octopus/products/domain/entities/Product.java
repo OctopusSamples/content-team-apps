@@ -54,6 +54,9 @@ public class Product {
   public String epub;
 
   @Audited
+  public String web;
+
+  @Audited
   public String image;
 
   @Audited

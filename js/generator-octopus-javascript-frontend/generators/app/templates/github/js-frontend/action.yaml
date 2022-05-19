@@ -154,9 +154,9 @@ runs:
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
         --include **/*
-        --basePath cypress-frontend
+        --outFolder ..
       shell: bash
-      working-directory: js
+      working-directory: js/cypress-frontend
 
     # The Cypress package is pushed to the Octopus built-in feed.
     - name: Push Cypress Package

@@ -53,12 +53,14 @@
             <column name="pdf" type="varchar(255)"/>
             <column name="epub" type="varchar(255)"/>
             <column name="image" type="varchar(255)"/>
+            <column name="web" type="varchar(255)"/>
             <column name="description" type="clob"/>
         </addColumn>
         <addColumn tableName="product_AUD">
             <column name="pdf" type="varchar(255)"/>
             <column name="epub" type="varchar(255)"/>
             <column name="image" type="varchar(255)"/>
+            <column name="web" type="varchar(255)"/>
             <column name="description" type="clob"/>
         </addColumn>
     </changeSet>
@@ -74,6 +76,41 @@
               value="Learn how to apply the 10 pillars of pragmatic deployments to your Kubernetes infrastructure with practical tips for configuring Octopus and managing your Kubernetes cluster."/>
             <where>id = 1</where>
         </update>
+    </changeSet>
+    <changeSet author="mcasperson" id="7">
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="An introduction to DevOps"/>
+            <column name="web"
+              value="https://octopus.com/blog/introduction-to-devops"/>
+            <column name="image"
+              value="https://i.octopus.com/blog/2022-q2/introduction-to-devops/blogimage-introductiontodevops-2022.png"/>
+            <column name="description"
+              value="In this post, we take a surface-level look at the parts that make up DevOps. We explore the concepts, tools, unique roles, plus explain where Octopus fits in."/>
+        </insert>
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="An introduction to build servers and Continuous Integration"/>
+            <column name="web"
+              value="https://octopus.com/blog/introduction-to-build-servers"/>
+            <column name="image"
+              value="https://i.octopus.com/blog/2022-01/introduction-to-build-servers/blogimage-buildservers.png"/>
+            <column name="description"
+              value="Most development teams understand the importance of version control to coordinate code commits, and build servers to compile and package their software, but Continuous Integration (CI) is a big topic. Over the next few months, we’re going into detail about Continuous Integration and how two of the most popular build servers, Jenkins and GitHub Actions, can help with your CI processes."/>
+        </insert>
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="What is GitOps?"/>
+            <column name="web"
+              value="https://octopus.com/blog/what-is-gitops"/>
+            <column name="image"
+              value="https://i.octopus.com/blog/2022-q2/what-is-gitops/blogimage-whatisgitops-2022.png"/>
+            <column name="description"
+              value=" in this post we look at: The history of GitOps, GitOps goals and ideals, The limitations of GitOps, The tools that support GitOps, The practical implications of adopting GitOps in your own organization"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>

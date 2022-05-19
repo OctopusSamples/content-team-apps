@@ -23,6 +23,7 @@ export interface ProductData {
         image: string | null,
         pdf: string | null,
         epub: string | null,
+        web: string | null,
         description: string | null
     }
 }

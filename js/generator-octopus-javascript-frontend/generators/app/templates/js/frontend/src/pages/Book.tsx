@@ -46,6 +46,7 @@ const Book: FC<{}> = (): ReactElement => {
                     <ul>
                         {book.data.attributes.pdf && <li><a href={book.data.attributes.pdf}>PDF</a></li>}
                         {book.data.attributes.epub && <li><a href={book.data.attributes.epub}>EPUB</a></li>}
+                        {book.data.attributes.web && <li><a href={book.data.attributes.web}>Link</a></li>}
                     </ul>
                 </Grid>
             </Grid>}

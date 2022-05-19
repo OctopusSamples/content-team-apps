@@ -173,6 +173,7 @@ jobs:
         uses: ./github/js-frontend
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
+          cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
