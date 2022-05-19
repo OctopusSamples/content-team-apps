@@ -1,0 +1,11 @@
+{
+  "baseUrl": "http://webapp.frontend-development",
+  "reporter": "mochawesome",
+  "reporterOptions": {
+    "charts": true,
+    "overwrite": false,
+    "html": true,
+    "json": false,
+    "reportDir": "."
+  }
+}

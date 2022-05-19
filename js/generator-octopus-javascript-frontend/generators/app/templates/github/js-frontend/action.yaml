@@ -4,6 +4,9 @@ inputs:
   image_tag:
     description: 'The ECR Docker image tag'
     required: true
+  cypress_image_tag:
+    description: 'The ECR Docker cypress worker image tag'
+    required: true
   aws_access_key:
     description: 'The AWS access key'
     required: true
@@ -129,13 +132,51 @@ runs:
       shell: bash
       working-directory: js/frontend
 
-#    - name: Create a release
-#      if: ${{ env.BRANCH_NAME == 'main' }}
-#      run: >
-#        octo create-release
-#        --project "Deploy Frontend"
-#        --server ${{ inputs.octopus_server }}
-#        --apiKey ${{ inputs.octopus_apikey }}
-#        --space "${{ inputs.octopus_space }}"
-#        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
-#      shell: bash
+    # The Docker image used to run Cypress tests is built and pushed.
+    - name: Build, tag, and push postman image to Amazon ECR
+      run: |
+        cd cypress
+        docker build -t ${{ inputs.cypress_image_tag }} .
+        docker push ${{ inputs.cypress_image_tag }}
+      shell: bash
+      working-directory: js
+
+    - name: Install Cypress modules
+      run: npm install
+      shell: bash
+      working-directory: js/cypress-frontend
+
+    # End-to-end tests are performed with Cypress.
+    - name: Build Cypress package
+      run: >
+        octo pack
+        --id octopub-frontend-cypress
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --format zip
+        --include **/*
+        --basePath cypress-frontend
+      shell: bash
+      working-directory: js
+
+    # The Cypress package is pushed to the Octopus built-in feed.
+    - name: Push Cypress Package
+      run: >
+        octo push 
+        --package octopub-frontend-cypress.${{ steps.determine_version.outputs.semVer }}.zip
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --overwrite-mode OverwriteExisting
+      shell: bash
+      working-directory: js
+
+    - name: Create a release
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "Deploy Frontend Service"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+      shell: bash
