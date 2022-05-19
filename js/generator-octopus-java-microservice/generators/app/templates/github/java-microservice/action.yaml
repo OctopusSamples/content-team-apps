@@ -175,7 +175,7 @@ runs:
         --id products-microservice-postman
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
-        --include postman-products/test.json
+        --include test.json
         --basePath postman-products
       shell: bash
       working-directory: java
