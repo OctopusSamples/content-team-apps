@@ -151,7 +151,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
               Properties:
                 HealthCheckEnabled: true
-                HealthCheckIntervalSeconds: 5
+                HealthCheckIntervalSeconds: 10
                 HealthCheckPath: /health/products/GET
                 HealthCheckPort: '${local.backend_port}'
                 HealthCheckProtocol: HTTP
