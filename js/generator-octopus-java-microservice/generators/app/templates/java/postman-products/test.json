@@ -1,0 +1,46 @@
+{
+  "info": {
+    "_postman_id": "6f477665-5aef-45a0-a016-7c4169aef281",
+    "name": "Octopub Products",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Products",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"response must be valid and have a body\", function () {\r",
+              "    pm.response.to.be.ok;\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "    pm.expect(pm.response.json().quote != \"\").to.be.true;\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/products/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8083",
+          "path": [
+            "api",
+            "products",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

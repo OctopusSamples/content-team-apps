@@ -48,6 +48,16 @@ variable "frontend_docker_image" {
   nullable = false
 }
 
+variable "postman_docker_image" {
+  type = string
+  nullable = false
+}
+
+variable "cypress_docker_image" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_library_variable_set_id" {
   type = string
   nullable = false

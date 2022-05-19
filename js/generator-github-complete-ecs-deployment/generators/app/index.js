@@ -42,6 +42,8 @@ module.exports = class extends Generator {
         const spaceName = platform + (framework ? " " + framework : "");
         const productsRepository = "products-service" + (framework ? "-" + framework : "");
         const frontendRepository = "octopus-frontend" + (framework ? "-" + framework : "");
+        const postmanRepository = "postman-worker" + (framework ? "-" + framework : "");
+        const cypressRepository = "cypress-worker" + (framework ? "-" + framework : "");
 
         this.fs.copyTpl(
             this.templatePath('.github/workflows/ecs-deployment.yaml'),
@@ -53,7 +55,9 @@ module.exports = class extends Generator {
                 framework,
                 platform,
                 products_repository: productsRepository,
-                frontend_repository: frontendRepository
+                frontend_repository: frontendRepository,
+                postman_repository: postmanRepository,
+                cypress_repository: cypressRepository
             }
         );
     }

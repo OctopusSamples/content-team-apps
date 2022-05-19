@@ -53,6 +53,33 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
   owner_id = octopusdeploy_project.deploy_backend_project.id
 }
 
+resource "octopusdeploy_variable" "postman_raw_url_variable" {
+  name         = "item:0:request:url:raw"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  value        = "http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/api/products/"
+}
+
+resource "octopusdeploy_variable" "postman_raw_host_variable" {
+  name         = "item:0:request:url:host:0"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  value        = "#{Octopus.Action[DFind the LoadBalancer URL].Output.DNSName}"
+}
+
+resource "octopusdeploy_variable" "postman_raw_port_variable" {
+  name         = "item:0:request:url:port"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  value        = "80"
+}
+
 locals {
   backend_package_name = "backend"
   backend_port         = "8083"
@@ -386,6 +413,46 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             echo "error"
             exit 1;
           fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Postman Integration Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Postman Integration Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.postman_docker_image
+      }
+      package {
+        name                      = "products-microservice-postman"
+        package_id                = "products-microservice-postman"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/*.json"
+      }
+      script_body = <<-EOT
+          newman run products-microservice-postman/test.json 2>&1
         EOT
     }
   }

@@ -43,6 +43,16 @@ variable "backend_docker_image" {
   nullable = false
 }
 
+variable "postman_docker_image" {
+  type = string
+  nullable = false
+}
+
+variable "cypress_docker_image" {
+  type = string
+  nullable = false
+}
+
 variable "frontend_docker_image" {
   type = string
   nullable = false

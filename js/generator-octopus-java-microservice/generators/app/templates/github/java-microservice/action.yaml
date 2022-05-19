@@ -2,7 +2,10 @@ name: Docker Build and Push
 description: Build the Java microservice
 inputs:
   image_tag:
-    description: 'The ECR Docker image tag'
+    description: 'The ECR Docker products service image tag'
+    required: true
+  postman_image_tag:
+    description: 'The ECR Docker postman worker image tag'
     required: true
   aws_access_key:
     description: 'The AWS access key'
@@ -164,6 +167,39 @@ runs:
         --overwrite-mode OverwriteExisting
       shell: bash
       working-directory: java/products-microservice
+
+    # Integration tests are performed with Postman using an exported collection.
+    - name: Build Postman package
+      run: >
+        octo pack
+        --id products-microservice-postman
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --format zip
+        --include postman-products/test.json
+        --basePath postman-products
+      shell: bash
+      working-directory: java
+
+    # The Postman package is pushed to the Octopus built-in feed.
+    - name: Push Postman Package
+      run: >
+        octo push 
+        --package products-microservice-postman.${{ steps.determine_version.outputs.semVer }}.zip
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --overwrite-mode OverwriteExisting
+      shell: bash
+      working-directory: java
+
+    # The Docker image used to run Postman tests is built and pushed.
+    - name: Build, tag, and push postman image to Amazon ECR
+      run: |
+        cd postman
+        docker build -t ${{ inputs.postman_image_tag }} .
+        docker push ${{ inputs.postman_image_tag }}
+      shell: bash
+      working-directory: java
 
     # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
     # two packages in Octopus.

@@ -34,6 +34,8 @@ module.exports = class extends Generator {
         this.composeWith(require.resolve('@octopus-content-team/generator-ecr-feed/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "products-service"});
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "octopus-frontend"});
+        this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "postman-worker"});
+        this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "cypress-worker"});
     }
 
     writing() {
@@ -42,6 +44,8 @@ module.exports = class extends Generator {
         const spaceName = platform + (framework ? " " + framework : "");
         const productsRepository = "products-service" + (framework ? "-" + framework : "");
         const frontendRepository = "octopus-frontend" + (framework ? "-" + framework : "");
+        const postmanRepository = "postman-worker" + (framework ? "-" + framework : "");
+        const cypressRepository = "cypress-worker" + (framework ? "-" + framework : "");
 
         this.fs.copyTpl(
             this.templatePath('.github/workflows/eks-deployment.yaml'),
@@ -53,7 +57,9 @@ module.exports = class extends Generator {
                 framework,
                 platform,
                 products_repository: productsRepository,
-                frontend_repository: frontendRepository
+                frontend_repository: frontendRepository,
+                postman_repository: postmanRepository,
+                cypress_repository: cypressRepository
             }
         );
     }

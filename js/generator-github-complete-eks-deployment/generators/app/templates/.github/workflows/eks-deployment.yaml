@@ -96,6 +96,40 @@ jobs:
           github_repo_owner: ${{ github.repository_owner }}
           platform: "<%= platform %>"
 
+      - name: Create the Postman worker ECR repository
+        id: ecr_postman_resources
+        uses: ./github/aws-ecr-<%= postman_repository %>
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= postman_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
+
+      - name: Create the Cypress worker ECR repository
+        id: ecr_cypress_resources
+        uses: ./github/aws-ecr-<%= postman_repository %>
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= cypress_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
+
       - name: Create the ECR feed
         id: ecr_feed
         uses: ./github/ecr-feed
@@ -123,6 +157,8 @@ jobs:
           octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
           backend_docker_image: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_name }}
           frontend_docker_image: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_name }}
+          postman_docker_image: ${{ steps.ecr_postman_resources.outputs.aws_ecr_repository_name }}
+          cypress_docker_image: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_name }}
           octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -153,6 +189,7 @@ jobs:
         uses: ./github/java-microservice
         with:
           image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
+          postman_image_tag: ${{ steps.ecr_postman_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"

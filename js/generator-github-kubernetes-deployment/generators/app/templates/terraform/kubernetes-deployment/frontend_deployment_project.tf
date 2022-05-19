@@ -98,7 +98,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.KubernetesContainers.Replicas" : "1",
         "Octopus.Action.KubernetesContainers.RevisionHistoryLimit" : "1",
         "Octopus.Action.KubernetesContainers.ServiceNameType" : "External",
-        "Octopus.Action.KubernetesContainers.ServiceType" : "LoadBalancer",
+        "Octopus.Action.KubernetesContainers.ServiceType" : "ClusterIP",
         "Octopus.Action.KubernetesContainers.Tolerations" : "[]",
         "OctopusUseBundledTooling" : "False",
         "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
