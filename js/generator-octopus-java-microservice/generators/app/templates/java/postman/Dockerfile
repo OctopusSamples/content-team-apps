@@ -3,10 +3,8 @@
 # When run as a tentacle, the Tentacle agent is called to register a worker with an Octopus instance.
 
 FROM postman/newman:5.2.0-ubuntu
-RUN apt-get update; apt-get install -y libicu60
-# Fix the "warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)" error
-# See https://unix.stackexchange.com/a/626921
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+RUN apt-get update; apt-get install -y libicu60 locales
+RUN locale-gen en_US.UTF-8
 RUN curl -L \
     https://download.octopusdeploy.com/linux-tentacle/tentacle-6.1.1403-linux_x64.tar.gz \
     --output tentacle-linux_x64.tar.gz
