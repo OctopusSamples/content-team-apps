@@ -2,7 +2,7 @@
   "basename": "",
   "branch": "main",
   "title": "Octopub",
-  "productEndpoint": "/api/products",
+  "productEndpoint": "http://localhost:8083/api/products",
   "productHealthEndpoint": "/health/products",
   "auditEndpoint": "/api/audits",
   "auditHealthEndpoint": "/health/audits"

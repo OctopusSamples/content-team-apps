@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) => {
                 display: "flex",
                 flexGrow: 1,
                 padding: theme.spacing(3),
+                overflowY: "scroll"
             },
             toolbar: {
                 ...theme.mixins.toolbar,

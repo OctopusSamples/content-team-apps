@@ -50,6 +50,7 @@ const Home: FC = (): ReactElement => {
                              className={classes.image}
                              src={b.attributes.image || "https://via.placeholder.com/300x400"}
                              alt={b.attributes.name || "Unknown"}/>
+                        <h3 className={classes.bookshelfTitle}>{b.attributes.name}</h3>
                     </Grid>)}
             </Grid>
         </>
