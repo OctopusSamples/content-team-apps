@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-ecr-feed",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Yeoman generator to create an AWS ECR Feed in Octopus.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [
