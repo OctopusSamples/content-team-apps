@@ -13,7 +13,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
     const [accessKeyError, setAccessKeyError] = useState<string | null>(null);
-    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "us-east-1");
+    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "us-west-1");
     const [regionError, setRegionError] = useState<string | null>(null);
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? mask : "");
     const [secretKeyError, setSecretKeyError] = useState<string | null>(null);
