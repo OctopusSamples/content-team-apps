@@ -68,7 +68,7 @@ resource "octopusdeploy_variable" "postman_raw_host_variable" {
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_backend_project.id
-  value        = "#{Octopus.Action[DFind the LoadBalancer URL].Output.DNSName}"
+  value        = "#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}"
 }
 
 resource "octopusdeploy_variable" "postman_raw_port_variable" {
