@@ -84,9 +84,7 @@ runs:
       shell: bash
 
     - name: Install Dependencies
-      run: |
-        npm install --production
-        node-prune
+      run: npm install --production
       shell: bash
       working-directory: js/octopus-template-generator
 
@@ -119,6 +117,11 @@ runs:
 
     - name: Build
       run: npm run build
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Prune node_modules
+      run: node-prune
       shell: bash
       working-directory: js/octopus-template-generator
 
