@@ -30,6 +30,10 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v20
 
+      - name: Show changed files
+        run: echo "${{steps.changed-files.outputs.all_modified_files}}"
+        shell: bash
+
       # This main workflow file implements each stage through composable actions -
       # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
       # This allows us to mix and match build and deployment steps, which is important for a platform engineering tool
@@ -38,10 +42,10 @@ jobs:
       - name: Create Initial Space
         id: shared_space
         if: >-
-          contains(steps.changed-files.outputs.modified_files, 'shared-space') 
-          || contains(steps.changed-files.outputs.modified_files, 'shared-infrastructure')
-          || contains(steps.changed-files.outputs.modified_files, 'ecr_feed')
-          || contains(steps.changed-files.outputs.modified_files, 'ecs-deployment')
+          contains(steps.changed-files.outputs.all_modified_files, 'shared-space') 
+          || contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecr_feed')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -56,7 +60,7 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
-        if: contains(steps.changed-files.outputs.modified_files, 'shared-infrastructure')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -152,7 +156,7 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create ECS Deployment Project
-        if: contains(steps.changed-files.outputs.modified_files, 'ecs-deployment')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/ecs-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -180,7 +184,7 @@ jobs:
 
       - name: Build JavaScript Frontend
         uses: ./github/js-frontend
-        if: contains(steps.changed-files.outputs.modified_files, 'js-frontend')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'js-frontend')
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
           cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
@@ -197,7 +201,7 @@ jobs:
 
       - name: Build Java Microservice
         uses: ./github/java-microservice
-        if: contains(steps.changed-files.outputs.modified_files, 'java-microservice')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'java-microservice')
         with:
           image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
