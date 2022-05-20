@@ -37,7 +37,11 @@ jobs:
 
       - name: Create Initial Space
         id: shared_space
-        if: contains(steps.changed-files.outputs.modified_files, 'shared-space')
+        if: >-
+          contains(steps.changed-files.outputs.modified_files, 'shared-space') 
+          || contains(steps.changed-files.outputs.modified_files, 'shared-infrastructure')
+          || contains(steps.changed-files.outputs.modified_files, 'ecr_feed')
+          || contains(steps.changed-files.outputs.modified_files, 'ecs-deployment')
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -176,6 +180,7 @@ jobs:
 
       - name: Build JavaScript Frontend
         uses: ./github/js-frontend
+        if: contains(steps.changed-files.outputs.modified_files, 'js-frontend')
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
           cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
@@ -192,6 +197,7 @@ jobs:
 
       - name: Build Java Microservice
         uses: ./github/java-microservice
+        if: contains(steps.changed-files.outputs.modified_files, 'java-microservice')
         with:
           image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
