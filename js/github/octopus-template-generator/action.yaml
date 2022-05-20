@@ -121,7 +121,7 @@ runs:
       working-directory: js/octopus-template-generator
 
     - name: Prune node_modules
-      run: node-prune -exclude **/@octopus-content-team/**
+      run: node-prune -exclude '**/@octopus-content-team/**'
       shell: bash
       working-directory: js/octopus-template-generator
 
