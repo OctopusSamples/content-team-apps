@@ -14,9 +14,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - uses: nelonoel/branch-name@v1.0.1
+
+      # This action provides a way to determine what files were changed with the last push. This allows us to work around
+      # a bug in the Octopus terraform provider where resources often have to be deleted before they are reprocessed. For
+      # example, the deployment projects must be deleted before an attempt to apply the project templates, even if nothing
+      # has changed. Deleting projects is destructive though, as you lose the releases, so we only delete and reapply if
+      # the Terraform files have been changed.
+      # See https://github.community/t/is-it-possible-to-run-the-job-only-when-a-specific-file-changes/115484/9
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v20
 
       # This main workflow file implements each stage through composable actions -
       # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
@@ -25,16 +37,7 @@ jobs:
 
       - name: Create Initial Space
         id: shared_space
-        # The App Builder will update an existing repo by placing the new code in the branch called app-builder-update.
-        # We don't trigger any builds from this branch, as it is up to the end user to merge any required changes
-        # into main.
-        # To overwrite the main branch with app-builder-update, use the "ours" merge strategy. See
-        # https://stackoverflow.com/a/2862938/157605 for more information:
-        #
-        # git checkout app-builder-update
-        # git merge -s ours main
-        # git checkout main
-        # git merge app-builder-update
+        if: contains(steps.changed-files.outputs.modified_files, 'shared-space')
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -49,6 +52,7 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
+        if: contains(steps.changed-files.outputs.modified_files, 'shared-infrastructure')
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -145,6 +149,7 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create Kubernetes Deployment Project
+        if: contains(steps.changed-files.outputs.modified_files, 'kubernetes-deployment')
         uses: ./github/kubernetes-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
