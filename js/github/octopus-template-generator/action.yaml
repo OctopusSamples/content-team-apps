@@ -79,10 +79,6 @@ runs:
       shell: bash
       working-directory: js/octopus-template-generator
 
-    - name: Install node prune
-      run: curl -sf https://gobinaries.com/tj/node-prune | sh
-      shell: bash
-
     - name: Install Dependencies
       run: npm install
       shell: bash
@@ -117,11 +113,6 @@ runs:
 
     - name: Build
       run: npm run build
-      shell: bash
-      working-directory: js/octopus-template-generator
-
-    - name: Prune node_modules
-      run: node-prune -exclude '**/@octopus-content-team/**'
       shell: bash
       working-directory: js/octopus-template-generator
 
