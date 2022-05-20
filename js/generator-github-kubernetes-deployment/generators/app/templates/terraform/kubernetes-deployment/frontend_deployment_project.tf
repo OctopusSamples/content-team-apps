@@ -224,9 +224,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
           echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
           cypress run 2>&1
+          RESULT=$?
           echo "##octopus[stdout-default]"
 
-          RESULT=$?
           if [[ -f mochawesome.html ]]
           then
             inline-assets mochawesome.html selfcontained.html
