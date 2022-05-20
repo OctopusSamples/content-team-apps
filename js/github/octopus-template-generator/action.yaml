@@ -84,7 +84,7 @@ runs:
       shell: bash
 
     - name: Install Dependencies
-      run: npm install --production
+      run: npm install
       shell: bash
       working-directory: js/octopus-template-generator
 
