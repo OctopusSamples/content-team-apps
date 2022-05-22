@@ -379,7 +379,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           set_octopusvariable "DNSName" "$${DNSNAME}"
 
-          echo "Open [http://$${DNSNAME}/api/products](http://$${DNSNAME}/api/products) to view the backend API."
+          write_highlight "Open [http://$${DNSNAME}/api/products](http://$${DNSNAME}/api/products) to view the backend API."
         EOT
       }
     }

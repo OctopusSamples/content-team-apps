@@ -160,7 +160,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
           set_octopusvariable "DNSName" "$${DNSNAME}"
-          echo "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
+          write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
         EOT
         "OctopusUseBundledTooling" : "False"
       }

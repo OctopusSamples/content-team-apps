@@ -356,7 +356,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
 
           set_octopusvariable "DNSName" "$${DNSNAME}"
 
-          echo "Open [http://$${DNSNAME}/index.html](http://$${DNSNAME}/index.html) to view the frontend webapp."
+          write_highlight "Open [http://$${DNSNAME}/index.html](http://$${DNSNAME}/index.html) to view the frontend webapp."
         EOT
       }
     }
@@ -434,9 +434,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       script_body = <<-EOT
           echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
-          cypress run 2>&1
+          OUTPUT=$(cypress run 2>&1)
           RESULT=$?
           echo "##octopus[stdout-default]"
+
+          # Print the output stripped of ANSI colour codes
+          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
 
           if [[ -f mochawesome.html ]]
           then

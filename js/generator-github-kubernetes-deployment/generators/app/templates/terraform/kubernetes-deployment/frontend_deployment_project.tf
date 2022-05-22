@@ -144,7 +144,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           DNSNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
           set_octopusvariable "DNSName" "$${DNSNAME}"
-          echo "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
+          write_highlight "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
         EOT
         "OctopusUseBundledTooling" : "False"
       }
@@ -223,9 +223,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
       script_body = <<-EOT
           echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
-          cypress run 2>&1
+          OUTPUT=$(cypress run 2>&1)
           RESULT=$?
           echo "##octopus[stdout-default]"
+
+          # Print the output stripped of ANSI colour codes
+          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
 
           if [[ -f mochawesome.html ]]
           then
