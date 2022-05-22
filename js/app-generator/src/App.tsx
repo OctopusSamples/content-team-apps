@@ -26,7 +26,7 @@ export const AppContext = createContext({
     settings: {} as RuntimeSettings,
     setDeveloperMode: (mode: boolean) => {
     },
-    developerMode: localStorage.getItem("developerMode") === "true",
+    developerMode: false,
     useDefaultTheme: true,
     partition: "",
     setPartition: (mode: string) => {
@@ -49,7 +49,7 @@ function App(settings: RuntimeSettings) {
     theme = responsiveFontSizes(theme);
 
     const [requireLogin, setRequireLogin] = useState<boolean>(false);
-    const [developerMode, setDeveloperMode] = useState<boolean>(false);
+    const [developerMode, setDeveloperMode] = useState<boolean>(localStorage.getItem("developerMode") === "true");
     const [partition, setPartition] = useState<string>("");
 
     const keys = settings.aws?.jwk?.keys;
