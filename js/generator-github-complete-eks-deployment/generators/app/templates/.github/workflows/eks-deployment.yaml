@@ -60,7 +60,9 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
-        if: contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
