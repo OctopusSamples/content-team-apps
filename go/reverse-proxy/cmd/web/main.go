@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"github.com/OctopusSamples/content-team-apps/go/reverse-proxy/internal/pkg/lambdahandler"
 	"github.com/OctopusSamples/content-team-apps/go/reverse-proxy/internal/pkg/utils"
 	"github.com/aws/aws-lambda-go/events"
@@ -26,7 +27,7 @@ func main() {
 			IsBase64Encoded:                 false,
 			MultiValueQueryStringParameters: r.URL.Query(),
 		}
-		response, _ := lambdahandler.HandleRequest(nil, request)
+		response, _ := lambdahandler.HandleRequest(context.TODO(), request)
 
 		w.WriteHeader(response.StatusCode)
 
