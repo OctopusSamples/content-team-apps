@@ -22,7 +22,7 @@ export const AppContext = createContext({
     settings: {} as RuntimeSettings,
     setDeveloperMode: (mode: boolean) => {
     },
-    developerMode: false,
+    developerMode: localStorage.getItem("developerMode") === "true",
     useDefaultTheme: true,
     partition: "",
     setPartition: (mode: string) => {

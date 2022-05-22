@@ -42,7 +42,11 @@ const Footer = () => {
             >
                 {FOOTER_TEXT}
             </Link>
-            <IconButton className={classes.icon} onClick={() => context.setDeveloperMode(!context.developerMode)}>
+            <IconButton className={classes.icon}
+                        onClick={() => {
+                            localStorage.setItem("developerMode", `${!context.developerMode}`);
+                            context.setDeveloperMode(!context.developerMode);
+                        }}>
                 <DeveloperModeIcon/>
             </IconButton>
         </div>
