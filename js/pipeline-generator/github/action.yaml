@@ -107,7 +107,7 @@ runs:
     - name: Trigger deployment Jenkins Pipelines
       run: >
         octo create-release
-        --project "Jenkins Pipeline Generator Frontend"
+        --project "Jenkins Pipelines Generator Frontend"
         --deployTo "Development"
         --waitForDeployment
         --server ${{ inputs.octopus_server_url }}
@@ -123,7 +123,7 @@ runs:
     - name: Trigger deployment Jenkins Pipelines Security env
       run: >
         octo promote-release
-        --project "Jenkins Pipeline Generator Frontend"
+        --project "Jenkins Pipelines Generator Frontend"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
