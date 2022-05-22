@@ -202,7 +202,9 @@ runs:
         project: Octopus Template Generator
         server: ${{ inputs.octopus_server }}
         deploy_to: Development
-        packages: octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
+        packages: |
+          octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
+          octopus-template-generator-lambda-sbom.${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
         wait_for_deployment: true
         deployment_timeout: 00:30:00
