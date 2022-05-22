@@ -195,7 +195,8 @@ runs:
         output_path: octopus
         octopus_space: "Content Team"
 
-    - name: Create Octopus Release
+    - name: Create Mainline Octopus Release
+      if: ${{ env.BRANCH_NAME == 'main' }}
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
@@ -209,3 +210,21 @@ runs:
         wait_for_deployment: true
         deployment_timeout: 00:30:00
         release_number: ${{ steps.determine_version.outputs.semVer }}
+        channel: Mainline
+
+    - name: Create Feature Branch Octopus Release
+      if: ${{ env.BRANCH_NAME != 'main' }}
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        project: Octopus Template Generator
+        server: ${{ inputs.octopus_server }}
+        deploy_to: Development
+        packages: |
+          octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
+          octopus-template-generator-lambda-sbom:${{ steps.determine_version.outputs.semVer }}
+        space: "Content Team"
+        wait_for_deployment: true
+        deployment_timeout: 00:30:00
+        release_number: ${{ steps.determine_version.outputs.semVer }}
+        channel: Feature Branches
