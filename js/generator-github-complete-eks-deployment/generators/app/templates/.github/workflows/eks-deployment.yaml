@@ -148,7 +148,7 @@ jobs:
         id: ecr_feed
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
-          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/ecr-feed
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
