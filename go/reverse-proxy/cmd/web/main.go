@@ -31,8 +31,14 @@ func main() {
 		}
 		response, _ := lambdahandler.HandleRequest(context.TODO(), request)
 
-		for s, s2 := range response.Headers {
-			w.Header().Set(s, s2)
+		for key, value := range response.Headers {
+			w.Header().Set(key, value)
+		}
+
+		for multiValueKey, multiValue := range response.MultiValueHeaders {
+			for _, value := range multiValue {
+				w.Header().Add(multiValueKey, value)
+			}
 		}
 
 		w.WriteHeader(response.StatusCode)
