@@ -225,6 +225,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               then
                 break
               fi
+              echo "Waiting for Ingress hostname"
               sleep 10
           done
           set_octopusvariable "DNSName" "$${DNSNAME}"
