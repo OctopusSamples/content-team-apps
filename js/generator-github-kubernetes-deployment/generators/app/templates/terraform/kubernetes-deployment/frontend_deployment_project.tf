@@ -142,7 +142,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          for i in {1..5}
+          # It can take a while for a load balancer to be provisioned
+          for i in {1..60}
           do
               DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
               if [[ "$${DNSNAME}" != "null" ]]
