@@ -133,7 +133,7 @@ runs:
       working-directory: go/reverse-proxy
 
     - run: |
-        docker build . -t ${{ inputs.dockerhub_username }}/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
-        docker push ${{ inputs.dockerhub_username }}/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+        docker build . -t octopussamples/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+        docker push octopussamples/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
       shell: bash
       working-directory: go/reverse-proxy
