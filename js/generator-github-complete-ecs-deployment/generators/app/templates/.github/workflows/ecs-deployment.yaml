@@ -147,7 +147,7 @@ jobs:
       - name: Create the ECR feed
         id: ecr_feed
         uses: ./github/ecr-feed
-        if: |
+        if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
           || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         with:
