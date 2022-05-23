@@ -3,6 +3,18 @@ import {RuntimeSettings} from "../config/runtimeConfig";
 
 const GET_RETRIES = 5;
 const JSON_TYPES = ["application/vnd.api+json", "application/json"];
+/**
+ * These are some example branching rules that appear in the UI if no other values are defined.
+ */
+const DEFAULT_BRANCHES = "[{\"id\":1,\"path\":\"/api/products:GET\",\"destination\":\"_url[https://theupstreamserver]\"},{\"id\":2,\"path\":\"/api/products/*:GET\",\"destination\":\"_path[/api/products:GET]\"}]";
+
+/**
+ * We want to expose some default rules to make it more obvious in the UI what kind of rules can be defined.
+ * Note we treat an empty string or null as the default state, and a string like "[]" as the empty state.
+ */
+export function getSavedBranchingRules() {
+    return localStorage.getItem("branching") || DEFAULT_BRANCHES;
+}
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
@@ -10,7 +22,7 @@ export function isBranchingEnabled() {
 
 export function getBranchingRules() {
     if (isBranchingEnabled()) {
-        const rules: RedirectRule[] = JSON.parse(localStorage.getItem("branching") || "[]")
+        const rules: RedirectRule[] = JSON.parse( getSavedBranchingRules() || "[]")
         return rules
             .filter(r => r.path.trim() && r.destination.trim())
             .map(r => "route[" + r.path + "]=" + r.destination).join(";")
