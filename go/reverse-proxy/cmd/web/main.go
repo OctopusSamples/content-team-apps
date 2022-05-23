@@ -13,8 +13,10 @@ import (
 func main() {
 
 	port := utils.GetEnv("PORT", "8080")
+	healthPort := utils.GetEnv("HEALTH_PORT", "8081")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	proxyHandler := http.NewServeMux()
+	proxyHandler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(r.Body)
 		body := buf.String()
@@ -38,8 +40,20 @@ func main() {
 		w.Write([]byte(response.Body))
 	})
 
-	log.Println("Listening on port " + port)
+	healthHandler := http.NewServeMux()
+	healthHandler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK"))
+	})
 
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Println("Listening on port " + port)
+	log.Println("Listening on health check port " + healthPort)
+
+	// Listen for health checks for the proxy
+	go func() {
+		http.ListenAndServe(":"+healthPort, healthHandler)
+	}()
+
+	// Proxy the requests
+	log.Fatal(http.ListenAndServe(":"+port, proxyHandler))
 
 }
