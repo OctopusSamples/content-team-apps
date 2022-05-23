@@ -1,15 +1,15 @@
-resource "octopusdeploy_project" "deploy_frontend_project" {
+resource "octopusdeploy_project" "deploy_backend_featurebranch_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the frontend service."
+  description                          = "Deploys the backend feature branch service."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Frontend WebApp"
-  project_group_id                     = octopusdeploy_project_group.frontend_project_group.id
+  name                                 = "Deploy Backend Feature Branch Service"
+  project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
@@ -24,60 +24,86 @@ resource "octopusdeploy_project" "deploy_frontend_project" {
   }
 }
 
-resource "octopusdeploy_variable" "frontend_debug_variable" {
+resource "octopusdeploy_variable" "debug_variable_featurebranch" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
+resource "octopusdeploy_variable" "debug_evaluated_variable_featurebranch" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "cypress_baseurl_variable" {
-  name         = "baseUrl"
+resource "octopusdeploy_variable" "postman_raw_url_variable_featurebranch" {
+  name         = "item:0:request:url:raw"
   type         = "String"
-  description  = "A structured variable replacement for the Cypress test."
+  description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}"
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/api/products/"
+}
+
+resource "octopusdeploy_variable" "postman_raw_host_variable_featurebranch" {
+  name         = "item:0:request:url:host:0"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "#{Octopus.Action[Display the Ingress URL].Output.DNSName}"
+}
+
+resource "octopusdeploy_variable" "postman_raw_port_variable_featurebranch" {
+  name         = "item:0:request:url:port"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "80"
+}
+
+resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
+  name         = "item:0:request:header"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "[{\"key\": \"Routing\", \"value\": \"route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}]\", \"type\": \"text\", \"disabled\": false}]"
 }
 
 locals {
-  frontend_package_name = "frontend"
-  frontend_service_name = "frontend-service"
-  frontend_ingress_name = "frontend-ingress"
+  backend_featurebranch_package_name = "products"
+  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease}"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_frontend" {
-  project_id = octopusdeploy_project.deploy_frontend_project.id
+resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
+  project_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Frontend WebApp"
+    name                = "Deploy Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
-    target_roles        = ["Kubernetes Frontend"]
+    target_roles        = ["Kubernetes Backend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Frontend WebApp"
+      name           = "Deploy Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
-      features = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress", "Octopus.Features.KubernetesConfigMap"]
+      features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.frontend_package_name
-        package_id                = var.frontend_docker_image
+        name                      = local.backend_featurebranch_package_name
+        package_id                = var.backend_docker_image
         feed_id                   = var.octopus_k8s_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -87,16 +113,16 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
       }
       properties = {
-        "Octopus.Action.KubernetesContainers.CombinedVolumes": "[{\"Items\":[{\"key\":\"config.json\",\"keyError\":null,\"value\":\"config.json\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"Name\":\"frontend-config-volume\",\"ReferenceName\":\"\",\"ReferenceNameType\":\"LinkedResource\",\"EmptyDirMedium\":\"\",\"HostPathType\":\"Directory\",\"HostPathPath\":\"\",\"LocalPath\":\"\",\"Type\":\"ConfigMap\",\"RawYaml\":\"\",\"Repository\":\"\",\"Revision\":\"\"}]",
-        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"${local.frontend_package_name}\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"5000\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[{\"key\":\"frontend-config-volume\",\"keyError\":null,\"value\":\"/workspace/build/config.json\",\"valueError\":null,\"option\":\"config.json\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
+        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
+        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"${local.backend_featurebranch_package_name}\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"frontend\"}",
-        "Octopus.Action.KubernetesContainers.DeploymentName" : "frontend",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"${local.backend_featurebranch_package_name}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.backend_featurebranch_package_name,
         "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment",
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
         "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
+        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
@@ -110,12 +136,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.Tolerations" : "[]",
         "OctopusUseBundledTooling" : "False",
         "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
-        "Octopus.Action.KubernetesContainers.IngressName" : local.frontend_ingress_name,
-        "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/*\",\"value\":\"web\",\"option\":\"\",\"option2\":\"ImplementationSpecific\"}]}}]",
-        "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_service_name,
-        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"5000\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]",
-        "Octopus.Action.KubernetesContainers.ConfigMapName": "frontend-config",
-        "Octopus.Action.KubernetesContainers.ConfigMapValues": "{\"config.json\":\"{\\n  \\\"basename\\\": \\\"\\\",\\n  \\\"branch\\\": \\\"main\\\",\\n  \\\"title\\\": \\\"Octopub\\\",\\n  \\\"productEndpoint\\\": \\\"/api/products\\\",\\n  \\\"productHealthEndpoint\\\": \\\"/health/products\\\",\\n  \\\"auditEndpoint\\\": \\\"/api/audits\\\",\\n  \\\"auditHealthEndpoint\\\": \\\"/health/audits\\\"\\n}\"}"
+        "Octopus.Action.KubernetesContainers.IngressName" : local.backend_ingress_name,
+        "Octopus.Action.KubernetesContainers.IngressRules" : "[]",
+        "Octopus.Action.KubernetesContainers.ServiceName" : local.backend_featurebranch_service_name,
+        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
       }
     }
   }
@@ -124,7 +148,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
     name                = "Display the Ingress URL"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
-    target_roles        = ["Kubernetes Frontend"]
+    target_roles        = ["Kubernetes Backend"]
     action {
       action_type    = "Octopus.KubernetesRunScript"
       name           = "Display the Ingress URL"
@@ -145,7 +169,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           # It can take a while for a load balancer to be provisioned
           for i in {1..60}
           do
-              DNSNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
+              DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
               if [[ "$${DNSNAME}" != "null" ]]
               then
                 break
@@ -157,7 +181,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
 
           if [[ "$${DNSNAME}" != "null" ]]
           then
-            write_highlight "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
+            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}]" to view the feature branch backend API."
           fi
         EOT
         "OctopusUseBundledTooling" : "False"
@@ -195,7 +219,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           for i in {1..60}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
               if [[ "$${DNSNAME}" != "000" ]]
               then
                 break
@@ -218,7 +242,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   }
   step {
     condition           = "Success"
-    name                = "Cypress E2E Test"
+    name                = "Postman Integration Test"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     run_script_action {
@@ -230,8 +254,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       script_source                      = "Inline"
       run_on_server                      = true
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name                               = "Cypress E2E Test"
-      notes                              = "Use cypress to perform an end to end test of the frontend web app."
+      name                               = "Postman Integration Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
       environments                       = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
@@ -239,17 +263,17 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       features = ["Octopus.Features.JsonConfigurationVariables"]
       container {
         feed_id = var.octopus_k8s_feed_id
-        image   = var.cypress_docker_image
+        image   = var.postman_docker_image
       }
       package {
-        name                      = "octopub-frontend-cypress"
-        package_id                = "octopub-frontend-cypress"
+        name                      = "products-microservice-postman"
+        package_id                = "products-microservice-postman"
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "Server"
         extract_during_deployment = true
       }
       properties = {
-        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/*.json"
       }
       script_body = <<-EOT
           if [[ "#{Octopus.Action[Display the Ingress URL].Output.DNSName}" == "null" ]]
@@ -258,26 +282,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             exit 1
           fi
 
-          echo "##octopus[stdout-verbose]"
-          cd octopub-frontend-cypress
-          OUTPUT=$(cypress run 2>&1)
-          RESULT=$?
-          echo "##octopus[stdout-default]"
-
-          # Print the output stripped of ANSI colour codes
-          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
-
-          if [[ -f mochawesome.html ]]
-          then
-            inline-assets mochawesome.html selfcontained.html
-            new_octopusartifact "$${PWD}/selfcontained.html" "selfcontained.html"
-          fi
-          if [[ -d cypress/screenshots/sample_spec.js ]]
-          then
-            zip -r screenshots.zip cypress/screenshots/sample_spec.js
-            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
-          fi
-          exit $${RESULT}
+          newman run products-microservice-postman/test.json 2>&1
         EOT
     }
   }
@@ -301,8 +306,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         data.octopusdeploy_environments.production_security.environments[0].id
       ]
       package {
-        name                      = "javascript-frontend-sbom"
-        package_id                = "javascript-frontend-sbom"
+        name                      = "products-microservice-sbom"
+        package_id                = "products-microservice-sbom"
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "Server"
         extract_during_deployment = true

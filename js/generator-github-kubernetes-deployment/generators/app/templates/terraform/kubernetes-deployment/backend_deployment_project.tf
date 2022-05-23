@@ -189,7 +189,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "OctopusUseBundledTooling" : "False",
         "Octopus.Action.KubernetesContainers.PodManagementPolicy" : "OrderedReady",
         "Octopus.Action.KubernetesContainers.IngressName" : local.backend_ingress_name,
-        "Octopus.Action.KubernetesContainers.IngressRules" : "[{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/api/products\",\"value\":\"web\",\"option\":\"\",\"option2\":\"Prefix\"}]}},{\"host\":\"\",\"http\":{\"paths\":[{\"key\":\"/health/products\",\"value\":\"web\",\"option\":\"\",\"option2\":\"Prefix\"}]}}]",
+        "Octopus.Action.KubernetesContainers.IngressRules" : "[]",
         "Octopus.Action.KubernetesContainers.ServiceName" : local.backend_service_name,
         "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
       }
