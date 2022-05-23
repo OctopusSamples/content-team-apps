@@ -405,7 +405,16 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       script_body = <<-EOT
-          CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/health/products/GET)
+          for i in {1..60}
+          do
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/health/products/GET)
+              if [[ "$${DNSNAME}" != "000" ]]
+              then
+                break
+              fi
+              echo "Waiting for DNS name to be resolvable"
+              sleep 10
+          done
 
           echo "response code: $${CODE}"
           if [ "$${CODE}" == "200" ]
