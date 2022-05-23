@@ -189,7 +189,7 @@ jobs:
 
       - name: Build JavaScript Frontend
         uses: ./github/js-frontend
-        if: contains(steps.changed-files.outputs.all_modified_files, 'js-frontend')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'frontend')
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
           cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
@@ -206,7 +206,7 @@ jobs:
 
       - name: Build Java Microservice
         uses: ./github/java-microservice
-        if: contains(steps.changed-files.outputs.all_modified_files, 'java-microservice')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'java')
         with:
           image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
