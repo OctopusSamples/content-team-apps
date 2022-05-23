@@ -6,6 +6,7 @@ import {Grid} from "@mui/material";
 import {Products} from "../model/Product";
 import {useNavigate} from "react-router-dom";
 import {styles} from "../utils/styles";
+import {convertToObject} from "../utils/parsing";
 
 const Home: FC = (): ReactElement => {
     const context = useContext(AppContext);
@@ -19,7 +20,7 @@ const Home: FC = (): ReactElement => {
 
     useEffect(() => {
         getJsonApi<Products>(context.settings.productEndpoint, context.partition)
-            .then(data => setBooks(data))
+            .then(data => setBooks(convertToObject(data)))
             .catch(() => setError("Failed to retrieve the list of books."
                 + (isBranchingEnabled() ? " Branching rules are enabled - double check they are valid, or disable them." : "")));
     }, [context.settings.productEndpoint, setBooks, setError, context.partition]);

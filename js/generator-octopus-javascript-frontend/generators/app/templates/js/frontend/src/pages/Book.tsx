@@ -6,6 +6,7 @@ import {useParams} from "react-router-dom";
 import {getJsonApi} from "../utils/network";
 import {Grid} from "@mui/material";
 import {styles} from "../utils/styles";
+import {convertToObject} from "../utils/parsing";
 
 const Book: FC<{}> = (): ReactElement => {
 
@@ -21,7 +22,7 @@ const Book: FC<{}> = (): ReactElement => {
 
     useEffect(() => {
         getJsonApi<Product>(context.settings.productEndpoint + "/" + bookId, context.partition)
-            .then(data => setBook(data));
+            .then(data => setBook(convertToObject(data)))
     }, [bookId, setBook, context.settings.productEndpoint, context.partition]);
 
     return (
