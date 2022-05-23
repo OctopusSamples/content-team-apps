@@ -308,6 +308,8 @@ public class GitHubRepoHandler {
       final String routingHeader)
       throws IOException {
 
+    Log.info("Calling template generator");
+
     try (final Response response = generateTemplateClient.generateTemplate(
         body, routingHeader, authHeader, serviceAuthHeader)) {
       if (response.getStatus() != 200) {
