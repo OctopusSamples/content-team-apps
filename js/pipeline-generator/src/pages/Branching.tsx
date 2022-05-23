@@ -19,7 +19,7 @@ const Branching: FC<{}> = (): ReactElement => {
     const classes = styles();
 
     const [rules, setRules] = useState<RedirectRule[]>(JSON.parse(localStorage.getItem("branching") || "[]"));
-    const [rulesEnabled, setRulesEnabled] = useState<boolean>((localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false");
+    const [rulesEnabled, setRulesEnabled] = useState<boolean>((localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true");
 
     const columns = [
         {field: 'id', headerName: 'Index', width: 30},
