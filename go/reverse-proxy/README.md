@@ -8,6 +8,9 @@ hosted on a developers local machine and exposed to public traffic with services
 a more direct tunnel such as a VPN. Alternatively, feature branch Lambdas can be deployed alongside their mainline
 siblings.
 
+The functionality was inspired by the Uber post 
+[Why We Leverage Multi-tenancy in Uber’s Microservice Architecture ](https://eng.uber.com/multitenancy-microservice-architecture/).
+
 # History
 
 API Gateway is a rich platform for exposing backend services like Lambdas, and offers a great deal of flexibility in
