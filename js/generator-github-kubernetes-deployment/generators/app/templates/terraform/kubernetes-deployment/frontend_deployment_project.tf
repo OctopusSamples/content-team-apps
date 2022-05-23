@@ -153,7 +153,11 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
               sleep 10
           done
           set_octopusvariable "DNSName" "$${DNSNAME}"
-          write_highlight "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
+
+          if [[ "$${DNSNAME}" != "null" ]]
+          then
+            write_highlight "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
+          fi
         EOT
         "OctopusUseBundledTooling" : "False"
       }
@@ -180,6 +184,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       script_body = <<-EOT
+          if [[ "#{Octopus.Action[Display the Ingress URL].Output.DNSName}" == "null" ]]
+          then
+            echo "The previous step failed to find the ingress hostname. This means we are unable to test the service."
+            exit 1
+          fi
+
           CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html)
 
           echo "response code: $${CODE}"
@@ -230,6 +240,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
         "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
       }
       script_body = <<-EOT
+          if [[ "#{Octopus.Action[Display the Ingress URL].Output.DNSName}" == "null" ]]
+          then
+            echo "The previous step failed to find the ingress hostname. This means we are unable to test the service."
+            exit 1
+          fi
+
           echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
           OUTPUT=$(cypress run 2>&1)

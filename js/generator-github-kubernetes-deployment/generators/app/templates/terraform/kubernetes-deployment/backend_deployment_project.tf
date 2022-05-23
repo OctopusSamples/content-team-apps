@@ -229,7 +229,11 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               sleep 10
           done
           set_octopusvariable "DNSName" "$${DNSNAME}"
-          write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
+
+          if [[ "$${DNSNAME}" != "null" ]]
+          then
+            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
+          fi
         EOT
         "OctopusUseBundledTooling" : "False"
       }
@@ -256,6 +260,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       script_body = <<-EOT
+          if [[ "#{Octopus.Action[Display the Ingress URL].Output.DNSName}" == "null" ]]
+          then
+            echo "The previous step failed to find the ingress hostname. This means we are unable to test the service."
+            exit 1
+          fi
+
           CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
 
           echo "response code: $${CODE}"
@@ -306,6 +316,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/*.json"
       }
       script_body = <<-EOT
+          if [[ "#{Octopus.Action[Display the Ingress URL].Output.DNSName}" == "null" ]]
+          then
+            echo "The previous step failed to find the ingress hostname. This means we are unable to test the service."
+            exit 1
+          fi
+
           newman run products-microservice-postman/test.json 2>&1
         EOT
     }
