@@ -333,7 +333,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     UPSTREAM_SERVICE_NAME: Jenkins Pipelines Generator
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 512
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

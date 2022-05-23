@@ -368,7 +368,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     CLIENT_PRIVATE_KEY: !Ref ClientPrivateKey
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

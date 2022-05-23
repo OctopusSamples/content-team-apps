@@ -388,7 +388,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
                     SERVICE_BUS_SERVICE: !Ref ServiceBusUrl
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

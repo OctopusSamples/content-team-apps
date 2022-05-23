@@ -403,7 +403,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     OCTOPUS_DISABLE_TEMPLATE_GENERATION: !Ref OctopusDisableTemplateGeneration
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: application/lambda/generate-template.lambdaHandler
-                MemorySize: 256
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

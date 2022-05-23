@@ -440,7 +440,7 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
                     LAMBDA_HANDLER: PopulateGithubRepo
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 512
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

@@ -402,7 +402,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     OCTOPUS_TEST_SERVER: !Ref OctopusTestServer
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

@@ -370,7 +370,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     GITHUB_SALT: !Ref GitHubSalt
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution

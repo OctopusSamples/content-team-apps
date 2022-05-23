@@ -443,7 +443,7 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
                     LAMBDA_HANDLER: CreateGithubCommit
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 512
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
