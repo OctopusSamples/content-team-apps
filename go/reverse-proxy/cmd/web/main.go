@@ -31,11 +31,11 @@ func main() {
 		}
 		response, _ := lambdahandler.HandleRequest(context.TODO(), request)
 
-		w.WriteHeader(response.StatusCode)
-
 		for s, s2 := range response.Headers {
-			w.Header().Add(s, s2)
+			w.Header().Set(s, s2)
 		}
+
+		w.WriteHeader(response.StatusCode)
 
 		w.Write([]byte(response.Body))
 	})
