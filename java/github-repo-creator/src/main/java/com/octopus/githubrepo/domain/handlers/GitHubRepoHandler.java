@@ -575,12 +575,16 @@ public class GitHubRepoHandler {
       final String repoName,
       final String branch) {
     try {
+      Log.info("Searching for branch " + branch);
+
       // First check to see if we have the branch already.
       gitHubClient.getBranch(
           user.getLogin(),
           repoName,
           "refs/heads/" + branch,
           "token " + decryptedGithubToken);
+
+      Log.info("Found branch " + branch);
     } catch (ClientWebApplicationException ex) {
       // anything other than a 404 is unexpected
       if (ex.getResponse().getStatus() != 404) {
@@ -595,6 +599,8 @@ public class GitHubRepoHandler {
       final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
 
       if (sha.isPresent()) {
+        Log.info("Creating branch " + branch);
+
         // create a new branch based on the first commit
         gitHubClient.createBranch(
             GithubRef.builder()
