@@ -232,9 +232,7 @@ public class GitHubRepoHandler {
           populateGithubRepo.getGithubRepository()));
 
       /*
-        Ensure the branch exists. There have been some possible race conditions here were a branch is not found, but then returns
-        {"message":"Reference already exists","documentation_url":"https://docs.github.com/rest/reference/git#create-a-reference"}
-        when it is attempted to be created. Since createBranch() is idempotent, we wrap it in a retry.
+        Ensure the branch exists.
       */
       Failsafe.with(RETRY_POLICY)
           .run(() -> createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch()));
