@@ -43,13 +43,13 @@ But the code is easy enough to modify if anyone is looking for a place to start.
 # How to perform redirections
 
 Redirection rules are defined in the `Routing` header based on ant wildcard paths. For example, the header 
-`route[/api/products*]=url[https://c9ce-118-208-2-185.ngrok.io]` instructs this proxy to redirect all requests made on
+`route[/api/products*:GET]=url[https://c9ce-118-208-2-185.ngrok.io]` instructs this proxy to redirect all `GET` requests made on
 paths that match `/api/products*` to https://c9ce-118-208-2-185.ngrok.io. A header like
-`route[/api/products*]=lambda[Development-products-0-myfeature]` will redirect requests made on
+`route[/api/products*:GET]=lambda[Development-products-0-myfeature]` will redirect `GET` requests made on
 paths that match `/api/products*` to the Lambda called `Development-products-0-myfeature`.
 
 This allows a client to make a request to a top level API with `Routing` headers like 
-`route[/api/products*]=https://c9ce-118-208-2-185.ngrok.io;route[/api/audits*]=lambda[Development-audits-0-myfeature]`,
+`route[/api/products*:GET]=https://c9ce-118-208-2-185.ngrok.io;route[/api/audits*:GET]=lambda[Development-audits-0-myfeature]`,
 and so long as each service forwards the `Routing` header to each service it calls, feature branch instances of 
 deeply nested microservices will be executed without having to recreate the entire microservice ecosystem locally.
 
