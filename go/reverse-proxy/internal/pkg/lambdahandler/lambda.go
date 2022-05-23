@@ -57,6 +57,8 @@ func HandleRequest(_ context.Context, req events.APIGatewayProxyRequest) (events
 }
 
 func processRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	log.Println("Received " + req.HTTPMethod + " request on " + req.Path)
+
 	upstreamUrl, upstreamLambda, upstreamSqs, err := extractUpstreamService(req)
 
 	if err != nil {
