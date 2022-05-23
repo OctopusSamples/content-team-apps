@@ -108,7 +108,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           EOF
 
             # Use eksctl to create the new cluster.
-            echo "Creating the EKS cluster"
+            echo "Creating the EKS cluster (this can take over 10 minutes to complete)"
             echo "##octopus[stdout-verbose]"
             eksctl create cluster -f /build/cluster.yaml
 
