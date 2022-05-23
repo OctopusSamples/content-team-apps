@@ -79,8 +79,8 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
 }
 
 locals {
-  backend_featurebranch_package_name = "products"
-  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease}"
+  backend_featurebranch_package_name = "products-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
+  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -281,6 +281,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
             echo "The previous step failed to find the ingress hostname. This means we are unable to test the service."
             exit 1
           fi
+
+          echo "##octopus[stdout-verbose]"
+          cat products-microservice-postman/test.json
+          echo "##octopus[stdout-default]"
 
           newman run products-microservice-postman/test.json 2>&1
         EOT

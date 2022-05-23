@@ -334,6 +334,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             exit 1
           fi
 
+          echo "##octopus[stdout-verbose]"
+          cat products-microservice-postman/test.json
+          echo "##octopus[stdout-default]"
+
           newman run products-microservice-postman/test.json 2>&1
         EOT
     }

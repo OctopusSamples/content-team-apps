@@ -466,6 +466,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/*.json"
       }
       script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          cat products-microservice-postman/test.json
+          echo "##octopus[stdout-default]"
+
           newman run products-microservice-postman/test.json 2>&1
         EOT
     }
