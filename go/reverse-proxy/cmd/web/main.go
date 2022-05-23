@@ -17,12 +17,12 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(r.Body)
-		newStr := buf.String()
+		body := buf.String()
 
 		request := events.APIGatewayProxyRequest{
 			MultiValueHeaders:               r.Header,
-			Path:                            r.RequestURI,
-			Body:                            newStr,
+			Path:                            r.URL.Path,
+			Body:                            body,
 			HTTPMethod:                      r.Method,
 			IsBase64Encoded:                 false,
 			MultiValueQueryStringParameters: r.URL.Query(),
