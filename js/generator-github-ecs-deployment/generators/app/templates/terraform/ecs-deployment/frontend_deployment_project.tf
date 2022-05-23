@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_frontend_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Frontend Service"
+  name                                 = "Deploy Frontend WebApp"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id

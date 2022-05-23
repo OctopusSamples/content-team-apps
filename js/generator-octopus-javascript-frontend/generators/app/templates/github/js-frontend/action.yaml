@@ -173,7 +173,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy Frontend Service"
+        --project "Deploy Frontend WebApp"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
