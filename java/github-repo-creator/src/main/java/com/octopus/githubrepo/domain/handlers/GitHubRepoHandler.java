@@ -576,7 +576,7 @@ public class GitHubRepoHandler {
       final String repoName,
       final String branch) {
     try {
-      Log.info("Searching for branch " + branch);
+      Log.info("Searching for branch " + branch + " under " + user.getLogin() + " " + repoName);
 
       // First check to see if we have the branch already.
       gitHubClient.getBranch(
