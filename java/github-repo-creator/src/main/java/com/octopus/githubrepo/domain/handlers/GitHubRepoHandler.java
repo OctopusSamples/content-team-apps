@@ -81,9 +81,8 @@ import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.internal.DefaultGitHubConnector;
 
 /**
- * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
- * to repositories.
+ * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the inputs to POJOs, apply the security rules, create an audit
+ * trail, and then pass the requests down to repositories.
  */
 @ApplicationScoped
 public class GitHubRepoHandler {
@@ -94,10 +93,8 @@ public class GitHubRepoHandler {
   private static final String DEFAULT_BRANCH = "main";
 
   /**
-   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't
-   * overwrite any updates users may have made between running the app-builder. The workflows are
-   * also configured to not run on this branch, so any manual updates made to Octopus won't be
-   * reverted.
+   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't overwrite any updates users may have made between running the
+   * app-builder. The workflows are also configured to not run on this branch, so any manual updates made to Octopus won't be reverted.
    */
   private static final String UPDATE_BRANCH = "app-builder-update";
 
@@ -169,14 +166,11 @@ public class GitHubRepoHandler {
    * Creates a new service account in the Octopus cloud instance.
    *
    * @param document                   The JSONAPI resource to create.
-   * @param authorizationHeader        The OAuth header for user-to-machine communication from the
-   *                                   content team identity management system. Note this is not
+   * @param authorizationHeader        The OAuth header for user-to-machine communication from the content team identity management system. Note this is not
    *                                   Octofront, but probably Cognito.
-   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note
-   *                                   this is not Octofront, but probably Cognito.
+   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note this is not Octofront, but probably Cognito.
    * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String create(
       @NonNull final String document,
@@ -234,9 +228,13 @@ public class GitHubRepoHandler {
       populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
           populateGithubRepo.getGithubRepository());
 
-      // ensure the branch exists
-      createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(),
-          populateGithubRepo.getBranch());
+      /*
+        Ensure the branch exists. There have been some possible race conditions here were a branch is not found, but then returns
+        {"message":"Reference already exists","documentation_url":"https://docs.github.com/rest/reference/git#create-a-reference"}
+        when it is attempted to be created. Since createBranch() is idempotent, we wrap it in a retry.
+      */
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch()));
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
