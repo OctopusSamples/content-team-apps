@@ -582,7 +582,7 @@ public class GitHubRepoHandler {
       gitHubClient.getBranch(
           user.getLogin(),
           repoName,
-          "refs/heads/" + branch,
+          branch,
           "token " + decryptedGithubToken);
 
       Log.info("Found branch " + branch);

@@ -54,12 +54,12 @@ public interface GitHubClient {
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
   @GET
-  @Path("/repos/{owner}/{repo}/git/{ref}")
+  @Path("/repos/{owner}/{repo}/git/refs/heads/{branch}")
   @Produces(MediaType.APPLICATION_JSON)
   Response getBranch(
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
-      @PathParam("ref") final String ref,
+      @PathParam("branch") final String branch,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
 
   @POST
