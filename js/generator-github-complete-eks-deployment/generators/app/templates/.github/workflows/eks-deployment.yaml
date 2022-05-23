@@ -44,7 +44,7 @@ jobs:
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'shared-space') 
           || contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
-          || contains(steps.changed-files.outputs.all_modified_files, 'ecr_feed')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
           || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/shared-space
         with:
@@ -146,7 +146,8 @@ jobs:
 
       - name: Create the ECR feed
         id: ecr_feed
-        if: contains(steps.changed-files.outputs.all_modified_files, 'ecr_feed')
+          contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/ecr-feed
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
