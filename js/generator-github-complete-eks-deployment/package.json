@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-eks-deployment",
-  "version": "0.1.185",
+  "version": "0.1.186",
   "description": "",
   "files": [
     "generators"
@@ -14,7 +14,7 @@
     "@octopus-content-team/generator-octopus-js-frontend": "0.1.13",
     "@octopus-content-team/generator-github-shared-space": "0.1.24",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.19",
-    "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.86",
+    "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.87",
     "@octopus-content-team/generator-aws-ecr": "0.1.27",
     "@octopus-content-team/generator-ecr-feed": "0.1.3"
   },
