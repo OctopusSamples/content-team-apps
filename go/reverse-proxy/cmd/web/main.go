@@ -21,8 +21,16 @@ func main() {
 		buf.ReadFrom(r.Body)
 		body := buf.String()
 
+		/*
+			Need to add the host header back into a collection, because it is removed from the
+			Header collection. This is from the docs:
+			For incoming requests, the Host header is promoted to the Request.Host field and removed from the Header map.
+		*/
+		headers := r.Header
+		headers.Set("Host", r.Host)
+
 		request := events.APIGatewayProxyRequest{
-			MultiValueHeaders:               r.Header,
+			MultiValueHeaders:               headers,
 			Path:                            r.URL.Path,
 			Body:                            body,
 			HTTPMethod:                      r.Method,
