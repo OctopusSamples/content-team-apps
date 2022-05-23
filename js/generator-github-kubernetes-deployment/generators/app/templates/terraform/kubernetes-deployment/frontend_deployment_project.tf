@@ -145,7 +145,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
           # It can take a while for a load balancer to be provisioned
           for i in {1..60}
           do
-              DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
+              DNSNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
               if [[ "$${DNSNAME}" != "null" ]]
               then
                 break
@@ -191,6 +191,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_backend" {
             exit 1
           fi
 
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html)

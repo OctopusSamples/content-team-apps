@@ -267,6 +267,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             exit 1
           fi
 
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
