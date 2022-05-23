@@ -112,7 +112,7 @@ public class GitHubRepoHandler {
   private static final RetryPolicy<String> RETRY_POLICY = RetryPolicy
       .<String>builder()
       .handle(Exception.class)
-      .withDelay(Duration.ofSeconds(1))
+      .withDelay(Duration.ofSeconds(3))
       .withMaxRetries(3)
       .build();
 
