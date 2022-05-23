@@ -74,6 +74,16 @@ runs:
       with:
         version: latest
 
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Creating a prerelease from the branch
+      run: |
+        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+        CHANNEL="${{ env.BRANCH_NAME != 'main' && 'Feature Branch' || 'Default' }}"
+        echo CHANNEL=${CHANNEL} >> $GITHUB_ENV
+      shell: bash
+
     - name: Install CycloneDX
       run: npm install -g @cyclonedx/bom
       shell: bash
