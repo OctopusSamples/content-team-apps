@@ -189,7 +189,7 @@ jobs:
           github_repo_owner: ${{ github.repository_owner }}
 
       - name: Build JavaScript Frontend
-        if: contains(steps.changed-files.outputs.all_modified_files, 'frontend')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'js')
         uses: ./github/js-frontend
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
