@@ -218,15 +218,18 @@ public class GitHubRepoHandler {
        Ensure the repo exists. We do expect that the repo was created by an upstream service
        before we get here, but we also support creating the repo as part of this request.
        */
-      createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository()));
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createSecrets(decryptedGithubToken, populateGithubRepo, user,
+          populateGithubRepo.getGithubRepository()));
 
       // Ensure there is an initial commit in the repo to use as the basis of other commits
-      populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
+          populateGithubRepo.getGithubRepository()));
 
       /*
         Ensure the branch exists. There have been some possible race conditions here were a branch is not found, but then returns
