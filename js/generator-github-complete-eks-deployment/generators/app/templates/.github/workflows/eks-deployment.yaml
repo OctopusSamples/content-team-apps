@@ -53,8 +53,14 @@ jobs:
           github_repo: ${{ github.repository }}
           github_repo_owner: ${{ github.repository_owner }}
 
+      # The subsequent steps use the "if" property to try and limit which build steps are triggered in response
+      # to a change in the git repo. Typically, earlier steps build shared infrastructure that is consumed
+      # by later steps, so earlier steps are triggered with more changes.
+
       - name: Create Shared Resources
         id: shared_resources
+        # rebuild if any of the shared resources change, or if the kubernetes deployment project is updated
+        # (as it needs to know things like lifecycles, feeds etc)
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
           || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
@@ -73,9 +79,12 @@ jobs:
 
       - name: Create the Products ECR repository
         id: ecr_products_resources
+        # rebuild if the ecr project changes, the java project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
         if: >-
-          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr') 
           || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -93,9 +102,12 @@ jobs:
 
       - name: Create the Frontend ECR repository
         id: ecr_frontend_resources
+        # rebuild if the ecr project changes, the javascript project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'js')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -113,9 +125,12 @@ jobs:
 
       - name: Create the Postman worker ECR repository
         id: ecr_postman_resources
+        # rebuild if the ecr project changes, the java project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -133,9 +148,12 @@ jobs:
 
       - name: Create the Cypress worker ECR repository
         id: ecr_cypress_resources
+        # rebuild if the ecr project changes, the javascript project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'js')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -153,6 +171,8 @@ jobs:
 
       - name: Create the ECR feed
         id: ecr_feed
+        # Rebuild if the feed project changes, or if the Kubernetes deployment project changes (as it need
+        # to add the ECR feed to steps).
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
           || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
