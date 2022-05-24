@@ -90,7 +90,9 @@ runs:
       working-directory: js/octopus-template-generator
 
     - name: Install Dependencies
-      run: npm install
+      run: |
+        npm cache clean --force
+        npm install
       shell: bash
       working-directory: js/octopus-template-generator
 
