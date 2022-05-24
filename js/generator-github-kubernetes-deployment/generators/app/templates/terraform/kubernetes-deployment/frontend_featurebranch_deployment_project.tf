@@ -84,8 +84,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          # It can take a while for a load balancer to be provisioned
-          for i in {1..60}
+          # Retry for up to a minute to get the main ingress DNS hostname
+          for i in {1..6}
           do
               DNSNAME=$(kubectl get ingress ${local.frontend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
               if [[ "$${DNSNAME}" != "null" ]]
@@ -95,6 +95,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               echo "Waiting for Ingress hostname"
               sleep 10
           done
+
+          if [[ "$${DNSNAME}" == "null" ]]
+          then
+            echo "Deploy the main backend services using the \"Deploy Backend Service\" project before deploying a frontend feature branch."
+            exit 1
+          fi
+
           set_octopusvariable "DNSName" "$${DNSNAME}"
         EOT
         "OctopusUseBundledTooling" : "False"
