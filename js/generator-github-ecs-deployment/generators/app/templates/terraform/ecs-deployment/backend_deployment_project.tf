@@ -407,6 +407,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       script_body = <<-EOT
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          echo "Waiting for DNS to propogate. This can take a while for a new load balancer."
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/health/products/GET)
