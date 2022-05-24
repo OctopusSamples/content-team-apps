@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-octopus-js-frontend",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "A Yeoman generator to create a sample Javascript frontend application.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [

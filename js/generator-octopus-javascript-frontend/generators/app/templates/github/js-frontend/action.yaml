@@ -71,6 +71,11 @@ runs:
       with:
         additionalArguments: /overrideconfig mode=Mainline
 
+    - name: Install modules
+      run: yarn install
+      shell: bash
+      working-directory: js/frontend
+
     - name: Instance CycloneDX
       run: npm install -g @cyclonedx/bom
       shell: bash
@@ -102,11 +107,6 @@ runs:
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
         --overwrite-mode OverwriteExisting
-      shell: bash
-      working-directory: js/frontend
-
-    - name: Install modules
-      run: yarn install
       shell: bash
       working-directory: js/frontend
 
