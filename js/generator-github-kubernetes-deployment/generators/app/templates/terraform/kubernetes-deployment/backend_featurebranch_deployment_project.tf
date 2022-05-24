@@ -186,7 +186,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
 
           if [[ "$${DNSNAME}" != "null" ]]
           then
-            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" to view the feature branch backend API."
+            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}];route[/api/products/**:GET]=path[/api/products:GET]" to view the feature branch backend API."
           fi
         EOT
         "OctopusUseBundledTooling" : "False"
