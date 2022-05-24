@@ -217,17 +217,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
-      package {
-        name                      = local.backend_package_name
-        package_id                = var.backend_docker_image
-        feed_id                   = var.octopus_k8s_feed_id
-        acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
-        properties                = {
-          "SelectionMode" : "immediate",
-          "Purpose" : "DockerImageReference"
-        }
-      }
 
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
