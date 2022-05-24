@@ -75,7 +75,7 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
-  value        = "[{\"key\": \"Routing\", \"value\": \"route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}]\", \"type\": \"text\", \"disabled\": false}]"
+  value        = "[{\"key\": \"Routing\", \"value\": \"route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]\", \"type\": \"text\", \"disabled\": false}]"
 }
 
 locals {
@@ -83,6 +83,7 @@ locals {
   backend_dns_branch_name = "#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   backend_featurebranch_deployment_name = "products-${local.backend_dns_branch_name}"
   backend_featurebranch_service_name = "products-service-${local.backend_dns_branch_name}"
+  backend_feature_branch_namespace = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.backend_dns_branch_name}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -185,11 +186,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
 
           if [[ "$${DNSNAME}" != "null" ]]
           then
-            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}]" to view the feature branch backend API."
+            write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" to view the feature branch backend API."
           fi
         EOT
-        "OctopusUseBundledTooling" : "False",
-        "Octopus.Action.KubernetesContainers.Namespace": "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.backend_dns_branch_name}"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -224,7 +224,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           for i in {1..60}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
               if [[ "$${CODE}" != "000" ]]
               then
                 break

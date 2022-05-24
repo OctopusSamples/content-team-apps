@@ -10,6 +10,10 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
       deployment_action = "Deploy Frontend WebApp"
       package_reference = local.frontend_package_name
     }
+    action_package {
+      deployment_action = "Check for Vulnerabilities"
+      package_reference = "javascript-frontend-sbom"
+    }
   }
 }
 
@@ -24,6 +28,10 @@ resource "octopusdeploy_channel" "frontend_mainline" {
     action_package {
       deployment_action = "Deploy Frontend WebApp"
       package_reference = local.frontend_package_name
+    }
+    action_package {
+      deployment_action = "Check for Vulnerabilities"
+      package_reference = "javascript-frontend-sbom"
     }
   }
 }
