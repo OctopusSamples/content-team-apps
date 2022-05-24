@@ -79,8 +79,8 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
 }
 
 locals {
-  backend_featurebranch_deployment_name = "products-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
-  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
+  backend_featurebranch_deployment_name = "products-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreReleasePrefix}"
+  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreReleasePrefix}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -220,7 +220,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
-              if [[ "$${DNSNAME}" != "000" ]]
+              if [[ "$${CODE}" != "000" ]]
               then
                 break
               fi

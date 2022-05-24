@@ -52,7 +52,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
 }
 
 locals {
-  dns_branch_name                        = "#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
+  dns_branch_name                        = "#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreReleasePrefix}"
   frontend_featurebranch_deployment_name = "frontend-${local.dns_branch_name}"
   frontend_featurebranch_service_name    = "frontend-service-${local.dns_branch_name}"
   frontend_featurebranch_ingress_name    = "frontend-ingress-${local.dns_branch_name}"
@@ -103,6 +103,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
           fi
 
           set_octopusvariable "DNSName" "$${DNSNAME}"
+          echo "Main ingress DNS hostname is $${DNSNAME}"
         EOT
         "OctopusUseBundledTooling" : "False"
       }
@@ -149,7 +150,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
         "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
+        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub-${local.dns_branch_name}\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
@@ -249,7 +250,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html)
-              if [[ "$${DNSNAME}" != "000" ]]
+              if [[ "$${CODE}" != "000" ]]
               then
                 break
               fi

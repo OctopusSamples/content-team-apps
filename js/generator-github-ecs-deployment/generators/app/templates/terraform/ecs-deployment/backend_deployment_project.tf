@@ -410,7 +410,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/health/products/GET)
-              if [[ "$${DNSNAME}" != "000" ]]
+              if [[ "$${CODE}" != "000" ]]
               then
                 break
               fi
