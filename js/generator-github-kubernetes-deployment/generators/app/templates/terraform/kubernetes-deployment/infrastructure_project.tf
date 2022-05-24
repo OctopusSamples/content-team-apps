@@ -100,7 +100,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           nodeGroups:
             - name: ng-1
               instanceType: t3a.small
-              desiredCapacity: 2
+              desiredCapacity: 3
               volumeSize: 80
               iam:
                 withAddonPolicies:
