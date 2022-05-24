@@ -220,3 +220,18 @@ runs:
         --space "${{ inputs.octopus_space }}"
         --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
       shell: bash
+
+    - name: Create a release
+      if: ${{ env.BRANCH_NAME != 'main' }}
+      run: >
+        octo create-release
+        --project "Deploy Backend Feature Branch Service"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --deployTo "Development (App)"
+        --waitForDeployment
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
+      shell: bash

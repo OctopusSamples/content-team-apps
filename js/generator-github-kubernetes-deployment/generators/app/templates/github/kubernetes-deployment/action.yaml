@@ -128,7 +128,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Deploy%20Backend%20Service" "Deploy%20Frontend%20WebApp" "Deploy%20EKS%20Cluster" "Deploy%20Backend%20Feature%20Branch%20Service")
+        declare -a arr=("Deploy%20Backend%20Service" "Deploy%20Frontend%20WebApp" "Deploy%20EKS%20Cluster" "Deploy%20Backend%20Feature%20Branch%20Service" "Deploy%20Frontend%20Feature%20Branch%20WebApp")
         
         for i in "${arr[@]}"
         do

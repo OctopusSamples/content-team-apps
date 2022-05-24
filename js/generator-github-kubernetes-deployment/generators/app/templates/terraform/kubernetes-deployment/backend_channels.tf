@@ -11,7 +11,7 @@ resource "octopusdeploy_channel" "backend_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = "Deploy Backend Service"
-      package_reference = local.backend_featurebranch_package_name
+      package_reference = local.backend_package_name
     }
     action_package {
       deployment_action = "Check for Vulnerabilities"

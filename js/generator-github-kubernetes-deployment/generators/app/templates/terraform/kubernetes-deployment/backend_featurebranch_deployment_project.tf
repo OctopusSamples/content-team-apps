@@ -79,8 +79,8 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
 }
 
 locals {
-  backend_featurebranch_package_name = "products-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
-  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[products].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
+  backend_featurebranch_deployment_name = "products-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
+  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\.\" \"-\"}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -102,7 +102,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.backend_featurebranch_package_name
+        name                      = local.backend_package_name
         package_id                = var.backend_docker_image
         feed_id                   = var.octopus_k8s_feed_id
         acquisition_location      = "NotAcquired"
@@ -114,10 +114,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
       }
       properties = {
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
-        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"${local.backend_featurebranch_package_name}\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
+        "Octopus.Action.KubernetesContainers.Containers" : "[{\"Name\":\"${local.backend_package_name}\",\"Ports\":[{\"key\":\"web\",\"keyError\":null,\"value\":\"8083\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}],\"EnvironmentVariables\":[],\"SecretEnvironmentVariables\":[],\"ConfigMapEnvironmentVariables\":[],\"FieldRefEnvironmentVariables\":[],\"ConfigMapEnvFromSource\":[],\"SecretEnvFromSource\":[],\"VolumeMounts\":[],\"Resources\":{\"requests\":{\"memory\":\"256Mi\",\"cpu\":\"\",\"ephemeralStorage\":\"\"},\"limits\":{\"memory\":\"1Gi\",\"cpu\":\"\",\"ephemeralStorage\":\"\",\"nvidiaGpu\":\"\",\"amdGpu\":\"\"}},\"LivenessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"ReadinessProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"StartupProbe\":{\"failureThreshold\":\"\",\"initialDelaySeconds\":\"\",\"periodSeconds\":\"\",\"successThreshold\":\"\",\"timeoutSeconds\":\"\",\"type\":null,\"exec\":{\"command\":[]},\"httpGet\":{\"host\":\"\",\"path\":\"\",\"port\":\"\",\"scheme\":\"\",\"httpHeaders\":[]},\"tcpSocket\":{\"host\":\"\",\"port\":\"\"}},\"Command\":[],\"Args\":[],\"InitContainer\":\"False\",\"SecurityContext\":{\"allowPrivilegeEscalation\":\"\",\"privileged\":\"\",\"readOnlyRootFilesystem\":\"\",\"runAsGroup\":\"\",\"runAsNonRoot\":\"\",\"runAsUser\":\"\",\"capabilities\":{\"add\":[],\"drop\":[]},\"seLinuxOptions\":{\"level\":\"\",\"role\":\"\",\"type\":\"\",\"user\":\"\"}},\"Lifecycle\":{},\"CreateFeedSecrets\":\"False\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"${local.backend_featurebranch_package_name}\"}",
-        "Octopus.Action.KubernetesContainers.DeploymentName" : local.backend_featurebranch_package_name,
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\" : \"${local.backend_package_name}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.backend_featurebranch_deployment_name,
         "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment",
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
         "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
