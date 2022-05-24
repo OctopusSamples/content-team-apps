@@ -52,7 +52,8 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
 }
 
 locals {
-  dns_branch_name                        = "#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreReleasePrefix}"
+  # The feature branch name is the prerelease version up to the first period
+  dns_branch_name                        = "#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   frontend_featurebranch_deployment_name = "frontend-${local.dns_branch_name}"
   frontend_featurebranch_service_name    = "frontend-service-${local.dns_branch_name}"
   frontend_featurebranch_ingress_name    = "frontend-ingress-${local.dns_branch_name}"
@@ -150,7 +151,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
         "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub-${local.dns_branch_name}\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
+        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub-#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \\\"\\\\..*\\\" \\\"\\\" | ToLower}\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
@@ -169,7 +170,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_featurebranch_service_name,
         "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"5000\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]",
         "Octopus.Action.KubernetesContainers.ConfigMapName" : "frontend-config",
-        "Octopus.Action.KubernetesContainers.ConfigMapValues" : "{\"config.json\":\"{\\n  \\\"basename\\\": \\\"\\\",\\n  \\\"branch\\\": \\\"main\\\",\\n  \\\"title\\\": \\\"Octopub\\\",\\n  \\\"productEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/api/products\\\",\\n  \\\"productHealthEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/health/products\\\",\\n  \\\"auditEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/api/audits\\\",\\n  \\\"auditHealthEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/health/audits\\\"\\n}\"}"
+        "Octopus.Action.KubernetesContainers.ConfigMapValues" : "{\"config.json\":\"{\\n  \\\"basename\\\": \\\"\\\",\\n  \\\"branch\\\": \\\"main\\\",\\n  \\\"title\\\": \\\"Octopub\\\",\\n  \\\"productEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/api/products\\\",\\n  \\\"productHealthEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/health/products\\\",\\n  \\\"auditEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/api/audits\\\",\\n  \\\"auditHealthEndpoint\\\": \\\"http://#{Octopus.Action[Display the Main Ingress URL].Output.DNSName}/health/audits\\\"\\n}\"}",
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.dns_branch_name}"
       }
     }
   }
@@ -214,7 +216,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
             write_highlight "Open [http://$DNSNAME/index.html](http://$DNSNAME/index.html) to view the web app."
           fi
         EOT
-        "OctopusUseBundledTooling" : "False"
+        "OctopusUseBundledTooling" : "False",
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.dns_branch_name}"
       }
     }
   }

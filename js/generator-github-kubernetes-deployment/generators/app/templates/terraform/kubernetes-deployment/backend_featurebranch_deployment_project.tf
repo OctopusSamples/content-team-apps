@@ -79,8 +79,10 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
 }
 
 locals {
-  backend_featurebranch_deployment_name = "products-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreReleasePrefix}"
-  backend_featurebranch_service_name = "products-service-#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreReleasePrefix}"
+  # The feature branch name is the prerelease version up to the first period
+  backend_dns_branch_name = "#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  backend_featurebranch_deployment_name = "products-${local.backend_dns_branch_name}"
+  backend_featurebranch_service_name = "products-service-${local.backend_dns_branch_name}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -139,7 +141,9 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
         "Octopus.Action.KubernetesContainers.IngressName" : local.backend_ingress_name,
         "Octopus.Action.KubernetesContainers.IngressRules" : "[]",
         "Octopus.Action.KubernetesContainers.ServiceName" : local.backend_featurebranch_service_name,
-        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]"
+        "Octopus.Action.KubernetesContainers.ServicePorts" : "[{\"name\":\"web\",\"port\":\"80\",\"targetPort\":\"8083\",\"nodePort\":\"\",\"protocol\":\"TCP\"}]",
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.backend_dns_branch_name}"
+
       }
     }
   }
@@ -184,7 +188,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
             write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to "route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}]" to view the feature branch backend API."
           fi
         EOT
-        "OctopusUseBundledTooling" : "False"
+        "OctopusUseBundledTooling" : "False",
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.backend_dns_branch_name}"
       }
     }
   }
