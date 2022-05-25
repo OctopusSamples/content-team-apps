@@ -291,7 +291,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         - /api/*
                         - /health/*
                 ListenerArn: !Ref Listener
-                Priority: 100
+                Priority: 200
               DependsOn:
                 - ProxyTargetGroup
             CloudWatchLogsGroup:
