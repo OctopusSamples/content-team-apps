@@ -210,8 +210,8 @@ const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
  */
 export const appBuilderMachine = createMachine<StateContext>({
             id: 'appBuilder',
-            initial: getInitialState(),
             context: getInitialStateContext(),
+            initial: getInitialState(),
             states: {
                 selectTarget: {
                     on: {
