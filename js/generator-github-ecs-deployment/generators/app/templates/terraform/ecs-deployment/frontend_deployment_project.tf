@@ -201,7 +201,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
-              DependsOn: TaskDefinitionBackend
+              DependsOn:
+                - TaskDefinitionBackend
+                - ListenerRule
             TaskDefinitionBackend:
               Type: AWS::ECS::TaskDefinition
               Properties:
