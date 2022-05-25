@@ -208,6 +208,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                     FromPort: 8080
                     IpProtocol: "tcp"
                     ToPort: 8080
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: 8081
+                    IpProtocol: "tcp"
+                    ToPort: 8081
             ApplicationLoadBalancer:
               Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
               Properties:
@@ -272,7 +276,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 HealthCheckEnabled: true
                 HealthCheckIntervalSeconds: 5
                 HealthCheckPath: /
-                HealthCheckPort: '${local.frontend_port}'
+                HealthCheckPort: 8081
                 HealthCheckProtocol: HTTP
                 HealthCheckTimeoutSeconds: 2
                 HealthyThresholdCount: 2
