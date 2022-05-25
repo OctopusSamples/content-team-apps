@@ -393,7 +393,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 ContainerDefinitions:
                   - Essential: true
                     Image: '#{Octopus.Action.Package[${local.frontend_package_name}].Image}'
-                    Name: frontend
+                    Name: frontend-${local.frontend_dns_branch_name}
                     ResourceRequirements: []
                     Environment:
                       - Name: PORT
@@ -430,7 +430,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 ContainerDefinitions:
                   - Essential: !!bool true
                     Image: "#{Octopus.Action.Package[${local.frontend_proxy_package_name}].Image}"
-                    Name: proxy
+                    Name: proxy-${local.frontend_dns_branch_name}
                     ResourceRequirements: []
                     Environment:
                       - Name: DEFAULT_URL
@@ -452,7 +452,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         awslogs-stream-prefix: frontend-proxy-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
                 Family: !Sub $${TaskDefinitionName}-proxy
                 Cpu: 512
-                Memory: 128
+                Memory: 256
                 ExecutionRoleArn: !Ref TaskExecutionRoleBackend
                 RequiresCompatibilities:
                   - FARGATE
