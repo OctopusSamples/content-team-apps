@@ -76,6 +76,7 @@ jobs:
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/aws-ecr-<%= products_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}

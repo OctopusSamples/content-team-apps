@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_frontend_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Frontend WebApp"
+  name                                 = "Frontend WebApp"
   project_group_id                     = octopusdeploy_project_group.frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -61,13 +61,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   project_id = octopusdeploy_project.deploy_frontend_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Frontend WebApp"
+    name                = "Frontend WebApp"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Frontend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Frontend WebApp"
+      name           = "Frontend WebApp"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [

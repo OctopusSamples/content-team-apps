@@ -128,7 +128,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Deploy%20Backend%20Service" "Deploy%20Frontend%20WebApp" "Deploy%20EKS%20Cluster" "Deploy%20Backend%20Feature%20Branch%20Service" "Deploy%20Frontend%20Feature%20Branch%20WebApp")
+        declare -a arr=("Backend%20Service" "Frontend%20WebApp" "EKS%20Cluster" "Backend%20Feature%20Branch%20Service" "Frontend%20Feature%20Branch%20WebApp")
         
         for i in "${arr[@]}"
         do
@@ -166,7 +166,7 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy EKS Cluster"
+        --project "EKS Cluster"
         --deployTo "Development (App)"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}

@@ -10,7 +10,7 @@ resource "octopusdeploy_channel" "backend_feature_branch" {
   rule {
     tag = ".+"
     action_package {
-      deployment_action = "Deploy Backend Service"
+      deployment_action = "Backend Service"
       package_reference = local.backend_package_name
     }
     action_package {
@@ -29,7 +29,7 @@ resource "octopusdeploy_channel" "backend_mainline" {
   rule {
     tag = "^$"
     action_package {
-      deployment_action = "Deploy Backend Service"
+      deployment_action = "Backend Service"
       package_reference = local.backend_package_name
     }
     action_package {

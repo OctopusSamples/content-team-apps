@@ -80,7 +80,7 @@ resource "octopusdeploy_variable" "postman_headers_variable_featurebranch" {
 
 locals {
   # The feature branch name is the prerelease version up to the first period
-  backend_dns_branch_name = "#{Octopus.Action[Deploy Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  backend_dns_branch_name = "#{Octopus.Action[Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   backend_featurebranch_deployment_name = "products-${local.backend_dns_branch_name}"
   backend_featurebranch_service_name = "products-service-${local.backend_dns_branch_name}"
   backend_feature_branch_namespace = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-frontend-${local.backend_dns_branch_name}"
@@ -90,13 +90,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
   project_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Backend Service"
+    name                = "Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Backend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Backend Service"
+      name           = "Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -222,7 +222,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
 
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
-          echo "Waiting for DNS to propogate. This can take a while for a new ingress load balancer."
+          echo "Waiting for DNS to propagate. This can take a while for a new ingress load balancer."
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)

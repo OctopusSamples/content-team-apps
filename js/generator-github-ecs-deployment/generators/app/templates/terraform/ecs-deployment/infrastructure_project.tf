@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_infrastructure_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_infrastructure_lifecycle_id
-  name                                 = "Create ECS Cluster"
+  name                                 = "ECS Cluster"
   project_group_id                     = octopusdeploy_project_group.infrastructure_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -252,7 +252,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             ApplicationLoadBalancer:
               Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
               Properties:
-                Name: "ECS-LB-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                Name: "ECS-LB-Shared"
                 Scheme: "internet-facing"
                 Type: "application"
                 Subnets:

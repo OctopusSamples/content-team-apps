@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_frontend_featurebranch_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Frontend Feature Branch WebApp"
+  name                                 = "Frontend Feature Branch WebApp"
   project_group_id                     = octopusdeploy_project_group.frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -53,7 +53,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
 
 locals {
   # The feature branch name is the prerelease version up to the first period
-  dns_branch_name                        = "#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  dns_branch_name                        = "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   frontend_featurebranch_deployment_name = "frontend-${local.dns_branch_name}"
   frontend_featurebranch_service_name    = "frontend-service-${local.dns_branch_name}"
   frontend_featurebranch_ingress_name    = "frontend-ingress-${local.dns_branch_name}"
@@ -99,7 +99,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
 
           if [[ "$${DNSNAME}" == "null" ]]
           then
-            echo "Deploy the main backend services using the \"Deploy Backend Service\" project before deploying a frontend feature branch."
+            echo "Deploy the main backend services using the \"Backend Service\" project before deploying a frontend feature branch."
             exit 1
           fi
 
@@ -112,13 +112,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Frontend WebApp"
+    name                = "Frontend WebApp"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Frontend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Frontend WebApp"
+      name           = "Frontend WebApp"
       notes          = "Deploy the web app feature branch to a unique ingress address."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
@@ -151,7 +151,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
         "Octopus.Action.KubernetesContainers.DeploymentWait" : "Wait",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub-#{Octopus.Action[Deploy Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \\\"\\\\..*\\\" \\\"\\\" | ToLower}\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
+        "Octopus.Action.KubernetesContainers.IngressAnnotations" : "[{\"key\":\"alb.ingress.kubernetes.io/group.name\",\"keyError\":null,\"value\":\"octopub-#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \\\"\\\\..*\\\" \\\"\\\" | ToLower}\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/group.order\",\"keyError\":null,\"value\":\"500\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/scheme\",\"keyError\":null,\"value\":\"internet-facing\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/healthcheck-path\",\"keyError\":null,\"value\":\"/\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"alb.ingress.kubernetes.io/target-type\",\"keyError\":null,\"value\":\"ip\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null},{\"key\":\"kubernetes.io/ingress.class\",\"keyError\":null,\"value\":\"alb\",\"valueError\":null,\"option\":\"\",\"optionError\":null,\"option2\":\"\",\"option2Error\":null}]",
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PersistentVolumeClaims" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
@@ -250,7 +250,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
 
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
-          echo "Waiting for DNS to propogate. This can take a while for a new ingress load balancer."
+          echo "Waiting for DNS to propagate. This can take a while for a new ingress load balancer."
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html)

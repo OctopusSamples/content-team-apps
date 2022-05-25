@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Backend Service"
+  name                                 = "Backend Service"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -81,13 +81,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   project_id = octopusdeploy_project.deploy_backend_project.id
   step {
     condition           = "Success"
-    name                = "Deploy Backend Service Proxy"
+    name                = "Backend Service Proxy"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Backend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Backend Service Proxy"
+      name           = "Backend Service Proxy"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -139,13 +139,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy Backend Service"
+    name                = "Backend Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["Kubernetes Backend"]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy Backend Service"
+      name           = "Backend Service"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
