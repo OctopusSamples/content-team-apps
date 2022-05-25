@@ -303,10 +303,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Type: AWS::ECS::Service
               Properties:
                 ServiceName: ${local.frontend_featurebranch_service_name}
-                Cluster:
-                  Ref: ClusterName
-                TaskDefinition:
-                  Ref: TaskDefinitionBackend
+                Cluster: !Ref ClusterName
+                TaskDefinition: !Ref TaskDefinitionBackend
                 DesiredCount: 1
                 EnableECSManagedTags: false
                 Tags: []
@@ -330,14 +328,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 - TaskDefinitionBackend
                 - Listener
                 - ListenerRule
+                - TargetGroup
             ServiceBackendProxy:
               Type: AWS::ECS::Service
               Properties:
                 ServiceName: ${local.frontend_featurebranch_proxy_service_name}
-                Cluster:
-                  Ref: ClusterName
-                TaskDefinition:
-                  Ref: TaskDefinitionProxy
+                Cluster: !Ref ClusterName
+                TaskDefinition: !Ref TaskDefinitionProxy
                 DesiredCount: 1
                 EnableECSManagedTags: false
                 Tags: []
@@ -361,6 +358,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 - TaskDefinitionProxy
                 - Listener
                 - ProxyListenerRule
+                - ProxyTargetGroup
             TaskDefinitionBackend:
               Type: AWS::ECS::TaskDefinition
               Properties:
@@ -373,13 +371,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                       - Name: PORT
                         Value: !!str "${local.frontend_port}"
                     EnvironmentFiles: []
-                    DisableNetworking: false
+                    DisableNetworking: !!bool false
                     DnsServers: []
                     DnsSearchDomains: []
                     ExtraHosts: []
                     PortMappings:
-                      - ContainerPort: ${local.frontend_port}
-                        HostPort: ${local.frontend_port}
+                      - ContainerPort: !!int ${local.frontend_port}
+                        HostPort: !!int ${local.frontend_port}
                         Protocol: tcp
                     LogConfiguration:
                       LogDriver: awslogs
@@ -387,14 +385,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         awslogs-group: !Ref CloudWatchLogsGroup
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: frontend-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
-                Family:
-                  Ref: TaskDefinitionName
-                Cpu:
-                  Ref: TaskDefinitionCPU
-                Memory:
-                  Ref: TaskDefinitionMemory
-                ExecutionRoleArn:
-                  Ref: TaskExecutionRoleBackend
+                Family: !Ref TaskDefinitionName
+                Cpu: !Ref TaskDefinitionCPU
+                Memory: !Ref TaskDefinitionMemory
+                ExecutionRoleArn: !Ref TaskExecutionRoleBackend
                 RequiresCompatibilities:
                   - FARGATE
                 NetworkMode: awsvpc
@@ -406,23 +400,23 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Type: AWS::ECS::TaskDefinition
               Properties:
                 ContainerDefinitions:
-                  - Essential: true
-                    Image: '#{Octopus.Action.Package[${local.frontend_proxy_package_name}].Image}'
+                  - Essential: !!bool true
+                    Image: "#{Octopus.Action.Package[${local.frontend_proxy_package_name}].Image}"
                     Name: frontend
                     ResourceRequirements: []
                     Environment:
                       - Name: PORT
                         Value: !!str "80"
                       - Name: DEFAULT_URL
-                        Value: !Sub 'http://$${MainLoadBalancer}'
+                        Value: !Sub "http://$${MainLoadBalancer}"
                     EnvironmentFiles: []
-                    DisableNetworking: false
+                    DisableNetworking: !!bool false
                     DnsServers: []
                     DnsSearchDomains: []
                     ExtraHosts: []
                     PortMappings:
-                      - ContainerPort: 80
-                        HostPort: 80
+                      - ContainerPort: !!int 80
+                        HostPort: !!int 80
                         Protocol: tcp
                     LogConfiguration:
                       LogDriver: awslogs
@@ -430,12 +424,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         awslogs-group: !Ref CloudWatchLogsGroup
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: frontend-proxy-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
-                Family:
-                  Sub: $${TaskDefinitionName}-Proxy
-                Cpu: 256
+                Family: !Sub $${TaskDefinitionName}-Proxy
+                Cpu: 512
                 Memory: 128
-                ExecutionRoleArn:
-                  Ref: TaskExecutionRoleBackend
+                ExecutionRoleArn: !Ref TaskExecutionRoleBackend
                 RequiresCompatibilities:
                   - FARGATE
                 NetworkMode: awsvpc
