@@ -451,8 +451,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: frontend-proxy-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
                 Family: !Sub $${TaskDefinitionName}-proxy
-                Cpu: 512
-                Memory: 256
+                Cpu: 256
+                Memory: 512
                 ExecutionRoleArn: !Ref TaskExecutionRoleBackend
                 RequiresCompatibilities:
                   - FARGATE
