@@ -179,6 +179,34 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                     FromPort: 443
                     IpProtocol: "tcp"
                     ToPort: 443
+            FrontendSecurityGroup:
+              Type: "AWS::EC2::SecurityGroup"
+              Properties:
+                GroupDescription: "Frontend Security group #{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                GroupName: "octopub-alb-sg-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                Tags:
+                  - Key: "Name"
+                    Value: "octopub-alb-sg-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                VpcId: !Ref Vpc
+                SecurityGroupIngress:
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: 5000
+                    IpProtocol: "tcp"
+                    ToPort: 80
+            BackendProxySecurityGroup:
+              Type: "AWS::EC2::SecurityGroup"
+              Properties:
+                GroupDescription: "Backend Proxy Security group #{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                GroupName: "octopub-alb-sg-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                Tags:
+                  - Key: "Name"
+                    Value: "octopub-alb-sg-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                VpcId: !Ref Vpc
+                SecurityGroupIngress:
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: 8080
+                    IpProtocol: "tcp"
+                    ToPort: 80
             ApplicationLoadBalancer:
               Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
               Properties:
@@ -299,7 +327,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Properties:
                 LogGroupName: !Ref AWS::StackName
                 RetentionInDays: 14
-            ServiceBackend:
+            ServiceFrontend:
               Type: AWS::ECS::Service
               Properties:
                 ServiceName: ${local.frontend_featurebranch_service_name}
@@ -313,7 +341,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                   AwsvpcConfiguration:
                     AssignPublicIp: ENABLED
                     SecurityGroups:
-                      - !Ref ALBSecurityGroup
+                      - !Ref FrontendSecurityGroup
                     Subnets:
                       - !Ref SubnetA
                       - !Ref SubnetB
@@ -343,7 +371,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                   AwsvpcConfiguration:
                     AssignPublicIp: ENABLED
                     SecurityGroups:
-                      - !Ref ALBSecurityGroup
+                      - !Ref BackendProxySecurityGroup
                     Subnets:
                       - !Ref SubnetA
                       - !Ref SubnetB
@@ -422,7 +450,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                         awslogs-group: !Ref CloudWatchLogsGroup
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: frontend-proxy-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
-                Family: !Sub $${TaskDefinitionName}-Proxy
+                Family: !Sub $${TaskDefinitionName}-proxy
                 Cpu: 512
                 Memory: 128
                 ExecutionRoleArn: !Ref TaskExecutionRoleBackend
@@ -487,7 +515,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
             ServiceName:
               Description: The service name
               Value: !GetAtt
-                - ServiceBackend
+                - ServiceFrontend
                 - Name
             ServiceProxyName:
               Description: The proxy service name
