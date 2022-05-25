@@ -326,7 +326,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
-              DependsOn: TaskDefinitionBackend
+              DependsOn:
+                - TaskDefinitionBackend
+                - Listener
+                - ListenerRule
             ServiceBackendProxy:
               Type: AWS::ECS::Service
               Properties:
@@ -354,7 +357,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
-              DependsOn: TaskDefinitionProxy
+              DependsOn:
+                - TaskDefinitionProxy
+                - Listener
+                - ProxyListenerRule
             TaskDefinitionBackend:
               Type: AWS::ECS::TaskDefinition
               Properties:
