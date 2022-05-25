@@ -402,11 +402,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 ContainerDefinitions:
                   - Essential: !!bool true
                     Image: "#{Octopus.Action.Package[${local.frontend_proxy_package_name}].Image}"
-                    Name: frontend
+                    Name: proxy
                     ResourceRequirements: []
                     Environment:
-                      - Name: PORT
-                        Value: !!str "80"
                       - Name: DEFAULT_URL
                         Value: !Sub "http://$${MainLoadBalancer}"
                     EnvironmentFiles: []
@@ -415,8 +413,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                     DnsSearchDomains: []
                     ExtraHosts: []
                     PortMappings:
-                      - ContainerPort: !!int 80
-                        HostPort: !!int 80
+                      - ContainerPort: !!int 8080
+                        HostPort: !!int 8080
                         Protocol: tcp
                     LogConfiguration:
                       LogDriver: awslogs
@@ -491,6 +489,16 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Value: !GetAtt
                 - ServiceBackend
                 - Name
+            ServiceProxyName:
+              Description: The proxy service name
+              Value: !GetAtt
+                - ServiceBackendProxy
+                - Name
+            DNSName:
+              Description: The listener
+              Value: !GetAtt
+              - ApplicationLoadBalancer
+              - DNSName
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"MainLoadBalancer\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.MainLoadBalancer}\"},{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"frontend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"MainLoadBalancer\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.MainLoadBalancer}\"},{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"frontend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"}]"
