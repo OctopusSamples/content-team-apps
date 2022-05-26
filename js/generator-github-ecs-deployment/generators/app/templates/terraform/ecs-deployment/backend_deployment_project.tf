@@ -387,7 +387,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
-          for i in {1..60}
+          for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/health/products/GET)
               if [[ "$${CODE}" != "000" && "$${CODE}" != "502" ]]
