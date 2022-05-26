@@ -1,14 +1,14 @@
-resource "octopusdeploy_project" "deploy_backend_project" {
+resource "octopusdeploy_project" "deploy_backend_featurebranch_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the backend service to ECS."
+  description                          = "Deploys the backend feature branch service to ECS."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Backend Service"
+  name                                 = "Backend Feature Branch Service"
   project_group_id                     = octopusdeploy_project_group.backend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -24,69 +24,67 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   }
 }
 
-output "deploy_backend_project_id" {
-  value = octopusdeploy_project.deploy_backend_project.id
-}
-
-resource "octopusdeploy_variable" "debug_variable" {
+resource "octopusdeploy_variable" "debug_featurebranch_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "debug_evaluated_variable" {
+resource "octopusdeploy_variable" "debug_featurebranch_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
+resource "octopusdeploy_variable" "aws_account_deploy_backend_featurebranch_project" {
   name     = "AWS Account"
   type     = "AmazonWebServicesAccount"
   value    = var.octopus_aws_account_id
-  owner_id = octopusdeploy_project.deploy_backend_project.id
+  owner_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
 }
 
-resource "octopusdeploy_variable" "postman_raw_url_variable" {
+resource "octopusdeploy_variable" "postman_raw_url_featurebranch_variable" {
   name         = "item:0:request:url:raw"
   type         = "String"
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
-  value        = "http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/api/products/"
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "http://#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}/api/products/"
 }
 
-resource "octopusdeploy_variable" "postman_raw_host_variable" {
+resource "octopusdeploy_variable" "postman_raw_host_featurebranch_variable" {
   name         = "item:0:request:url:host:0"
   type         = "String"
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
-  value        = "#{Octopus.Action[Get AWS Resources].Output.DNSName}"
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
+  value        = "#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}"
 }
 
-resource "octopusdeploy_variable" "postman_raw_port_variable" {
+resource "octopusdeploy_variable" "postman_raw_port_featurebranch_variable" {
   name         = "item:0:request:url:port"
   type         = "String"
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  owner_id     = octopusdeploy_project.deploy_backend_featurebranch_project.id
   value        = "80"
 }
 
 locals {
-  backend_package_name = "backend"
-  backend_port         = "8083"
+  backend_dns_branch_name = "#{Octopus.Action[Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  backend_trimmed_dns_branch_name = "#{Octopus.Action[Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower | Substring 10}"
+  # This needs to be under 32 characters, and yet still unique per user / environment / branch. We trim a few strings to try and keep it under the limit.
+  backend_featurebranch_loadbalancer_name = "ECS-PD-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}-${local.backend_trimmed_dns_branch_name}"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_backend" {
-  project_id = octopusdeploy_project.deploy_backend_project.id
+resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
+  project_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
   step {
     condition           = "Success"
     name                = "Get AWS Resources"
@@ -119,7 +117,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Backend Service"
-      notes          = "Deploy the task definition, service, target group and listener rule via CloudFormation. The end result is a ECS service exposed by the load balancer created by the ECS Cluster project."
+      notes          = "Deploy the task definition, service, target group, listener, and load balancer rule via CloudFormation. The end result is a ECS service exposed by it's own unique load balancer."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -141,12 +139,85 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Backend-Task-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-Backend-Task-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           # A handy checklist for accessing private ECR repositories:
           # https://stackoverflow.com/a/69643388/157605
           AWSTemplateFormatVersion: '2010-09-09'
           Resources:
+            # The load balancer security group allows HTTP and HTTPS traffic.
+            ALBSecurityGroup:
+              Type: "AWS::EC2::SecurityGroup"
+              Properties:
+                GroupDescription: 'ALB Security group #{Octopus.Action[Get AWS Resources].Output.FixedEnvironment} ${local.backend_dns_branch_name}'
+                GroupName: 'octopub-prd-alb-sg-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}'
+                Tags:
+                  - Key: "Name"
+                    Value: 'octopub-prd-alb-sg-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}'
+                VpcId: !Ref Vpc
+                SecurityGroupIngress:
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: 80
+                    IpProtocol: "tcp"
+                    ToPort: 80
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: 443
+                    IpProtocol: "tcp"
+                    ToPort: 443
+            # The ECS service exposes the container port.
+            BackendSecurityGroup:
+              Type: "AWS::EC2::SecurityGroup"
+              Properties:
+                GroupDescription: 'Product Security group #{Octopus.Action[Get AWS Resources].Output.FixedEnvironment} ${local.backend_dns_branch_name}'
+                GroupName: 'octopub-prd-sg-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}'
+                Tags:
+                  - Key: "Name"
+                    Value: 'octopub-prd-sg-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}'
+                VpcId: !Ref Vpc
+                SecurityGroupIngress:
+                  - CidrIp: "0.0.0.0/0"
+                    FromPort: ${local.backend_port}
+                    IpProtocol: "tcp"
+                    ToPort: ${local.backend_port}
+            # Each feature branch is exposed on its own load balancer.
+            ApplicationLoadBalancer:
+              Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+              Properties:
+                Name: '${local.backend_featurebranch_loadbalancer_name}'
+                Scheme: "internet-facing"
+                Type: "application"
+                Subnets:
+                  - !Ref SubnetA
+                  - !Ref SubnetB
+                SecurityGroups:
+                  - !Ref ALBSecurityGroup
+                IpAddressType: "ipv4"
+                LoadBalancerAttributes:
+                  - Key: "access_logs.s3.enabled"
+                    Value: "false"
+                  - Key: "idle_timeout.timeout_seconds"
+                    Value: "60"
+                  - Key: "deletion_protection.enabled"
+                    Value: "false"
+                  - Key: "routing.http2.enabled"
+                    Value: "true"
+                  - Key: "routing.http.drop_invalid_header_fields.enabled"
+                    Value: "false"
+            # The listener defines the traffic accecpted by the load balancer, which in this case is HTTP traffic.
+            # It also has a default rule to return 404 if no other listener rules match.
+            Listener:
+              Type: 'AWS::ElasticLoadBalancingV2::Listener'
+              Properties:
+                DefaultActions:
+                  - FixedResponseConfig:
+                      StatusCode: '404'
+                    Order: 1
+                    Type: fixed-response
+                LoadBalancerArn: !Ref ApplicationLoadBalancer
+                Port: 80
+                Protocol: HTTP
+            # Target groups reference the ECS services. The services always have a random IP address, so a target group
+            # provides a way to expose the IP addresses and load balance between multiple services.
             TargetGroup:
               Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
               Properties:
@@ -168,6 +239,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 TargetType: ip
                 UnhealthyThresholdCount: 5
                 VpcId: !Ref Vpc
+            # The listener rule defines how traffic is forwarded from the listener to the target group, and in trun
+            # to the ECS services.
             ListenerRule:
               Type: 'AWS::ElasticLoadBalancingV2::ListenerRule'
               Properties:
@@ -189,15 +262,20 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 Priority: 50
               DependsOn:
                 - TargetGroup
+            # This the the log group for the ECS service.
             CloudWatchLogsGroup:
               Type: AWS::Logs::LogGroup
               Properties:
                 LogGroupName: !Ref AWS::StackName
                 RetentionInDays: 14
+            # This is the ECS service, which registers itself with the target group defined above.
+            # Note that we need to depend on the listener rule and listener, which ensures the service is only
+            # created once it can be assigned to a load balancer. Without these dependencies, CloudFormation may fail to
+            # deploy the template, as ECS requires services have an active load balancer.
             ServiceBackend:
               Type: AWS::ECS::Service
               Properties:
-                ServiceName: 'OctopubProducts-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}'
+                ServiceName: 'OctopubProducts-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.backend_dns_branch_name}'
                 Cluster:
                   Ref: ClusterName
                 TaskDefinition:
@@ -210,7 +288,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                   AwsvpcConfiguration:
                     AssignPublicIp: ENABLED
                     SecurityGroups:
-                      - !Ref SecurityGroup
+                      - !Ref BackendSecurityGroup
                     Subnets:
                       - !Ref SubnetA
                       - !Ref SubnetB
@@ -221,7 +299,11 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
-              DependsOn: TaskDefinitionBackend
+              DependsOn:
+                - TaskDefinitionBackend
+                - ListenerRule
+                - Listener
+            # The task definition defines the images used to build the containers managed by the ECS service.
             TaskDefinitionBackend:
               Type: AWS::ECS::TaskDefinition
               Properties:
@@ -248,14 +330,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                         awslogs-group: !Ref CloudWatchLogsGroup
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: backend
-                Family:
-                  Ref: TaskDefinitionName
-                Cpu:
-                  Ref: TaskDefinitionCPU
-                Memory:
-                  Ref: TaskDefinitionMemory
-                ExecutionRoleArn:
-                  Ref: TaskExecutionRoleBackend
+                Family: !Sub '$${TaskDefinitionName}-${local.backend_dns_branch_name}'
+                Cpu: !Ref TaskDefinitionCPU
+                Memory: !Ref TaskDefinitionMemory
+                ExecutionRoleArn: !Ref TaskExecutionRoleBackend
                 RequiresCompatibilities:
                   - FARGATE
                 NetworkMode: awsvpc
@@ -263,6 +341,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 Tags: []
                 RuntimePlatform:
                   OperatingSystemFamily: LINUX
+            # This role allows the ECS service to download images from ECR and create log entries.
             TaskExecutionRoleBackend:
               Type: AWS::IAM::Role
               Properties:
@@ -295,7 +374,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
+              Default: 'app-builder-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}'
             TaskDefinitionName:
               Type: String
               Default: backend
@@ -309,11 +388,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             SubnetB:
               Type: String
-            SecurityGroup:
-              Type: String
             Vpc:
-              Type: String
-            Listener:
               Type: String
           Outputs:
             ServiceName:
@@ -321,9 +396,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Value: !GetAtt
                 - ServiceBackend
                 - Name
+            DNSName:
+              Description: The listener
+              Value: !GetAtt
+              - ApplicationLoadBalancer
+              - DNSName
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"Listener\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Listener}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"Listener\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Listener}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"},{\"ParameterKey\":\"SecurityGroup\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SecurityGroup}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Vpc\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.Vpc}\"},{\"ParameterKey\":\"TaskDefinitionName\",\"ParameterValue\":\"backend\"},{\"ParameterKey\":\"TaskDefinitionCPU\",\"ParameterValue\":\"256\"},{\"ParameterKey\":\"TaskDefinitionMemory\",\"ParameterValue\":\"512\"},{\"ParameterKey\":\"SubnetA\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetA}\"},{\"ParameterKey\":\"SubnetB\",\"ParameterValue\":\"#{Octopus.Action[Get AWS Resources].Output.SubnetB}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
@@ -358,7 +438,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          write_highlight "Open [http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/api/products](http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/api/products) to view the backend API."
+          write_highlight "Open [http://#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}/api/products](http://#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}/api/products) to view the backend API."
         EOT
       }
     }
@@ -389,7 +469,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..60}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/health/products/GET)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}/health/products/GET)
               if [[ "$${CODE}" != "000" && "$${CODE}" != "502" ]]
               then
                 break
