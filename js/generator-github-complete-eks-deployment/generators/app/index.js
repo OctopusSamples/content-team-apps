@@ -47,6 +47,9 @@ module.exports = class extends Generator {
         const postmanRepository = "postman-worker" + (framework ? "-" + framework : "");
         const cypressRepository = "cypress-worker" + (framework ? "-" + framework : "");
 
+        this.fs.copy(this.templatePath('images/diagram.png'),
+            this.destinationPath('images/diagram.png'));
+
         this.fs.copyTpl(
             this.templatePath('.github/workflows/eks-deployment.yaml'),
             this.destinationPath('.github/workflows/eks-deployment.yaml'),
