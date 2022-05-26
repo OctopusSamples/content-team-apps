@@ -234,6 +234,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
           then
             write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
+          else
+            write_error "Failed to find the ingress DNS name. The subsequent tests will fail."
           fi
         EOT
         "OctopusUseBundledTooling" : "False"

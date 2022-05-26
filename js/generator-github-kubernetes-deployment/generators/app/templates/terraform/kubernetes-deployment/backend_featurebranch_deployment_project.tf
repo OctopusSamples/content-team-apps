@@ -187,6 +187,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
           then
             write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to \"route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}];route[/api/products/**:GET]=path[/api/products:GET]\" to view the feature branch backend API."
+          else
+            write_error "Failed to find the ingress DNS name. The subsequent tests will fail."
           fi
         EOT
         "OctopusUseBundledTooling" : "False"
