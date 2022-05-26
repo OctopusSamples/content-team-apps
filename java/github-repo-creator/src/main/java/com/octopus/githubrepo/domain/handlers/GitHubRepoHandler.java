@@ -490,20 +490,23 @@ public class GitHubRepoHandler {
           GithubFile.builder()
               .content(Base64.getEncoder().encodeToString(
                   ("# App Builder\n"
-                      + "This repo was populated by the [Octopus App Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
+                      + "This repo was populated by the [Octopus Octopus Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
                       + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
                       + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
                       + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
                       + "* `java`: The sample Java application.\n"
-                      + "* `js`: The sample JavaScript application.\n\n"
-                      + "If you have run the App Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
+                      + "* `js`: The sample JavaScript application.\n"
+                      + "## Network Diagram\n"
+                      + "![Network Diagram](/images/diagram.png)\n"
+                      + "## Rerunning Octopus Builder\n"
+                      + "If you have run the Octopus Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
                       + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
                       + "To replace the `main` branch with the `app-builder-update` branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
                       + "1. `git checkout app-builder-update`\n"
                       + "2. `git merge -s ours main`\n"
                       + "3. `git checkout main`\n"
                       + "4. `git merge app-builder-update`\n\n"
-                      + "If you would rather see what has changed since you last ran the App Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
+                      + "If you would rather see what has changed since you last ran the Octopus Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
                       .getBytes(StandardCharsets.UTF_8)))
               .message("Adding the initial marker file")
               .branch(DEFAULT_BRANCH)
