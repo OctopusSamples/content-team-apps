@@ -166,7 +166,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                       Values:
                         - /*
                 ListenerArn: !Ref Listener
-                Priority: 100
+                Priority: 1000
               DependsOn:
                 - TargetGroup
             CloudWatchLogsGroup:

@@ -81,6 +81,7 @@ locals {
   backend_trimmed_dns_branch_name = "#{Octopus.Action[Backend Service].Package[${local.backend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower | Substring 10}"
   # This needs to be under 32 characters, and yet still unique per user / environment / branch. We trim a few strings to try and keep it under the limit.
   backend_featurebranch_loadbalancer_name = "ECS-PD-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}-${local.backend_trimmed_dns_branch_name}"
+  backend_featurebranch_targetgroup_name = "ECS-PD-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}-${local.backend_trimmed_dns_branch_name}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -233,7 +234,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                 HealthyThresholdCount: 2
                 Matcher:
                   HttpCode: '200'
-                Name: OctopubProductsTargetGroup
+                Name: '${local.backend_featurebranch_targetgroup_name}'
                 Port: ${local.backend_port}
                 Protocol: HTTP
                 TargetType: ip
