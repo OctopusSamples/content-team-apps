@@ -329,7 +329,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Properties:
                 ServiceName: ${local.frontend_featurebranch_service_name}
                 Cluster: !Ref ClusterName
-                TaskDefinition: !Ref TaskDefinitionBackend
+                TaskDefinition: !Ref TaskDefinitionFrontend
                 DesiredCount: 1
                 EnableECSManagedTags: false
                 Tags: []
@@ -350,7 +350,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
               DependsOn:
-                - TaskDefinitionBackend
+                - TaskDefinitionFrontend
                 - Listener
                 - ListenerRule
                 - TargetGroup
@@ -384,7 +384,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 - Listener
                 - ProxyListenerRule
                 - ProxyTargetGroup
-            TaskDefinitionBackend:
+            TaskDefinitionFrontend:
               Type: AWS::ECS::TaskDefinition
               Properties:
                 ContainerDefinitions:
