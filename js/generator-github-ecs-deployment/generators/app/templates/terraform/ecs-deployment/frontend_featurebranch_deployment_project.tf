@@ -97,15 +97,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False",
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          ${local.get_aws_resources}
-
-          # Get the main load balancer, which exposes all the services, and will have the backend service that the
-          # frontend feature branch will work with.
-          DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
-          set_octopusvariable "MainLoadBalancer" "$${DNSNAME}"
-          echo "Found Load Balancer DNS Name: $${DNSNAME}"
-        EOT
+        "Octopus.Action.Script.ScriptBody" : local.get_aws_resources
       }
     }
   }
@@ -621,7 +613,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..60}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html)
               if [[ "$${CODE}" != "000" ]]
               then
                 break

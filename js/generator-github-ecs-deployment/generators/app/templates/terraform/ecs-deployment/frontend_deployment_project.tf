@@ -55,7 +55,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}"
+  value        = "http://#{Octopus.Action[Get AWS Resources].Output.DNSName}"
 }
 
 
@@ -340,28 +340,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          # Get the containers
-          echo "Downloading Docker images"
-          echo "##octopus[stdout-verbose]"
-          docker pull amazon/aws-cli 2>&1
-          docker pull imega/jq 2>&1
-          echo "##octopus[stdout-default]"
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-          alias jq="docker run --rm -i imega/jq"
-
-          # Get the environmen name (or at least up until the first space)
-          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
-          ENVIRONMENT_ARRAY=($ENVIRONMENT)
-          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
-
-          DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
-
-          set_octopusvariable "DNSName" "$${DNSNAME}"
-
-          write_highlight "Open [http://$${DNSNAME}/index.html](http://$${DNSNAME}/index.html) to view the frontend webapp."
+          write_highlight "Open [http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html](http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html) to view the frontend webapp."
         EOT
       }
     }
@@ -392,7 +371,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..60}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html)
               if [[ "$${CODE}" != "000" ]]
               then
                 break

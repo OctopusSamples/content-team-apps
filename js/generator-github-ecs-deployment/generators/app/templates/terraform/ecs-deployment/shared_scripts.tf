@@ -27,6 +27,8 @@ locals {
 
       # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
       LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text)
+      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
+
 
       echo "##octopus[stdout-default]"
 
@@ -35,6 +37,7 @@ locals {
       echo "Found Subnet B: $${SUBNETB}"
       echo "Found VPC: $${VPC}"
       echo "Found Listener: $${LISTENER}"
+      echo "Main Found Load Balancer DNS Name: $${DNSNAME}"
 
       set_octopusvariable "SecurityGroup" "$${SECURITYGROUP}"
       set_octopusvariable "SubnetA" "$${SUBNETA}"
@@ -43,6 +46,7 @@ locals {
       set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
       set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
       set_octopusvariable "Listener" $${LISTENER}
+      set_octopusvariable "MainLoadBalancer" "$${DNSNAME}"
 
       if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
         echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
