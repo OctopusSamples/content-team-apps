@@ -219,10 +219,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.Syntax" : "Bash"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           # It can take a while for a load balancer to be provisioned
-          for i in {1..60}
+          for i in {1..30}
           do
               DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
-              if [[ "$${DNSNAME}" != "null" ]]
+              if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
               then
                 break
               fi
@@ -231,7 +231,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           done
           set_octopusvariable "DNSName" "$${DNSNAME}"
 
-          if [[ "$${DNSNAME}" != "null" ]]
+          if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
           then
             write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) to view the backend API."
           fi
@@ -269,7 +269,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
-          for i in {1..60}
+          for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
               if [[ "$${CODE}" != "000" ]]

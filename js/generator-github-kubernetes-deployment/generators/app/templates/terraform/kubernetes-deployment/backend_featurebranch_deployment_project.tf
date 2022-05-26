@@ -172,10 +172,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
         "Octopus.Action.Script.Syntax" : "Bash"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           # It can take a while for a load balancer to be provisioned
-          for i in {1..60}
+          for i in {1..30}
           do
               DNSNAME=$(kubectl get ingress ${local.backend_ingress_name} -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
-              if [[ "$${DNSNAME}" != "null" ]]
+              if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
               then
                 break
               fi
@@ -184,7 +184,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           done
           set_octopusvariable "DNSName" "$${DNSNAME}"
 
-          if [[ "$${DNSNAME}" != "null" ]]
+          if [[ "$${DNSNAME}" != "null" && "$${DNSNAME}" != "" ]]
           then
             write_highlight "Open [http://$DNSNAME/api/products](http://$DNSNAME/api/products) with the Routing header set to \"route[/api/products:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}];route[/api/products/**:GET]=path[/api/products:GET]\" to view the feature branch backend API."
           fi
@@ -223,7 +223,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
           echo "Waiting for DNS to propagate. This can take a while for a new ingress load balancer."
-          for i in {1..60}
+          for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
               if [[ "$${CODE}" != "000" ]]
