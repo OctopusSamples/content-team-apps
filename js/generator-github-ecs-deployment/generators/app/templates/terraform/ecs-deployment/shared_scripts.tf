@@ -46,7 +46,7 @@ locals {
       set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
       set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
       set_octopusvariable "Listener" $${LISTENER}
-      set_octopusvariable "MainLoadBalancer" "$${DNSNAME}"
+      set_octopusvariable "DNSName" "$${DNSNAME}"
 
       if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
         echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
