@@ -461,6 +461,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     Environment:
                       - Name: DEFAULT_URL
                         Value: !Sub "http://$${ApplicationLoadBalancer.DNSName}"
+                      - Name: COGNITO_DISABLE_AUTH
+                        Value: !!str "true"
                     EnvironmentFiles: []
                     DisableNetworking: !!bool false
                     DnsServers: []
