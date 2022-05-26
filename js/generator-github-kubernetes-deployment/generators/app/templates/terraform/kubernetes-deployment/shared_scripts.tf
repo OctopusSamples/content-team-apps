@@ -28,10 +28,10 @@ locals {
 
       set_octopusvariable "VerificationResult" $SUCCESS
 
-      if [[  $SUCCESS -ne 0 ]]; then
-        >&2 echo "Vulnerabilities were detected"
+      if [[ $SUCCESS -ne 0 ]]; then
+        >&2 echo "Critical vulnerabilities were detected"
       else
-        echo "No vulnerabilities were detected"
+        echo "No critical vulnerabilities were detected"
       fi
 
       exit 0
