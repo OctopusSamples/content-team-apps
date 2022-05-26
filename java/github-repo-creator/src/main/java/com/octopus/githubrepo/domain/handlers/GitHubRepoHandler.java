@@ -489,7 +489,7 @@ public class GitHubRepoHandler {
       gitHubClient.createFile(
           GithubFile.builder()
               .content(Base64.getEncoder().encodeToString(
-                  ("# App Builder\n"
+                  ("# Octopus Builder\n"
                       + "This repo was populated by the [Octopus Octopus Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
                       + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
                       + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
