@@ -154,7 +154,17 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull bitnami/kubectl 2>&1
 
           # Download the IAM authenticator from https://github.com/kubernetes-sigs/aws-iam-authenticator
-          curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
+          for i in {1..5}
+          do
+            echo "Downloading aws-iam-authenticator"
+            curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
+            ls -la aws-iam-authenticator
+            aws-iam-authenticator version
+            if [[ "$?" == "0" ]]
+            then
+              break
+            fi
+          done
           echo "##octopus[stdout-default]"
 
           # Let the bitnami/kubectl user execute this file
@@ -212,6 +222,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           sed -i.bak -e "s|      - get-token|      - token|" ./kubeconfig
           sed -i.bak -e "s|      - --cluster-name|      - -i|" ./kubeconfig
           sed -i.bak -e "s|      command: aws|      command: aws-iam-authenticator|" ./kubeconfig
+
+          cat ./kubeconfig
 
           # Let the bitnami/kubectl user read this file
           chmod 644 kubeconfig
