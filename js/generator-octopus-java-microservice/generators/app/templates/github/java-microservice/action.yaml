@@ -219,6 +219,7 @@ runs:
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
         --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --version ${{ steps.determine_version.outputs.semVer }}
       shell: bash
 
     - name: Create a release
