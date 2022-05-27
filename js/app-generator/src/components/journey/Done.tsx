@@ -111,10 +111,17 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             .then(body => {
                 // reset the error count
                 setSpaceErrorCount(0);
-                // Try and find the space
-                const bodyObject = body as any;
-                if (bodyObject.data.length !== 0) {
-                    setSpaceId(bodyObject.data[0].attributes.Id);
+                try {
+                    // Try and find the space
+                    const bodyObject = body as any;
+                    if (bodyObject.data.length !== 0) {
+                        setSpaceId(bodyObject.data[0].attributes.Id);
+                    }
+                } catch (e) {
+                    // count the consecutive errors
+                    setSpaceErrorCount(spaceErrorCount + 1);
+                    console.log(e);
+                    setSpaceId(null);
                 }
             })
             .catch(e => {
