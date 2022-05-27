@@ -134,6 +134,8 @@ public class ResourceHandler {
 
     // Convert the response to a space object
     final Space space = Try.of(() -> OBJECT_MAPPER.readValue(spaceJson, Space.class))
+        // Log any JSON deserialization errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Serialization-FailedToDeserialize", e))
         // Any unexpected fields will result in a 500 error message
         .getOrElseThrow(e -> new JsonSerializationException());
 
