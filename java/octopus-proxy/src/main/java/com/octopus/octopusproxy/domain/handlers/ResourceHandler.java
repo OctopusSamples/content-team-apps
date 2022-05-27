@@ -210,12 +210,16 @@ public class ResourceHandler {
           }
           throw new RuntimeException();
         })
+        // Log any network errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-SpacesApiCallFailed", e))
         // assume any error means the entity does not exist
         .getOrElseThrow(e -> new EntityNotFoundException());
 
     // Convert the response to a space object
     final SpaceCollection spaceCollection = Try.of(
             () -> OBJECT_MAPPER.readValue(spaceJson, SpaceCollection.class))
+        // Log any JSON deserialization errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Serialization-FailedToDeserialize", e))
         // Any unexpected fields will result in a 500 error message
         .getOrElseThrow(e -> new JsonSerializationException());
 
