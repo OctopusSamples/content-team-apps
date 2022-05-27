@@ -7,8 +7,15 @@ import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ErrorIcon from '@mui/icons-material/Error';
 import {generateSpaceName, getOctopusServer} from "../../utils/naming";
 import Cookies from "js-cookie";
+
+/**
+ * Allow up to 5 errors accessing the space proxy. Anything more than that, and we just assume
+ * we won't get a good result.
+ */
+const MAX_SPACE_ERRORS = 5;
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -18,6 +25,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const [workflowUrl, setWorkflowUrl] = useState<string | null>(null);
     const [workflowCompleted, setWorkflowCompleted] = useState<boolean>(false);
     const [spaceId, setSpaceId] = useState<string | null>(null);
+    const [spaceErrorCount, setSpaceErrorCount] = useState<number>(0);
 
     const repoUrlValid = () => {
         return !!props.machine.state.context.apiRepoUrl;
@@ -31,7 +39,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         // No need to check once the repo is found
         if (repoCreated) {
-            return true;
+            return;
         }
 
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
@@ -54,7 +62,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         // No need to check once the repo is found
         if (workflowCompleted) {
-            return true;
+            return;
         }
 
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
@@ -80,9 +88,9 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     }
 
     const checkSpaceExists = () => {
-        // No need to check once the space is found
-        if (spaceId) {
-            return true;
+        // No need to check once the space is found, or if we encountered too many errors to continue.
+        if (spaceId || spaceErrorCount >= MAX_SPACE_ERRORS) {
+            return;
         }
 
         const spaceName = generateSpaceName(
@@ -101,12 +109,18 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         getJsonApi(url, context.settings, null)
             .then(body => {
+                // reset the error count
+                setSpaceErrorCount(0);
+                // Try and find the space
                 const bodyObject = body as any;
                 if (bodyObject.data.length !== 0) {
                     setSpaceId(bodyObject.data[0].attributes.Id);
                 }
             })
-            .catch(() => {
+            .catch(e => {
+                // count the consecutive errors
+                setSpaceErrorCount(spaceErrorCount + 1);
+                console.log(e);
                 setSpaceId(null);
             });
     }
@@ -180,22 +194,40 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                     </Button>}
                                 </td>
                             </tr>
-                            <tr>
-                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
-                                    {!spaceId && <CircularProgress size={32} sx={iconStyle}/>}</td>
-                                <td><h3>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
-                                    Octopus space.</h3>
-                                    <p>This is the space that will host the deployment project and other resources required to deploy the sample
-                                        application.</p>
-                                    <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
-                                </td>
-                                <td>{!!spaceId &&
-                                    <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
-                                        {"Open Space >"}
-                                    </Button>}
-                                </td>
-                            </tr>
+                            {spaceErrorCount < MAX_SPACE_ERRORS &&
+                                <tr>
+                                    <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
+                                        {!spaceId && <CircularProgress size={32} sx={iconStyle}/>}</td>
+                                    <td>
+                                        <h3>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
+                                            Octopus space.</h3>
+                                        <p>This is the space that will host the deployment project and other resources required to deploy the sample
+                                            application.</p>
+                                        <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
+                                    </td>
+                                    <td>{!!spaceId &&
+                                        <Button sx={openResourceStyle} variant="outlined"
+                                                onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
+                                            {"Open Space >"}
+                                        </Button>}
+                                    </td>
+                                </tr>
+                            }
+                            {spaceErrorCount >= MAX_SPACE_ERRORS &&
+                                <tr>
+                                    <td><ErrorIcon sx={iconStyle}/></td>
+                                    <td>
+                                        <h3>Failed to detect Octopus space.</h3>
+                                        <p>
+                                            Something went wrong and we were unable to determine the state of the newly created Octopus space. The space
+                                            may still be created, so look for a space with your GitHub username in it once the GitHub Actions workflow
+                                            completes.
+                                        </p>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            }
                             <tr>
                                 <td>{workflowCompleted &&
                                     <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
