@@ -40,7 +40,7 @@ const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Log into GitHub.</h2>
                         <p>
-                            You must log into GitHub to grant the app builder the permissions required to populate
+                            You must log into GitHub to grant the Octopus Builder the permissions required to populate
                             a new git repository with the sample application and GitHub Actions workflow.
                         </p>
                         <p>By logging in, you agree to your GitHub email address being collected for marketing or advertising purposes.</p>

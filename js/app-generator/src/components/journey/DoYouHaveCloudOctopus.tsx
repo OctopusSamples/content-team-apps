@@ -26,12 +26,12 @@ const DoYouHaveCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Do you have an existing cloud Octopus instance?</h2>
                         <p>
-                            The app builder configures cloud Octopus instances for you. You can identify a cloud Octopus
+                            The Octopus Builder configures cloud Octopus instances for you. You can identify a cloud Octopus
                             instance by the URL you use to access it, which will be something like
                             myinstance.octopus.app.
                         </p>
                         <p>
-                            The app builder can not configure self hosted Octopus instances.
+                            The Octopus Builder can not configure self hosted Octopus instances.
                         </p>
                         <p>
                             If you do not have an existing cloud Octopus instance, select the No option, and you will

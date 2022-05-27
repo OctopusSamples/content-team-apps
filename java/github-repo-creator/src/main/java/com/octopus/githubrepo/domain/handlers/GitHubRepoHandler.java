@@ -402,7 +402,7 @@ public class GitHubRepoHandler {
         .tree(treeBuilder.create().getSha())
         // set the parent of the commit as the master branch
         .parent(targetBranch.getSHA1())
-        .message("App Builder repo population")
+        .message("Octopus Builder repo population")
         .create();
 
     repo.getRef("heads/" + branch).updateTo(commit.getSHA1());
