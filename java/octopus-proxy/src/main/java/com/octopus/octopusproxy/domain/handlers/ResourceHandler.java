@@ -13,6 +13,7 @@ import com.octopus.exceptions.JsonSerializationException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.octopusproxy.domain.entities.Space;
@@ -21,6 +22,7 @@ import com.octopus.octopusproxy.domain.features.ClientPrivateKey;
 import com.octopus.octopusproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -76,6 +78,9 @@ public class ResourceHandler {
   @Inject
   AsymmetricDecryptor asymmetricDecryptor;
 
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
+
   /**
    * Returns the one resource that matches the supplied ID.
    *
@@ -122,6 +127,8 @@ public class ResourceHandler {
           }
           throw new RuntimeException();
         })
+        // Log any network errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-ApiCallFailed", e))
         // assume any error means the entity does not exist
         .getOrElseThrow(e -> new EntityNotFoundException());
 
