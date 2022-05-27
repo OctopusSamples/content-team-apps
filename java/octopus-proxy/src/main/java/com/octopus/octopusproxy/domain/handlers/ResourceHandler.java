@@ -125,7 +125,7 @@ public class ResourceHandler {
           if (response.getStatusLine().getStatusCode() == 200) {
             return EntityUtils.toString(response.getEntity());
           }
-          throw new RuntimeException();
+          throw new RuntimeException(EntityUtils.toString(response.getEntity()));
         })
         // Log any network errors
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-ApiCallFailed", e))
@@ -208,7 +208,7 @@ public class ResourceHandler {
           if (response.getStatusLine().getStatusCode() == 200) {
             return EntityUtils.toString(response.getEntity());
           }
-          throw new RuntimeException();
+          throw new RuntimeException(EntityUtils.toString(response.getEntity()));
         })
         // Log any network errors
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-SpacesApiCallFailed", e))
