@@ -131,7 +131,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     // Make sure people don't exit away unexpectedly
     window.addEventListener("beforeunload", (ev) => {
         ev.preventDefault();
-        return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the App Builder.';
+        return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the Octopus Builder.';
     });
 
     return (

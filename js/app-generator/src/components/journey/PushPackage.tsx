@@ -27,7 +27,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 "type": "createserviceaccount",
                 "attributes": {
                     "username": "AppBuilder",
-                    "displayName": "App Builder Service Account",
+                    "displayName": "Octopus Builder Service Account",
                     "isService": true,
                     "octopusServer": getOctopusServer(props.machine.state.context)
                 }
