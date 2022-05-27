@@ -159,6 +159,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "Downloading aws-iam-authenticator"
             curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
             ls -la aws-iam-authenticator
+            # Let the bitnami/kubectl user execute this file
+            chmod 755 aws-iam-authenticator
             ./aws-iam-authenticator version
             if [[ "$?" == "0" ]]
             then
@@ -166,9 +168,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             fi
           done
           echo "##octopus[stdout-default]"
-
-          # Let the bitnami/kubectl user execute this file
-          chmod 755 aws-iam-authenticator
 
           # Alias the docker run commands
           shopt -s expand_aliases
