@@ -4,7 +4,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.lambda.ProxyResponseBuilder;
+import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -27,6 +30,9 @@ public class LambdaRequestEntryPoint implements
   @Inject
   Instance<LambdaRequestHandler> handlers;
 
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
+
   /**
    * Handle the lambda proxy request.
    *
@@ -44,16 +50,20 @@ public class LambdaRequestEntryPoint implements
      comes out of preview), so we are on our own with functionality such as routing requests to
      handlers. This code simply calls each handler to find the first one that responds to the request.
     */
-    return handlers.stream()
-        // handle the request
-        .map(h -> h.handleRequest(input))
-        // we're only interested in populated responses
-        .filter(Optional::isPresent)
-        // get the response
-        .map(Optional::get)
-        // we only expect one of the handlers to provide a response, so get the first one
-        .findFirst()
-        // otherwise nothing handled the response, and we return a 404
-        .orElseGet(() -> proxyResponseBuilder.buildPathNotFound());
+    return Try.of(() -> handlers.stream()
+            // handle the request
+            .map(h -> h.handleRequest(input))
+            // we're only interested in populated responses
+            .filter(Optional::isPresent)
+            // get the response
+            .map(Optional::get)
+            // we only expect one of the handlers to provide a response, so get the first one
+            .findFirst()
+            // otherwise nothing handled the response, and we return a 404
+            .orElseGet(() -> proxyResponseBuilder.buildPathNotFound()))
+        // Log any failures
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-General-GeneralError", e))
+        // Get the result, or rethrow the exception
+        .get();
   }
 }
