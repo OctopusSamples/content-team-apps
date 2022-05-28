@@ -44,13 +44,9 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
             .then(body => {
-                try {
-                    const bodyObject = body as any;
-                    if (bodyObject.data.id) {
-                        setRepoCreated(true);
-                    }
-                } catch {
-                    setRepoCreated(false);
+                const bodyObject = body as any;
+                if (bodyObject.data.id) {
+                    setRepoCreated(true);
                 }
             })
             .catch(() => {
@@ -71,23 +67,18 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
             .then(body => {
-                try {
-                    const bodyObject = body as any;
-                    if (bodyObject?.data?.id) {
+                const bodyObject = body as any;
+                if (bodyObject?.data?.id) {
 
-                        const latestWorkflow = bodyObject?.included
-                            ?.filter((i: any) => i.type === "workflowruns")
-                            ?.sort((a: any, b: any) => a.attributes?.runNumber > b.attributes?.runNumber)
-                            ?.pop();
+                    const latestWorkflow = bodyObject?.included
+                        ?.filter((i: any) => i.type === "workflowruns")
+                        ?.sort((a: any, b: any) => a.attributes?.runNumber > b.attributes?.runNumber)
+                        ?.pop();
 
-                        if (latestWorkflow) {
-                            setWorkflowUrl(latestWorkflow.attributes?.htmlUrl);
-                            setWorkflowCompleted(latestWorkflow?.attributes?.status === "completed");
-                        }
+                    if (latestWorkflow) {
+                        setWorkflowUrl(latestWorkflow.attributes?.htmlUrl);
+                        setWorkflowCompleted(latestWorkflow?.attributes?.status === "completed");
                     }
-                } catch {
-                    setWorkflowUrl(null);
-                    setWorkflowCompleted(false);
                 }
             })
             .catch(() => {
@@ -120,18 +111,13 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             .then(body => {
                 // reset the error count
                 setSpaceErrorCount(0);
-                try {
-                    // Try and find the space
-                    const bodyObject = body as any;
-                    if (bodyObject.data.length !== 0) {
-                        setSpaceId(bodyObject.data[0].attributes.Id);
-                    }
-                } catch (e) {
-                    // count the consecutive errors
-                    setSpaceErrorCount(spaceErrorCount + 1);
-                    console.log(e);
-                    setSpaceId(null);
+
+                // Try and find the space
+                const bodyObject = body as any;
+                if (bodyObject.data.length !== 0) {
+                    setSpaceId(bodyObject.data[0].attributes.Id);
                 }
+
             })
             .catch(e => {
                 // count the consecutive errors
