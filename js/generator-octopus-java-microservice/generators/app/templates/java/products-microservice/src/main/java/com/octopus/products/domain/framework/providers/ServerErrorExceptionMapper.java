@@ -1,6 +1,6 @@
 package com.octopus.products.domain.framework.providers;
 
-import com.octopus.exceptions.ServerErrorException;
+import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
