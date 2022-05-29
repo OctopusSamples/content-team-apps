@@ -64,13 +64,20 @@ public class LambdaRequestEntryPoint implements
             .findFirst()
             // otherwise nothing handled the response, and we return a 404
             .orElseGet(() -> proxyResponseBuilder.buildPathNotFound()))
+        /*
+          We don't expect anything other than a 200 OK, even if the result is empty. It is possible that the request
+          was for a missing entity, had a bad filter, or was unauthorized, but if the front end is working as expected,
+          these events should be rare. Log the event so we can track down any issues between the frontend and this service
+          later on.
+         */
+        .onFailure(e -> Log.warn(microserviceNameFeature.getMicroserviceName() + "-General-UnexpectResponse", e))
         // Map a EntityNotFoundException to a "not found" response
-        .recover(EntityNotFoundException.class, proxyResponseBuilder.buildPathNotFound())
+        .recover(EntityNotFoundException.class, proxyResponseBuilder.buildNotFound())
         // Map a UnauthorizedException to a "unauthorized" response
         .recover(UnauthorizedException.class, ex -> proxyResponseBuilder.buildUnauthorizedRequest(ex))
         // Map the InvalidFilterException to a bad request response
         .recover(InvalidFilterException.class, ex -> proxyResponseBuilder.buildBadRequest(ex))
-        // Any other failures are unexpected, so log a message
+        // Any other failures represent a more significant issue, so log them as an error
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-General-GeneralError", e))
         // All other exceptions are treated as server side exceptions
         .recover(Exception.class, ex -> proxyResponseBuilder.buildError(ex))
