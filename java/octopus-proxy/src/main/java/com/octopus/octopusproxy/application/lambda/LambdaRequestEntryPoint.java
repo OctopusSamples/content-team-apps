@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.InvalidFilterException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.lambda.ProxyResponseBuilder;
@@ -67,6 +68,8 @@ public class LambdaRequestEntryPoint implements
         .recover(EntityNotFoundException.class, proxyResponseBuilder.buildPathNotFound())
         // Map a UnauthorizedException to a "unauthorized" response
         .recover(UnauthorizedException.class, ex -> proxyResponseBuilder.buildUnauthorizedRequest(ex))
+        // Map the InvalidFilterException to a bad request response
+        .recover(InvalidFilterException.class, ex -> proxyResponseBuilder.buildBadRequest(ex))
         // Any other failures are unexpected, so log a message
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-General-GeneralError", e))
         // All other exceptions are treated as server side exceptions

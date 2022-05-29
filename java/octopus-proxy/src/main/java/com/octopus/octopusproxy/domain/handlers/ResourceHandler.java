@@ -107,6 +107,8 @@ public class ResourceHandler {
 
     // The id of a space is a URL, so check that the ID is valid
     final URI sanitizedId = Try.of(() -> URI.create(id))
+        // URI.create() is surprisingly lenient, so we ensure the instance has a scheme and authority
+        .filter(u -> StringUtils.isNotBlank(u.getScheme()) && StringUtils.isNotBlank(u.getAuthority()))
         /*
          We ignore things like query params and anchors. Ideally clients are not appending these
          things to the URL, but we'll be robust and liberal in what we accept from others.
@@ -187,6 +189,8 @@ public class ResourceHandler {
 
     // The id of a space is a URL, so check that the ID is valid
     final URI sanitizedId = Try.of(() -> URI.create(visitor.getInstanceArgument()))
+        // URI.create() is surprisingly lenient, so we ensure the instance has a scheme and authority
+        .filter(u -> StringUtils.isNotBlank(u.getScheme()) && StringUtils.isNotBlank(u.getAuthority()))
         /*
          We ignore things like query params and anchors, as well as any additional path element.
          Ideally clients are not appending these things to the URL, but we'll be robust and liberal
