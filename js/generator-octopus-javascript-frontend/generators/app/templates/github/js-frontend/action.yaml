@@ -177,7 +177,8 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --package ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
         --version ${{ steps.determine_version.outputs.semVer }}
       shell: bash
 
@@ -189,7 +190,8 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --package ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
         --deployTo "Development (App)"
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}
