@@ -73,6 +73,50 @@ public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
                 + "}"
             )));
 
+    wireMockServer.stubFor(get(urlEqualTo("/api/spaces?partialName=ECS+octo-matt"))
+        .willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody("{\n"
+                + "    \"ItemType\": \"Space\",\n"
+                + "    \"TotalResults\": 3,\n"
+                + "    \"ItemsPerPage\": 30,\n"
+                + "    \"NumberOfPages\": 1,\n"
+                + "    \"LastPageNumber\": 0,\n"
+                + "    \"Items\": [\n"
+                + "        {\n"
+                + "            \"Id\": \"Spaces-923\",\n"
+                + "            \"Name\": \"ECS octo-matt\",\n"
+                + "            \"Description\": \"A space created by app builder. This resource is created and managed by the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs). The Terraform files can be found in the [GitHub repo](https://github.com/mcasperson/AppBuilder-ECS).\",\n"
+                + "            \"IsDefault\": false,\n"
+                + "            \"IsPrivate\": false,\n"
+                + "            \"PrivateSpaceOwner\": null,\n"
+                + "            \"TaskQueueStopped\": false,\n"
+                + "            \"SpaceManagersTeams\": [\n"
+                + "                \"teams-spacemanagers-Spaces-923\"\n"
+                + "            ],\n"
+                + "            \"SpaceManagersTeamMembers\": [],\n"
+                + "            \"Icon\": null,\n"
+                + "            \"ExtensionSettings\": [],\n"
+                + "            \"LastModifiedOn\": \"0001-01-01T00:00:00.000+00:00\",\n"
+                + "            \"Links\": {\n"
+                + "                \"Self\": \"/api/spaces/Spaces-923\",\n"
+                + "                \"SpaceHome\": \"/api/Spaces-923\",\n"
+                + "                \"Web\": \"/app#/spaces/Spaces-923\",\n"
+                + "                \"Logo\": \"/api/spaces/Spaces-923/logo?cb=2022.2.5531\",\n"
+                + "                \"Search\": \"/api/spaces/Spaces-923/search\"\n"
+                + "            }\n"
+                + "        }\n"
+                + "    ],\n"
+                + "    \"Links\": {\n"
+                + "        \"Self\": \"/api/spaces?skip=0&take=30&partialName=ECS\",\n"
+                + "        \"Template\": \"/api/spaces{?skip,take,ids,partialName}\",\n"
+                + "        \"Page.All\": \"/api/spaces?skip=0&take=2147483647&partialName=ECS\",\n"
+                + "        \"Page.Current\": \"/api/spaces?skip=0&take=30&partialName=ECS\",\n"
+                + "        \"Page.Last\": \"/api/spaces?skip=0&take=30&partialName=ECS\"\n"
+                + "    }\n"
+                + "}"
+            )));
+
     wireMockServer.stubFor(get(urlEqualTo("/api/spaces?partialName=unauthorized"))
         .willReturn(aResponse()
             .withHeader("Content-Type", "application/json")

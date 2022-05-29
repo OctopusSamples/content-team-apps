@@ -31,6 +31,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 /**
@@ -156,11 +158,12 @@ public class HandlerGetAllTests extends BaseTest {
         null));
   }
 
-  @Test
-  public void getAllSpaces() throws DocumentSerializationException, JsonProcessingException {
+  @ParameterizedTest
+  @ValueSource(strings = {"ECS mcasperson", "ECS octo-matt"})
+  public void getAllSpaces(final String space) throws DocumentSerializationException, JsonProcessingException {
     final String result = handler.getAll(
         "apikey",
-        "name=='ECS mcasperson';instance==" + wiremockUrl,
+        "name=='" + space + "';instance==" + wiremockUrl,
         List.of("testing"),
         null,
         null);
