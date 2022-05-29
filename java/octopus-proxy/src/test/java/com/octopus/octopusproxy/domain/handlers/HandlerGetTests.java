@@ -111,7 +111,7 @@ public class HandlerGetTests extends BaseTest {
   }
 
   @Test
-  public void getMissingSpace() throws DocumentSerializationException, JsonProcessingException {
+  public void getMissingSpace() {
     assertThrows(EntityNotFoundException.class, () -> handler.getOne(
         wiremockUrl + "/api/Spaces/Spaces-2",
         "blah",
