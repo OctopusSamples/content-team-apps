@@ -4,6 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.octopus.exceptions.EntityNotFoundException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.lambda.ProxyResponseBuilder;
 import io.quarkus.logging.Log;
@@ -61,8 +63,14 @@ public class LambdaRequestEntryPoint implements
             .findFirst()
             // otherwise nothing handled the response, and we return a 404
             .orElseGet(() -> proxyResponseBuilder.buildPathNotFound()))
-        // Log any failures
+        // Map a EntityNotFoundException to a "not found" response
+        .recover(EntityNotFoundException.class, proxyResponseBuilder.buildPathNotFound())
+        // Map a UnauthorizedException to a "unauthorized" response
+        .recover(UnauthorizedException.class, ex -> proxyResponseBuilder.buildUnauthorizedRequest(ex))
+        // Any other failures are unexpected, so log a message
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-General-GeneralError", e))
+        // All other exceptions are treated as server side exceptions
+        .recover(Exception.class, ex -> proxyResponseBuilder.buildError(ex))
         // Get the result, or rethrow the exception
         .get();
   }

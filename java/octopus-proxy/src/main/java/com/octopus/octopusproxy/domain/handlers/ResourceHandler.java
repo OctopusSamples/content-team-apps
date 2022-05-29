@@ -10,6 +10,7 @@ import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.InvalidFilterException;
 import com.octopus.exceptions.JsonSerializationException;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -205,15 +208,22 @@ public class ResourceHandler {
           final HttpResponse response = client.execute(new HttpGet(
               sanitizedId.toString() + "/api/spaces?partialName="
                   + URLEncoder.encode(visitor.getNameArgument(), StandardCharsets.UTF_8.toString())));
-          if (response.getStatusLine().getStatusCode() == 200) {
-            return EntityUtils.toString(response.getEntity());
+
+          switch (response.getStatusLine().getStatusCode()) {
+            case 200:
+              return EntityUtils.toString(response.getEntity());
+            case 403:
+              throw new UnauthorizedException();
+            case 404:
+              throw new EntityNotFoundException();
+            default:
+              throw new ServerErrorException();
           }
-          throw new RuntimeException(EntityUtils.toString(response.getEntity()));
         })
         // Log any network errors
         .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-SpacesApiCallFailed", e))
-        // assume any error means the entity does not exist
-        .getOrElseThrow(e -> new EntityNotFoundException());
+        // get the result or rethrow
+        .get();
 
     // Convert the response to a space object
     final SpaceCollection spaceCollection = Try.of(
