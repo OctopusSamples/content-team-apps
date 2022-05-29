@@ -180,6 +180,7 @@ runs:
         --package ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
         --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
         --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
       shell: bash
 
     - name: Create a release

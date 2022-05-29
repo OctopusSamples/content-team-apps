@@ -221,6 +221,7 @@ runs:
         --package ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
         --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
         --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
       shell: bash
 
     - name: Create a release
