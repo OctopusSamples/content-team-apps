@@ -187,7 +187,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                         application source code.
                                     </p></span>}
                                     {!repoUrlValid() && <span>There was an error querying the GitHub repo. Please report
-                                        this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"}>here</a>.</span>}
+                                        this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"} target={"_blank"}>here</a>.</span>}
                                 </td>
                                 <td>{repoUrlValid() && repoCreated &&
                                     <Button sx={openResourceStyle} variant="outlined"
@@ -254,7 +254,11 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             When the GitHub Actions workflow is completed, your Octopus instance is fully populated and ready to perform your first deployment.
                         </p>
                         <p>
-                            Watch the video below to learn how to make the most of your Octopus instance.
+                            We'd also love your feedback! Please leave a comment on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"} target={"_blank"}>this GitHub issue</a>
+                            to let us know how the Octopus Workflow Builder worked for you.
+                        </p>
+                        <p>
+                            Watch the videos below to learn how to make the most of your Octopus instance.
                         </p>
                         <iframe width="100%" height="522" src="https://oc.to/QoaFL7" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
