@@ -37,7 +37,9 @@ function getInitialStateContext() {
             awsRegion: state.awsRegion || "",
             targetPlatform: state.targetPlatform || "",
             generator: state.generator || "",
-            developmentFramework: state.developmentFramework || "",
+            // We may go so far as to offer different framework examples, but for now this is always blank.
+            developmentFramework: "",
+            // developmentFramework: state.developmentFramework || "",
             octopusServer: state.octopusServer || "",
             githubRepo: state.githubRepo || "",
             browsableRepoUrl: state.browsableRepoUrl || "",
