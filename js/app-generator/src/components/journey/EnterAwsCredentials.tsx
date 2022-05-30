@@ -153,10 +153,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={next}>
                             {"Next >"}
                         </Button>
-                        <p style={{marginTop: "80px", color: "grey"}}>
-                            Octonauts - The credentials from the <strong>AWS CloudDeployer (new account)</strong> entry
-                            in the password manager can be used here.
-                        </p>
                     </Grid>
                 </Grid>
                 <Grid item md={3} xs={0}/>
