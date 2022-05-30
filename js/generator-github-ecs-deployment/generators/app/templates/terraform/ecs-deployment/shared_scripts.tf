@@ -20,15 +20,15 @@ locals {
 
       # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
       # as we'll place our new ECS services in them.
-      SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
-      SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
-      VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
+      SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
+      SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
+      VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
       SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} Name=group-name,Values=default | jq -r '.SecurityGroups[].GroupId')
 
       # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
-      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text)
-      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
-
+      # Note these values will be empty for the first run of the ecs infrastructure script.
+      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text 2>/dev/null)
+      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text 2>/dev/null)
 
       echo "##octopus[stdout-default]"
 
