@@ -17,6 +17,7 @@ locals {
       ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
       ENVIRONMENT_ARRAY=($ENVIRONMENT)
       FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
+      ENVIRONMENT_SUBSTRING=b=$${FIXED_ENVIRONMENT:0:3}
 
       # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
       # as we'll place our new ECS services in them.
@@ -27,8 +28,8 @@ locals {
 
       # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
       # Note these values will be empty for the first run of the ecs infrastructure script.
-      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text 2>/dev/null)
-      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text 2>/dev/null)
+      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-$${ENVIRONMENT_SUBSTRING}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text 2>/dev/null)
+      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-$${ENVIRONMENT_SUBSTRING}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text 2>/dev/null)
 
       echo "##octopus[stdout-default]"
 
