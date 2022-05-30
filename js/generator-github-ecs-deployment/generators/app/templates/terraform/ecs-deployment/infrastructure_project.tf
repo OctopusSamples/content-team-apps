@@ -94,22 +94,22 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "##octopus[stdout-verbose]"
 
             cat <<EOF > ecsTaskExecutionRole.json
-            {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "",
-                  "Effect": "Allow",
-                  "Principal": {
-                    "Service": "ecs-tasks.amazonaws.com"
-                  },
-                  "Action": "sts:AssumeRole"
-                }
-              ]
-            }
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "ecs-tasks.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          }
           EOF
 
-            aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://build/ecsTaskExecutionRole.json
+            aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file:///build/ecsTaskExecutionRole.json
             aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
             echo "##octopus[stdout-default]"
           else
