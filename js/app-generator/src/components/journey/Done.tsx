@@ -256,7 +256,13 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Watch the video below to learn how to make the most of your Octopus instance.
                         </p>
-                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/rvhUkW2k10g" title="YouTube video player" frameBorder="0"
+                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/wABZvJPVCMg" title="YouTube video player" frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/vcHdGRS-xzU" title="YouTube video player" frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/sex-QLKA5xE" title="YouTube video player" frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/Wo4JY8fV_WM" title="YouTube video player" frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                     </Grid>
                 </Grid>
