@@ -506,7 +506,14 @@ public class GitHubRepoHandler {
                       + "2. `git merge -s ours main`\n"
                       + "3. `git checkout main`\n"
                       + "4. `git merge app-builder-update`\n\n"
-                      + "If you would rather see what has changed since you last ran the Octopus Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
+                      + "If you would rather see what has changed since you last ran the Octopus Builder, create a regular pull request between the `app-builder-update` and `main` branches.\n\n"
+                      + "## Videos\n"
+                      + "[![Introduction](https://user-images.githubusercontent.com/160104/171066204-faa47ace-9cef-40a5-b919-5074f662c045.png)](https://oc.to/QoaFL7)\n"
+                      + "[![Testing](https://user-images.githubusercontent.com/160104/171066350-86616af1-1b74-4c3b-b914-636e15b4f0f9.png)](https://oc.to/LdAw6T)\n"
+                      + "[![Security Testing](https://user-images.githubusercontent.com/160104/171066462-15c095b4-f7b7-4a52-b2f4-1b4239c48c74.png)](https://oc.to/tOL83r)\n"
+                      + "[![Feature Branching](https://user-images.githubusercontent.com/160104/171066536-46a1480d-abe5-44da-b8b3-c69d4fc8274f.png)](https://oc.to/JgsP6z)\n"
+
+                  )
                       .getBytes(StandardCharsets.UTF_8)))
               .message("Adding the initial marker file")
               .branch(DEFAULT_BRANCH)
