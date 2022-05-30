@@ -221,7 +221,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[]"
-        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+        "Octopus.Action.Aws.CloudFormationStackName" : "AppBuilder-ECS-LB-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}"
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             Vpc:
