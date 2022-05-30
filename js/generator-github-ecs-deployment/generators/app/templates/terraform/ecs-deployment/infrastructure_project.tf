@@ -88,34 +88,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Create the cluster using the instructions from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
-          EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
-          if [[ -z "$${EXISTING}" ]]; then
-            echo "Creating IAM role"
-            echo "##octopus[stdout-verbose]"
-
-            cat <<EOF > ecsTaskExecutionRole.json
-          {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Sid": "",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ecs-tasks.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          }
-          EOF
-
-            aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file:///build/ecsTaskExecutionRole.json
-            aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-            echo "##octopus[stdout-default]"
-          else
-            echo "IAM role already exists with ARN $${EXISTING}"
-          fi
-
           # Find any existing cluster with the name "app-builder".
           EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r ".clusterArns[] | select(. | endswith(\"/app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}\"))")
 
