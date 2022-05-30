@@ -277,7 +277,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
+              Default: app-builder-${var.github_repo_owner}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
             TaskDefinitionName:
               Type: String
               Default: frontend
