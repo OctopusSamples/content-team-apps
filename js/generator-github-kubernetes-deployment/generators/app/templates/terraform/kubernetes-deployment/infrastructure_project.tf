@@ -306,7 +306,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
-            name=\"$(encode_servicemessagevalue "Octopus Builder EKS Cluster Backend $${FIXED_ENVIRONMENT}")\" \
+            name=\"$(encode_servicemessagevalue "Octopus Workflow Builder EKS Cluster Backend $${FIXED_ENVIRONMENT}")\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
@@ -362,7 +362,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
-            name=\"$(encode_servicemessagevalue "Octopus Builder EKS Cluster Frontend $${FIXED_ENVIRONMENT}")\" \
+            name=\"$(encode_servicemessagevalue "Octopus Workflow Builder EKS Cluster Frontend $${FIXED_ENVIRONMENT}")\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \

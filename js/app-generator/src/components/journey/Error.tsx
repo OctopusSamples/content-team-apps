@@ -21,7 +21,7 @@ const Error: FC<JourneyProps> = (props): ReactElement => {
                     >
                         <h2>Doh!</h2>
                         <p>
-                            Unfortunately the Octopus Builder has encountered an error and can not proceed. This issue has
+                            Unfortunately the Octopus Workflow Builder has encountered an error and can not proceed. This issue has
                             been logged, so check back later to see if the problem has been resolved.
                         </p>
                     </Grid>

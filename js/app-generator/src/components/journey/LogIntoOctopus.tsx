@@ -102,7 +102,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Log into you cloud Octopus instance.</h2>
                             <p>
-                                You must log into your cloud Octopus instance to allow the Octopus Builder to configure your
+                                You must log into your cloud Octopus instance to allow the Octopus Workflow Builder to configure your
                                 application deployment process.
                             </p>
                             <p>
