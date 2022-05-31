@@ -2,27 +2,35 @@ package com.octopus.githubrepo.domain.handlers;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.base.Preconditions;
+import com.google.common.io.Resources;
+import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.ServerErrorException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.GlobalConstants;
+import com.octopus.githubrepo.domain.audit.AuditGenerator;
+import com.octopus.githubrepo.domain.entities.Audit;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommitMeta;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
+import com.octopus.githubrepo.domain.entities.github.GitHubEmail;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
 import com.octopus.githubrepo.domain.exceptions.UnexpectedResponseException;
 import com.octopus.githubrepo.domain.features.DisableServiceFeature;
+import com.octopus.githubrepo.domain.github.PublicEmailTester;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ScopeVerifier;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
+import com.octopus.githubrepo.infrastructure.clients.AuditClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -40,29 +48,22 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 /**
- * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
- * to repositories.
+ * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the inputs to POJOs, apply the security rules, create an audit
+ * trail, and then pass the requests down to repositories.
  *
  * <p>The GitHub Commit handler is responsible for creating a new commit in GitHub. Every time the
- * App Builder is run, a new commit is created somewhere, so this maps nicely to the idea
- * of a REST endpoint creating a new commit with a POST request.
+ * App Builder is run, a new commit is created somewhere, so this maps nicely to the idea of a REST endpoint creating a new commit with a POST request.
  *
  * <p>This handler is expected to return a 202 HTTP code to the caller to indicate that the request
- * was accepted, but that the actual commit is going to be created later. The response body
- * includes the details of the GitHub repo where the commit will be created.
+ * was accepted, but that the actual commit is going to be created later. The response body includes the details of the GitHub repo where the commit will be
+ * created.
  *
  * <p>This handler solves a number of issues:
- * 1. It is more RESTful than simply executing an action to populate repo. Conceptually, we are
- *    creating a new commit every time this service is run, which maps nicely to a JSONAPI
- *    create endpoint.
- * 2. It allows us to return the details of the github repo and user. The GitHub user token
- *    is encrypted and not usable by JavaScript. This is inline with the fact that the GitHub
- *    Oauth infrastructure does not support the implicit flow. But it also means there is no
- *    direct way to get the details of the user. So returning the user and repo details
- *    from this endpoint allows the frontend app to then know those minimal details.
- * 3. The long-running operation of populating the repo is handled async and API clients don't
- *    need to be aware of the details.
+ * 1. It is more RESTful than simply executing an action to populate repo. Conceptually, we are creating a new commit every time this service is run, which maps
+ * nicely to a JSONAPI create endpoint. 2. It allows us to return the details of the github repo and user. The GitHub user token is encrypted and not usable by
+ * JavaScript. This is inline with the fact that the GitHub Oauth infrastructure does not support the implicit flow. But it also means there is no direct way to
+ * get the details of the user. So returning the user and repo details from this endpoint allows the frontend app to then know those minimal details. 3. The
+ * long-running operation of populating the repo is handled async and API clients don't need to be aware of the details.
  *
  * <p>It is the responsibility of the GitHubRepoHandler to create the commit with the contents of the
  * template to be saved in the git repo. This can take a bit of time, and so is done async.
@@ -76,10 +77,8 @@ public class GitHubCommitHandler {
   private static final String DEFAULT_BRANCH = "main";
 
   /**
-   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't
-   * overwrite any updates users may have made between running the app-builder. The workflows are
-   * also configured to not run on this branch, so any manual updates made to Octopus won't be
-   * reverted.
+   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't overwrite any updates users may have made between running the
+   * app-builder. The workflows are also configured to not run on this branch, so any manual updates made to Octopus won't be reverted.
    */
   private static final String UPDATE_BRANCH = "app-builder-update";
 
@@ -97,6 +96,9 @@ public class GitHubCommitHandler {
 
   @RestClient
   PopulateRepoClient populateRepoClient;
+
+  @Inject
+  AuditGenerator auditGenerator;
 
   @Inject
   ServiceAuthUtils serviceAuthUtils;
@@ -121,24 +123,29 @@ public class GitHubCommitHandler {
   @Inject
   ScopeVerifier scopeVerifier;
 
+  @Inject
+  PublicEmailTester publicEmailTester;
+
+  @Inject
+  AsymmetricEncryptor asymmetricEncryptor;
+
   /**
    * Creates a new service account in the Octopus cloud instance.
    *
    * @param document                   The JSONAPI resource to create.
-   * @param authorizationHeader        The OAuth header for user-to-machine communication from the
-   *                                   content team identity management system. Note this is not
+   * @param authorizationHeader        The OAuth header for user-to-machine communication from the content team identity management system. Note this is not
    *                                   Octofront, but probably Cognito.
-   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note
-   *                                   this is not Octofront, but probably Cognito.
+   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note this is not Octofront, but probably Cognito.
    * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String create(
       @NonNull final String document,
       final String authorizationHeader,
       final String serviceAuthorizationHeader,
       final String routingHeader,
+      final String dataPartitionHeaders,
+      final String xray,
       @NonNull final String githubToken)
       throws DocumentSerializationException {
 
@@ -157,6 +164,9 @@ public class GitHubCommitHandler {
           .githubRepository("")
           .build());
     }
+
+    // Log the access
+    auditEmail(authorizationHeader, routingHeader, dataPartitionHeaders, xray, githubToken);
 
     try {
       // Extract the create service account action from the HTTP body.
@@ -203,7 +213,8 @@ public class GitHubCommitHandler {
           GlobalConstants.ASYNC_INVOCATION_TYPE,
           githubToken)) {
         if (response.getStatus() != 202) {
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus() + " but expected a 202");
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus()
+              + " but expected a 202");
           throw new UnexpectedResponseException();
         }
       }
@@ -242,6 +253,47 @@ public class GitHubCommitHandler {
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
       throw new ServerErrorException();
+    }
+  }
+
+  private void auditEmail(
+      final String authorizationHeader,
+      final String routingHeader,
+      final String dataPartitionHeaders,
+      final String xray,
+      final String githubToken) {
+
+    /*
+      Auditing is a best effort exercise. We don't throw any exceptions here, nor do we block any processing if anything goes wrong.
+      Start by loading the public key.
+     */
+    final List<String> emails = Try.of(() -> Resources.toByteArray(Resources.getResource("public_key.der")))
+        // convert it to a base64 string
+        .map(Base64.getEncoder()::encodeToString)
+        // now try and get the email addresses associated with the github user
+        .map(k -> Arrays.stream(gitHubClient.publicEmails("token " + githubToken))
+            // extract the email
+            .map(GitHubEmail::getEmail)
+            // limit the results to public emails
+            .filter(publicEmailTester::isPublicEmail)
+            // encrypt the email
+            .map(e -> asymmetricEncryptor.encrypt(e, k))
+            // collect the list
+            .collect(Collectors.toList()))
+        // get the resulting list, or an empty list if anything went wrong.
+        .getOrElse(List.of());
+
+    for (final String email : emails) {
+      auditGenerator.createAuditEvent(new Audit(
+              microserviceNameFeature.getMicroserviceName(),
+              GlobalConstants.POPULATED_REPO,
+              email,
+              true,
+              false),
+          xray,
+          routingHeader,
+          dataPartitionHeaders,
+          authorizationHeader);
     }
   }
 

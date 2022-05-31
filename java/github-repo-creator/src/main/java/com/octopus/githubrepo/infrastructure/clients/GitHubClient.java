@@ -1,6 +1,8 @@
 package com.octopus.githubrepo.infrastructure.clients;
 
+import com.octopus.githubrepo.GlobalConstants;
 import com.octopus.githubrepo.domain.entities.github.GitHubCommit;
+import com.octopus.githubrepo.domain.entities.github.GitHubEmail;
 import com.octopus.githubrepo.domain.entities.github.GitHubPublicKey;
 import com.octopus.githubrepo.domain.entities.github.GitHubSecret;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
@@ -28,6 +30,17 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Path("/")
 @RegisterRestClient
 public interface GitHubClient {
+
+  /**
+   * Get the users public email addresses.
+   *
+   * @param auth The Authorization header.
+   * @return The access and refresh tokens.
+   */
+  @Path("user/public_emails")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  GitHubEmail[] publicEmails(@HeaderParam(GlobalConstants.AUTHORIZATION_HEADER) String auth);
 
   @GET
   @Path("/user")

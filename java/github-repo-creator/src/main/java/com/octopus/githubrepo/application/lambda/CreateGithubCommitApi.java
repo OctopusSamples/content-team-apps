@@ -167,14 +167,12 @@ public class CreateGithubCommitApi implements
                 .withBody(
                     gitHubCommitHandler.create(
                         requestBodyExtractor.getBody(input),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.ROUTING_HEADER).orElse(null),
-                        lambdaHttpCookieExtractor.getCookieValue(input,
-                            ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.ROUTING_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.DATA_PARTITION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AMAZON_TRACE_ID_HEADER).orElse(null),
+                        lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
       }
     } catch (final UnauthorizedException e) {
       return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
