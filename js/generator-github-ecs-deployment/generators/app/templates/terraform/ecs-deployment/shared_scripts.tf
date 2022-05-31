@@ -43,7 +43,7 @@ locals {
       set_octopusvariable "SubnetA" "$${SUBNETA}"
       set_octopusvariable "SubnetB" "$${SUBNETB}"
       set_octopusvariable "Vpc" "$${VPC}"
-      set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
+      set_octopusvariable "ClusterName" "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}"
       set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
       set_octopusvariable "Listener" $${LISTENER}
       set_octopusvariable "DNSName" "$${DNSNAME}"
