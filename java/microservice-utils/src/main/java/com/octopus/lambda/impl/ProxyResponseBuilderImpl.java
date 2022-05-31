@@ -16,7 +16,7 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   private static final Logger LOGGER = Logger.getLogger(ProxyResponseBuilderImpl.class.getName());
 
   @Override
-  public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildError(@NonNull final Throwable ex) {
     LOGGER.log(Level.SEVERE, "System exception thrown", ex);
 
     return new ApiGatewayProxyResponseEventWithCors()
@@ -25,7 +25,7 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex,
+  public APIGatewayProxyResponseEvent buildError(@NonNull final Throwable ex,
       @NonNull final String requestBody) {
     LOGGER.log(Level.SEVERE, "System exception thrown", ex);
 
@@ -53,14 +53,14 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildBadRequest(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildBadRequest(@NonNull final Throwable ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(400)
         .withBody("{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildUnauthorizedRequest(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildUnauthorizedRequest(@NonNull final Throwable ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(403)
         .withBody("{\"errors\": [{\"title\": \"Unauthorized\"}]}");

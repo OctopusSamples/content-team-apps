@@ -18,6 +18,7 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -159,28 +160,27 @@ public class CreateGithubCommitApi implements
    */
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
-    try {
-      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.of(
-            new ApiGatewayProxyResponseEventWithCors()
-                .withStatusCode(202)
-                .withBody(
-                    gitHubCommitHandler.create(
-                        requestBodyExtractor.getBody(input),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.ROUTING_HEADER).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.DATA_PARTITION_HEADER).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AMAZON_TRACE_ID_HEADER).orElse(null),
-                        lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
-      }
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInputException | IllegalArgumentException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
+    if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      return Try.of(() -> Optional.of(
+          new ApiGatewayProxyResponseEventWithCors()
+              .withStatusCode(202)
+              .withBody(
+                  gitHubCommitHandler.create(
+                      requestBodyExtractor.getBody(input),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.ROUTING_HEADER).orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.DATA_PARTITION_HEADER).orElse(null),
+                      lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AMAZON_TRACE_ID_HEADER).orElse(null),
+                      lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse("")))))
+          .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+          .recover(InvalidInputException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+          .recover(IllegalArgumentException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+          // Any other kind of exception is probably a server side error. Log the exception so it can be diagnosed later on.
+          .onFailure(Throwable::printStackTrace)
+          // Recover from any other kind of exception.
+          .recover(e -> Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input))))
+          .get();
     }
 
     return Optional.empty();
