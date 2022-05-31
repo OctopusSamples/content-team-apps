@@ -12,14 +12,14 @@ import org.apache.commons.text.StringEscapeUtils;
 public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
 
   @Override
-  public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildError(@NonNull final Throwable ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(500)
         .withBody("{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildError(@NonNull final Exception ex,
+  public APIGatewayProxyResponseEvent buildError(@NonNull final Throwable ex,
       @NonNull final String requestBody) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(500)
@@ -38,14 +38,14 @@ public class ProxyResponseBuilderImpl implements ProxyResponseBuilder {
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildBadRequest(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildBadRequest(@NonNull final Throwable ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(400)
         .withBody("{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
   }
 
   @Override
-  public APIGatewayProxyResponseEvent buildUnauthorizedRequest(@NonNull final Exception ex) {
+  public APIGatewayProxyResponseEvent buildUnauthorizedRequest(@NonNull final Throwable ex) {
     return new ApiGatewayProxyResponseEventWithCors()
         .withStatusCode(403)
         .withBody("{\"errors\": [{\"title\": \"Unauthorized\"}]}");

@@ -13,7 +13,7 @@ public interface ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  APIGatewayProxyResponseEvent buildError(Exception ex);
+  APIGatewayProxyResponseEvent buildError(Throwable ex);
 
   /**
    * Build an error object including the exception name and the body of the request that was sent.
@@ -23,7 +23,7 @@ public interface ProxyResponseBuilder {
    * @param requestBody The request body
    * @return The ProxyResponse representing the error.
    */
-  APIGatewayProxyResponseEvent buildError(Exception ex, String requestBody);
+  APIGatewayProxyResponseEvent buildError(Throwable ex, String requestBody);
 
   /**
    * Build a error object for a 404 not found error. https://jsonapi.org/format/#error-objects
@@ -38,7 +38,7 @@ public interface ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  APIGatewayProxyResponseEvent buildBadRequest(Exception ex);
+  APIGatewayProxyResponseEvent buildBadRequest(Throwable ex);
 
   /**
    * Build an error object including the exception name. https://jsonapi.org/format/#error-objects
@@ -46,5 +46,5 @@ public interface ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  APIGatewayProxyResponseEvent buildUnauthorizedRequest(Exception ex);
+  APIGatewayProxyResponseEvent buildUnauthorizedRequest(Throwable ex);
 }
