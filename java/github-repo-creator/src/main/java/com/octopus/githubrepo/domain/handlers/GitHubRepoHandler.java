@@ -181,8 +181,7 @@ public class GitHubRepoHandler {
       throws DocumentSerializationException {
 
     Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
-    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken),
-        "githubToken can not be blank");
+    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken), "githubToken can not be blank");
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
@@ -198,15 +197,13 @@ public class GitHubRepoHandler {
 
     try {
       // Extract the create service account action from the HTTP body.
-      final PopulateGithubRepo populateGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(
-          document, PopulateGithubRepo.class);
+      final PopulateGithubRepo populateGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(document, PopulateGithubRepo.class);
 
       // Ensure the validity of the request.
       verifyRequest(populateGithubRepo);
 
       // Decrypt the github token passed in as a cookie.
-      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
-          githubSalt);
+      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption, githubSalt);
 
       // Ensure we have the required scopes
       scopeVerifier.verifyScopes(decryptedGithubToken);
@@ -223,17 +220,13 @@ public class GitHubRepoHandler {
 
       // Create the secrets
       Failsafe.with(RETRY_POLICY)
-          .run(() -> createSecrets(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository()));
+          .run(() -> createSecrets(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository()));
 
       // Ensure there is an initial commit in the repo to use as the basis of other commits
       Failsafe.with(RETRY_POLICY)
-          .run(() -> populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository()));
+          .run(() -> populateInitialFile(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository()));
 
-      /*
-        Ensure the branch exists.
-      */
+      // Ensure the branch exists.
       Failsafe.with(RETRY_POLICY)
           .run(() -> createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch()));
 
@@ -257,18 +250,15 @@ public class GitHubRepoHandler {
       // return the details of the new commit
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(PopulateGithubRepo
           .builder()
-          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/"
-              + commit)
+          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/" + commit)
           .githubRepository(populateGithubRepo.getGithubRepository())
           .build());
     } catch (final ClientWebApplicationException ex) {
-      Try.run(
-          () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-              + ex.getResponse().readEntity(String.class), ex));
+      Try.run(() ->
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed " + ex.getResponse().readEntity(String.class), ex));
       throw new ServerErrorException();
     } catch (final InvalidInputException | IllegalArgumentException ex) {
-      Log.error(
-          microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
@@ -289,12 +279,10 @@ public class GitHubRepoHandler {
         .options(populateGithubRepo.getOptions())
         .build();
 
-    final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(
-        new JSONAPIDocument<>(generateTemplate)));
+    final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(new JSONAPIDocument<>(generateTemplate)));
 
     try (final TemporaryResources temp = new TemporaryResources()) {
-      final Path zipFile = downloadTemplateToTempFile(
-          body, temp, authHeader, serviceAuthHeader, routingHeader);
+      final Path zipFile = downloadTemplateToTempFile(body, temp, authHeader, serviceAuthHeader, routingHeader);
       return extractZipToTempDir(zipFile, temp).toString();
     }
   }
@@ -309,11 +297,9 @@ public class GitHubRepoHandler {
 
     Log.info("Calling template generator");
 
-    try (final Response response = generateTemplateClient.generateTemplate(
-        body, routingHeader, authHeader, serviceAuthHeader)) {
+    try (final Response response = generateTemplateClient.generateTemplate(body, routingHeader, authHeader, serviceAuthHeader)) {
       if (response.getStatus() != 200) {
-        throw new BadRequestException(
-            "Call to template generator resulted in status code " + response.getStatus());
+        throw new BadRequestException("Call to template generator resulted in status code " + response.getStatus());
       }
 
       final InputStream inputStream = response.readEntity(InputStream.class);

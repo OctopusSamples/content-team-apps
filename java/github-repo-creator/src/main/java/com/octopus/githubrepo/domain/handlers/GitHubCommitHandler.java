@@ -285,7 +285,7 @@ public class GitHubCommitHandler {
     for (final String email : emails) {
       auditGenerator.createAuditEvent(new Audit(
               microserviceNameFeature.getMicroserviceName(),
-              GlobalConstants.POPULATED_REPO_FOR,
+              GlobalConstants.POPULATED_REPO_FOR_CUSTOMER,
               email,
               true,
               false),
