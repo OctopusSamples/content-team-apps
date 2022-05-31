@@ -165,9 +165,6 @@ public class GitHubCommitHandler {
           .build());
     }
 
-    // Log the access
-    auditEmail(authorizationHeader, routingHeader, dataPartitionHeaders, xray, githubToken);
-
     try {
       // Extract the create service account action from the HTTP body.
       final CreateGithubCommit createGithubRepo = jsonApiServiceUtilsCreateGithubCommit
@@ -181,6 +178,9 @@ public class GitHubCommitHandler {
           githubToken,
           githubEncryption,
           githubSalt);
+
+      // Log the access
+      auditEmail(authorizationHeader, routingHeader, dataPartitionHeaders, xray, decryptedGithubToken);
 
       // Ensure we have the required scopes
       scopeVerifier.verifyScopes(decryptedGithubToken);
