@@ -148,4 +148,30 @@ resource "octopusdeploy_deployment_process" "cognito_userpool_client_deploy_proj
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Get Client ID"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Client ID"
+      run_on_server  = true
+      worker_pool_id = var.octopus_worker_pool_id
+      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Script.ScriptBody": <<-EOT
+          echo "Client ID: #{Octopus.Action[GitHub Commit Creator User Pool Client].Output.AwsOutputs[CognitoAppClientID]}"
+        EOT
+        "Octopus.Action.Script.ScriptSource": "Inline"
+        "Octopus.Action.Script.Syntax": "Bash"
+        "OctopusUseBundledTooling": "False"
+      }
+    }
+  }
 }
