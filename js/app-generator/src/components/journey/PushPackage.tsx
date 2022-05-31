@@ -46,7 +46,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             })
             .catch(() => {
                 setLoading(false);
-                window.alert("DOH!")
+                props.machine.send("ERROR");
             });
     }
 
@@ -124,7 +124,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             })
             .catch(() => {
                 setLoading(false);
-                window.alert("DOH!")
+                props.machine.send("ERROR");
             });
     }
 

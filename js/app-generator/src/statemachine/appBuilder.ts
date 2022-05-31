@@ -220,6 +220,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ECS: {target: 'doYouHaveCloudOctopus'},
                         EKS: {target: 'doYouHaveCloudOctopus'},
                         LAMBDA: {target: 'doYouHaveCloudOctopus'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("selectTarget"),
@@ -228,7 +229,8 @@ export const appBuilderMachine = createMachine<StateContext>({
                 },
                 selectedTargetNotAvailable: {
                     on: {
-                        BACK: {target: 'selectTarget'}
+                        BACK: {target: 'selectTarget'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("selectedTargetNotAvailable"),
@@ -239,6 +241,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         YES: {target: 'logIntoOctopus'},
                         NO: {target: 'signUpForCloudOctopus'},
                         BACK: {target: 'selectTarget'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("doYouHaveCloudOctopus"),
@@ -249,6 +252,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     on: {
                         NEXT: {target: 'logIntoOctopus'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("signUpForCloudOctopus"),
@@ -260,6 +264,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         BACK: {target: 'doYouHaveCloudOctopus'},
                         APIKEY: {target: 'enterOctopusCredentials'},
                         MOCK: {target: 'loggedIntoOctopus'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("logIntoOctopus"),
@@ -269,7 +274,8 @@ export const appBuilderMachine = createMachine<StateContext>({
                 enterOctopusCredentials: {
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
-                        NEXT: {target: 'logIntoGitHub'}
+                        NEXT: {target: 'logIntoGitHub'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("enterOctopusCredentials"),
@@ -281,6 +287,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         NEXT: {target: 'logIntoGitHub'},
                         ALREADY_LOGGED_INTO_GITHUB: {target: 'enterAwsCredentials'},
                         BACK: {target: 'doYouHaveCloudOctopus'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("loggedIntoOctopus"),
@@ -291,6 +298,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     on: {
                         BACK: {target: 'doYouHaveCloudOctopus'},
                         MOCK: {target: 'loggedIntoGithub'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("logIntoGitHub"),
@@ -300,7 +308,8 @@ export const appBuilderMachine = createMachine<StateContext>({
                 loggedIntoGithub: {
                     on: {
                         BACK: {target: 'logIntoGitHub'},
-                        NEXT: {target: 'enterAwsCredentials'}
+                        NEXT: {target: 'enterAwsCredentials'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("loggedIntoGithub"),
@@ -311,6 +320,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     on: {
                         BACK: {target: 'logIntoGitHub'},
                         NEXT: {target: 'pushPackage'},
+                        ERROR: {target: 'error'},
                     },
                     entry: [
                         saveCurrentState("enterAwsCredentials"),
@@ -321,7 +331,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                     on: {
                         BACK: {target: 'logIntoGitHub'},
                         NEXT: {target: 'done'},
-                        ERROR: {target: 'error'},
+                        ERROR: {target: 'error'}
                     },
                     entry: [
                         saveCurrentState("pushPackage"),
