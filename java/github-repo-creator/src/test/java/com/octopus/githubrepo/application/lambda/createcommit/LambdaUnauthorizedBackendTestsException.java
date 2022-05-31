@@ -37,7 +37,7 @@ public class LambdaUnauthorizedBackendTestsException extends BaseTest {
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.create(any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handler.create(any(), any(), any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
   }
 
   @Test

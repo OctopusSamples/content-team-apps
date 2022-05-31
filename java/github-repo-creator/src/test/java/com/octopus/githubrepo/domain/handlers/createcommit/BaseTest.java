@@ -44,7 +44,7 @@ public class BaseTest {
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
-            null, null, null, "blah");
+            null, null, null, null, null,"blah");
     final CreateGithubCommit resultObject = getResourceFromDocument(resourceConverter, result);
     return resultObject;
   }

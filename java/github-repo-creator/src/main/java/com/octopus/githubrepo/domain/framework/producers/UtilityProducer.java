@@ -2,9 +2,11 @@ package com.octopus.githubrepo.domain.framework.producers;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.octopus.encryption.AsymmetricDecryptor;
+import com.octopus.encryption.AsymmetricEncryptor;
 import com.octopus.encryption.CryptoUtils;
 import com.octopus.encryption.impl.AesCryptoUtils;
 import com.octopus.encryption.impl.RsaCryptoUtilsDecryptor;
+import com.octopus.encryption.impl.RsaCryptoUtilsEncryptor;
 import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.features.CognitoJwkBase64Feature;
 import com.octopus.features.DisableSecurityFeature;
@@ -282,5 +284,17 @@ public class UtilityProducer {
   @Produces
   public RequestBodyExtractor getRequestBodyExtractor() {
     return new RequestBodyExtractorImpl();
+  }
+
+  /**
+   * Produces the AsymmetricEncryptor.
+   *
+   * @return An implementation of AsymmetricEncryptor.
+   */
+  @ApplicationScoped
+  @Produces
+  public AsymmetricEncryptor getAsymmetricEncryptor()
+      throws NoSuchPaddingException, NoSuchAlgorithmException {
+    return new RsaCryptoUtilsEncryptor();
   }
 }

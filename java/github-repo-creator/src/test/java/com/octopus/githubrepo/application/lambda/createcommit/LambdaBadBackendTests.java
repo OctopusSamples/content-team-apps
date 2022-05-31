@@ -43,7 +43,7 @@ public class LambdaBadBackendTests extends BaseTest {
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.create(any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
+    Mockito.when(handler.create(any(), any(), any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
     Mockito.when(healthHandler.getHealth(any(), any())).thenThrow(new RuntimeException());
   }
 

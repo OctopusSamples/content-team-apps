@@ -35,6 +35,6 @@ public class BadInputHandlerTests extends BaseTest {
     assertThrows(InvalidInputException.class, () ->
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
-            null, null, null, "blah"));
+            null, null, null, null, null, "blah"));
   }
 }
