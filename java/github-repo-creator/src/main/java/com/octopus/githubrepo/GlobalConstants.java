@@ -16,5 +16,5 @@ public final class GlobalConstants {
   public static final String FROM_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
   public static final String CLIENT_CREDENTIALS = "client_credentials";
   public static final String AUDIT_SCOPE = "audit.content-team/admin";
-  public static final String POPULATED_REPO = "PopulatedRepo";
+  public static final String POPULATED_REPO_FOR = "PopulatedRepoFor";
 }

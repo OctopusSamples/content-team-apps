@@ -24,7 +24,6 @@ import com.octopus.githubrepo.domain.github.PublicEmailTester;
 import com.octopus.githubrepo.domain.utils.JsonApiResourceUtils;
 import com.octopus.githubrepo.domain.utils.ScopeVerifier;
 import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
-import com.octopus.githubrepo.infrastructure.clients.AuditClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import io.quarkus.logging.Log;
@@ -286,7 +285,7 @@ public class GitHubCommitHandler {
     for (final String email : emails) {
       auditGenerator.createAuditEvent(new Audit(
               microserviceNameFeature.getMicroserviceName(),
-              GlobalConstants.POPULATED_REPO,
+              GlobalConstants.POPULATED_REPO_FOR,
               email,
               true,
               false),
