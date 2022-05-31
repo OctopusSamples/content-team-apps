@@ -261,12 +261,16 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Watch the videos below to learn how to make the most of your Octopus instance.
                         </p>
+                        <h3>Introduction</h3>
                         <iframe width="100%" height="522" src="https://oc.to/QoaFL7" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Testing</h3>
                         <iframe width="100%" height="522" src="https://oc.to/LdAw6T" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Security Testing</h3>
                         <iframe width="100%" height="522" src="https://oc.to/tOL83r" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Feature Branching</h3>
                         <iframe width="100%" height="522" src="https://oc.to/JgsP6z" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                     </Grid>
