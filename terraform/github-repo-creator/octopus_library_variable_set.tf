@@ -77,6 +77,15 @@ resource "octopusdeploy_variable" "aws_cloudformation_commit_creator" {
   value = "GitHubCreateCommit"
 }
 
+resource "octopusdeploy_variable" "aws_cloudformation_commit_creator_app_client" {
+  name = "CloudFormation.OctopusCreateGithubCommitAppClient"
+  type = "String"
+  description = "The name of the stack creating the Cognito app client."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "GitHubCreateCommitAppClient"
+}
+
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
   name = "CloudFormationName.AppBuilderApiGateway"
   type = "String"
