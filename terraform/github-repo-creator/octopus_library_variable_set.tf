@@ -220,3 +220,27 @@ resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_deve
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "cloudformation_audit_client_secret_production" {
+  name = "Cognito.AuditClientSecret"
+  type = "String"
+  description = "The Cognito client secret used to authenticate with the audit service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.audit_client_secret_production
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_audit_client_secret_development" {
+  name = "Cognito.AuditClientSecret"
+  type = "String"
+  description = "The Cognito client secret used to authenticate with the audit service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.audit_client_secret_development
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}

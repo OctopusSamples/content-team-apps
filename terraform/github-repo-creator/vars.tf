@@ -101,6 +101,18 @@ variable "client_private_key_base64_development" {
   sensitive = true
 }
 
+variable "audit_client_secret_development" {
+  type = string
+  nullable = false
+  sensitive = true
+}
+
+variable "audit_client_secret_production" {
+  type = string
+  nullable = false
+  sensitive = true
+}
+
 variable "run_number" {
   type = string
   nullable = false
