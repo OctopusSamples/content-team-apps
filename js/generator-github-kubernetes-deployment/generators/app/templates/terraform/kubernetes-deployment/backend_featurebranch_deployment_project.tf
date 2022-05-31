@@ -228,16 +228,16 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" -H "Routing: route[/health/products/GET:GET]=url[http://${local.backend_featurebranch_service_name}.${local.backend_feature_branch_namespace}]" http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/health/products/GET)
-              if [[ "$${CODE}" != "000" ]]
+              if [[ "$${CODE}" == "200" ]]
               then
                 break
               fi
-              echo "Waiting for DNS name to be resolvable"
+              echo "Waiting for DNS name to be resolvable and for service to respond"
               sleep 10
           done
 
           echo "response code: $${CODE}"
-          if [ "$${CODE}" == "200" ]
+          if [[ "$${CODE}" == "200" ]]
           then
             echo "success"
             exit 0;

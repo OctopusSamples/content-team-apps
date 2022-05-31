@@ -617,16 +617,16 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/health/products/GET)
-              if [[ "$${CODE}" != "000" && "$${CODE}" != "502" && "$${CODE}" != "503" ]]
+              if [[ "$${CODE}" == "200" ]]
               then
                 break
               fi
-              echo "Waiting for DNS name to be resolvable"
+              echo "Waiting for DNS name to be resolvable and for service to respond"
               sleep 10
           done
 
           echo "response code: $${CODE}"
-          if [ "$${CODE}" == "200" ]
+          if [[ "$${CODE}" == "200" ]]
           then
             echo "success"
             exit 0;
