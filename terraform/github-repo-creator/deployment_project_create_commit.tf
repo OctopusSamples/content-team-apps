@@ -53,30 +53,6 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
   project_id = octopusdeploy_project.create_commit_project.id
   step {
     condition           = "Success"
-    name                = "Capture Local Dev Settings ${var.run_number}"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = ["LocalDevelopment"]
-    action {
-      action_type    = "Octopus.Script"
-      name           = "Capture Local Dev Settings ${var.run_number}"
-      run_on_server  = false
-      environments   = [
-        var.octopus_production_environment_id, var.octopus_development_environment_id
-      ]
-
-      properties = {
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
-          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};REPO_POPULATOR=#{ExternalService.RepoPopulator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=CreateGithubCommit"
-        EOT
-        "Octopus.Action.Script.ScriptSource" : "Inline"
-        "Octopus.Action.Script.Syntax" : "Bash"
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Create S3 bucket"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -734,6 +710,30 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Capture Local Dev Settings ${var.run_number}"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = ["LocalDevelopment"]
+    action {
+      action_type    = "Octopus.Script"
+      name           = "Capture Local Dev Settings ${var.run_number}"
+      run_on_server  = false
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
+
+      properties = {
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
+          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};REPO_POPULATOR=#{ExternalService.RepoPopulator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=CreateGithubCommit;COGNITO_CLIENT_ID=#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId};COGNITO_CLIENT_SECRET=#{Cognito.AuditClientSecret}"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
       }
     }
   }
