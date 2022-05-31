@@ -471,7 +471,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           for i in {1..30}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Backend Service].Output.AwsOutputs[DNSName]}/health/products/GET)
-              if [[ "$${CODE}" != "000" && "$${CODE}" != "502" ]]
+              if [[ "$${CODE}" != "000" && "$${CODE}" != "502" && "$${CODE}" != "503" ]]
               then
                 break
               fi

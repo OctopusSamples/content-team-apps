@@ -372,7 +372,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           for i in {1..60}
           do
               CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html)
-              if [[ "$${CODE}" != "000" ]]
+              if [[ "$${CODE}" != "000" && "$${CODE}" != "502" && "$${CODE}" != "503" ]]
               then
                 break
               fi
