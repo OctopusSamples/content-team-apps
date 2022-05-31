@@ -104,7 +104,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
             if [[ $RESULT -ne 0 ]]; then
               echo "##octopus[stdout-default]"
-              echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
+              write_highlight "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
               exit 1
             fi
 

@@ -114,7 +114,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
             if [[ $? -ne 0 ]]; then
               echo "##octopus[stdout-error]"
-              echo "[AppBuilder-Infrastructure-EKSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-eksfailed) The cluster was not created successfully. Expand the verbose logs for more details, or click the error code link for more information."
+              write_highlight "[AppBuilder-Infrastructure-EKSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-eksfailed) The cluster was not created successfully. Expand the verbose logs for more details, or click the error code link for more information."
               exit 1
             fi
 
