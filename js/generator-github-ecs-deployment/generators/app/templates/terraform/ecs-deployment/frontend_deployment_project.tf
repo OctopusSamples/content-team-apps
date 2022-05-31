@@ -440,7 +440,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           if [[ -f mochawesome.html ]]
           then
             inline-assets mochawesome.html selfcontained.html
-            new_octopusartifact "$${PWD}/selfcontained.html" "HTML Report"
+            new_octopusartifact "$${PWD}/selfcontained.html" "html-report.html"
           fi
           if [[ -d cypress/screenshots/sample_spec.js ]]
           then
