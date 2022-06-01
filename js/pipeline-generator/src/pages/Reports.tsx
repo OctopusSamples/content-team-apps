@@ -1,7 +1,7 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {AppContext} from "../App";
-import Audits, {AuditsCollection} from "./Audits";
+import {AuditsCollection} from "./Audits";
 
 const Reports: FC<{}> = (): ReactElement => {
     const context = useContext(AppContext);
@@ -32,6 +32,7 @@ const Reports: FC<{}> = (): ReactElement => {
     }, [setEmailAudits, context.settings.auditEndpoint, context.partition]);
 
     return <div>
+        {error && <span>{error}</span>}
         <h1>Last 28 Days</h1>
         <p>Emails collected: {emailAudits?.data?.length}</p>
         <p>Jenkins templates: {templateAudits?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length}</p>
