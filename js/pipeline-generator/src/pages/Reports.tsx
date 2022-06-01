@@ -10,10 +10,12 @@ const Reports: FC<{}> = (): ReactElement => {
     const [templateAuditsFourWeeks, setTemplateAuditsFourWeeks] = useState<AuditsCollection | null>(null);
     const [templateAuditsOneWeek, setTemplateAuditsOneWeek] = useState<AuditsCollection | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
-    const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+
 
     useEffect(() => {
+        const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
+        const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateFor;time>=" + fourWeeksAgo.toISOString(), context.partition)
             .then(data => {
                 setEmailAuditsFourWeeks(data);
@@ -21,9 +23,12 @@ const Reports: FC<{}> = (): ReactElement => {
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
-    }, [setEmailAuditsFourWeeks, context.settings.auditEndpoint, context.partition]);
+    }, [setEmailAuditsFourWeeks, setEmailAuditsOneWeek, context.settings.auditEndpoint, context.partition]);
 
     useEffect(() => {
+        const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
+        const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing;time>=" + fourWeeksAgo.toISOString(), context.partition)
             .then(data => {
                 setTemplateAuditsFourWeeks(data);
@@ -31,7 +36,7 @@ const Reports: FC<{}> = (): ReactElement => {
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
-    }, [setEmailAuditsFourWeeks, context.settings.auditEndpoint, context.partition]);
+    }, [setEmailAuditsFourWeeks, setTemplateAuditsOneWeek, context.settings.auditEndpoint, context.partition]);
 
     return <div>
         {error && <span>{error}</span>}

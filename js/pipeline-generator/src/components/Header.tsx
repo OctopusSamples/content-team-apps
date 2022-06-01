@@ -15,7 +15,7 @@ import Brightness3Icon from "@material-ui/icons/Brightness3";
 import ContentCopy from '@material-ui/icons/ContentCopy';
 import {FC, useContext} from "react";
 import {AppContext} from "../App";
-import {History, LocalHospital, SettingsApplications, Share} from "@material-ui/icons";
+import {History, LocalHospital, PieChart, SettingsApplications, Share} from "@material-ui/icons";
 import {useHistory} from "react-router-dom";
 
 // define css-in-js
@@ -89,6 +89,11 @@ const Header: FC<HeaderProps> = ({
                     </IconButton>
                 }
                 {context.developerMode && <div>
+                    <IconButton onClick={() => history.push('/reports')}>
+                        <Tooltip title={"Reports"} placement={"bottom"}>
+                            <PieChart/>
+                        </Tooltip>
+                    </IconButton>
                     <IconButton onClick={() => history.push('/audits')}>
                         <Tooltip title={"Audits"} placement={"bottom"}>
                             <History/>
