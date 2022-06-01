@@ -222,7 +222,7 @@ resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_deve
 }
 
 resource "octopusdeploy_variable" "cloudformation_audit_client_secret_production" {
-  name = "Cognito.AuditClientSecret"
+  name = "Cognito.GitHubCommitCreatorAuditClientSecret"
   type = "String"
   description = "The Cognito client secret used to authenticate with the audit service."
   is_sensitive = false
@@ -234,7 +234,7 @@ resource "octopusdeploy_variable" "cloudformation_audit_client_secret_production
 }
 
 resource "octopusdeploy_variable" "cloudformation_audit_client_secret_development" {
-  name = "Cognito.AuditClientSecret"
+  name = "Cognito.GitHubCommitCreatorAuditClientSecret"
   type = "String"
   description = "The Cognito client secret used to authenticate with the audit service."
   is_sensitive = false
