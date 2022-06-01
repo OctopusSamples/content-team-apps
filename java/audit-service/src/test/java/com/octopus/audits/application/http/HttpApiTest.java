@@ -290,6 +290,32 @@ public class HttpApiTest extends BaseTest {
                     getAuditsFromDocument(resourceConverter, a.toString()).stream()
                         .anyMatch(p -> Objects.equals(created.getId(), p.getId())),
                 "Resource should be returned"));
+
+    given()
+        .accept("application/vnd.api+json")
+        .header("data-partition", "main")
+        .when()
+        .queryParam("filter", "time<1970-01-01T12:00:00Z")
+        .get("/api/audits")
+        .then()
+        .statusCode(200)
+        .body(
+            new LambdaMatcher<String>(
+                a -> getAuditsFromDocument(resourceConverter, a.toString()).isEmpty(),
+                "No resource should be returned"));
+
+    given()
+        .accept("application/vnd.api+json")
+        .header("data-partition", "main")
+        .when()
+        .queryParam("filter", "time>1970-01-01T12:00:00Z")
+        .get("/api/audits")
+        .then()
+        .statusCode(200)
+        .body(
+            new LambdaMatcher<String>(
+                a -> !getAuditsFromDocument(resourceConverter, a.toString()).isEmpty(),
+                "Some resources should be returned"));
   }
 
   @Test
