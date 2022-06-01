@@ -34,7 +34,7 @@ const Reports: FC<{}> = (): ReactElement => {
     return <div>
         {error && <span>{error}</span>}
         <h1>Last 28 Days</h1>
-        <p>Emails collected: {emailAudits?.data?.length}</p>
+        <p>Emails collected: {emailAudits?.data?.length} (Note some of these email addresses are unusable "no-reply" addresses.)</p>
         <p>Jenkins templates: {templateAudits?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length}</p>
         <p>GitHub Actions templates: {templateAudits?.data?.filter(a => a.attributes.subject === "GithubActionWorkflowBuilder").length}</p>
         <p>Node.js templates: {templateAudits?.data?.filter(a => a.attributes.object === "Node.js").length}</p>
