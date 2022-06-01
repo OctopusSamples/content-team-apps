@@ -13,10 +13,11 @@ import {
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import Brightness3Icon from "@material-ui/icons/Brightness3";
 import ContentCopy from '@material-ui/icons/ContentCopy';
-import {FC, useContext} from "react";
+import {FC, useContext, useState} from "react";
 import {AppContext} from "../App";
-import {History, LocalHospital, PieChart, SettingsApplications, Share} from "@material-ui/icons";
+import {History, LocalHospital, Person, PieChart, SettingsApplications, Share} from "@material-ui/icons";
 import {useHistory} from "react-router-dom";
+import {getAccessToken} from "../utils/security";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -67,6 +68,8 @@ const Header: FC<HeaderProps> = ({
     const classes = useStyles();
     const context = useContext(AppContext);
     const history = useHistory();
+    const [accessToken] = useState<string | null>(getAccessToken());
+
     return (
         <AppBar
             position="relative"
@@ -89,6 +92,11 @@ const Header: FC<HeaderProps> = ({
                     </IconButton>
                 }
                 {context.developerMode && <div>
+                    {accessToken && <IconButton>
+                        <Tooltip title={"Logged In"} placement={"bottom"}>
+                            <Person/>
+                        </Tooltip>
+                    </IconButton>}
                     <IconButton onClick={() => history.push('/reports')}>
                         <Tooltip title={"Reports"} placement={"bottom"}>
                             <PieChart/>

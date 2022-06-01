@@ -14,6 +14,7 @@ import dotnetcore from './logos/dotnetcore.png';
 // constants
 import {useHistory} from "react-router-dom";
 import {AppContext} from "../App";
+import {getAccessToken} from "../utils/security";
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Home: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const classes = useStyles();
-    const {setCopyText, settings, generateTemplate} = useContext(AppContext);
+    const {setCopyText, settings, generateTemplate, partition} = useContext(AppContext);
 
     setCopyText("");
 
@@ -65,6 +66,8 @@ const Home: FC<{}> = (): ReactElement => {
     );
 
     const [error, setError] = useState("");
+    const [testPartitionRequired] = useState<boolean>((localStorage.getItem("testPartitionRequired") || "").toLowerCase() === "true");
+    const [accessToken] = useState<string | null>(getAccessToken());
 
     const returningFromLogin = new URLSearchParams(window.location.search).get('action') === "loggedin";
 
@@ -115,6 +118,20 @@ const Home: FC<{}> = (): ReactElement => {
         generateTemplate(url, history);
     }
 
+    function loginRequired() {
+        if (testPartitionRequired) {
+            if (!accessToken) {
+                return true;
+            }
+
+            if (partition !== "" && partition !== "main") {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     return (
         <>
             <Helmet>
@@ -148,8 +165,9 @@ const Home: FC<{}> = (): ReactElement => {
                                        variant={"outlined"}/>
                         </Grid>
                         <Grid item xs={2}>
-                            <Button style={{marginLeft: "1em"}} variant="contained"
-                                    onClick={handleClick}>{"Go"}</Button>
+                            {loginRequired()
+                                ? <Button style={{marginLeft: "1em"}} variant="contained" onClick={() => history.push('/settings')}>{"Login"}</Button>
+                                : <Button style={{marginLeft: "1em"}} variant="contained" onClick={handleClick}>{"Go"}</Button>}
                         </Grid>
                         {error !== "" &&
                         <Grid item xs={12} container={true} justifyContent="center">

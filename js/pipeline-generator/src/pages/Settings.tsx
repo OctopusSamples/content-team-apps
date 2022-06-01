@@ -5,6 +5,7 @@ import {AppContext} from "../App";
 import {styles} from "../utils/styles";
 import {useHistory} from "react-router-dom";
 import {getAccessToken, getTokenTimeLeft, login, logout} from "../utils/security";
+import {Checkbox} from "@mui/material";
 
 const Settings: FC<{}> = (): ReactElement => {
 
@@ -15,6 +16,7 @@ const Settings: FC<{}> = (): ReactElement => {
     const history = useHistory();
     const [partition, setPartition] = useState<string | null>(context.partition);
     const [accessToken, setAccessToken] = useState<string | null>(getAccessToken());
+    const [testPartitionRequired, setTestPartitionRequired] = useState<boolean>((localStorage.getItem("testPartitionRequired") || "").toLowerCase() === "true");
 
     return (
         <>
@@ -41,6 +43,23 @@ const Settings: FC<{}> = (): ReactElement => {
                         </p>
                         <p>
                             Set the data partition to "main" to work in default partition.
+                        </p>
+                    </span>
+                </Grid>
+                <Grid className={classes.cell} item md={2} sm={12} xs={12}>
+                    <FormLabel className={classes.label}>Require Testing Partition</FormLabel>
+                </Grid>
+                <Grid className={classes.cell} item md={10} sm={12} xs={12}>
+                    <Checkbox
+                        checked={testPartitionRequired}
+                        onChange={event => {
+                            setTestPartitionRequired(event.target.checked);
+                            localStorage.setItem("testPartitionRequired", event.target.checked.toString());
+                        }}/>
+                    <span className={classes.helpText}>
+                        <p>
+                            Enabling this setting forces you to log in and use a test partition to use the application. This
+                            ensures statistics will not be skewed by developer testing.
                         </p>
                     </span>
                 </Grid>
