@@ -17,8 +17,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 /**
  * A service used to write audit events to the audits microservice.
@@ -87,25 +89,28 @@ public class AuditGenerator {
       return Try.of(() -> accessToken);
     }
 
-    if (cognitoClientId.isPresent() && cognitoClientSecret.isPresent()) {
-      return Try.of(() -> cognitoClient.getToken(
-              "Basic " + Base64.getEncoder()
-                  .encodeToString(
-                      (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
-              GlobalConstants.CLIENT_CREDENTIALS,
-              cognitoClientId.get(),
-              GlobalConstants.AUDIT_SCOPE))
-          // We expect to see an access token. Fail if the value is empty.
-          .filter(oauth -> StringUtils.isNotEmpty(oauth.getAccessToken()))
-          // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
-          .mapTry(oauth -> {
-            accessToken = oauth.getAccessToken();
-            expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
-            return accessToken;
-          });
+    if (!(cognitoClientId.isPresent() && cognitoClientSecret.isPresent())) {
+      return Try.failure(new Exception("Cognito client ID or secret were not set"));
     }
 
-    return Try.failure(new Exception("Cognito client ID or secret were not set"));
+    return Try.of(() -> cognitoClient.getToken(
+            "Basic " + Base64.getEncoder()
+                .encodeToString(
+                    (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
+            GlobalConstants.CLIENT_CREDENTIALS,
+            cognitoClientId.get(),
+            GlobalConstants.AUDIT_SCOPE))
+        // We expect to see an access token. Fail if the value is empty.
+        .filter(oauth -> StringUtils.isNotEmpty(oauth.getAccessToken()))
+        // We can reuse a token for an hour, but we set the expiry 10 mins before just to be safe.
+        .mapTry(oauth -> {
+          accessToken = oauth.getAccessToken();
+          expiry = new Date().getTime() + ((long) oauth.getExpiresIn() * 1000) - (10 * 60 * 1000);
+          return accessToken;
+        })
+        // Log the failure, and try to log the response body
+        .onFailure(ClientWebApplicationException.class, e ->
+            Log.error(microserviceNameFeature.getMicroserviceName() + "-Cognito-LoginFailed "
+                + Try.of(() -> e.getResponse().readEntity(String.class)).getOrElse("")));
   }
-
 }
