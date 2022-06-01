@@ -124,7 +124,7 @@ const Home: FC<{}> = (): ReactElement => {
                 return true;
             }
 
-            if (partition !== "" && partition !== "main") {
+            if (partition === "" || partition === "main") {
                 return true;
             }
         }
