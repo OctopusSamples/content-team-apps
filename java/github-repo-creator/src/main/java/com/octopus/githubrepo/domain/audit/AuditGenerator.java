@@ -94,9 +94,7 @@ public class AuditGenerator {
     }
 
     return Try.of(() -> cognitoClient.getToken(
-            "Basic " + Base64.getEncoder()
-                .encodeToString(
-                    (cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
+            "Basic " + Base64.getEncoder().encodeToString((cognitoClientId.get() + ":" + cognitoClientSecret.get()).getBytes()),
             GlobalConstants.CLIENT_CREDENTIALS,
             cognitoClientId.get(),
             GlobalConstants.AUDIT_SCOPE))
@@ -109,8 +107,8 @@ public class AuditGenerator {
           return accessToken;
         })
         // Log the failure, and try to log the response body
-        .onFailure(ClientWebApplicationException.class, e ->
-            Log.error(microserviceNameFeature.getMicroserviceName() + "-Cognito-LoginFailed "
+        .onFailure(ClientWebApplicationException.class, e -> Log.error(
+            microserviceNameFeature.getMicroserviceName() + "-Cognito-LoginFailed "
                 + Try.of(() -> e.getResponse().readEntity(String.class)).getOrElse("")));
   }
 }
