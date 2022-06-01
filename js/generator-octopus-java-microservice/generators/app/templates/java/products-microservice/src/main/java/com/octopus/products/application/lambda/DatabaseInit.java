@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.products.infrastructure.utilities.LiquidbaseUpdater;
+import io.vavr.control.Try;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.inject.Inject;
@@ -16,7 +17,8 @@ import liquibase.exception.LiquibaseException;
 @Named("DatabaseInit")
 public class DatabaseInit implements RequestHandler<Map<String, Object>, APIGatewayProxyResponseEvent> {
 
-  @Inject LiquidbaseUpdater liquidbaseUpdater;
+  @Inject
+  LiquidbaseUpdater liquidbaseUpdater;
 
   @Override
   public APIGatewayProxyResponseEvent handleRequest(
@@ -28,11 +30,10 @@ public class DatabaseInit implements RequestHandler<Map<String, Object>, APIGate
       accessed though, so this logic repeats forever until the migration
       succeeds or the Lambda times out.
      */
-    try {
-      liquidbaseUpdater.update();
-      return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("ok");
-    } catch (final LiquibaseException | SQLException ex) {
-      return handleRequest(stringObjectMap, context);
-    }
+
+    return Try.run(() -> liquidbaseUpdater.update())
+        .map(v -> new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("ok"))
+        .recover(e -> handleRequest(stringObjectMap, context))
+        .get();
   }
 }

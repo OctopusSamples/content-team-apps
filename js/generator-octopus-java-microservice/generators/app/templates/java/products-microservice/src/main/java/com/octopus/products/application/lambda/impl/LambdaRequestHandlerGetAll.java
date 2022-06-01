@@ -14,6 +14,7 @@ import com.octopus.lambda.LambdaHttpValueExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestMatcher;
 import cz.jirutka.rsql.parser.RSQLParserException;
+import io.vavr.control.Try;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -52,49 +53,26 @@ public class LambdaRequestHandlerGetAll implements LambdaRequestHandler {
    * @return A populated response event, or an empty optional if this service did not handle the event.
    */
   @Override
-  public Optional<APIGatewayProxyResponseEvent> handleRequest(
-      APIGatewayProxyRequestEvent input) {
-    try {
-      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
-        return Optional.empty();
-      }
-
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(200)
-              .withBody(
-                  resourceHandler.getAll(
-                      lambdaHttpHeaderExtractor.getAllHeaders(
-                          input,
-                          Constants.DATA_PARTITION_HEADER),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.FILTER_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpValueExtractor.getQueryParam(
-                              input,
-                              Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(
-                              input,
-                              HttpHeaders.AUTHORIZATION)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(
-                              input,
-                              Constants.SERVICE_AUTHORIZATION_HEADER)
-                          .orElse(null))));
-
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final RSQLParserException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e));
+  public Optional<APIGatewayProxyResponseEvent> handleRequest(final APIGatewayProxyRequestEvent input) {
+    if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.GET_METHOD)) {
+      return Optional.empty();
     }
+
+    return Try.of(() -> Optional.of(
+            new ApiGatewayProxyResponseEventWithCors()
+                .withStatusCode(200)
+                .withBody(
+                    resourceHandler.getAll(
+                        lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+                        lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.FILTER_QUERY_PARAM).orElse(null),
+                        lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.PAGE_OFFSET_QUERY_PARAM).orElse(null),
+                        lambdaHttpValueExtractor.getQueryParam(input, Constants.JsonApi.PAGE_LIMIT_QUERY_PARAM).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null)))))
+        .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+        .recover(RSQLParserException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+        .onFailure(Throwable::printStackTrace)
+        .recover(e -> Optional.of(proxyResponseBuilder.buildError(e)))
+        .get();
   }
 }

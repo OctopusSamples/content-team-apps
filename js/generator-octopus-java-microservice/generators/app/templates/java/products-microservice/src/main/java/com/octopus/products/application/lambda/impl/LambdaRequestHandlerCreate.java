@@ -15,6 +15,7 @@ import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
+import io.vavr.control.Try;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -53,33 +54,25 @@ public class LambdaRequestHandlerCreate implements LambdaRequestHandler {
    * @return A populated response event, or an empty optional if this service did not handle the event.
    */
   @Override
-  public Optional<APIGatewayProxyResponseEvent> handleRequest(
-      APIGatewayProxyRequestEvent input) {
-    try {
-      if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.empty();
-      }
+  public Optional<APIGatewayProxyResponseEvent> handleRequest(final APIGatewayProxyRequestEvent input) {
 
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(201)
-              .withBody(
-                  resourceHandler.create(
-                      requestBodyExtractor.getBody(input),
-                      lambdaHttpHeaderExtractor.getAllHeaders(input,
-                          Constants.DATA_PARTITION_HEADER),
-                      lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                          .orElse(null),
-                      lambdaHttpHeaderExtractor.getFirstHeader(input,
-                          Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
-
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInputException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
+    if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      return Optional.empty();
     }
+
+    return Try.of(() -> Optional.of(
+            new ApiGatewayProxyResponseEventWithCors()
+                .withStatusCode(201)
+                .withBody(
+                    resourceHandler.create(
+                        requestBodyExtractor.getBody(input),
+                        lambdaHttpHeaderExtractor.getAllHeaders(input, Constants.DATA_PARTITION_HEADER),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null)))))
+        .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+        .recover(InvalidInputException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+        .onFailure(Throwable::printStackTrace)
+        .recover(e -> Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input))))
+        .get();
   }
 }

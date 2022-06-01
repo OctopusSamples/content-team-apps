@@ -47,8 +47,7 @@ public class HealthHandler {
             .build());
   }
 
-  private String respondWithHealth(final Health health)
-      throws DocumentSerializationException {
+  private String respondWithHealth(final Health health) throws DocumentSerializationException {
     final JSONAPIDocument<Health> document = new JSONAPIDocument<>(health);
     return new String(resourceConverter.writeDocument(document));
   }
