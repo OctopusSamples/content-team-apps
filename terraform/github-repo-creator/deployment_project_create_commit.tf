@@ -376,8 +376,6 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
                     COGNITO_POOL: !Ref CognitoPool
                     COGNITO_JWK: !Ref CognitoJwk
                     COGNITO_REQUIRED_GROUP: !Ref CognitoRequiredGroup
-                    COGNITO_CLIENT_SECRET: !Ref AuditClientSecret
-                    COGNITO_CLIENT_ID: !Ref AuditClientId
                 Description: !Sub '$${LambdaDescription} Proxy'
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
                 Handler: main
@@ -436,6 +434,8 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
                     REPO_POPULATOR: !Ref RepoPopulator
                     CLIENT_PRIVATE_KEY: !Ref ClientPrivateKey
                     LAMBDA_HANDLER: CreateGithubCommit
+                    COGNITO_CLIENT_SECRET: !Ref AuditClientSecret
+                    COGNITO_CLIENT_ID: !Ref AuditClientId
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
                 MemorySize: 1024
