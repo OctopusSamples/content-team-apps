@@ -155,32 +155,32 @@ public class ResourceHandler {
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
     return Try.of(() -> {
-          final Product product = repository.findOne(Integer.parseInt(id));
-          if (product != null
-              && (Constants.DEFAULT_PARTITION.equals(product.getDataPartition())
-              || StringUtils.equals(partition, product.getDataPartition()))) {
-            return respondWithResource(product);
-          }
-          throw new EntityNotFoundException();
-        })
-        // All exceptions, like NumberFormatException, translate to EntityNotFoundException
-        .getOrElseThrow(e -> new EntityNotFoundException());
+      final Product product = repository.findOne(Integer.parseInt(id));
+      if (product != null
+          && (Constants.DEFAULT_PARTITION.equals(product.getDataPartition())
+          || StringUtils.equals(partition, product.getDataPartition()))) {
+        return respondWithResource(product);
+      }
+      throw new EntityNotFoundException();
+    })
+    // All exceptions, like NumberFormatException, translate to EntityNotFoundException
+    .getOrElseThrow(e -> new EntityNotFoundException());
   }
 
   private Product getResourceFromDocument(final String document) {
     return Try.of(() -> {
-          final JSONAPIDocument<Product> resourceDocument = resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Product.class);
-          final Product product = resourceDocument.get();
-          /*
-           The ID of a resource is determined by the URL, while the partition comes froms
-           the headers. If either of these values was sent by the client, strip them out.
-          */
-          product.setId(null);
-          product.setDataPartition(null);
-          return product;
-        })
-        // Assume the exception relates to invalid input
-        .getOrElseThrow(e -> new InvalidInputException());
+      final JSONAPIDocument<Product> resourceDocument = resourceConverter.readDocument(document.getBytes(StandardCharsets.UTF_8), Product.class);
+      final Product product = resourceDocument.get();
+      /*
+       The ID of a resource is determined by the URL, while the partition comes froms
+       the headers. If either of these values was sent by the client, strip them out.
+      */
+      product.setId(null);
+      product.setDataPartition(null);
+      return product;
+    })
+    // Assume the exception relates to invalid input
+    .getOrElseThrow(e -> new InvalidInputException());
   }
 
   private String respondWithResource(final Product product)
