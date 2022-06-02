@@ -51,5 +51,35 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             }
         )
+
+        /*
+            npm publish will remove .gitignore files, but we need them in the resulting template. So each .gitignore file
+            has a copy called .gitignorefile, which is copied to the correct destination.
+            See https://github.com/Polymer/tools/issues/2324 and https://github.com/yeoman/generator/issues/812 for details.
+         */
+
+        this.fs.copyTpl(
+            this.templatePath('.gitignorefile'),
+            this.destinationPath(`.gitignore`),
+            null
+        );
+
+        this.fs.copyTpl(
+            this.templatePath('java/.gitignorefile'),
+            this.destinationPath(`java/.gitignore`),
+            null
+        );
+
+        this.fs.copyTpl(
+            this.templatePath('java/products-microservice/.gitignorefile'),
+            this.destinationPath(`java/products-microservice/.gitignore`),
+            null
+        );
+
+        this.fs.copyTpl(
+            this.templatePath('java/microservice-utils/.gitignorefile'),
+            this.destinationPath(`java/microservice-utils/.gitignore`),
+            null
+        );
     }
 };
