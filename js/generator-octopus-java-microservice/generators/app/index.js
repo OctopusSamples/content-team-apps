@@ -41,5 +41,15 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             }
         )
+
+        this.fs.copyTpl(
+            this.templatePath('.devcontainer/java/Dockerfile'),
+            this.destinationPath('.devcontainer/java/Dockerfile'),
+            {
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
+                aws_region: this.options["aws_region"]
+            }
+        )
     }
 };
