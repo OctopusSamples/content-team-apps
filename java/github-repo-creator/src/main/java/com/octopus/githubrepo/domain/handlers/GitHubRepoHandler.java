@@ -1,5 +1,7 @@
 package com.octopus.githubrepo.domain.handlers;
 
+import static com.google.common.io.Files.asCharSource;
+
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.base.Preconditions;
@@ -372,7 +374,7 @@ public class GitHubRepoHandler {
 
           treeBuilder = treeBuilder.add(
               relativePath,
-              com.google.common.io.Files.toByteArray(file),
+              getFileContents(file),
               fileIsExecutable(file));
         }
       }
@@ -398,6 +400,19 @@ public class GitHubRepoHandler {
 
   private boolean fileIsExecutable(final File file) {
     return "mvnw".equals(file.getName());
+  }
+
+  private byte[] getFileContents(final File file) throws IOException {
+    // Assume executable files must have linux line endings
+    if (fileIsExecutable(file)) {
+      return asCharSource(file, StandardCharsets.UTF_8)
+          .read()
+          .replaceAll("\\r\\n?", "\n")
+          .getBytes();
+    }
+
+    // Everything else is read as is
+    return com.google.common.io.Files.toByteArray(file);
   }
 
   private boolean pathHasIgnoreDirectory(final String path) {
