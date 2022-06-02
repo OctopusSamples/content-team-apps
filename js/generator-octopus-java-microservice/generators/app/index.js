@@ -19,7 +19,7 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             },
             null,
-            {globOptions: {ignore: ["**/target", "**/*.iml", "**/.idea"]}}
+            {globOptions: {ignore: ["**/target", "**/*.iml", "**/.idea"], dot: true}}
         );
 
         this.fs.copyTpl(

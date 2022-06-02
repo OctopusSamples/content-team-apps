@@ -57,9 +57,12 @@ locals {
   mainline_s3_bucket_stack = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
   api_gateway_stack = "AppBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
   product_stack = "AppBuilder-Product-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+  product_proxy_stack = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+  product_version_stack = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package = "products_lambda"
   reverse_proxy_package = "reverse-proxy"
   cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Backend Service\"}]"
+  cloudformation_transient_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Backend Service\"}]"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend" {
@@ -332,6 +335,230 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"}]"
+        "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Deploy Application Lambda Version"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Deploy Application Lambda Version"
+      notes          = "Stacks deploying Lambda versions must have unique names to ensure a new version is created each time. This step deploys a uniquely names stack creating a version of the Lambda deployed in the last step."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_transient_tags
+        "Octopus.Action.Aws.CloudFormationStackName" : local.product_version_stack
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          # This template creates a new lambda version for the application lambda created in the
+          # previous step. This template is created in a unique stack each time, and is cleaned
+          # up by Octopus once the API gateway no longer points to this version.
+          Parameters:
+            RestApi:
+              Type: String
+            LambdaDescription:
+              Type: String
+            ApplicationLambda:
+              Type: String
+          Resources:
+            LambdaVersion:
+              Type: 'AWS::Lambda::Version'
+              Properties:
+                FunctionName: !Ref ApplicationLambda
+                Description: !Ref LambdaDescription
+                ProvisionedConcurrencyConfig:
+                  ProvisionedConcurrentExecutions: 20
+            ApplicationLambdaPermissions:
+              Type: 'AWS::Lambda::Permission'
+              Properties:
+                FunctionName: !Ref LambdaVersion
+                Action: 'lambda:InvokeFunction'
+                Principal: apigateway.amazonaws.com
+                SourceArn: !Join
+                  - ''
+                  - - 'arn:'
+                    - !Ref 'AWS::Partition'
+                    - ':execute-api:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':'
+                    - !Ref RestApi
+                    - /*/*
+          Outputs:
+            LambdaVersion:
+              Description: The name of the Lambda version resource deployed by this template
+              Value: !Ref LambdaVersion
+            EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ApplicationLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda].Output.AwsOutputs[ApplicationLambda]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"ApplicationLambda\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda].Output.AwsOutputs[ApplicationLambda]}\"}]"
+        "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Deploy Reverse Proxy Lambda"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Deploy Reverse Proxy Lambda"
+      notes          = "To allow us to debug applications locally and deploy feature branches, each Lambda is exposed by a reverse proxy that can redirect requests to another Lambda or URL. This step deploys the reverse proxy."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.product_stack
+        "Octopus.Action.Aws.CloudFormationStackName" : local.product_proxy_stack
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          # This template creates the reverse proxy lambda, pointing it to the application lambda
+          # created in previous steps.
+          Parameters:
+            EnvironmentName:
+              Type: String
+              Default: '#{Octopus.Environment.Name}'
+            RestApi:
+              Type: String
+            ProxyLambdaS3Key:
+              Type: String
+            LambdaS3Bucket:
+              Type: String
+            LambdaName:
+              Type: String
+            LambdaDescription:
+              Type: String
+            CognitoRegion:
+              Type: String
+            CognitoPool:
+              Type: String
+            CognitoJwk:
+              Type: String
+            CognitoRequiredGroup:
+              Type: String
+            CognitoClientId:
+              Type: String
+            LambdaVersion:
+              Type: String
+          Resources:
+            AppLogGroupProxy:
+              Type: 'AWS::Logs::LogGroup'
+              Properties:
+                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
+                RetentionInDays: 14
+            IamRoleProxyLambdaExecution:
+              Type: 'AWS::IAM::Role'
+              Properties:
+                AssumeRolePolicyDocument:
+                  Version: 2012-10-17
+                  Statement:
+                    - Effect: Allow
+                      Principal:
+                        Service:
+                          - lambda.amazonaws.com
+                      Action:
+                        - 'sts:AssumeRole'
+                Policies:
+                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-policy'
+                    PolicyDocument:
+                      Version: 2012-10-17
+                      Statement:
+                        - Effect: Allow
+                          Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:CreateLogGroup'
+                            - 'logs:PutLogEvents'
+                          Resource:
+                            - !Sub >-
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
+                        - Effect: Allow
+                          Action:
+                            - 'lambda:InvokeFunction'
+                          Resource:
+                            - !Sub >-
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*
+                        - Effect: Allow
+                          Action:
+                            - 'lambda:InvokeFunction'
+                          Resource:
+                            - !Sub >-
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*:*
+                Path: /
+                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
+            ProxyLambdaPermissions:
+              Type: 'AWS::Lambda::Permission'
+              Properties:
+                FunctionName: !GetAtt
+                  - ProxyLambda
+                  - Arn
+                Action: 'lambda:InvokeFunction'
+                Principal: apigateway.amazonaws.com
+                SourceArn: !Join
+                  - ''
+                  - - 'arn:'
+                    - !Ref 'AWS::Partition'
+                    - ':execute-api:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':'
+                    - !Ref RestApi
+                    - /*/*
+            ProxyLambda:
+              Type: 'AWS::Lambda::Function'
+              Properties:
+                Code:
+                  S3Bucket: !Ref LambdaS3Bucket
+                  S3Key: !Ref ProxyLambdaS3Key
+                Environment:
+                  Variables:
+                    DEFAULT_LAMBDA: !Ref LambdaVersion
+                    COGNITO_REGION: !Ref CognitoRegion
+                    COGNITO_POOL: !Ref CognitoPool
+                    COGNITO_JWK: !Ref CognitoJwk
+                    COGNITO_REQUIRED_GROUP: !Ref CognitoRequiredGroup
+                Description: !Sub '$${LambdaDescription} Proxy'
+                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
+                Handler: main
+                MemorySize: 128
+                PackageType: Zip
+                Role: !GetAtt
+                  - IamRoleProxyLambdaExecution
+                  - Arn
+                Runtime: go1.x
+                Timeout: 600
+          Outputs:
+            ProxyLambda:
+              Description: The proxy lambda reference
+              Value: !Ref ProxyLambda
+            EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoClientId}\"},{\"ParameterKey\":\"LambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}\"}]"
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
