@@ -54,12 +54,13 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
 }
 
 locals {
-  mainline_s3_bucket_stack = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
-  api_gateway_stack = "AppBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
-  api_gateway_stage_stack = "AppBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
-  product_api_gateway_stack = "AppBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
-  product_stack = "AppBuilder-Product-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
-  product_proxy_stack = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+  # The environment name up to the first space and lowercase
+  fixed_environment = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+  mainline_s3_bucket_stack = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  api_gateway_stage_stack = "AppBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_api_gateway_stack = "AppBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_stack = "AppBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_proxy_stack = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package = "products_lambda"
