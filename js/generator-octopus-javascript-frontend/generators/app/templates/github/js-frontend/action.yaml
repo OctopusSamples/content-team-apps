@@ -137,6 +137,23 @@ runs:
       shell: bash
       working-directory: js/frontend
 
+    - name: Build and push static web package
+      run: |
+        if [[ -n "${{ inputs.image_tag }}" ]]
+        then
+          pushd build
+          zip ../javascript-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+          popd
+          octo push \
+            --package javascript-frontend.${{ steps.determine_version.outputs.semVer }}.zip \
+            --server ${{ inputs.octopus_server }} \
+            --apiKey ${{ inputs.octopus_apikey }} \
+            --space "${{ inputs.octopus_space }}" \
+            --overwrite-mode OverwriteExisting
+        fi
+      shell: bash
+      working-directory: java/products-microservice
+
     # The Docker image used to run Cypress tests is built and pushed.
     - name: Build, tag, and push postman image to Amazon ECR
       run: |
