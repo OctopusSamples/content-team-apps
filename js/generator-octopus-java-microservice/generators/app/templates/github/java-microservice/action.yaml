@@ -213,6 +213,22 @@ runs:
       shell: bash
       working-directory: java/products-microservice
 
+    - name: Build and push lambda package
+      run: |
+        if [[ -n "${{ inputs.image_tag }}" ]]
+        then
+          mvn package -Plambda -Pnative -DskipTests
+          mv target\function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip
+          octo push \
+            --package products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
+            --server ${{ inputs.octopus_server }} \
+            --apiKey ${{ inputs.octopus_apikey }} \
+            --space "${{ inputs.octopus_space }}" \
+            --overwrite-mode OverwriteExisting
+        fi
+      shell: bash
+      working-directory: java/products-microservice
+
     - name: Create a release
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >

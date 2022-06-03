@@ -63,7 +63,7 @@ jobs:
         # (as it needs to know things like lifecycles, feeds etc)
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
-          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+          || contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -84,7 +84,7 @@ jobs:
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'java')
-          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+          || contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -107,7 +107,7 @@ jobs:
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
           || contains(steps.changed-files.outputs.all_modified_files, 'js')
-          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+          || contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -125,11 +125,11 @@ jobs:
 
       - name: Create the ECR feed
         id: ecr_feed
-        # Rebuild if the feed project changes, or if the Kubernetes deployment project changes (as it need
+        # Rebuild if the feed project changes, or if the Lambda deployment project changes (as it need
         # to add the ECR feed to steps).
         if: >-
           contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
-          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+          || contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
         uses: ./github/ecr-feed
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -143,7 +143,7 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create Lambda Deployment Project
-        if: contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        if: contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
         uses: ./github/lambda-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
