@@ -1,0 +1,204 @@
+name: Lambda Deployment
+permissions:
+  contents: write
+'on':
+  workflow_dispatch: {}
+  push:
+    paths:
+      - '**/*'
+      - '!.github/badges/*'
+    branches-ignore:
+      - 'app-builder-update'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: nelonoel/branch-name@v1.0.1
+
+      # This action provides a way to determine what files were changed with the last push. This allows us to work around
+      # a bug in the Octopus terraform provider where resources often have to be deleted before they are reprocessed. For
+      # example, the deployment projects must be deleted before an attempt to apply the project templates, even if nothing
+      # has changed. Deleting projects is destructive though, as you lose the releases, so we only delete and reapply if
+      # the Terraform files have been changed.
+      # See https://github.community/t/is-it-possible-to-run-the-job-only-when-a-specific-file-changes/115484/9
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v20
+
+      - name: Show changed files
+        run: echo "${{steps.changed-files.outputs.all_modified_files}}"
+        shell: bash
+
+      # This main workflow file implements each stage through composable actions -
+      # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+      # This allows us to mix and match build and deployment steps, which is important for a platform engineering tool
+      # like the App Builder.
+
+      - name: Create Initial Space
+        id: shared_space
+        uses: ./github/shared-space
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space: "<%= octopus_space %>"
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
+      # The subsequent steps use the "if" property to try and limit which build steps are triggered in response
+      # to a change in the git repo. Typically, earlier steps build shared infrastructure that is consumed
+      # by later steps, so earlier steps are triggered with more changes.
+
+      - name: Create Shared Resources
+        id: shared_resources
+        # rebuild if any of the shared resources change, or if the kubernetes deployment project is updated
+        # (as it needs to know things like lifecycles, feeds etc)
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        uses: ./github/shared-infrastructure
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          github_username: ${{ github.actor }}
+          github_repo: ${{ github.repository }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+
+      - name: Create the Postman worker ECR repository
+        id: ecr_postman_resources
+        # rebuild if the ecr project changes, the java project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        uses: ./github/aws-ecr-<%= postman_repository %>
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= postman_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
+
+      - name: Create the Cypress worker ECR repository
+        id: ecr_cypress_resources
+        # rebuild if the ecr project changes, the javascript project is rebuilt (as it needs a repo to push to), or
+        # if the deployment project is rebuilt (as they need worker images to reference)
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'js')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        uses: ./github/aws-ecr-<%= postman_repository %>
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= cypress_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+          platform: "<%= platform %>"
+
+      - name: Create the ECR feed
+        id: ecr_feed
+        # Rebuild if the feed project changes, or if the Kubernetes deployment project changes (as it need
+        # to add the ECR feed to steps).
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
+          || contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        uses: ./github/ecr-feed
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          aws_ecr_repository_name: "<%= frontend_repository %>"
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+
+      - name: Create Lambda Deployment Project
+        if: contains(steps.changed-files.outputs.all_modified_files, 'kubernetes-deployment')
+        uses: ./github/lambda-deployment
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          octopus_dockerhub_feed_id: ${{ steps.shared_resources.outputs.octopus_dockerhub_feed_id }}
+          octopus_k8s_feed_id: ${{ steps.ecr_feed.outputs.ecr_feed_id }}
+          octopus_application_lifecycle_id: ${{ steps.shared_resources.outputs.application_lifecycle_id }}
+          octopus_infrastructure_lifecycle_id: ${{ steps.shared_resources.outputs.infrastructure_lifecycle_id }}
+          backend_docker_image: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_name }}
+          frontend_docker_image: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_name }}
+          postman_docker_image: ${{ steps.ecr_postman_resources.outputs.aws_ecr_repository_name }}
+          cypress_docker_image: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_name }}
+          octopus_library_variable_set_id: ${{ steps.shared_resources.outputs.octopus_library_variable_set_id }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          repository_owner: ${{ github.repository_owner }}
+          octopus_aws_account_id: ${{ steps.shared_resources.outputs.aws_account_id }}
+          terraform_bucket_suffix: ${{ secrets.TERRAFORM_BUCKET_SUFFIX }}
+          terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
+          github_repo: ${{ github.repository }}
+          github_repo_owner: ${{ github.repository_owner }}
+
+      - name: Build JavaScript Frontend
+        if: contains(steps.changed-files.outputs.all_modified_files, 'js')
+        uses: ./github/js-frontend
+        with:
+          image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
+          cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          run_number: ${{ github.run_number }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          github_repo: ${{ github.repository }}
+          github_token: ${{ github.token }}
+
+      - name: Build Java Microservice
+        if: contains(steps.changed-files.outputs.all_modified_files, 'java')
+        uses: ./github/java-microservice
+        with:
+          image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
+          postman_image_tag: ${{ steps.ecr_postman_resources.outputs.aws_ecr_repository_url }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          run_number: ${{ github.run_number }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          github_repo: ${{ github.repository }}
+          github_token: ${{ github.token }}

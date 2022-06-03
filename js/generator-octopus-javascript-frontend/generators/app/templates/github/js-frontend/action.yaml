@@ -128,7 +128,12 @@ runs:
     # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
-      run: docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+      run: |
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+          docker push ${{ inputs.image_tag }}
+        fi
       shell: bash
       working-directory: js/frontend
 

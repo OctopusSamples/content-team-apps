@@ -1,0 +1,1 @@
+This directory contains badges created as part of the GitHub Actions workflows.

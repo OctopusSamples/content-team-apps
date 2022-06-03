@@ -205,8 +205,11 @@ runs:
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
-        docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
+          docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        fi
       shell: bash
       working-directory: java/products-microservice
 
