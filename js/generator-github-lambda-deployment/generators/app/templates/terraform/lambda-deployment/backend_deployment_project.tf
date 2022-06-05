@@ -879,9 +879,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       ].id
       environments = [
         data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[
-        0
-        ].id
+        data.octopusdeploy_environments.production.environments[0].id
       ]
 
       properties = {
@@ -969,9 +967,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       ].id
       environments = [
         data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[
-        0
-        ].id
+        data.octopusdeploy_environments.production.environments[0].id
       ]
 
       properties = {
@@ -1060,9 +1056,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Clean up Lambda Versions"
       notes          = "Now that the API Gateway is pointing to the new Lambda versions, the old Lambda versions can be cleaned up."
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[
-      0
-      ].id
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
@@ -1099,9 +1093,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
-        data.octopusdeploy_environments.development.environments[
-        0
-        ].id,
+        data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
 
@@ -1111,7 +1103,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-                                  STAGE_URL=$(aws cloudformation \
+          STAGE_URL=$(aws cloudformation \
               describe-stacks \
               --stack-name "${local.api_gateway_stage_stack}" \
               --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
@@ -1140,9 +1132,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       script_syntax                      = "Bash"
       script_source                      = "Inline"
       run_on_server                      = true
-      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[
-      0
-      ].id
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       name         = "Check for Vulnerabilities"
       environments = [
         data.octopusdeploy_environments.development_security.environments[0].id,
