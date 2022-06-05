@@ -874,10 +874,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Update API Gateway"
       notes          = "This step attaches the reverse proxy version created in the previous step to the API Gateway, and creates an API Gateway deployment."
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[
-      0
-      ].id
-      environments = [
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
@@ -962,10 +960,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       name           = "Update Stage"
       notes          = "This step deploys the deployment created in the previous step, effectively exposing the new Lambdas to the public."
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[
-      0
-      ].id
-      environments = [
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
@@ -1057,7 +1053,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       notes          = "Now that the API Gateway is pointing to the new Lambda versions, the old Lambda versions can be cleaned up."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments = [
+      environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
@@ -1133,8 +1129,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       script_source                      = "Inline"
       run_on_server                      = true
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name         = "Check for Vulnerabilities"
-      environments = [
+      name                               = "Check for Vulnerabilities"
+      environments                       = [
         data.octopusdeploy_environments.development_security.environments[0].id,
         data.octopusdeploy_environments.production_security.environments[0].id
       ]
