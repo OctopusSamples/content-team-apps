@@ -7,12 +7,11 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
   rule {
     tag = ".+"
     action_package {
-      deployment_action = "Frontend WebApp"
-      package_reference = local.frontend_package_name
+      deployment_action = "Upload Frontend"
     }
     action_package {
       deployment_action = "Check for Vulnerabilities"
-      package_reference = "javascript-frontend-sbom"
+      package_reference = local.frontend_sbom_package_name
     }
   }
 }
@@ -26,12 +25,11 @@ resource "octopusdeploy_channel" "frontend_mainline" {
   rule {
     tag = "^$"
     action_package {
-      deployment_action = "Frontend WebApp"
-      package_reference = local.frontend_package_name
+      deployment_action = "Upload Frontend"
     }
     action_package {
       deployment_action = "Check for Vulnerabilities"
-      package_reference = "javascript-frontend-sbom"
+      package_reference = local.frontend_sbom_package_name
     }
   }
 }

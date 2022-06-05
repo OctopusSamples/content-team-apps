@@ -56,4 +56,109 @@ locals {
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
   project_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
 
+  step {
+    condition           = "Success"
+    name                = "Upload Lambda"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsUploadS3"
+      name           = "Upload Lambda"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      primary_package {
+        acquisition_location = "Server"
+        feed_id = var.octopus_built_in_feed_id
+        package_id = local.products_package
+        properties = {
+          "SelectionMode": "immediate"
+        }
+      }
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": var.aws_region
+        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+        "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+        "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS Account"
+        "Octopus.Action.Package.DownloadOnTentacle": "False"
+        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId": local.products_package
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Upload Lambda Proxy"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsUploadS3"
+      name           = "Upload Lambda Proxy"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      primary_package {
+        acquisition_location = "Server"
+        feed_id = var.octopus_built_in_feed_id
+        package_id = local.reverse_proxy_package
+        properties = {
+          "SelectionMode": "immediate"
+        }
+      }
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole": "False"
+        "Octopus.Action.Aws.Region": var.aws_region
+        "Octopus.Action.Aws.S3.BucketName": "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+        "Octopus.Action.Aws.S3.PackageOptions": "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
+        "Octopus.Action.Aws.S3.TargetMode": "EntirePackage"
+        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
+        "Octopus.Action.AwsAccount.Variable": "AWS Account"
+        "Octopus.Action.Package.DownloadOnTentacle": "False"
+        "Octopus.Action.Package.FeedId": var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId": local.reverse_proxy_package
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Check for Vulnerabilities"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Check for Vulnerabilities"
+      environments                       = [
+        data.octopusdeploy_environments.development_security.environments[0].id,
+        data.octopusdeploy_environments.production_security.environments[0].id
+      ]
+      package {
+        name                      = local.products_sbom_package
+        package_id                = local.products_sbom_package
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      script_body = local.vulnerability_scan
+    }
+  }
 }
