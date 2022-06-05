@@ -117,7 +117,7 @@ runs:
 
     - name: Build image
       uses: mamezou-tech/buildpacks-action@master
-      if: inputs.image_tag != ""
+      if: inputs.image_tag != ''
       with:
         image: '${{ inputs.image_tag }}'
         tag: '${{ steps.determine_version.outputs.semVer }}'
