@@ -55,19 +55,65 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
 
 locals {
   # The environment name up to the first space and lowercase
-  fixed_environment                     = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
-  mainline_s3_bucket_stack              = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  api_gateway_stage_stack               = "AppBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_api_gateway_stack             = "AppBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_stack                         = "AppBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_proxy_stack                   = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_version_stack                 = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
-  product_proxy_version_stack           = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
-  products_package                      = "products-lambda"
-  products_sbom_package                 = "products-microservice-sbom"
-  reverse_proxy_package                 = "reverse-proxy"
-  product_cloudformation_tags           = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Backend Service\"}]"
-  product_cloudformation_transient_tags = "[{\"key\":\"OctopusTransient\",\"value\":\"True\"},{\"key\":\"OctopusTenantId\",\"value\":\"#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}\"},{\"key\":\"OctopusStepId\",\"value\":\"#{Octopus.Step.Id}\"},{\"key\":\"OctopusRunbookRunId\",\"value\":\"#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}\"},{\"key\":\"OctopusDeploymentId\",\"value\":\"#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}\"},{\"key\":\"OctopusProjectId\",\"value\":\"#{Octopus.Project.Id}\"},{\"key\":\"OctopusEnvironmentId\",\"value\":\"#{Octopus.Environment.Id}\"},{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Backend Service\"}]"
+  fixed_environment           = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+  mainline_s3_bucket_stack    = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  api_gateway_stage_stack     = "AppBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_api_gateway_stack   = "AppBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_stack               = "AppBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_proxy_stack         = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
+  product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
+  products_package            = "products-lambda"
+  products_sbom_package       = "products-microservice-sbom"
+  reverse_proxy_package       = "reverse-proxy"
+  product_cloudformation_tags = jsonencode([
+    {
+      key : "Environment"
+      value : "#{Octopus.Environment.Name}"
+    },
+    {
+      key : "Deployment Project"
+      value : "Backend Service"
+    }
+  ])
+  product_cloudformation_transient_tags = jsonencode([
+    {
+      key : "OctopusTransient"
+      value : "True"
+    },
+    {
+      key : "OctopusTenantId"
+      value : "#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}"
+    },
+    {
+      key : "OctopusStepId"
+      value : "#{Octopus.Step.Id}"
+    },
+    {
+      key : "OctopusRunbookRunId"
+      value : "#{if Octopus.RunBookRun.Id}#{Octopus.RunBookRun.Id}#{/if}#{unless Octopus.RunBookRun.Id}none#{/unless}"
+    },
+    {
+      key : "OctopusDeploymentId"
+      value : "#{if Octopus.Deployment.Id}#{Octopus.Deployment.Id}#{/if}#{unless Octopus.Deployment.Id}none#{/unless}"
+    },
+    {
+      key : "OctopusProjectId"
+      value : "#{Octopus.Project.Id}"
+    },
+    {
+      key : "OctopusEnvironmentId"
+      value : "#{Octopus.Environment.Id}"
+    },
+    {
+      key : "Environment"
+      value : "#{Octopus.Environment.Name}"
+    },
+    {
+      key : "Deployment Project"
+      value : "Backend Service"
+    }
+  ])
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend" {
