@@ -205,7 +205,7 @@ runs:
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        if [[ -z "${{ inputs.image_tag }}" ]]
+        if [[ -n "${{ inputs.image_tag }}" ]]
         then
           docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
           docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
@@ -215,7 +215,7 @@ runs:
 
     - name: Build and push lambda package
       run: |
-        if [[ -n "${{ inputs.image_tag }}" ]]
+        if [[ -z "${{ inputs.image_tag }}" ]]
         then
           mvn package -Plambda -Pnative -DskipTests
           mv target\function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip

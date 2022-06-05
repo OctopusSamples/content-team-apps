@@ -117,6 +117,7 @@ runs:
 
     - name: Build image
       uses: mamezou-tech/buildpacks-action@master
+      if: inputs.image_tag != ""
       with:
         image: '${{ inputs.image_tag }}'
         tag: '${{ steps.determine_version.outputs.semVer }}'
@@ -129,7 +130,7 @@ runs:
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        if [[ -z "${{ inputs.image_tag }}" ]]
+        if [[ -n "${{ inputs.image_tag }}" ]]
         then
           docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
           docker push ${{ inputs.image_tag }}
@@ -139,7 +140,7 @@ runs:
 
     - name: Build and push static web package
       run: |
-        if [[ -n "${{ inputs.image_tag }}" ]]
+        if [[ -z "${{ inputs.image_tag }}" ]]
         then
           pushd build
           zip ../javascript-frontend.${{ steps.determine_version.outputs.semVer }}.zip

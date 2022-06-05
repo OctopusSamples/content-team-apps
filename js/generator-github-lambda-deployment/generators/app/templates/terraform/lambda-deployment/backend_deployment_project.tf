@@ -63,7 +63,7 @@ locals {
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
-  products_package            = "products-lambda"
+  products_package            = "products-microservice-lambda"
   products_sbom_package       = "products-microservice-sbom"
   reverse_proxy_package       = "reverse-proxy"
   product_cloudformation_tags = jsonencode([
