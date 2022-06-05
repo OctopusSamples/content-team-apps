@@ -56,11 +56,11 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
 locals {
   # The environment name up to the first space and lowercase
   fixed_environment           = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
-  mainline_s3_bucket_stack    = "AppBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  api_gateway_stage_stack     = "AppBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_api_gateway_stack   = "AppBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_stack               = "AppBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  product_proxy_stack         = "AppBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  mainline_s3_bucket_stack    = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  api_gateway_stage_stack     = "OctopusBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_api_gateway_stack   = "OctopusBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_stack               = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-lambda"
@@ -405,7 +405,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             ParameterKey : "LambdaS3Bucket"
             ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
           },
-          { ParameterKey : "LambdaName"ParameterValue : "#{Lambda.Name}" },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : local.product_proxy_stack
+          },
           {
             ParameterKey : "LambdaDescription"
             ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
@@ -432,7 +435,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             ParameterKey : "LambdaS3Bucket"
             ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
           },
-          { ParameterKey : "LambdaName"ParameterValue : "#{Lambda.Name}" },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : local.product_proxy_stack
+          },
           {
             ParameterKey : "LambdaDescription"
             ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
@@ -703,7 +709,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : "#{Lambda.Name}"
+            ParameterValue : local.product_proxy_stack
           },
           {
             ParameterKey : "LambdaDescription"
@@ -741,7 +747,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : "#{Lambda.Name}"
+            ParameterValue : local.product_proxy_stack
           },
           {
             ParameterKey : "LambdaDescription"
@@ -937,8 +943,42 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Description: The deployment id
               Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Reverse Proxy Lambda Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"ProxyLambdaVersion\",\"ParameterValue\":\"#{Octopus.Action[Deploy Reverse Proxy Lambda Version].Output.AwsOutputs[ProxyLambdaVersion]}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "ProxyLambdaVersion"
+            ParameterValue : "#{Octopus.Action[Deploy Reverse Proxy Lambda Version].Output.AwsOutputs[ProxyLambdaVersion]}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "ProxyLambdaVersion"
+            ParameterValue : "#{Octopus.Action[Deploy Reverse Proxy Lambda Version].Output.AwsOutputs[ProxyLambdaVersion]}"
+          }
+        ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
           "CAPABILITY_AUTO_EXPAND", "CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"
         ])
