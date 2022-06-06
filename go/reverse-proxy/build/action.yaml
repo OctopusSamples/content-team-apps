@@ -137,3 +137,9 @@ runs:
         docker push octopussamples/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
       shell: bash
       working-directory: go/reverse-proxy
+
+    - run: |
+        docker build -f Dockerfile-lambda . -t octopussamples/dumb-reverse-proxy-lambda:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+        docker push octopussamples/dumb-reverse-proxy-lambda:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy
