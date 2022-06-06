@@ -341,7 +341,82 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             LambdaDescription:
               Type: String
+            DBUsername:
+              Type: String
+            DBPassword:
+              Type: String
           Resources:
+            VPC:
+              Type: "AWS::EC2::VPC"
+              Properties:
+                CidrBlock: "10.0.0.0/16"
+                Tags:
+                - Key: "Name"
+                  Value: !Ref LambdaName
+            SubnetA:
+              Type: "AWS::EC2::Subnet"
+              Properties:
+                AvailabilityZone: !Select
+                  - 0
+                  - !GetAZs
+                    Ref: 'AWS::Region'
+                VpcId: !Ref "VPC"
+                CidrBlock: "10.0.0.0/24"
+            SubnetB:
+              Type: "AWS::EC2::Subnet"
+              Properties:
+                AvailabilityZone: !Select
+                  - 1
+                  - !GetAZs
+                    Ref: 'AWS::Region'
+                VpcId: !Ref "VPC"
+                CidrBlock: "10.0.1.0/24"
+            RouteTable:
+              Type: "AWS::EC2::RouteTable"
+              Properties:
+                VpcId: !Ref "VPC"
+            SubnetGroup:
+              Type: "AWS::RDS::DBSubnetGroup"
+              Properties:
+                DBSubnetGroupName: "subnetgroup"
+                DBSubnetGroupDescription: "Subnet Group"
+                SubnetIds:
+                - !Ref "SubnetA"
+                - !Ref "SubnetB"
+            InstanceSecurityGroup:
+              Type: "AWS::EC2::SecurityGroup"
+              Properties:
+                GroupName: "Example Security Group"
+                GroupDescription: "RDS traffic"
+                VpcId: !Ref "VPC"
+                SecurityGroupEgress:
+                - IpProtocol: "-1"
+                  CidrIp: "0.0.0.0/0"
+            InstanceSecurityGroupIngress:
+              Type: "AWS::EC2::SecurityGroupIngress"
+              DependsOn: "InstanceSecurityGroup"
+              Properties:
+                GroupId: !Ref "InstanceSecurityGroup"
+                IpProtocol: "tcp"
+                FromPort: "0"
+                ToPort: "65535"
+                SourceSecurityGroupId: !Ref "InstanceSecurityGroup"
+            RDSCluster:
+              Type: "AWS::RDS::DBCluster"
+              Properties:
+                DBSubnetGroupName: !Ref "SubnetGroup"
+                MasterUsername: !Ref "DBUsername"
+                MasterUserPassword: !Ref "DBPassword"
+                DatabaseName: "products"
+                Engine: "aurora-mysql"
+                EngineMode: "serverless"
+                VpcSecurityGroupIds:
+                - !Ref "InstanceSecurityGroup"
+                ScalingConfiguration:
+                  AutoPause: true
+                  MaxCapacity: 1
+                  MinCapacity: 1
+                  SecondsUntilAutoPause: 300
             AppLogGroup:
               Type: 'AWS::Logs::LogGroup'
               Properties:
@@ -372,6 +447,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                           Resource:
                             - !Sub >-
                               arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
+                        - Effect: Allow
+                          Action:
+                            - 'ec2:DescribeInstances'
+                            - 'ec2:CreateNetworkInterface'
+                            - 'ec2:AttachNetworkInterface'
+                            - 'ec2:DeleteNetworkInterface'
+                            - 'ec2:DescribeNetworkInterfaces'
+                          Resource: "*"
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
             ApplicationLambda:
@@ -390,6 +473,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                   - Arn
                 Runtime: java11
                 Timeout: 600
+                VpcConfig:
+                  SecurityGroupIds:
+                    - !Ref "InstanceSecurityGroup"
+                  SubnetIds:
+                    - !Ref "SubnetA"
+                    - !Ref "SubnetB"
           Outputs:
             ApplicationLambda:
               Description: The Lambda ref
@@ -423,6 +512,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           {
             ParameterKey : "LambdaDescription"
             ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "DBUsername"
+            ParameterValue : "productadmin"
+          },
+          {
+            ParameterKey : "DBPassword"
+            ParameterValue : "Password01!"
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
@@ -453,6 +550,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           {
             ParameterKey : "LambdaDescription"
             ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "DBUsername"
+            ParameterValue : "productadmin"
+          },
+          {
+            ParameterKey : "DBPassword"
+            ParameterValue : "Password01!"
           }
         ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
@@ -676,6 +781,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 Environment:
                   Variables:
                     DEFAULT_LAMBDA: !Ref LambdaVersion
+                    COGNITO_AUTHORIZATION_REQUIRED: !!str "false"
                 Description: !Sub '$${LambdaDescription} Proxy'
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
                 Handler: main
