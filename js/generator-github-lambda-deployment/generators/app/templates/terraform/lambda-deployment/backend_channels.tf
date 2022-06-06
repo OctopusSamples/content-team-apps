@@ -34,5 +34,8 @@ resource "octopusdeploy_channel" "backend_mainline" {
       deployment_action = "Check for Vulnerabilities"
       package_reference = local.products_sbom_package
     }
+    action_package {
+      deployment_action = "Upload Lambda Proxy"
+    }
   }
 }

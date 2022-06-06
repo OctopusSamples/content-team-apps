@@ -61,6 +61,7 @@ locals {
   product_api_gateway_stack   = "OctopusBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_stack               = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  product_lambda_name         = "Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-microservice-lambda"
@@ -69,7 +70,7 @@ locals {
   product_cloudformation_tags = jsonencode([
     {
       key : "Environment"
-      value : "#{Octopus.Environment.Name}"
+      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
     },
     {
       key : "DeploymentProject"
@@ -107,7 +108,7 @@ locals {
     },
     {
       key : "Environment"
-      value : "#{Octopus.Environment.Name}"
+      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
     },
     {
       key : "DeploymentProject"
@@ -254,6 +255,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
           API_RESOURCE=$(aws cloudformation \
               describe-stacks \
               --stack-name ${local.api_gateway_stack} \
@@ -368,8 +381,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 Code:
                   S3Bucket: !Ref LambdaS3Bucket
                   S3Key: !Ref LambdaS3Key
-                Environment:
-                  Variables:
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
                 MemorySize: 1024
@@ -387,7 +398,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -407,7 +418,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : local.product_proxy_stack
+            ParameterValue : local.product_lambda_name
           },
           {
             ParameterKey : "LambdaDescription"
@@ -417,7 +428,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -437,7 +448,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : local.product_proxy_stack
+            ParameterValue : local.product_lambda_name
           },
           {
             ParameterKey : "LambdaDescription"
@@ -683,7 +694,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -707,7 +718,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : local.product_proxy_stack
+            ParameterValue : local.product_lambda_name
           },
           {
             ParameterKey : "LambdaDescription"
@@ -721,7 +732,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -745,7 +756,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : local.product_proxy_stack
+            ParameterValue : local.product_lambda_name
           },
           {
             ParameterKey : "LambdaDescription"
@@ -805,8 +816,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Properties:
                 FunctionName: !Ref ProxyLambda
                 Description: !Ref LambdaDescription
-                ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 1
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -896,7 +905,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name}'
+              Default: '#{Octopus.Environment.Name | Replace " .*" "" | ToLower}'
             RestApi:
               Type: String
             ResourceId:
@@ -944,7 +953,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -962,7 +971,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "RestApi"
@@ -1014,7 +1023,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name}'
+              Default: '#{Octopus.Environment.Name | Replace " .*" "" | ToLower}'
             DeploymentId:
               Type: String
               Default: 'Deployment#{DeploymentId}'
@@ -1047,7 +1056,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "DeploymentId"
@@ -1061,7 +1070,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
           },
           {
             ParameterKey : "DeploymentId"
@@ -1102,6 +1111,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
           OLD_STACKS=$(aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusTransient` && Value == `True`] && Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}`]].{StackName: StackName}' --output text)
 
           if [[ -n "$${OLD_STACKS}" ]]; then
@@ -1137,6 +1158,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
           STAGE_URL=$(aws cloudformation \
               describe-stacks \
               --stack-name "${local.api_gateway_stage_stack}" \
