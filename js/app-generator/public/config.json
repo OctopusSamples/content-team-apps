@@ -9,9 +9,9 @@
   "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
   "githubCommitEndpoint": "http://localhost:13000/api/githubcommit",
   "octoSpaceEndpoint": "http://localhost:8083/api/octopusspace",
-  "githubRepoEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/api/githubrepo",
+  "githubRepoEndpoint": "https://octopusworkflowbuilder-test.octopus.com/api/githubrepo",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
-  "healthEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/health",
+  "healthEndpoint": "https://octopusworkflowbuilder-test.octopus.com//health",
   "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
   "google": {
     "tag": ""
