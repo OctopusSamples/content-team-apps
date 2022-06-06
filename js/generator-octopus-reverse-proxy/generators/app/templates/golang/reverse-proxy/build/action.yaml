@@ -1,0 +1,145 @@
+name: 'Build'
+description: 'Build Go App'
+inputs:
+  github_token:
+    description: The github token
+    required: true
+  github_user:
+    description: The github username
+    required: true
+  aws_access_key:
+    description: The aws access key
+    required: true
+  aws_secret_key:
+    description: The aws secret key
+    required: true
+  dockerhub_username:
+    required: true
+    description: The DockerHub username
+  dockerhub_password:
+    required: true
+    description: The DockerHub password
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_password }}
+
+    - name: Creating a prerelease from the branch
+      run: |
+        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+      shell: bash
+
+    - run: go install honnef.co/go/tools/cmd/staticcheck@latest
+      shell: bash
+
+    # https://github.com/CycloneDX/cyclonedx-gomod
+    - run: go install github.com/CycloneDX/cyclonedx-gomod@v1.0.0
+      shell: bash
+
+    - run: staticcheck ./...
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: go get ./...
+      shell: bash
+      working-directory: go/reverse-proxy
+      
+    - run: go test ./...
+      shell: bash
+      working-directory: go/reverse-proxy
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+        AWS_REGION: us-west-1
+        TEST_LAMBDA: Development-hello-world
+        TEST_SQS: https://sqs.us-west-1.amazonaws.com/720766170633/Development-integrationtest
+        COGNITO_AUTHORIZATION_REQUIRED: false
+
+    - run: cyclonedx-gomod app -main cmd/lambda -output cyclonedx.bom.xml
+      shell: bash
+      working-directory: go/reverse-proxy
+      env:
+        GOOS: linux
+        GOARCH: arm64
+
+    - run: zip function-sbom.zip cyclonedx.bom.xml
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: go build cmd/lambda/main.go
+      shell: bash
+      working-directory: go/reverse-proxy
+      env:
+        GOOS: linux
+        GOARCH: arm64
+
+    - run: zip function-arm64.zip main
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: go build cmd/lambda/main.go
+      shell: bash
+      working-directory: go/reverse-proxy
+      env:
+        GOOS: linux
+        GOARCH: amd64
+
+    - run: zip function-amd64.zip main
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: >
+        mvn deploy:deploy-file
+        -DrepositoryId=github
+        -Dfile=function-amd64.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus
+        -DartifactId=reverse-proxy
+        -Dversion=0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: >
+        mvn deploy:deploy-file
+        -DrepositoryId=github
+        -Dfile=function-arm64.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus
+        -DartifactId=reverse-proxy-arm
+        -Dversion=0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: >
+        mvn deploy:deploy-file
+        -DrepositoryId=github
+        -Dfile=function-sbom.zip
+        -Durl="https://${{ inputs.github_user }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}"
+        -DgroupId=com.octopus
+        -DartifactId=reverse-proxy-sbom
+        -Dversion=0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: |
+        docker build . -t octopussamples/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+        docker push octopussamples/dumb-reverse-proxy:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy
+
+    - run: |
+        docker build -f Dockerfile-lambda . -t octopussamples/dumb-reverse-proxy-lambda:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+        docker push octopussamples/dumb-reverse-proxy-lambda:0.1.${{ github.run_number }}${{ env.PRERELEASE  }}
+      shell: bash
+      working-directory: go/reverse-proxy

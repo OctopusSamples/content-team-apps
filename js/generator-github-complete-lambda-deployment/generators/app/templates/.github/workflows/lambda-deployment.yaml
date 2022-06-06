@@ -169,6 +169,21 @@ jobs:
           github_repo: ${{ github.repository }}
           github_repo_owner: ${{ github.repository_owner }}
 
+      - name: Build Reverse Proxy
+        if: contains(steps.changed-files.outputs.all_modified_files, 'golang')
+        uses: ./github/golang-reverse-proxy
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "<%= aws_region %>"
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ steps.shared_space.outputs.octopus_space_id }}
+          run_number: ${{ github.run_number }}
+          octopus_space: ${{ steps.shared_space.outputs.octopus_space_name }}
+          github_repo: ${{ github.repository }}
+          github_token: ${{ github.token }}
+
       - name: Build JavaScript Frontend
         if: contains(steps.changed-files.outputs.all_modified_files, 'js')
         uses: ./github/js-frontend

@@ -65,15 +65,15 @@ locals {
   product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-microservice-lambda"
   products_sbom_package       = "products-microservice-sbom"
-  reverse_proxy_package       = "reverse-proxy"
+  reverse_proxy_package       = "reverse-proxy-lambda"
   product_cloudformation_tags = jsonencode([
     {
       key : "Environment"
       value : "#{Octopus.Environment.Name}"
     },
     {
-      key : "Deployment Project"
-      value : "Backend Service"
+      key : "DeploymentProject"
+      value : "Backend_Service"
     }
   ])
   product_cloudformation_transient_tags = jsonencode([
@@ -110,8 +110,8 @@ locals {
       value : "#{Octopus.Environment.Name}"
     },
     {
-      key : "Deployment Project"
-      value : "Backend Service"
+      key : "DeploymentProject"
+      value : "Backend_Service"
     }
   ])
 }
@@ -492,8 +492,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Properties:
                 FunctionName: !Ref ApplicationLambda
                 Description: !Ref LambdaDescription
-                ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 1
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:

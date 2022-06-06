@@ -33,8 +33,8 @@ resource "octopusdeploy_variable" "aws_account_deploy_infrastructure_project" {
 }
 
 locals {
-  api_gateway_stack = "AppBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
-  api_gateway_cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"API Gateway\"}]"
+  api_gateway_stack = "OctopusBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+  api_gateway_cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"DeploymentProject\",\"value\":\"API_Gateway\"}]"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_cluster" {
