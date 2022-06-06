@@ -186,6 +186,21 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_templategenera
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "https://octopusworkflowbuilder-test.octopus.com"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_externalservice_templategenerator_prod" {
+  name = "ExternalService.TemplateGenerator"
+  type = "String"
+  description = "The URL of the template generation service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator" {
@@ -195,6 +210,21 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = "https://octopusworkflowbuilder-test.octopus.com"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator_prod" {
+  name = "ExternalService.RepoPopulator"
+  type = "String"
+  description = "The URL of the repo population service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_production" {
