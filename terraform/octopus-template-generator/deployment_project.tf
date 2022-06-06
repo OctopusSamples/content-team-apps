@@ -64,7 +64,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
-      properties     = {
+      properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy Octopus Service Account Creator\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
@@ -482,8 +482,114 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
               Description: The Lambda description
               Value: !Ref LambdaDescription
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"OctopusDisableTemplateGeneration\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"OctopusDisableTemplateGeneration\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.Name}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "LambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "LambdaS3Bucket"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+          },
+          {
+            ParameterKey : "OctopusDisableTemplateGeneration"
+            ParameterValue : "#{Service.Disable}"
+          },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : "#{Lambda.Name}"
+          },
+          {
+            ParameterKey : "LambdaDescription"
+            ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "CognitoPool"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          }
+          {
+            ParameterKey : "CognitoJwk"
+            ParameterValue : "#{Cognito.JWK}"
+          },
+          {
+            ParameterKey : "CognitoRequiredGroup"
+            ParameterValue : "#{Cognito.RequiredGroup}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          },
+          {
+            ParameterKey : "ProxyLambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "LambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "LambdaS3Bucket"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+          },
+          {
+            ParameterKey : "OctopusDisableTemplateGeneration"
+            ParameterValue : "#{Service.Disable}"
+          },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : "#{Lambda.Name}"
+          },
+          {
+            ParameterKey : "LambdaDescription"
+            ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "CognitoPool"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          }
+          {
+            ParameterKey : "CognitoJwk"
+            ParameterValue : "#{Cognito.JWK}"
+          },
+          {
+            ParameterKey : "CognitoRequiredGroup"
+            ParameterValue : "#{Cognito.RequiredGroup}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          },
+          {
+            ParameterKey : "ProxyLambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip"
+          }
+        ])
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"

@@ -493,7 +493,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 FunctionName: !Ref ApplicationLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 1
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -808,7 +808,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 FunctionName: !Ref ProxyLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 1
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
