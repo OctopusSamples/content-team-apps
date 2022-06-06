@@ -457,6 +457,37 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                           Resource: "*"
                 Path: /
                 RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+            MigrationLambda:
+              Type: 'AWS::Lambda::Function'
+              Properties:
+                Description: !Ref LambdaDescription
+                Code:
+                  S3Bucket: !Ref LambdaS3Bucket
+                  S3Key: !Ref LambdaS3Key
+                Environment:
+                  Variables:
+                    DATABASE_HOSTNAME: !GetAtt
+                    - RDSCluster
+                    - Endpoint.Address
+                    DATABASE_USERNAME: !Ref "DBUsername"
+                    DATABASE_PASSWORD: !Ref "DBPassword"
+                    MIGRATE_AT_START: !!str "false"
+                    LAMBDA_NAME: "DatabaseInit"
+                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-DBMigration'
+                Handler: not.used.in.provided.runtime
+                MemorySize: 256
+                PackageType: Zip
+                Role: !GetAtt
+                  - IamRoleProxyLambdaExecution
+                  - Arn
+                Runtime: provided
+                Timeout: 600
+                VpcConfig:
+                  SecurityGroupIds:
+                    - !Ref "InstanceSecurityGroup"
+                  SubnetIds:
+                    - !Ref "SubnetA"
+                    - !Ref "SubnetB"
             ApplicationLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
@@ -464,14 +495,22 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 Code:
                   S3Bucket: !Ref LambdaS3Bucket
                   S3Key: !Ref LambdaS3Key
+                Environment:
+                  Variables:
+                    DATABASE_HOSTNAME: !GetAtt
+                    - RDSCluster
+                    - Endpoint.Address
+                    DATABASE_USERNAME: !Ref "DBUsername"
+                    DATABASE_PASSWORD: !Ref "DBPassword"
+                    MIGRATE_AT_START: !!str "false"
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
-                Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 1024
+                Handler: not.used.in.provided.runtime
+                MemorySize: 256
                 PackageType: Zip
                 Role: !GetAtt
-                  - IamRoleLambdaExecution
+                  - IamRoleProxyLambdaExecution
                   - Arn
-                Runtime: java11
+                Runtime: provided
                 Timeout: 600
                 VpcConfig:
                   SecurityGroupIds:
@@ -568,6 +607,51 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Run Database Migrations"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Run Database Migrations"
+      notes          = "Run the Lambda that performs database migrations."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
+          aws lambda invoke \
+            --function-name '#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-${local.product_lambda_name}-DBMigration' \
+            --payload '{}' \
+            response.json
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }

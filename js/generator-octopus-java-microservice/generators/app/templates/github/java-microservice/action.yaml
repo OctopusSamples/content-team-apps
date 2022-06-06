@@ -217,7 +217,7 @@ runs:
       run: |
         if [[ -z "${{ inputs.image_tag }}" ]]
         then
-          ./mvnw --batch-mode package -P "lambda,native" -DskipTests
+          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas
           ls -la target
           mv target/function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip
           octo push \
