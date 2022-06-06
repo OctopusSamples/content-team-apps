@@ -497,6 +497,7 @@ public class GitHubRepoHandler {
                       + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance with the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs).\n"
                       + "* `java`: The sample Java application.\n"
                       + "* `js`: The sample JavaScript application.\n"
+                      + "* `golang`: The sample Go application.\n"
                       + "## Network Diagram\n"
                       + "![Network Diagram](/images/diagram.png)\n"
                       + "## Rerunning Octopus Builder\n"
