@@ -453,7 +453,7 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
                 FunctionName: !Ref ApplicationLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 5
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:

@@ -51,8 +51,8 @@ resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
 
 
 locals {
-  frontend_package_name        = "frontend-webapp"
-  frontend_sbom_package_name   = "frontend-webapp-sbom"
+  frontend_package_name        = "javascript-frontend"
+  frontend_sbom_package_name   = "javascript-frontend-sbom"
   frontend_cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Frontend WebApp\"}]"
 }
 
