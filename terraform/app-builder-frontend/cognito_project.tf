@@ -12,7 +12,10 @@ resource "octopusdeploy_project" "cognito_project" {
   project_group_id                     = octopusdeploy_project_group.appbuilder_frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
-  included_library_variable_sets       = [octopusdeploy_library_variable_set.frontend_library_variable_set.id, var.cognito_library_variable_set_id, var.content_team_library_variable_set_id]
+  included_library_variable_sets       = [
+    octopusdeploy_library_variable_set.frontend_library_variable_set.id,
+    var.cognito_library_variable_set_id, var.content_team_library_variable_set_id
+  ]
 
   connectivity_policy {
     allow_deployments_to_no_targets = false
@@ -26,21 +29,21 @@ output "cognito_project_id" {
 }
 
 resource "octopusdeploy_variable" "cognito_debug_variable" {
-  name = "OctopusPrintVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.cognito_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.cognito_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_variable" "cognito_debug_evaluated_variable" {
-  name = "OctopusPrintEvaluatedVariables"
-  type = "String"
-  description = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
+  name         = "OctopusPrintEvaluatedVariables"
+  type         = "String"
+  description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id = octopusdeploy_project.cognito_project.id
-  value = "False"
+  owner_id     = octopusdeploy_project.cognito_project.id
+  value        = "False"
 }
 
 resource "octopusdeploy_deployment_process" "cognito_project" {
@@ -55,14 +58,16 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
       name           = "Get Stack Outputs"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
-        "Octopus.Action.Script.ScriptBody": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
           COGNITO_POOL_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name #{CloudFormation.Cognito} \
@@ -79,9 +84,9 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
           echo "REST API ID: $${REST_API_ID}"
           set_octopusvariable "RestApiID" $${REST_API_ID}
         EOT
-        "Octopus.Action.Script.ScriptSource": "Inline"
-        "Octopus.Action.Script.Syntax": "Bash"
-        "OctopusUseBundledTooling": "False"
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
@@ -95,13 +100,15 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
       name           = "Deploy Cognito User Pool"
       run_on_server  = true
       worker_pool_id = var.octopus_worker_pool_id
-      environments = [var.octopus_production_environment_id, var.octopus_development_environment_id]
+      environments   = [
+        var.octopus_production_environment_id, var.octopus_development_environment_id
+      ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"main\"}]"
-        "Octopus.Action.Aws.CloudFormationStackName": "#{CloudFormation.CognitoUserPool}"
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy App Builder Frontend\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"},{\"key\":\"Branch\",\"value\":\"main\"}]"
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.CognitoUserPool}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           AWSTemplateFormatVersion: "2010-09-09"
           Parameters:
             CognitoPoolId:
@@ -137,13 +144,47 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
               Value: !Sub https://$${CognitoDomain}.auth.$${CognitoRegion}.amazoncognito.com/login?client_id=$${UserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=$${CallbackUrl}
               Description: The hosted UI URL
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://#{Octopus.Action[Get Stack Outputs].Output.RestApiID}.execute-api.#{AWS.Region}.amazonaws.com/#{Octopus.Environment.Name}/\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[{\"ParameterKey\":\"CognitoPoolId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CallbackUrl\",\"ParameterValue\":\"https://#{Octopus.Action[Get Stack Outputs].Output.RestApiID}.execute-api.#{AWS.Region}.amazonaws.com/#{Octopus.Environment.Name}/\"},{\"ParameterKey\":\"CognitoDomain\",\"ParameterValue\":\"#{Cognito.Domain}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"}]"
-        "Octopus.Action.Aws.Region": "#{AWS.Region}"
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS.Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "CognitoPoolId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          },
+          {
+            ParameterKey : "CallbackUrl"
+            ParameterValue : "https://octopusworkflowbuilder-test.octopus.com/"
+          },
+          {
+            ParameterKey : "CognitoDomain"
+            ParameterValue : "#{Cognito.Domain}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "CognitoPoolId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          },
+          {
+            ParameterKey : "CallbackUrl"
+            ParameterValue : "https://octopusworkflowbuilder-test.octopus.com/"
+          },
+          {
+            ParameterKey : "CognitoDomain"
+            ParameterValue : "#{Cognito.Domain}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          }
+        ])
+        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
       }
     }
   }
