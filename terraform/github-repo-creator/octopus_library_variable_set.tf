@@ -185,7 +185,7 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_templategenera
   description = "The URL of the template generation service."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
+  value = "https://octopusworkflowbuilder-test.octopus.com"
 }
 
 resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator" {
@@ -194,7 +194,7 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator
   description = "The URL of the repo population service."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
+  value = "https://octopusworkflowbuilder-test.octopus.com"
 }
 
 resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_production" {
