@@ -518,7 +518,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           {
             ParameterKey : "CognitoPool"
             ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
-          }
+          },
           {
             ParameterKey : "CognitoJwk"
             ParameterValue : "#{Cognito.JWK}"
@@ -572,7 +572,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           {
             ParameterKey : "CognitoPool"
             ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
-          }
+          },
           {
             ParameterKey : "CognitoJwk"
             ParameterValue : "#{Cognito.JWK}"

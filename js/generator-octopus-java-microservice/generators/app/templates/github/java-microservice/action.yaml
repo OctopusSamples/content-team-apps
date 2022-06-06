@@ -217,7 +217,8 @@ runs:
       run: |
         if [[ -z "${{ inputs.image_tag }}" ]]
         then
-          mvn package -P "lambda,native" -DskipTests
+          mvn --batch-mode package -P "lambda,native" -DskipTests
+          ls -la target
           mv target/function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip
           octo push \
             --package products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
