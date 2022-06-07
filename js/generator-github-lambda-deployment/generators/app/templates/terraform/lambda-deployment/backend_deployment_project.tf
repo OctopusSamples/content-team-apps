@@ -1370,7 +1370,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           set_octopusvariable "StageURL" $${STAGE_URL}
 
-          write_highlight "Open [$${STAGE_URL}/api/products](http://$${STAGE_URL}/api/products) to view the backend API."
+          write_highlight "Open [$${STAGE_URL}/api/products]($${STAGE_URL}/api/products) to view the backend API."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
