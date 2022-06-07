@@ -50,16 +50,47 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_featurebranch_proj
 }
 
 locals {
-  backend_dns_branch_name                = "#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   # Subnet group names are lowercase
-  featurebranch_subnetgroup_product_name = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
-  featurebranch_s3_bucket_stack          = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
-  featurebranch_product_stack            = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
+  featurebranch_subnetgroup_product_name = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
+  featurebranch_s3_bucket_stack          = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
+  featurebranch_product_stack            = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
   project_id = octopusdeploy_project.deploy_backend_featurebranch_project.id
 
+  step {
+    condition           = "Success"
+    name                = "Get Stack Outputs"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stack Outputs"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          BRANCH_NAME="#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Replace "\..*" "" | ToLower}"
+          set_octopusvariable "BranchName" $${BRANCH_NAME}
+
+          echo "Branch Name: $${BRANCH_NAME}"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
   step {
     condition           = "Success"
     name                = "Create S3 bucket"
@@ -385,7 +416,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : "${local.product_lambda_name}-${local.backend_dns_branch_name}"
+            ParameterValue : "${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
           },
           {
             ParameterKey : "LambdaDescription"
@@ -427,7 +458,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           },
           {
             ParameterKey : "LambdaName"
-            ParameterValue : "${local.product_lambda_name}-${local.backend_dns_branch_name}"
+            ParameterValue : "${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
           },
           {
             ParameterKey : "LambdaDescription"
@@ -492,7 +523,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           echo "##octopus[stdout-default]"
 
           aws lambda invoke \
-            --function-name '${local.product_lambda_name}-${local.backend_dns_branch_name}-DBMigration' \
+            --function-name '${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}-DBMigration' \
             --payload '{}' \
             response.json
         EOT
@@ -525,7 +556,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           echo "Access this feature branch by setting the Routing header to:"
-          echo "route[/api/products:GET]=lambda[#{Octopus.Environment.Name | Replace " .*" ""}-${local.product_lambda_name}-${local.backend_dns_branch_name}];route[/api/products/**:GET]=path[/api/products:GET]"
+          echo "route[/api/products:GET]=lambda[#{Octopus.Environment.Name | Replace " .*" ""}-${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}];route[/api/products/**:GET]=path[/api/products:GET]"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
