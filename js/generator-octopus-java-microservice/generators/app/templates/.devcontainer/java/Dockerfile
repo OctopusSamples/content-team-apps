@@ -23,3 +23,8 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+
+RUN cd /opt \
+    curl -o graalvm-ce-java17-linux-amd64.tar.gz -L https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.1.0/graalvm-ce-java17-linux-amd64-22.1.0.tar.gz \
+    tar -xzf graalvm-ce-java17-linux-amd64.tar.gz
+ENV GRAALVM_HOME=/opt/graalvm-ce-java17-22.1.0
