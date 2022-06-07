@@ -556,7 +556,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           echo "Access this feature branch by setting the Routing header to:"
-          echo "route[/api/products:GET]=lambda[#{Octopus.Environment.Name | Replace " .*" ""}-${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}];route[/api/products/**:GET]=path[/api/products:GET]"
+          echo "route[/api/products:GET]=lambda[${local.product_lambda_name}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}];route[/api/products/**:GET]=path[/api/products:GET]"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
