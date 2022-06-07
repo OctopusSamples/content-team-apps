@@ -59,7 +59,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         </Button>
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("LAMBDA", "LAM")}>
-                            {"AWS Lambda (Coming soon)"}
+                            {"AWS Lambda"}
                         </Button>
                     </Grid>
                 </Grid>
