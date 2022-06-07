@@ -15,7 +15,11 @@ import com.octopus.audits.domain.utilities.PartitionIdentifier;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import com.octopus.audits.domain.wrappers.FilteredResultWrapper;
 import com.octopus.audits.infrastructure.repositories.AuditRepository;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
+import io.vavr.control.Try;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
@@ -25,12 +29,50 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
- * to repositories.
+ * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the inputs to POJOs, apply the security rules, create an audit
+ * trail, and then pass the requests down to repositories.
  */
 @ApplicationScoped
 public class AuditsHandler {
+
+  /**
+   * A retry policy used when accessing the database. Aurora serverless databases can take a bit of time
+   * to wake up after sleeping, with testing shows it can take 30 seconds to make the initial requests.
+   *
+   * <p>Note though that requests to retrieve policies are usually made via an API Gateway, which has a timeout
+   * of 29 seconds. This means the HTTP client (usually a browser) must retry read requests that timeout,
+   * as any response by the service after 29 seconds is ignored by Api gateway.
+   *
+   * <p>This means read requests are retried for 15 seconds, which assumes we can take up half the request time
+   * trying to warm up the database.
+   */
+  private static final RetryPolicy<FilteredResultWrapper<Audit>> RETRY_POLICY_GET_ALL = RetryPolicy
+      .<FilteredResultWrapper<Audit>>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(5))
+      .withMaxRetries(3)
+      .build();
+
+  /**
+   * This is the retry policy for the request to get a single audit record. It retries for 15 seconds.
+   */
+  private static final RetryPolicy<Audit> RETRY_POLICY_GET_ONE = RetryPolicy
+      .<Audit>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(5))
+      .withMaxRetries(9)
+      .build();
+
+  /**
+   * Write requests are assumed to be fire and forget, which means we are not bound by the API Gateway timeouts.
+   * So we retry for up to 45 seconds to create a new record.
+   */
+  private static final RetryPolicy<Audit> RETRY_POLICY_CREATE_ONE = RetryPolicy
+      .<Audit>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(5))
+      .withMaxRetries(9)
+      .build();
 
   @ConfigProperty(name = "cognito.admin-claim")
   String cognitoAdminClaim;
@@ -65,8 +107,7 @@ public class AuditsHandler {
    * @param dataPartitionHeaders The "data-partition" headers.
    * @param filterParam          The filter query param.
    * @return All matching resources
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String getAll(@NonNull final List<String> dataPartitionHeaders,
       final String filterParam,
@@ -84,12 +125,14 @@ public class AuditsHandler {
             dataPartitionHeaders,
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    final FilteredResultWrapper<Audit> audits =
+    final FilteredResultWrapper<Audit> audits = Failsafe.with(RETRY_POLICY_GET_ALL).get(() ->
         auditRepository.findAll(
             List.of(Constants.DEFAULT_PARTITION, partition),
             filterParam,
             pageOffset,
-            pageLimit);
+            pageLimit)
+    );
+
     final JSONAPIDocument<List<Audit>> document = new JSONAPIDocument<List<Audit>>(
         audits.getList());
 
@@ -105,8 +148,7 @@ public class AuditsHandler {
    * @param document             The JSONAPI resource to create.
    * @param dataPartitionHeaders The "Data-Partition" headers.
    * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String create(
       @NonNull final String document,
@@ -125,7 +167,7 @@ public class AuditsHandler {
         dataPartitionHeaders,
         jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    auditRepository.save(audit);
+    Failsafe.with(RETRY_POLICY_CREATE_ONE).run(() -> auditRepository.save(audit));
 
     return respondWithResource(audit);
   }
@@ -136,8 +178,7 @@ public class AuditsHandler {
    * @param id                   The ID of the resource to return.
    * @param dataPartitionHeaders The "data-partition" headers.
    * @return The matching resource.
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String getOne(@NonNull final String id,
       @NonNull final List<String> dataPartitionHeaders,
@@ -149,20 +190,20 @@ public class AuditsHandler {
     }
 
     final String partition = partitionIdentifier
-        .getPartition(
-            dataPartitionHeaders,
-            jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
+        .getPartition(dataPartitionHeaders, jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    try {
-      final Audit audit = auditRepository.findOne(Integer.parseInt(id));
-      if (audit != null
-          && (Constants.DEFAULT_PARTITION.equals(audit.getDataPartition())
-          || StringUtils.equals(partition, audit.getDataPartition()))) {
-        return respondWithResource(audit);
-      }
-    } catch (final NumberFormatException ex) {
-      // ignored, as the supplied id was not an int, and would never find any entities
+    final int parsedInt = Try.of(() -> Integer.parseInt(id))
+        .getOrElseThrow(EntityNotFound::new);
+
+    final Audit audit = Failsafe.with(RETRY_POLICY_GET_ONE)
+        .get(() -> auditRepository.findOne(parsedInt));
+
+    if (audit != null
+        && (Constants.DEFAULT_PARTITION.equals(audit.getDataPartition())
+        || StringUtils.equals(partition, audit.getDataPartition()))) {
+      return respondWithResource(audit);
     }
+
     throw new EntityNotFound();
   }
 
