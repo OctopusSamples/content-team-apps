@@ -4,8 +4,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.octopus.products.infrastructure.utilities.LiquidbaseUpdater;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
+import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,6 +20,16 @@ import liquibase.exception.LiquibaseException;
  */
 @Named("DatabaseInit")
 public class DatabaseInit implements RequestHandler<Map<String, Object>, APIGatewayProxyResponseEvent> {
+
+  /**
+   * A retry policy used when calling upstream services.
+   */
+  private static final RetryPolicy<APIGatewayProxyResponseEvent> RETRY_POLICY = RetryPolicy
+      .<APIGatewayProxyResponseEvent>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(30))
+      .withMaxRetries(10)
+      .build();
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;
@@ -31,9 +45,11 @@ public class DatabaseInit implements RequestHandler<Map<String, Object>, APIGate
       succeeds or the Lambda times out.
      */
 
-    return Try.run(() -> liquidbaseUpdater.update())
-        .map(v -> new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("ok"))
-        .recover(e -> handleRequest(stringObjectMap, context))
-        .get();
+    return Failsafe.with(RETRY_POLICY)
+        .onFailure(e -> Log.error("Failed to migrate database", e.getException()))
+        .get(() -> {
+          liquidbaseUpdater.update();
+          return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("ok");
+        });
   }
 }
