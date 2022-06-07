@@ -50,7 +50,7 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_featurebranch_proj
 }
 
 locals {
-  backend_dns_branch_name       = "#{Octopus.Action[Upload Lambda].Package[${local.products_package}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  backend_dns_branch_name       = "#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   featurebranch_s3_bucket_stack = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
   featurebranch_product_stack   = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
 }
