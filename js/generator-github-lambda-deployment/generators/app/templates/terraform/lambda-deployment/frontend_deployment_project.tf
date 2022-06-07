@@ -49,14 +49,43 @@ resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
+resource "octopusdeploy_variable" "productEndpoint_deploy_frontend_project" {
+  name     = "productEndpoint"
+  type     = "String"
+  value    = "/${local.fixed_environment_upper}/api/products"
+  owner_id = octopusdeploy_project.deploy_frontend_project.id
+}
+
+resource "octopusdeploy_variable" "productHealthEndpoint_deploy_frontend_project" {
+  name     = "productHealthEndpoint"
+  type     = "String"
+  value    = "/${local.fixed_environment_upper}/health/products"
+  owner_id = octopusdeploy_project.deploy_frontend_project.id
+}
+
+resource "octopusdeploy_variable" "auditEndpoint_deploy_frontend_project" {
+  name     = "auditEndpoint"
+  type     = "String"
+  value    = "/${local.fixed_environment_upper}/api/audits"
+  owner_id = octopusdeploy_project.deploy_frontend_project.id
+}
+
+resource "octopusdeploy_variable" "auditHealthEndpoint_deploy_frontend_project" {
+  name     = "auditHealthEndpoint"
+  type     = "String"
+  value    = "/${local.fixed_environment_upper}/health/audits"
+  owner_id = octopusdeploy_project.deploy_frontend_project.id
+}
+
 locals {
   mainline_frontend_s3_bucket_stack = "OctopusBuilder-WebApp-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  frontend_stack                    = "OctopusBuilder-WebApp-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   frontend_package_name             = "javascript-frontend"
   frontend_sbom_package_name        = "javascript-frontend-sbom"
   frontend_cloudformation_tags      = jsonencode([
     {
       key : "Environment"
-      value : "#{Octopus.Environment.Name}"
+      value : local.fixed_environment_upper
     },
     {
       key : "DeploymentProject"
@@ -238,6 +267,18 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
           WEB_RESOURCE_ID=$(aws cloudformation \
               describe-stacks \
               --stack-name ${local.api_gateway_stack} \
@@ -304,12 +345,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
-        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.Frontend}"
+        "Octopus.Action.Aws.CloudFormationStackName" : local.frontend_stack
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name}'
+              Default: '${local.fixed_environment_upper}'
             RestApi:
               Type: String
             RootResourceId:
@@ -531,7 +572,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+            ParameterValue : local.fixed_environment_upper
           },
           {
             ParameterKey : "RestApi"
@@ -559,13 +600,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           },
           {
             ParameterKey : "SubPath"
-            ParameterValue : "#{WebApp.SubPath}"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease}"
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+            ParameterValue : local.fixed_environment_upper
           },
           {
             ParameterKey : "RestApi"
@@ -593,7 +634,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           },
           {
             ParameterKey : "SubPath"
-            ParameterValue : "#{WebApp.SubPath}"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease}"
           }
         ])
         "Octopus.Action.Aws.Region" : var.aws_region
@@ -627,10 +668,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name}'
+              Default: '${local.fixed_environment_upper}'
             DeploymentId:
               Type: String
-              Default: 'Deployment#{DeploymentId}'
             ApiGatewayId:
               Type: String
           Resources:
@@ -658,7 +698,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+            ParameterValue : local.fixed_environment_upper
           },
           {
             ParameterKey : "DeploymentId"
@@ -672,7 +712,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+            ParameterValue : local.fixed_environment_upper
           },
           {
             ParameterKey : "DeploymentId"
@@ -732,7 +772,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
 
           set_octopusvariable "StageURL" $${STAGE_URL}
 
-          write_highlight "Open [$${STAGE_URL}/index.html]($${STAGE_URL}/index.html) to view the frontend web app."
+          write_highlight "Open [$${STAGE_URL}index.html]($${STAGE_URL}index.html) to view the frontend web app."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"

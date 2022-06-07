@@ -90,11 +90,18 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
                     - RestApi
                     - RootResourceId
                 PathPart: api
+            Web:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !GetAtt
+                  - RestApi
+                  - RootResourceId
+                PathPart: '{proxy+}'
           Outputs:
             RestApi:
               Description: The REST API
-              Value:
-                Ref: RestApi
+              Value: !Ref RestApi
             RootResourceId:
               Description: ID of the resource exposing the root resource id
               Value:
@@ -103,12 +110,13 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
                   - RootResourceId
             Health:
               Description: ID of the resource exposing the health endpoints
-              Value:
-                Ref: Health
+              Value: !Ref Health
             Api:
               Description: ID of the resource exposing the api endpoint
-              Value:
-                Ref: Api
+              Value: !Ref Api
+            Web:
+              Description: ID of the resource exposing the web app frontend
+              Value: !Ref Web
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[]"
