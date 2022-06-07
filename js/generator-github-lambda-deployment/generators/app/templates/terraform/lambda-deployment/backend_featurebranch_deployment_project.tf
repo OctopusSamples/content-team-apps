@@ -136,44 +136,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
   }
   step {
     condition           = "Success"
-    name                = "Upload Lambda"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    action {
-      action_type    = "Octopus.AwsUploadS3"
-      name           = "Upload Lambda"
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-
-      primary_package {
-        acquisition_location = "Server"
-        feed_id              = var.octopus_built_in_feed_id
-        package_id           = local.products_package
-        properties           = {
-          "SelectionMode" : "immediate"
-        }
-      }
-
-      properties = {
-        "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.Region" : var.aws_region
-        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
-        "Octopus.Action.Aws.S3.PackageOptions" : "{\"bucketKey\":\"\",\"bucketKeyBehaviour\":\"Filename\",\"bucketKeyPrefix\":\"\",\"storageClass\":\"STANDARD\",\"cannedAcl\":\"private\",\"metadata\":[],\"tags\":[]}"
-        "Octopus.Action.Aws.S3.TargetMode" : "EntirePackage"
-        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-        "Octopus.Action.Package.DownloadOnTentacle" : "False"
-        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId" : local.products_package
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Deploy Application Lambda"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -528,12 +490,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
   }
   step {
     condition           = "Success"
-    name                = "Run Database Migrations"
+    name                = "Print Routing Details"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Run Database Migrations"
+      name           = "Print Routing Details"
       notes          = "Run the Lambda that performs database migrations."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
