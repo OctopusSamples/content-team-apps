@@ -70,6 +70,7 @@ public class AuditsHandler {
   private static final RetryPolicy<Audit> RETRY_POLICY_CREATE_ONE = RetryPolicy
       .<Audit>builder()
       .handle(Exception.class)
+      .abortOn(InvalidInput.class)
       .withDelay(Duration.ofSeconds(5))
       .withMaxRetries(9)
       .build();
