@@ -50,9 +50,11 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_featurebranch_proj
 }
 
 locals {
-  backend_dns_branch_name       = "#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
-  featurebranch_s3_bucket_stack = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
-  featurebranch_product_stack   = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
+  backend_dns_branch_name                = "#{Octopus.Action[Upload Lambda].Package[].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  # Subnet group names are lowercase
+  featurebranch_subnetgroup_product_name = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
+  featurebranch_s3_bucket_stack          = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
+  featurebranch_product_stack            = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
@@ -170,6 +172,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
               Type: String
             LambdaName:
               Type: String
+            SubnetGroupName:
+              Type: String
             LambdaDescription:
               Type: String
             DBUsername:
@@ -209,7 +213,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
             SubnetGroup:
               Type: "AWS::RDS::DBSubnetGroup"
               Properties:
-                DBSubnetGroupName: "subnetgroup"
+                DBSubnetGroupName: !Sub '$${SubnetGroupName}'
                 DBSubnetGroupDescription: "Subnet Group"
                 SubnetIds:
                 - !Ref "SubnetA"
@@ -248,10 +252,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                   MaxCapacity: 1
                   MinCapacity: 1
                   SecondsUntilAutoPause: 300
+              DependsOn:
+                - SubnetGroup
             AppLogGroup:
               Type: 'AWS::Logs::LogGroup'
               Properties:
-                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
+                LogGroupName: !Sub '/aws/lambda/$${LambdaName}'
                 RetentionInDays: 14
             IamRoleLambdaExecution:
               Type: 'AWS::IAM::Role'
@@ -266,7 +272,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                       Action:
                         - 'sts:AssumeRole'
                 Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-policy'
+                  - PolicyName: !Sub '$${LambdaName}-policy'
                     PolicyDocument:
                       Version: 2012-10-17
                       Statement:
@@ -277,7 +283,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${LambdaName}*:*
                         - Effect: Allow
                           Action:
                             - 'ec2:DescribeInstances'
@@ -287,7 +293,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                             - 'ec2:DescribeNetworkInterfaces'
                           Resource: "*"
                 Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+                RoleName: !Sub '$${LambdaName}-role'
             MigrationLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
@@ -305,7 +311,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                     MIGRATE_AT_START: !!str "false"
                     LAMBDA_NAME: "DatabaseInit"
                     QUARKUS_PROFILE: "faas"
-                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-DBMigration'
+                FunctionName: !Sub '$${LambdaName}-DBMigration'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
@@ -336,7 +342,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
                     DATABASE_PASSWORD: !Ref "DBPassword"
                     MIGRATE_AT_START: !!str "false"
                     QUARKUS_PROFILE: "faas"
-                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
+                FunctionName: !Sub '$${LambdaName}'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
@@ -392,6 +398,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           {
             ParameterKey : "DBPassword"
             ParameterValue : "Password01!"
+          },
+          {
+            ParameterKey : "SubnetGroupName"
+            ParameterValue : local.featurebranch_subnetgroup_product_name
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
@@ -430,6 +440,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           {
             ParameterKey : "DBPassword"
             ParameterValue : "Password01!"
+          },
+          {
+            ParameterKey : "SubnetGroupName"
+            ParameterValue : local.featurebranch_subnetgroup_product_name
           }
         ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
@@ -478,7 +492,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend_featurebranch" {
           echo "##octopus[stdout-default]"
 
           aws lambda invoke \
-            --function-name '#{Octopus.Environment.Name | Replace \" .*\" \"\"}-${local.product_lambda_name}-${local.backend_dns_branch_name}-DBMigration' \
+            --function-name '${local.product_lambda_name}-${local.backend_dns_branch_name}-DBMigration' \
             --payload '{}' \
             response.json
         EOT

@@ -59,6 +59,8 @@ locals {
   product_stack               = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_lambda_name         = "Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  # Subnet group names are lowercase
+  subnetgroup_product_name    = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_proxy_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-microservice-lambda"
@@ -336,6 +338,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             LambdaName:
               Type: String
+            SubnetGroupName:
+              Type: String
             LambdaDescription:
               Type: String
             DBUsername:
@@ -375,7 +379,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             SubnetGroup:
               Type: "AWS::RDS::DBSubnetGroup"
               Properties:
-                DBSubnetGroupName: "subnetgroup"
+                DBSubnetGroupName: !Ref SubnetGroupName
                 DBSubnetGroupDescription: "Subnet Group"
                 SubnetIds:
                 - !Ref "SubnetA"
@@ -414,10 +418,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                   MaxCapacity: 1
                   MinCapacity: 1
                   SecondsUntilAutoPause: 300
+              DependsOn:
+                - SubnetGroup
             AppLogGroup:
               Type: 'AWS::Logs::LogGroup'
               Properties:
-                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
+                LogGroupName: !Sub '/aws/lambda/$${LambdaName}'
                 RetentionInDays: 14
             IamRoleLambdaExecution:
               Type: 'AWS::IAM::Role'
@@ -432,7 +438,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       Action:
                         - 'sts:AssumeRole'
                 Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-policy'
+                  - PolicyName: !Sub '$${LambdaName}-policy'
                     PolicyDocument:
                       Version: 2012-10-17
                       Statement:
@@ -443,7 +449,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${LambdaName}*:*
                         - Effect: Allow
                           Action:
                             - 'ec2:DescribeInstances'
@@ -453,7 +459,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                             - 'ec2:DescribeNetworkInterfaces'
                           Resource: "*"
                 Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-role'
+                RoleName: !Sub '$${LambdaName}-role'
             MigrationLambda:
               Type: 'AWS::Lambda::Function'
               Properties:
@@ -471,7 +477,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     MIGRATE_AT_START: !!str "false"
                     LAMBDA_NAME: "DatabaseInit"
                     QUARKUS_PROFILE: "faas"
-                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-DBMigration'
+                FunctionName: !Sub '$${LambdaName}-DBMigration'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
@@ -502,7 +508,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     DATABASE_PASSWORD: !Ref "DBPassword"
                     MIGRATE_AT_START: !!str "false"
                     QUARKUS_PROFILE: "faas"
-                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
+                FunctionName: !Sub '$${LambdaName}'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
@@ -558,6 +564,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           {
             ParameterKey : "DBPassword"
             ParameterValue : "Password01!"
+          },
+          {
+            ParameterKey : "SubnetGroupName"
+            ParameterValue : local.subnetgroup_product_name
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
@@ -596,6 +606,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           {
             ParameterKey : "DBPassword"
             ParameterValue : "Password01!"
+          },
+          {
+            ParameterKey : "SubnetGroupName"
+            ParameterValue : local.subnetgroup_product_name
           }
         ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
@@ -644,7 +658,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "##octopus[stdout-default]"
 
           aws lambda invoke \
-            --function-name '#{Octopus.Environment.Name | Replace \" .*\" \"\"}-${local.product_lambda_name}-DBMigration' \
+            --function-name '${local.product_lambda_name}-DBMigration' \
             --payload '{}' \
             response.json
         EOT
@@ -795,7 +809,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             AppLogGroupProxy:
               Type: 'AWS::Logs::LogGroup'
               Properties:
-                LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy'
+                LogGroupName: !Sub '/aws/lambda/$${LambdaName}-Proxy'
                 RetentionInDays: 14
             IamRoleProxyLambdaExecution:
               Type: 'AWS::IAM::Role'
@@ -810,7 +824,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       Action:
                         - 'sts:AssumeRole'
                 Policies:
-                  - PolicyName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-policy'
+                  - PolicyName: !Sub '$${LambdaName}-Proxy-policy'
                     PolicyDocument:
                       Version: 2012-10-17
                       Statement:
@@ -821,21 +835,21 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                             - 'logs:PutLogEvents'
                           Resource:
                             - !Sub >-
-                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${EnvironmentName}-$${LambdaName}-Proxy*:*
+                              arn:$${AWS::Partition}:logs:$${AWS::Region}:$${AWS::AccountId}:log-group:/aws/lambda/$${LambdaName}-Proxy*:*
                         - Effect: Allow
                           Action:
                             - 'lambda:InvokeFunction'
                           Resource:
                             - !Sub >-
-                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${LambdaName}*
                         - Effect: Allow
                           Action:
                             - 'lambda:InvokeFunction'
                           Resource:
                             - !Sub >-
-                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${EnvironmentName}-$${LambdaName}*:*
+                              arn:aws:lambda:$${AWS::Region}:$${AWS::AccountId}:function:$${LambdaName}*:*
                 Path: /
-                RoleName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy-role'
+                RoleName: !Sub '$${LambdaName}-Proxy-role'
             ProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -866,7 +880,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     DEFAULT_LAMBDA: !Ref LambdaVersion
                     COGNITO_AUTHORIZATION_REQUIRED: !!str "false"
                 Description: !Sub '$${LambdaDescription} Proxy'
-                FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-Proxy'
+                FunctionName: !Sub '$${LambdaName}-Proxy'
                 Handler: main
                 MemorySize: 128
                 PackageType: Zip
