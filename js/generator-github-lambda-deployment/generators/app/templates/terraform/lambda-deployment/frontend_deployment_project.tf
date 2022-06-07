@@ -99,155 +99,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
 
   step {
     condition           = "Success"
-    name                = "Create S3 Bucket"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    action {
-      action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Create S3 Bucket"
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      properties = {
-        "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
-        "Octopus.Action.Aws.CloudFormationStackName" : local.mainline_frontend_s3_bucket_stack
-        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
-                AWSTemplateFormatVersion: 2010-09-09
-                Parameters:
-                  Hostname:
-                    Type: String
-                Resources:
-                  S3Bucket:
-                    Type: AWS::S3::Bucket
-                    Properties:
-                      AccessControl: PublicRead
-                      WebsiteConfiguration:
-                        IndexDocument: index.html
-                        ErrorDocument: error.html
-                        RoutingRules:
-                        - RoutingRuleCondition:
-                           HttpErrorCodeReturnedEquals: '404'
-                          RedirectRule:
-                            ReplaceKeyWith: index.html
-                            HostName: !Ref Hostname
-                            Protocol: https
-                    DeletionPolicy: Retain
-                  BucketPolicy:
-                    Type: AWS::S3::BucketPolicy
-                    Properties:
-                      PolicyDocument:
-                        Id: MyPolicy
-                        Version: 2012-10-17
-                        Statement:
-                          - Sid: PublicReadForGetBucketObjects
-                            Effect: Allow
-                            Principal: '*'
-                            Action: 's3:GetObject'
-                            Resource: !Join
-                              - ''
-                              - - 'arn:aws:s3:::'
-                                - !Ref S3Bucket
-                                - /*
-                      Bucket: !Ref S3Bucket
-                Outputs:
-                  Bucket:
-                    Value: !Ref S3Bucket
-                    Description: URL for website hosted on S3
-                  WebsiteURL:
-                    Value: !GetAtt
-                      - S3Bucket
-                      - WebsiteURL
-                    Description: URL for website hosted on S3
-                  S3BucketSecureURL:
-                    Value: !Join
-                      - ''
-                      - - 'https://'
-                        - !GetAtt
-                          - S3Bucket
-                          - DomainName
-                    Description: Name of S3 bucket to hold website content
-            EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
-          {
-            ParameterKey : "Hostname"
-            ParameterValue : "#{WebApp.Hostname}"
-          }
-        ])
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
-          {
-            ParameterKey : "Hostname"
-            ParameterValue : "#{WebApp.Hostname}"
-          }
-        ])
-        "Octopus.Action.Aws.Region" : var.aws_region
-        "Octopus.Action.Aws.TemplateSource" : "Inline"
-        "Octopus.Action.Aws.WaitForCompletion" : "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-      }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Upload Frontend"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    action {
-      action_type    = "Octopus.AwsUploadS3"
-      name           = "Upload Frontend"
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-
-      primary_package {
-        acquisition_location = "Server"
-        feed_id              = var.octopus_built_in_feed_id
-        package_id           = local.frontend_package_name
-        properties           = {
-          "SelectionMode" : "immediate"
-        }
-      }
-
-      properties = {
-        "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.Region" : var.aws_region
-        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
-        "Octopus.Action.Aws.S3.FileSelections" : jsonencode([
-          {
-            type : "MultipleFiles"
-            tags : []
-            metadata : []
-            cannedAcl : "private"
-            path : ""
-            storageClass : "STANDARD"
-            bucketKey : ""
-            bucketKeyPrefix : "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/"
-            bucketKeyBehaviour : "Custom"
-            performVariableSubstitution : "False"
-            performStructuredVariableSubstitution : "False"
-            pattern : "**/*"
-            autoFocus : true
-            structuredVariableSubstitutionPatterns : "config.json"
-          }
-        ])
-        "Octopus.Action.Aws.S3.TargetMode" : "FileSelections"
-        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-        "Octopus.Action.Package.DownloadOnTentacle" : "False"
-        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId" : local.frontend_package_name
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Get Stack Outputs"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -324,6 +175,155 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Create S3 Bucket"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Create S3 Bucket"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
+        "Octopus.Action.Aws.CloudFormationStackName" : local.mainline_frontend_s3_bucket_stack
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          AWSTemplateFormatVersion: 2010-09-09
+          Parameters:
+            Hostname:
+              Type: String
+          Resources:
+            S3Bucket:
+              Type: AWS::S3::Bucket
+              Properties:
+                AccessControl: PublicRead
+                WebsiteConfiguration:
+                  IndexDocument: index.html
+                  ErrorDocument: error.html
+                  RoutingRules:
+                  - RoutingRuleCondition:
+                     HttpErrorCodeReturnedEquals: '404'
+                    RedirectRule:
+                      ReplaceKeyWith: index.html
+                      HostName: !Ref Hostname
+                      Protocol: https
+              DeletionPolicy: Retain
+            BucketPolicy:
+              Type: AWS::S3::BucketPolicy
+              Properties:
+                PolicyDocument:
+                  Id: MyPolicy
+                  Version: 2012-10-17
+                  Statement:
+                    - Sid: PublicReadForGetBucketObjects
+                      Effect: Allow
+                      Principal: '*'
+                      Action: 's3:GetObject'
+                      Resource: !Join
+                        - ''
+                        - - 'arn:aws:s3:::'
+                          - !Ref S3Bucket
+                          - /*
+                Bucket: !Ref S3Bucket
+          Outputs:
+            Bucket:
+              Value: !Ref S3Bucket
+              Description: URL for website hosted on S3
+            WebsiteURL:
+              Value: !GetAtt
+                - S3Bucket
+                - WebsiteURL
+              Description: URL for website hosted on S3
+            S3BucketSecureURL:
+              Value: !Join
+                - ''
+                - - 'https://'
+                  - !GetAtt
+                    - S3Bucket
+                    - DomainName
+              Description: Name of S3 bucket to hold website content
+        EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "Hostname"
+            ParameterValue : "#{WebApp.Hostname}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "Hostname"
+            ParameterValue : "#{WebApp.Hostname}"
+          }
+        ])
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Upload Frontend"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsUploadS3"
+      name           = "Upload Frontend"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      primary_package {
+        acquisition_location = "Server"
+        feed_id              = var.octopus_built_in_feed_id
+        package_id           = local.frontend_package_name
+        properties           = {
+          "SelectionMode" : "immediate"
+        }
+      }
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+        "Octopus.Action.Aws.S3.FileSelections" : jsonencode([
+          {
+            type : "MultipleFiles"
+            tags : []
+            metadata : []
+            cannedAcl : "private"
+            path : ""
+            storageClass : "STANDARD"
+            bucketKey : ""
+            bucketKeyPrefix : "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/"
+            bucketKeyBehaviour : "Custom"
+            performVariableSubstitution : "False"
+            performStructuredVariableSubstitution : "False"
+            pattern : "**/*"
+            autoFocus : true
+            structuredVariableSubstitutionPatterns : "config.json"
+          }
+        ])
+        "Octopus.Action.Aws.S3.TargetMode" : "FileSelections"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Package.DownloadOnTentacle" : "False"
+        "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
+        "Octopus.Action.Package.PackageId" : local.frontend_package_name
       }
     }
   }
@@ -422,28 +422,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                         method.response.header.X-Frame-Options: '''DENY'''
                         method.response.header.X-XSS-Protection: '''1; mode=block'''
                         method.response.header.Referrer-Policy: '''no-referrer'''
-                        method.response.header.Permissions-Policy: >-
-                          'accelerometer=(), ambient-light-sensor=(), autoplay=(),
-                          battery=(), camera=(), cross-origin-isolated=(),
-                          display-capture=(), document-domain=(), encrypted-media=(),
-                          execution-while-not-rendered=(),
-                          execution-while-out-of-viewport=(), fullscreen=(),
-                          geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(),
-                          microphone=(), midi=(), navigation-override=(), payment=(),
-                          picture-in-picture=(), publickey-credentials-get=(),
-                          screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(),
-                          xr-spatial-tracking=(), clipboard-read=(), clipboard-write=*,
-                          gamepad=(), speaker-selection=(), conversion-measurement=(),
-                          focus-without-user-activation=(), hid=(), idle-detection=(),
-                          interest-cohort=(), serial=(), sync-script=(),
-                          trust-token-redemption=(), window-placement=(),
-                          vertical-scroll=()'
-                        method.response.header.Content-Security-Policy: >-
-                          'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
-                          object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
-                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
-                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                        method.response.header.Permissions-Policy: "${local.permissions_policy}"
+                        method.response.header.Content-Security-Policy: "${local.security_policy}"
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
                 MethodResponses:
                   - ResponseModels:
@@ -499,28 +479,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                         method.response.header.X-Frame-Options: '''DENY'''
                         method.response.header.X-XSS-Protection: '''1; mode=block'''
                         method.response.header.Referrer-Policy: '''no-referrer'''
-                        method.response.header.Permissions-Policy: >-
-                          'accelerometer=(), ambient-light-sensor=(), autoplay=(),
-                          battery=(), camera=(), cross-origin-isolated=(),
-                          display-capture=(), document-domain=(), encrypted-media=(),
-                          execution-while-not-rendered=(),
-                          execution-while-out-of-viewport=(), fullscreen=(),
-                          geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(),
-                          microphone=(), midi=(), navigation-override=(), payment=(),
-                          picture-in-picture=(), publickey-credentials-get=(),
-                          screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(),
-                          xr-spatial-tracking=(), clipboard-read=(), clipboard-write=*,
-                          gamepad=(), speaker-selection=(), conversion-measurement=(),
-                          focus-without-user-activation=(), hid=(), idle-detection=(),
-                          interest-cohort=(), serial=(), sync-script=(),
-                          trust-token-redemption=(), window-placement=(),
-                          vertical-scroll=()'
-                        method.response.header.Content-Security-Policy: >-
-                          'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
-                          object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
-                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
-                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                        method.response.header.Permissions-Policy: "${local.permissions_policy}"
+                        method.response.header.Content-Security-Policy: "${local.security_policy}"
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
                     - StatusCode: '307'
                       SelectionPattern: '307'
@@ -600,7 +560,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           },
           {
             ParameterKey : "SubPath"
-            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease}"
+            ParameterValue : ""
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
@@ -634,7 +594,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           },
           {
             ParameterKey : "SubPath"
-            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease}"
+            ParameterValue : ""
           }
         ])
         "Octopus.Action.Aws.Region" : var.aws_region
