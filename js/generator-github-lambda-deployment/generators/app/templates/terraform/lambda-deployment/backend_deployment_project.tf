@@ -1102,13 +1102,19 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             ProxyLambdaVersion:
               Type: String
           Resources:
-            ApiServiceAccountsResource:
+            ApiProductsResource:
               Type: 'AWS::ApiGateway::Resource'
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ResourceId
                 PathPart: products
-            ApiServiceAccountsMethod:
+            ApiProductsProxyResource:
+              Type: 'AWS::ApiGateway::Resource'
+              Properties:
+                RestApiId: !Ref RestApi
+                ParentId: !Ref ApiProductsResource
+                PathPart: '{proxy+}'
+            ApiProductsMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
                 AuthorizationType: NONE
@@ -1126,14 +1132,34 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       - ':lambda:path/2015-03-31/functions/'
                       - !Ref ProxyLambdaVersion
                       - /invocations
-                ResourceId: !Ref ApiServiceAccountsResource
+                ResourceId: !Ref ApiProductsResource
+                RestApiId: !Ref RestApi
+            ApiProxyProductsMethod:
+              Type: 'AWS::ApiGateway::Method'
+              Properties:
+                AuthorizationType: NONE
+                HttpMethod: ANY
+                Integration:
+                  IntegrationHttpMethod: POST
+                  TimeoutInMillis: 20000
+                  Type: AWS_PROXY
+                  Uri: !Join
+                    - ''
+                    - - 'arn:'
+                      - !Ref 'AWS::Partition'
+                      - ':apigateway:'
+                      - !Ref 'AWS::Region'
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !Ref ProxyLambdaVersion
+                      - /invocations
+                ResourceId: !Ref ApiProductsProxyResource
                 RestApiId: !Ref RestApi
             'Deployment#{Octopus.Deployment.Id | Replace -}':
               Type: 'AWS::ApiGateway::Deployment'
               Properties:
                 RestApiId: !Ref RestApi
               DependsOn:
-                - ApiServiceAccountsMethod
+                - ApiProductsMethod
           Outputs:
             DeploymentId:
               Description: The deployment id
