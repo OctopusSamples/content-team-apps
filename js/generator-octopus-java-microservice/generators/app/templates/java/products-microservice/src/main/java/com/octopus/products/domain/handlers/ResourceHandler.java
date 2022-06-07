@@ -183,9 +183,12 @@ public class ResourceHandler {
             dataPartitionHeaders,
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
+    final int parsedId = Try.of(() -> Integer.parseInt(id))
+        .getOrElseThrow(() -> new EntityNotFoundException());
+
     final Optional<String> result =  Failsafe.with(RETRY_POLICY)
         .get(() -> {
-          final Product product = repository.findOne(Integer.parseInt(id));
+          final Product product = repository.findOne(parsedId);
           if (product != null
               && (Constants.DEFAULT_PARTITION.equals(product.getDataPartition())
               || StringUtils.equals(partition, product.getDataPartition()))) {
