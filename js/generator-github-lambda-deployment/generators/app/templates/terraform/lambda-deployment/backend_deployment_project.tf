@@ -60,7 +60,7 @@ locals {
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_lambda_name         = "Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   # Subnet group names are lowercase
-  subnetgroup_product_name    = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}-${local.backend_dns_branch_name}"
+  subnetgroup_product_name    = "product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
   product_proxy_version_stack = "${local.product_proxy_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-microservice-lambda"
