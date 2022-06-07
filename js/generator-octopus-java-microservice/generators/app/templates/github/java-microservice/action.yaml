@@ -248,7 +248,7 @@ runs:
       if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'app-builder-update' }}
       run: >
         octo create-release
-        --project "Deploy Backend Feature Branch Service"
+        --project "Backend Feature Branch Service"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
