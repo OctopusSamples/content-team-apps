@@ -5,7 +5,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.products.domain.Constants;
 import com.octopus.products.domain.entities.Health;
-import com.octopus.products.infrastructure.repositories.CustomersRepository;
+import com.octopus.products.infrastructure.repositories.ProductsRepository;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ public class HealthHandler {
   ResourceConverter resourceConverter;
 
   @Inject
-  CustomersRepository repository;
+  ProductsRepository repository;
 
   /**
    * Get the health check response content.

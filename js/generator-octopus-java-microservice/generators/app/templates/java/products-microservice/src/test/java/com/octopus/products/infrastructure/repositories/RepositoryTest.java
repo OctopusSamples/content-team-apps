@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @TestInstance(Lifecycle.PER_CLASS)
 public class RepositoryTest {
   @Inject
-  CustomersRepository repository;
+  ProductsRepository repository;
 
   @Inject
   LiquidbaseUpdater liquidbaseUpdater;

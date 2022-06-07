@@ -3,10 +3,6 @@ package com.octopus.products.domain.handlers;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
-import com.octopus.products.domain.Constants;
-import com.octopus.products.domain.entities.Product;
-import com.octopus.products.domain.features.impl.DisableSecurityFeatureImpl;
-import com.octopus.products.infrastructure.repositories.CustomersRepository;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.InvalidInputException;
 import com.octopus.exceptions.UnauthorizedException;
@@ -15,11 +11,19 @@ import com.octopus.features.AdminJwtGroupFeature;
 import com.octopus.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
+import com.octopus.products.domain.Constants;
+import com.octopus.products.domain.entities.Product;
+import com.octopus.products.domain.features.impl.DisableSecurityFeatureImpl;
+import com.octopus.products.infrastructure.repositories.ProductsRepository;
 import com.octopus.utilties.PartitionIdentifier;
 import com.octopus.wrappers.FilteredResultWrapper;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import io.vavr.control.Try;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.NonNull;
@@ -32,6 +36,31 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  */
 @ApplicationScoped
 public class ResourceHandler {
+
+  private static final int DATABASE_RETRIES = 3;
+  private static final int DATABASE_RETRY_DELAY = 5;
+
+  /*
+   * When connecting to AWS Aurora serverless, the first request will often fail with the
+   * error "Acquisition timeout while waiting for new connection". This retry allows
+   * us to handle these kind of situations.
+   *
+   * See https://aws.amazon.com/blogs/database/best-practices-for-working-with-amazon-aurora-serverless/
+   * under the "Retry logic" section.
+   */
+  private static final RetryPolicy<Optional<String>> RETRY_POLICY = RetryPolicy
+      .<Optional<String>>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(DATABASE_RETRY_DELAY))
+      .withMaxRetries(DATABASE_RETRIES)
+      .build();
+
+  private static final RetryPolicy<FilteredResultWrapper<Product>> GET_ALL_RETRY_POLICY = RetryPolicy
+      .<FilteredResultWrapper<Product>>builder()
+      .handle(Exception.class)
+      .withDelay(Duration.ofSeconds(DATABASE_RETRY_DELAY))
+      .withMaxRetries(DATABASE_RETRIES)
+      .build();
 
   @Inject
   AdminJwtClaimFeature adminJwtClaimFeature;
@@ -46,7 +75,7 @@ public class ResourceHandler {
   AdminJwtGroupFeature adminJwtGroupFeature;
 
   @Inject
-  CustomersRepository repository;
+  ProductsRepository repository;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -87,12 +116,13 @@ public class ResourceHandler {
             dataPartitionHeaders,
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    final FilteredResultWrapper<Product> resources =
-        repository.findAll(
+    final FilteredResultWrapper<Product> resources = Failsafe.with(GET_ALL_RETRY_POLICY)
+        .get(() -> repository.findAll(
             List.of(Constants.DEFAULT_PARTITION, partition),
             filterParam,
             pageOffset,
-            pageLimit);
+            pageLimit));
+
     final JSONAPIDocument<List<Product>> document = new JSONAPIDocument<List<Product>>(
         resources.getList());
 
@@ -127,7 +157,7 @@ public class ResourceHandler {
         dataPartitionHeaders,
         jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null)));
 
-    repository.save(product);
+    Failsafe.with(RETRY_POLICY).run(() -> repository.save(product));
 
     return respondWithResource(product);
   }
@@ -143,8 +173,7 @@ public class ResourceHandler {
   public String getOne(@NonNull final String id,
       @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
-      final String serviceAuthorizationHeader)
-      throws DocumentSerializationException {
+      final String serviceAuthorizationHeader) {
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
     }
@@ -154,17 +183,18 @@ public class ResourceHandler {
             dataPartitionHeaders,
             jwtUtils.getJwtFromAuthorizationHeader(authorizationHeader).orElse(null));
 
-    return Try.of(() -> {
-      final Product product = repository.findOne(Integer.parseInt(id));
-      if (product != null
-          && (Constants.DEFAULT_PARTITION.equals(product.getDataPartition())
-          || StringUtils.equals(partition, product.getDataPartition()))) {
-        return respondWithResource(product);
-      }
-      throw new EntityNotFoundException();
-    })
-    // All exceptions, like NumberFormatException, translate to EntityNotFoundException
-    .getOrElseThrow(e -> new EntityNotFoundException());
+    final Optional<String> result =  Failsafe.with(RETRY_POLICY)
+        .get(() -> {
+          final Product product = repository.findOne(Integer.parseInt(id));
+          if (product != null
+              && (Constants.DEFAULT_PARTITION.equals(product.getDataPartition())
+              || StringUtils.equals(partition, product.getDataPartition()))) {
+            return Optional.of(respondWithResource(product));
+          }
+          return Optional.empty();
+        });
+
+    return result.orElseThrow(EntityNotFoundException::new);
   }
 
   private Product getResourceFromDocument(final String document) {
