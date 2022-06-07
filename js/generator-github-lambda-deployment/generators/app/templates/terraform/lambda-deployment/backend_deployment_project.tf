@@ -60,7 +60,7 @@ locals {
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_lambda_name         = "Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_version_stack       = "${local.product_stack}-#{Octopus.Deployment.Id | Replace -}"
-  product_proxy_version_stack = "${local.product_version_stack}-#{Octopus.Deployment.Id | Replace -}"
+  product_proxy_version_stack = "${local.product_proxy_stack}-#{Octopus.Deployment.Id | Replace -}"
   products_package            = "products-microservice-lambda"
   products_sbom_package       = "products-microservice-sbom"
   reverse_proxy_package       = "reverse-proxy-lambda"
@@ -1338,12 +1338,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           echo "##octopus[stdout-default]"
 
+          # Find old cloud formation stacks that represent old Lambda versions that can now be cleaned up.
           OLD_STACKS=$(aws cloudformation describe-stacks --query 'Stacks[?Tags[?Key == `OctopusTransient` && Value == `True`] && Tags[?Key == `OctopusEnvironmentId` && Value == `#{Octopus.Environment.Id}`] && Tags[?Key == `OctopusProjectId` && Value == `#{Octopus.Project.Id}`] && Tags[?Key == `OctopusDeploymentId` && Value != `#{Octopus.Deployment.Id}`] && Tags[?Key == `OctopusTenantId` && Value == `#{if Octopus.Deployment.Tenant.Id}#{Octopus.Deployment.Tenant.Id}#{/if}#{unless Octopus.Deployment.Tenant.Id}untenanted#{/unless}`]].{StackName: StackName}' --output text)
 
           if [[ -n "$${OLD_STACKS}" ]]; then
             echo "Cleaning up the following stacks:"
             echo "$${OLD_STACKS}"
-            echo "$${OLD_STACKS}" | xargs -n1 aws cloudformation delete-stack --stack-name $1
+            # xargs doesn't use aliases, so we copy the aws command here again.
+            echo "$${OLD_STACKS}" | xargs -n1 docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli cloudformation delete-stack --stack-name $1
           fi
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
@@ -1393,7 +1395,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           set_octopusvariable "StageURL" $${STAGE_URL}
 
-          write_highlight "Open [$${STAGE_URL}/api/products]($${STAGE_URL}/api/products) to view the backend API."
+          write_highlight "Open [$${STAGE_URL}api/products]($${STAGE_URL}api/products) to view the backend API."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
