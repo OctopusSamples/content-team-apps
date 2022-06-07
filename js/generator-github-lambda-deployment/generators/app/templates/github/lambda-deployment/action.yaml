@@ -161,3 +161,15 @@ runs:
         fi
       working-directory: terraform/lambda-deployment
       shell: bash
+
+    - name: Create the cluster
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "API Gateway"
+        --deployTo "Development (App)"
+        --version "1.0.0"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+      shell: bash

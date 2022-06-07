@@ -168,6 +168,7 @@ runs:
         octo create-release
         --project "ECS Cluster"
         --deployTo "Development (App)"
+        --version "1.0.0"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
