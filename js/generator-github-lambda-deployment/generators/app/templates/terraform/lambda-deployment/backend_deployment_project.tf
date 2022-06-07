@@ -1110,7 +1110,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Properties:
                 RestApiId: !Ref RestApi
                 ParentId: !Ref ResourceId
-                PathPart: loginmessage
+                PathPart: products
             ApiServiceAccountsMethod:
               Type: 'AWS::ApiGateway::Method'
               Properties:
@@ -1370,7 +1370,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
           set_octopusvariable "StageURL" $${STAGE_URL}
 
-          echo "Stage URL: $${STAGE_URL}"
+          write_highlight "Open [$${STAGE_URL}/api/products](http://$${STAGE_URL}/api/products) to view the backend API."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
