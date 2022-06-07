@@ -54,10 +54,7 @@ resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
 }
 
 locals {
-  # The environment name up to the first space and lowercase
-  fixed_environment           = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
   mainline_s3_bucket_stack    = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  api_gateway_stage_stack     = "OctopusBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_api_gateway_stack   = "OctopusBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_stack               = "OctopusBuilder-Product-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_proxy_stack         = "OctopusBuilder-Product-Proxy-${lower(var.github_repo_owner)}-${local.fixed_environment}"
@@ -70,7 +67,7 @@ locals {
   product_cloudformation_tags = jsonencode([
     {
       key : "Environment"
-      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
     },
     {
       key : "DeploymentProject"
@@ -108,7 +105,7 @@ locals {
     },
     {
       key : "Environment"
-      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
     },
     {
       key : "DeploymentProject"
@@ -528,7 +525,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -566,7 +563,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -647,7 +644,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "##octopus[stdout-default]"
 
           aws lambda invoke \
-            --function-name '#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}-${local.product_lambda_name}-DBMigration' \
+            --function-name '#{Octopus.Environment.Name | Replace \" .*\" \"\"}-${local.product_lambda_name}-DBMigration' \
             --payload '{}' \
             response.json
         EOT
@@ -886,7 +883,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -924,7 +921,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -1097,7 +1094,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name | Replace " .*" "" | ToLower}'
+              Default: '#{Octopus.Environment.Name | Replace " .*" ""}'
             RestApi:
               Type: String
             ResourceId:
@@ -1145,7 +1142,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -1163,7 +1160,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
           },
           {
             ParameterKey : "RestApi"
@@ -1215,7 +1212,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             EnvironmentName:
               Type: String
-              Default: '#{Octopus.Environment.Name | Replace " .*" "" | ToLower}'
+              Default: '#{Octopus.Environment.Name | Replace " .*" ""}'
             DeploymentId:
               Type: String
               Default: 'Deployment#{DeploymentId}'
@@ -1248,7 +1245,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" }"
           },
           {
             ParameterKey : "DeploymentId"
@@ -1262,7 +1259,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey : "EnvironmentName"
-            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\" }"
           },
           {
             ParameterKey : "DeploymentId"

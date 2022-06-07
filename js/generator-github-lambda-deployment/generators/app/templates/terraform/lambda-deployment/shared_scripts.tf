@@ -1,4 +1,8 @@
 locals {
+  # The environment name up to the first space and lowercase
+  fixed_environment       = "#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+  api_gateway_stage_stack = "OctopusBuilder-APIGateway-Stage-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+
   get_aws_resources = <<-EOT
       # Get the containers
       echo "Downloading Docker images"

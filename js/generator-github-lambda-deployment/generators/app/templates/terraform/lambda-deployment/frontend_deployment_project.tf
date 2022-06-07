@@ -49,11 +49,20 @@ resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
-
 locals {
-  frontend_package_name        = "javascript-frontend"
-  frontend_sbom_package_name   = "javascript-frontend-sbom"
-  frontend_cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Frontend WebApp\"}]"
+  mainline_frontend_s3_bucket_stack = "OctopusBuilder-WebApp-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
+  frontend_package_name             = "javascript-frontend"
+  frontend_sbom_package_name        = "javascript-frontend-sbom"
+  frontend_cloudformation_tags      = jsonencode([
+    {
+      key : "Environment"
+      value : "#{Octopus.Environment.Name}"
+    },
+    {
+      key : "DeploymentProject"
+      value : "Frontend_WebApp"
+    }
+  ])
 }
 
 resource "octopusdeploy_deployment_process" "deploy_frontend" {
@@ -76,7 +85,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
-        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.S3Bucket}"
+        "Octopus.Action.Aws.CloudFormationStackName" : local.mainline_frontend_s3_bucket_stack
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
                 AWSTemplateFormatVersion: 2010-09-09
                 Parameters:
@@ -133,13 +142,23 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                           - DomainName
                     Description: Name of S3 bucket to hold website content
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"Hostname\",\"ParameterValue\":\"#{WebApp.Hostname}\"}]"
-        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "Hostname"
+            ParameterValue : "#{WebApp.Hostname}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "Hostname"
+            ParameterValue : "#{WebApp.Hostname}"
+          }
+        ])
+        "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
       }
     }
   }
@@ -169,15 +188,555 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
 
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.Region" : "#{AWS.Region}"
+        "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.S3.BucketName" : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
-        "Octopus.Action.Aws.S3.FileSelections" : "[{\"type\":\"MultipleFiles\",\"tags\":[],\"metadata\":[],\"cannedAcl\":\"private\",\"path\":\"\",\"storageClass\":\"STANDARD\",\"bucketKey\":\"\",\"bucketKeyPrefix\":\"#{S3.Directory}/\",\"bucketKeyBehaviour\":\"Custom\",\"performVariableSubstitution\":\"False\",\"performStructuredVariableSubstitution\":\"False\",\"pattern\":\"**/*\",\"autoFocus\":true,\"structuredVariableSubstitutionPatterns\":\"config.json\"}]"
+        "Octopus.Action.Aws.S3.FileSelections" : jsonencode([
+          {
+            type : "MultipleFiles"
+            tags : []
+            metadata : []
+            cannedAcl : "private"
+            path : ""
+            storageClass : "STANDARD"
+            bucketKey : ""
+            bucketKeyPrefix : "#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/"
+            bucketKeyBehaviour : "Custom"
+            performVariableSubstitution : "False"
+            performStructuredVariableSubstitution : "False"
+            pattern : "**/*"
+            autoFocus : true
+            structuredVariableSubstitutionPatterns : "config.json"
+          }
+        ])
         "Octopus.Action.Aws.S3.TargetMode" : "FileSelections"
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS.Account"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId" : local.frontend_package_name
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Get Stack Outputs"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stack Outputs"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          WEB_RESOURCE_ID=$(aws cloudformation \
+              describe-stacks \
+              --stack-name ${local.api_gateway_stack} \
+              --query "Stacks[0].Outputs[?OutputKey=='Web'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "Web" $${WEB_RESOURCE_ID}
+          echo "Web Resource ID: $WEB_RESOURCE_ID"
+
+          if [[ -z "$${WEB_RESOURCE_ID}" ]]; then
+            echo "Run the API Gateway project first"
+            exit 1
+          fi
+
+          REST_API=$(aws cloudformation \
+              describe-stacks \
+              --stack-name ${local.api_gateway_stack} \
+              --query "Stacks[0].Outputs[?OutputKey=='RestApi'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "RestApi" $${REST_API}
+          echo "Rest API ID: $REST_API"
+
+          if [[ -z "$${REST_API}" ]]; then
+            echo "Run the API Gateway project first"
+            exit 1
+          fi
+
+          ROOT_RESOURCE_ID=$(aws cloudformation \
+              describe-stacks \
+              --stack-name ${local.api_gateway_stack} \
+              --query "Stacks[0].Outputs[?OutputKey=='RootResourceId'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "RootResourceId" $${ROOT_RESOURCE_ID}
+          echo "Root resource ID: $ROOT_RESOURCE_ID"
+
+          if [[ -z "$${ROOT_RESOURCE_ID}" ]]; then
+            echo "Run the API Gateway project first"
+            exit 1
+          fi
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Proxy with API Gateway"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Proxy with API Gateway"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
+        "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.Frontend}"
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          Parameters:
+            EnvironmentName:
+              Type: String
+              Default: '#{Octopus.Environment.Name}'
+            RestApi:
+              Type: String
+            RootResourceId:
+              Type: String
+            ResourceId:
+              Type: String
+            PackageVersion:
+              Type: String
+            PackageId:
+              Type: String
+            BucketName:
+              Type: String
+            SubPath:
+              Type: String
+          Conditions:
+            IsFeatureBranch:
+              'Fn::Not':
+                - 'Fn::Equals':
+                    - Ref: SubPath
+                    - ''
+          Resources:
+            BranchResource:
+              Type: 'AWS::ApiGateway::Resource'
+              Condition: IsFeatureBranch
+              Properties:
+                RestApiId:
+                  Ref: RestApi
+                ParentId:
+                  Ref: RootResourceId
+                PathPart:
+                  Ref: SubPath
+            BranchResourceProxy:
+              Type: 'AWS::ApiGateway::Resource'
+              Condition: IsFeatureBranch
+              Properties:
+                RestApiId:
+                  Ref: RestApi
+                ParentId:
+                  Ref: BranchResource
+                PathPart: '{proxy+}'
+            FrontendMethodOne:
+              Type: 'AWS::ApiGateway::Method'
+              Properties:
+                AuthorizationType: NONE
+                HttpMethod: ANY
+                Integration:
+                  ContentHandling: CONVERT_TO_TEXT
+                  IntegrationHttpMethod: GET
+                  TimeoutInMillis: 20000
+                  Type: HTTP
+                  Uri:
+                    'Fn::Join':
+                      - ''
+                      - - 'http://'
+                        - Ref: BucketName
+                        - .s3-website-us-west-1.amazonaws.com/
+                        - Ref: PackageId
+                        - .
+                        - Ref: PackageVersion
+                        - /index.html
+                  PassthroughBehavior: WHEN_NO_MATCH
+                  RequestTemplates:
+                    image/png: ''
+                  IntegrationResponses:
+                    - StatusCode: '200'
+                      ResponseParameters:
+                        method.response.header.Content-Type: integration.response.header.Content-Type
+                        method.response.header.X-Content-Type-Options: '''nosniff'''
+                        method.response.header.X-Frame-Options: '''DENY'''
+                        method.response.header.X-XSS-Protection: '''1; mode=block'''
+                        method.response.header.Referrer-Policy: '''no-referrer'''
+                        method.response.header.Permissions-Policy: >-
+                          'accelerometer=(), ambient-light-sensor=(), autoplay=(),
+                          battery=(), camera=(), cross-origin-isolated=(),
+                          display-capture=(), document-domain=(), encrypted-media=(),
+                          execution-while-not-rendered=(),
+                          execution-while-out-of-viewport=(), fullscreen=(),
+                          geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(),
+                          microphone=(), midi=(), navigation-override=(), payment=(),
+                          picture-in-picture=(), publickey-credentials-get=(),
+                          screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(),
+                          xr-spatial-tracking=(), clipboard-read=(), clipboard-write=*,
+                          gamepad=(), speaker-selection=(), conversion-measurement=(),
+                          focus-without-user-activation=(), hid=(), idle-detection=(),
+                          interest-cohort=(), serial=(), sync-script=(),
+                          trust-token-redemption=(), window-placement=(),
+                          vertical-scroll=()'
+                        method.response.header.Content-Security-Policy: >-
+                          'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
+                          object-src 'none'; default-src 'self' 'unsafe-inline'
+                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
+                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
+                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                        method.response.header.Strict-Transport-Security: '''max-age=15768000'''
+                MethodResponses:
+                  - ResponseModels:
+                      text/html: Empty
+                      text/css: Empty
+                    StatusCode: '200'
+                    ResponseParameters:
+                      method.response.header.Content-Type: true
+                      method.response.header.Content-Security-Policy: true
+                      method.response.header.X-Content-Type-Options: true
+                      method.response.header.X-Frame-Options: true
+                      method.response.header.X-XSS-Protection: true
+                      method.response.header.Referrer-Policy: true
+                      method.response.header.Permissions-Policy: true
+                      method.response.header.Strict-Transport-Security: true
+                ResourceId:
+                  'Fn::If':
+                    - IsFeatureBranch
+                    - Ref: BranchResource
+                    - Ref: RootResourceId
+                RestApiId:
+                  Ref: RestApi
+            FrontendMethodTwo:
+              Type: 'AWS::ApiGateway::Method'
+              Properties:
+                AuthorizationType: NONE
+                HttpMethod: ANY
+                RequestParameters:
+                  method.request.path.proxy: true
+                Integration:
+                  ContentHandling: CONVERT_TO_TEXT
+                  IntegrationHttpMethod: GET
+                  TimeoutInMillis: 20000
+                  Type: HTTP
+                  Uri:
+                    'Fn::Join':
+                      - ''
+                      - - 'http://'
+                        - Ref: BucketName
+                        - .s3-website-us-west-1.amazonaws.com/
+                        - Ref: PackageId
+                        - .
+                        - Ref: PackageVersion
+                        - '/{proxy}'
+                  PassthroughBehavior: WHEN_NO_MATCH
+                  RequestTemplates:
+                    image/png: ''
+                  IntegrationResponses:
+                    - StatusCode: '200'
+                      ResponseParameters:
+                        method.response.header.Content-Type: integration.response.header.Content-Type
+                        method.response.header.X-Content-Type-Options: '''nosniff'''
+                        method.response.header.X-Frame-Options: '''DENY'''
+                        method.response.header.X-XSS-Protection: '''1; mode=block'''
+                        method.response.header.Referrer-Policy: '''no-referrer'''
+                        method.response.header.Permissions-Policy: >-
+                          'accelerometer=(), ambient-light-sensor=(), autoplay=(),
+                          battery=(), camera=(), cross-origin-isolated=(),
+                          display-capture=(), document-domain=(), encrypted-media=(),
+                          execution-while-not-rendered=(),
+                          execution-while-out-of-viewport=(), fullscreen=(),
+                          geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(),
+                          microphone=(), midi=(), navigation-override=(), payment=(),
+                          picture-in-picture=(), publickey-credentials-get=(),
+                          screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(),
+                          xr-spatial-tracking=(), clipboard-read=(), clipboard-write=*,
+                          gamepad=(), speaker-selection=(), conversion-measurement=(),
+                          focus-without-user-activation=(), hid=(), idle-detection=(),
+                          interest-cohort=(), serial=(), sync-script=(),
+                          trust-token-redemption=(), window-placement=(),
+                          vertical-scroll=()'
+                        method.response.header.Content-Security-Policy: >-
+                          'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
+                          object-src 'none'; default-src 'self' 'unsafe-inline'
+                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
+                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
+                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                        method.response.header.Strict-Transport-Security: '''max-age=15768000'''
+                    - StatusCode: '307'
+                      SelectionPattern: '307'
+                      ResponseParameters:
+                        method.response.header.Location: integration.response.header.Location
+                  RequestParameters:
+                    integration.request.path.proxy: method.request.path.proxy
+                MethodResponses:
+                  - ResponseModels:
+                      text/html: Empty
+                      text/css: Empty
+                    StatusCode: '200'
+                    ResponseParameters:
+                      method.response.header.Content-Type: true
+                      method.response.header.Content-Security-Policy: true
+                      method.response.header.X-Content-Type-Options: true
+                      method.response.header.X-Frame-Options: true
+                      method.response.header.X-XSS-Protection: true
+                      method.response.header.Referrer-Policy: true
+                      method.response.header.Permissions-Policy: true
+                      method.response.header.Strict-Transport-Security: true
+                  - ResponseModels:
+                      text/html: Empty
+                      text/css: Empty
+                    StatusCode: '307'
+                    ResponseParameters:
+                      method.response.header.Location: true
+                ResourceId:
+                  'Fn::If':
+                    - IsFeatureBranch
+                    - Ref: BranchResourceProxy
+                    - Ref: ResourceId
+                RestApiId:
+                  Ref: RestApi
+            'Deployment#{Octopus.Deployment.Id | Replace -}':
+              Type: 'AWS::ApiGateway::Deployment'
+              Properties:
+                RestApiId:
+                  Ref: RestApi
+              DependsOn:
+                - FrontendMethodOne
+                - FrontendMethodTwo
+          Outputs:
+            DeploymentId:
+              Description: The deployment id
+              Value:
+                Ref: 'Deployment#{Octopus.Deployment.Id | Replace -}'
+        EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "RootResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Web}"
+          },
+          {
+            ParameterKey : "PackageVersion"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "PackageId"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageId}"
+          },
+          {
+            ParameterKey : "BucketName"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+          },
+          {
+            ParameterKey : "SubPath"
+            ParameterValue : "#{WebApp.SubPath}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "RootResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RootResourceId}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Web}"
+          },
+          {
+            ParameterKey : "PackageVersion"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "PackageId"
+            ParameterValue : "#{Octopus.Action[Upload Frontend].Package[].PackageId}"
+          },
+          {
+            ParameterKey : "BucketName"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}"
+          },
+          {
+            ParameterKey : "SubPath"
+            ParameterValue : "#{WebApp.SubPath}"
+          }
+        ])
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Update Stage"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunCloudFormation"
+      name           = "Update Stage"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
+        "Octopus.Action.Aws.CloudFormationStackName" : local.api_gateway_stage_stack
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
+          Parameters:
+            EnvironmentName:
+              Type: String
+              Default: '#{Octopus.Environment.Name}'
+            DeploymentId:
+              Type: String
+              Default: 'Deployment#{DeploymentId}'
+            ApiGatewayId:
+              Type: String
+          Resources:
+            Stage:
+              Type: 'AWS::ApiGateway::Stage'
+              Properties:
+                DeploymentId: !Sub '$${DeploymentId}'
+                RestApiId: !Sub '$${ApiGatewayId}'
+                StageName: !Sub '$${EnvironmentName}'
+                Variables:
+                  indexPage: !Sub /index.html
+          Outputs:
+            StageURL:
+              Description: The url of the stage
+              Value: !Join
+                - ''
+                - - 'https://'
+                  - !Ref ApiGatewayId
+                  - .execute-api.
+                  - !Ref 'AWS::Region'
+                  - .amazonaws.com/
+                  - !Ref Stage
+                  - /
+        EOT
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+          },
+          {
+            ParameterKey : "DeploymentId"
+            ParameterValue : "#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}"
+          },
+          {
+            ParameterKey : "ApiGatewayId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+          },
+          {
+            ParameterKey : "DeploymentId"
+            ParameterValue : "#{Octopus.Action[Proxy with API Gateway].Output.AwsOutputs[DeploymentId]}"
+          },
+          {
+            ParameterKey : "ApiGatewayId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          }
+        ])
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Get Stage URL"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stage URL"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
+          STAGE_URL=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "StageURL" $${STAGE_URL}
+
+          write_highlight "Open [$${STAGE_URL}/index.html]($${STAGE_URL}/index.html) to view the frontend web app."
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
       }
     }
   }
