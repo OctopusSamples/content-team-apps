@@ -1,6 +1,5 @@
-FROM cypress/included:6.6.0
-RUN apt-get update; \
-apt-get install -y libicu63
+FROM cypress/included:9.6.1
+RUN apt-get update; apt-get install -y libicu67 zip
 RUN npm install -g inline-assets
 RUN curl -L \
     https://download.octopusdeploy.com/linux-tentacle/tentacle-6.1.1403-linux_x64.tar.gz \

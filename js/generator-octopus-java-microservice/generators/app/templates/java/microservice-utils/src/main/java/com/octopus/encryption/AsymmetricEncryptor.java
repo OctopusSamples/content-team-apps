@@ -9,8 +9,8 @@ public interface AsymmetricEncryptor {
    * Decrypt a value.
    *
    * @param value    The value to encrypt.
-   * @param privateKeyBase64 The private to encrypt the value with.
+   * @param publicKeyBase64 The private to encrypt the value with.
    * @return The decrypted value.
    */
-  String encrypt(String value, String privateKeyBase64);
+  String encrypt(String value, String publicKeyBase64);
 }

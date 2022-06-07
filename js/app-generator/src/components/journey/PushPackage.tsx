@@ -18,7 +18,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
     function createRepoName() {
-        return "AppBuilder-" + props.machine.state.context.targetPlatform;
+        return "OctopusBuilder-" + props.machine.state.context.targetPlatform;
     }
 
     const createServiceAccount = (callback: (apiKey: string, apiKeyEncrypted: boolean, server: string) => void) => {
@@ -26,8 +26,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             "data": {
                 "type": "createserviceaccount",
                 "attributes": {
-                    "username": "AppBuilder",
-                    "displayName": "App Builder Service Account",
+                    "username": "OctopusBuilder",
+                    "displayName": "Octopus Builder Service Account",
                     "isService": true,
                     "octopusServer": getOctopusServer(props.machine.state.context)
                 }
@@ -46,7 +46,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             })
             .catch(() => {
                 setLoading(false);
-                window.alert("DOH!")
+                props.machine.send("ERROR");
             });
     }
 
@@ -124,7 +124,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             })
             .catch(() => {
                 setLoading(false);
-                window.alert("DOH!")
+                props.machine.send("ERROR");
             });
     }
 

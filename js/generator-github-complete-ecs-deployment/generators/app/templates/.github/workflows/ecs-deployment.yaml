@@ -14,9 +14,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - uses: nelonoel/branch-name@v1.0.1
+
+      # This action provides a way to determine what files were changed with the last push. This allows us to work around
+      # a bug in the Octopus terraform provider where resources often have to be deleted before they are reprocessed. For
+      # example, the deployment projects must be deleted before an attempt to apply the project templates, even if nothing
+      # has changed. Deleting projects is destructive though, as you lose the releases, so we only delete and reapply if
+      # the Terraform files have been changed.
+      # See https://github.community/t/is-it-possible-to-run-the-job-only-when-a-specific-file-changes/115484/9
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v20
+
+      - name: Show changed files
+        run: echo "${{steps.changed-files.outputs.all_modified_files}}"
+        shell: bash
 
       # This main workflow file implements each stage through composable actions -
       # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
@@ -25,16 +41,6 @@ jobs:
 
       - name: Create Initial Space
         id: shared_space
-        # The App Builder will update an existing repo by placing the new code in the branch called app-builder-update.
-        # We don't trigger any builds from this branch, as it is up to the end user to merge any required changes
-        # into main.
-        # To overwrite the main branch with app-builder-update, use the "ours" merge strategy. See
-        # https://stackoverflow.com/a/2862938/157605 for more information:
-        #
-        # git checkout app-builder-update
-        # git merge -s ours main
-        # git checkout main
-        # git merge app-builder-update
         uses: ./github/shared-space
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -49,6 +55,9 @@ jobs:
 
       - name: Create Shared Resources
         id: shared_resources
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'shared-infrastructure')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/shared-infrastructure
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -64,6 +73,10 @@ jobs:
 
       - name: Create the Products ECR repository
         id: ecr_products_resources
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/aws-ecr-<%= products_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -81,6 +94,10 @@ jobs:
 
       - name: Create the Frontend ECR repository
         id: ecr_frontend_resources
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'js')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/aws-ecr-<%= frontend_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -98,6 +115,10 @@ jobs:
 
       - name: Create the Postman worker ECR repository
         id: ecr_postman_resources
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'java')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -115,6 +136,10 @@ jobs:
 
       - name: Create the Cypress worker ECR repository
         id: ecr_cypress_resources
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'aws-ecr')
+          || contains(steps.changed-files.outputs.all_modified_files, 'js')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/aws-ecr-<%= postman_repository %>
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -133,6 +158,9 @@ jobs:
       - name: Create the ECR feed
         id: ecr_feed
         uses: ./github/ecr-feed
+        if: >-
+          contains(steps.changed-files.outputs.all_modified_files, 'ecr-feed')
+          || contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
@@ -144,6 +172,7 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create ECS Deployment Project
+        if: contains(steps.changed-files.outputs.all_modified_files, 'ecs-deployment')
         uses: ./github/ecs-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
@@ -171,8 +200,10 @@ jobs:
 
       - name: Build JavaScript Frontend
         uses: ./github/js-frontend
+        if: contains(steps.changed-files.outputs.all_modified_files, 'js')
         with:
           image_tag: ${{ steps.ecr_frontend_resources.outputs.aws_ecr_repository_url }}
+          cypress_image_tag: ${{ steps.ecr_cypress_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: "<%= aws_region %>"
@@ -186,6 +217,7 @@ jobs:
 
       - name: Build Java Microservice
         uses: ./github/java-microservice
+        if: contains(steps.changed-files.outputs.all_modified_files, 'java')
         with:
           image_tag: ${{ steps.ecr_products_resources.outputs.aws_ecr_repository_url }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_infrastructure_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_infrastructure_lifecycle_id
-  name                                 = "Deploy EKS Cluster"
+  name                                 = "EKS Cluster"
   project_group_id                     = octopusdeploy_project_group.infrastructure_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -100,7 +100,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           nodeGroups:
             - name: ng-1
               instanceType: t3a.small
-              desiredCapacity: 2
+              desiredCapacity: 3
               volumeSize: 80
               iam:
                 withAddonPolicies:
@@ -108,13 +108,13 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           EOF
 
             # Use eksctl to create the new cluster.
-            echo "Creating the EKS cluster"
+            echo "Creating the EKS cluster (this can take over 20 minutes to complete)"
             echo "##octopus[stdout-verbose]"
             eksctl create cluster -f /build/cluster.yaml
 
             if [[ $? -ne 0 ]]; then
               echo "##octopus[stdout-error]"
-              echo "[AppBuilder-Infrastructure-EKSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-eksfailed) The cluster was not created successfully. Expand the verbose logs for more details, or click the error code link for more information."
+              write_highlight "[AppBuilder-Infrastructure-EKSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-eksfailed) The cluster was not created successfully. Expand the verbose logs for more details, or click the error code link for more information."
               exit 1
             fi
 
@@ -154,11 +154,20 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           docker pull bitnami/kubectl 2>&1
 
           # Download the IAM authenticator from https://github.com/kubernetes-sigs/aws-iam-authenticator
-          curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
+          for i in {1..5}
+          do
+            echo "Downloading aws-iam-authenticator"
+            curl -o aws-iam-authenticator -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.7/aws-iam-authenticator_0.5.7_linux_amd64 2>&1
+            ls -la aws-iam-authenticator
+            # Let the bitnami/kubectl user execute this file
+            chmod 755 aws-iam-authenticator
+            ./aws-iam-authenticator version
+            if [[ "$?" == "0" ]]
+            then
+              break
+            fi
+          done
           echo "##octopus[stdout-default]"
-
-          # Let the bitnami/kubectl user execute this file
-          chmod 755 aws-iam-authenticator
 
           # Alias the docker run commands
           shopt -s expand_aliases
@@ -212,6 +221,8 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           sed -i.bak -e "s|      - get-token|      - token|" ./kubeconfig
           sed -i.bak -e "s|      - --cluster-name|      - -i|" ./kubeconfig
           sed -i.bak -e "s|      command: aws|      command: aws-iam-authenticator|" ./kubeconfig
+
+          cat ./kubeconfig
 
           # Let the bitnami/kubectl user read this file
           chmod 644 kubeconfig
@@ -295,7 +306,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
-            name=\"$(encode_servicemessagevalue "App Builder EKS Cluster Backend $${FIXED_ENVIRONMENT}")\" \
+            name=\"$(encode_servicemessagevalue "Octopus Workflow Builder EKS Cluster Backend $${FIXED_ENVIRONMENT}")\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Backend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \
@@ -351,7 +362,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           aws eks describe-cluster --name app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT} > clusterdetails.json
 
           echo "##octopus[create-kubernetestarget \
-            name=\"$(encode_servicemessagevalue "App Builder EKS Cluster Frontend $${FIXED_ENVIRONMENT}")\" \
+            name=\"$(encode_servicemessagevalue "Octopus Workflow Builder EKS Cluster Frontend $${FIXED_ENVIRONMENT}")\" \
             octopusRoles=\"$(encode_servicemessagevalue 'Kubernetes Frontend,Kubernetes')\" \
             clusterName=\"$(encode_servicemessagevalue "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}")\" \
             clusterUrl=\"$(encode_servicemessagevalue "$(cat clusterdetails.json | jq -r '.cluster.endpoint')")\" \

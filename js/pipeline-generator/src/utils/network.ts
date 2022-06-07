@@ -4,7 +4,7 @@ import {getAccessToken} from "./security";
 import {UtmParams} from "./tracking";
 
 export function isBranchingEnabled() {
-    return (localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false";
+    return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
 }
 
 export function getBranchingRules() {

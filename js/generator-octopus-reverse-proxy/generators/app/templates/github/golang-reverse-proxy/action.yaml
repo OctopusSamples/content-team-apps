@@ -1,0 +1,93 @@
+name: Docker Build and Push
+description: Build the Java microservice
+inputs:
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  run_number:
+    required: true
+    description: The GitHub Actions Workflow run number
+  octopus_space:
+    description: 'The Octopus space name'
+    required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+  github_token:
+    description: 'The github token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.17
+
+    - name: Install Dependencies
+      run: go get ./...
+      shell: bash
+      working-directory: golang/reverse-proxy
+
+    - name: Build app
+      run: go build ./cmd/lambda/main.go
+      shell: bash
+      working-directory: golang/reverse-proxy
+
+    - name: Build and push lambda package
+      run: |
+        zip reverse-proxy-lambda.${{ steps.determine_version.outputs.semVer }}.zip main
+        octo push \
+            --package reverse-proxy-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
+            --server ${{ inputs.octopus_server }} \
+            --apiKey ${{ inputs.octopus_apikey }} \
+            --space "${{ inputs.octopus_space }}" \
+            --overwrite-mode OverwriteExisting
+      shell: bash
+      working-directory: golang/reverse-proxy

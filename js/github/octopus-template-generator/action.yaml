@@ -74,13 +74,25 @@ runs:
       with:
         version: latest
 
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Creating a prerelease from the branch
+      run: |
+        PRERELEASE="${{ env.BRANCH_NAME != 'main' && format('-{0}', env.BRANCH_NAME) || '' }}"
+        echo PRERELEASE=${PRERELEASE////-} >> $GITHUB_ENV
+        CHANNEL="${{ env.BRANCH_NAME != 'main' && 'Feature Branch' || 'Default' }}"
+        echo CHANNEL=${CHANNEL} >> $GITHUB_ENV
+      shell: bash
+
     - name: Install CycloneDX
       run: npm install -g @cyclonedx/bom
       shell: bash
       working-directory: js/octopus-template-generator
 
     - name: Install Dependencies
-      run: npm install
+      run: |
+        npm cache clean --force
+        npm install
       shell: bash
       working-directory: js/octopus-template-generator
 
@@ -195,15 +207,36 @@ runs:
         output_path: octopus
         octopus_space: "Content Team"
 
-    - name: Create Octopus Release
+    - name: Create Mainline Octopus Release
+      if: ${{ env.BRANCH_NAME == 'main' }}
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
         project: Octopus Template Generator
         server: ${{ inputs.octopus_server }}
         deploy_to: Development
-        packages: octopus-template-generator:${{ steps.determine_version.outputs.semVer }}
+        packages: |
+          octopus-template-generator-lambda:${{ steps.determine_version.outputs.semVer }}
+          octopus-template-generator-lambda-sbom:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
         wait_for_deployment: true
-        timeout: 1800
+        deployment_timeout: 00:30:00
         release_number: ${{ steps.determine_version.outputs.semVer }}
+        channel: Mainline
+
+    - name: Create Feature Branch Octopus Release
+      if: ${{ env.BRANCH_NAME != 'main' }}
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        project: Octopus Template Generator
+        server: ${{ inputs.octopus_server }}
+        deploy_to: Development
+        packages: |
+          octopus-template-generator-lambda:${{ steps.determine_version.outputs.semVer }}
+          octopus-template-generator-lambda-sbom:${{ steps.determine_version.outputs.semVer }}
+        space: "Content Team"
+        wait_for_deployment: true
+        deployment_timeout: 00:30:00
+        release_number: ${{ steps.determine_version.outputs.semVer }}
+        channel: Feature Branches

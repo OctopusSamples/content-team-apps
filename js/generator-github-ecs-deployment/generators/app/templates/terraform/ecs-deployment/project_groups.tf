@@ -1,6 +1,6 @@
 resource "octopusdeploy_project_group" "backend_project_group" {
   description  = "The backend service."
-  name         = "Kubernetes Backend"
+  name         = "Service Backend"
 }
 
 output "backend_project_group_id" {
@@ -9,7 +9,7 @@ output "backend_project_group_id" {
 
 resource "octopusdeploy_project_group" "frontend_project_group" {
   description  = "The frontend UI."
-  name         = "Kubernetes Frontend"
+  name         = "Service Frontend"
 }
 
 output "frontend_project_group_id" {
@@ -17,7 +17,7 @@ output "frontend_project_group_id" {
 }
 
 resource "octopusdeploy_project_group" "infrastructure_project_group" {
-  description  = "Builds the Kubernetes cluster."
+  description  = "Builds the ECS cluster."
   name         = "Infrastructure"
 }
 

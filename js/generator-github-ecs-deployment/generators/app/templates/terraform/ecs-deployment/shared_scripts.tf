@@ -20,13 +20,15 @@ locals {
 
       # ecs-cli creates two public subnets, a VPC, and the VPC security group. We need to find those resources,
       # as we'll place our new ECS services in them.
-      SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
-      SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
-      VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
+      SUBNETA=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[0].SubnetId')
+      SUBNETB=$(aws ec2 describe-subnets --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Subnets[1].SubnetId')
+      VPC=$(aws ec2 describe-vpcs --filter "Name=tag:aws:cloudformation:stack-name,Values=amazon-ecs-cli-setup-app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}" | jq -r '.Vpcs[0].VpcId')
       SECURITYGROUP=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$${VPC} Name=group-name,Values=default | jq -r '.SecurityGroups[].GroupId')
 
       # The load balancer listener was created by the infrastructure deployment project, and is read from the CloudFormation stack outputs.
-      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text)
+      # Note these values will be empty for the first run of the ecs infrastructure script.
+      LISTENER=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='Listener'].OutputValue" --output text 2>/dev/null)
+      DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text 2>/dev/null)
 
       echo "##octopus[stdout-default]"
 
@@ -35,17 +37,19 @@ locals {
       echo "Found Subnet B: $${SUBNETB}"
       echo "Found VPC: $${VPC}"
       echo "Found Listener: $${LISTENER}"
+      echo "Found Main Load Balancer DNS Name: $${DNSNAME}"
 
       set_octopusvariable "SecurityGroup" "$${SECURITYGROUP}"
       set_octopusvariable "SubnetA" "$${SUBNETA}"
       set_octopusvariable "SubnetB" "$${SUBNETB}"
       set_octopusvariable "Vpc" "$${VPC}"
-      set_octopusvariable "ClusterName" "app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}"
+      set_octopusvariable "ClusterName" "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}"
       set_octopusvariable "FixedEnvironment" "$${FIXED_ENVIRONMENT}"
       set_octopusvariable "Listener" $${LISTENER}
+      set_octopusvariable "DNSName" "$${DNSNAME}"
 
       if [[ -z $${SECURITYGROUP} || -z $${SUBNETA} || -z $${SUBNETB} ]]; then
-        echo "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
+        write_highlight "[AppBuilder-Infrastructure-ECSResourceLookupFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsresourcelookupfailed) Failed to find one of the resources created with the ECS cluster."
         exit 1
       fi
     EOT
@@ -79,10 +83,10 @@ locals {
 
       set_octopusvariable "VerificationResult" $SUCCESS
 
-      if [[  $SUCCESS -ne 0 ]]; then
-        >&2 echo "Vulnerabilities were detected"
+      if [[ $SUCCESS -ne 0 ]]; then
+        >&2 echo "Critical vulnerabilities were detected"
       else
-        echo "No vulnerabilities were detected"
+        echo "No critical vulnerabilities were detected"
       fi
 
       exit 0

@@ -8,7 +8,7 @@ resource "octopusdeploy_project" "deploy_infrastructure_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_infrastructure_lifecycle_id
-  name                                 = "Create ECS Cluster"
+  name                                 = "ECS Cluster"
   project_group_id                     = octopusdeploy_project_group.infrastructure_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -88,34 +88,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
           FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
 
           # Create the cluster using the instructions from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
-          EXISTING=$(aws iam list-roles --max-items 10000 | jq -r '.Roles[] | select(.RoleName == "ecsTaskExecutionRole") | .Arn')
-          if [[ -z "$${EXISTING}" ]]; then
-            echo "Creating IAM role"
-            echo "##octopus[stdout-verbose]"
-
-            cat <<EOF > ecsTaskExecutionRole.json
-            {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "",
-                  "Effect": "Allow",
-                  "Principal": {
-                    "Service": "ecs-tasks.amazonaws.com"
-                  },
-                  "Action": "sts:AssumeRole"
-                }
-              ]
-            }
-          EOF
-
-            aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://build/ecsTaskExecutionRole.json
-            aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-            echo "##octopus[stdout-default]"
-          else
-            echo "IAM role already exists with ARN $${EXISTING}"
-          fi
-
           # Find any existing cluster with the name "app-builder".
           EXISTINGCLUSTER=$(aws ecs list-clusters | jq -r ".clusterArns[] | select(. | endswith(\"/app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}\"))")
 
@@ -132,7 +104,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
 
             if [[ $RESULT -ne 0 ]]; then
               echo "##octopus[stdout-default]"
-              echo "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
+              write_highlight "[AppBuilder-Infrastructure-ECSFailed](https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-ecsfailed) Failed to create the cluster with ecs-cli."
               exit 1
             fi
 
@@ -151,29 +123,29 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             echo "ECS Cluster already exists with ARN $${EXISTINGCLUSTER}"
           fi
 
-          # Create the dyanmic target.
+          # An example of how to create the ECS dyanmic target.
           # https://octopus.com/docs/infrastructure/deployment-targets/dynamic-infrastructure/new-octopustarget
           # Note that the ECS deployments are done via CloudFormation in this example project, which does not require
           # an ECS target. However, if you wish to use the "Deploy Amazon ECS Service", this target can be used.
-          read -r -d '' INPUTS <<EOF
-          {
-              "clusterName": "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}",
-              "authentication": {
-                "credentials" : {
-                  "type": "account",
-                  "account": "${var.octopus_aws_account_id}"
-                },
-                "role": {
-                  "type": "noAssumedRole"
-                }
-              },
-              "region": "$${AWS_DEFAULT_REGION}"
-          }
-          EOF
+          #read -r -d '' INPUTS <<EOF
+          #{
+          #    "clusterName": "app-builder-${var.github_repo_owner}-$${FIXED_ENVIRONMENT}",
+          #    "authentication": {
+          #      "credentials" : {
+          #        "type": "account",
+          #        "account": "${var.octopus_aws_account_id}"
+          #      },
+          #      "role": {
+          #        "type": "noAssumedRole"
+          #      }
+          #    },
+          #    "region": "$${AWS_DEFAULT_REGION}"
+          #}
+          #EOF
 
-          echo "Creating ECS target"
-          echo "##octopus[stdout-verbose]"
-          new_octopustarget --update-if-existing -n "app-builder" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "ECS Cluster"
+          #echo "Creating ECS target"
+          #echo "##octopus[stdout-verbose]"
+          #new_octopustarget --update-if-existing -n "app-builder" -t "aws-ecs-target" --inputs "$${INPUTS}" --roles "ECS Cluster"
         EOT
       }
     }
@@ -217,17 +189,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
         data.octopusdeploy_environments.development.environments[0].id,
         data.octopusdeploy_environments.production.environments[0].id
       ]
-      package {
-        name                      = local.backend_package_name
-        package_id                = var.backend_docker_image
-        feed_id                   = var.octopus_k8s_feed_id
-        acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
-        properties                = {
-          "SelectionMode" : "immediate",
-          "Purpose" : "DockerImageReference"
-        }
-      }
 
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
@@ -263,7 +224,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             ApplicationLoadBalancer:
               Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
               Properties:
-                Name: "ECS-LB-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}"
+                Name: "ECS-LB-Shared-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}"
                 Scheme: "internet-facing"
                 Type: "application"
                 Subnets:

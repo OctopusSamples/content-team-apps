@@ -13,7 +13,7 @@ interface JsonAPILink {
     }
 }
 
-interface AuditsCollection {
+export interface AuditsCollection {
     data: Audit[],
     links: {
         first: JsonAPILink,
@@ -23,7 +23,7 @@ interface AuditsCollection {
     }
 }
 
-interface Audit {
+export interface Audit {
     id: number,
     attributes: {
         subject: string,

@@ -14,12 +14,17 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
         if (props.machine.state) {
             props.machine.state.context.targetPlatform = platform;
 
+            // Match the platform to the Yeoman generator
             if (props.machine.state.context.targetPlatform === "EKS") {
                 props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-eks-deployment"
             }
 
             if (props.machine.state.context.targetPlatform === "ECS") {
                 props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-ecs-deployment"
+            }
+
+            if (props.machine.state.context.targetPlatform === "LAM") {
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-lambda-deployment"
             }
         }
         props.machine.send(state);
@@ -52,9 +57,9 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                                 onClick={() => next("ECS", "ECS")}>
                             {"AWS Elastic Compute Service (ECS)"}
                         </Button>
-                        <Button sx={buttonStyle} variant="outlined" disabled={true}
+                        <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("LAMBDA", "LAM")}>
-                            {"AWS Lambda (Coming soon)"}
+                            {"AWS Lambda"}
                         </Button>
                     </Grid>
                 </Grid>

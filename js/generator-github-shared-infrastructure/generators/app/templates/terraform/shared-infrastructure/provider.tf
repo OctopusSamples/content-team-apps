@@ -2,7 +2,7 @@ terraform {
   required_providers {
     octopusdeploy = {
       source  = "OctopusDeployLabs/octopusdeploy"
-      version = "~> 0.7.68"
+      version = "0.7.70"
     }
     aws = {
       source = "hashicorp/aws"

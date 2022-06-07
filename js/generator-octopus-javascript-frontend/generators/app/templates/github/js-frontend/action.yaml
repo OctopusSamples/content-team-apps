@@ -71,6 +71,11 @@ runs:
       with:
         additionalArguments: /overrideconfig mode=Mainline
 
+    - name: Install modules
+      run: yarn install
+      shell: bash
+      working-directory: js/frontend
+
     - name: Instance CycloneDX
       run: npm install -g @cyclonedx/bom
       shell: bash
@@ -105,11 +110,6 @@ runs:
       shell: bash
       working-directory: js/frontend
 
-    - name: Install modules
-      run: yarn install
-      shell: bash
-      working-directory: js/frontend
-
     - name: Build App
       run: yarn run build
       shell: bash
@@ -117,6 +117,7 @@ runs:
 
     - name: Build image
       uses: mamezou-tech/buildpacks-action@master
+      if: inputs.image_tag != ''
       with:
         image: '${{ inputs.image_tag }}'
         tag: '${{ steps.determine_version.outputs.semVer }}'
@@ -128,7 +129,29 @@ runs:
     # The Docker image is built and pushed. It uses the same tag as the SBOM package version to allow us to match the
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
-      run: docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+      run: |
+        if [[ -n "${{ inputs.image_tag }}" ]]
+        then
+          docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+          docker push ${{ inputs.image_tag }}
+        fi
+      shell: bash
+      working-directory: js/frontend
+
+    - name: Build and push static web package
+      run: |
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          pushd build
+          zip -r ../javascript-frontend.${{ steps.determine_version.outputs.semVer }}.zip .
+          popd
+          octo push \
+            --package javascript-frontend.${{ steps.determine_version.outputs.semVer }}.zip \
+            --server ${{ inputs.octopus_server }} \
+            --apiKey ${{ inputs.octopus_apikey }} \
+            --space "${{ inputs.octopus_space }}" \
+            --overwrite-mode OverwriteExisting
+        fi
       shell: bash
       working-directory: js/frontend
 
@@ -153,10 +176,9 @@ runs:
         --id octopub-frontend-cypress
         --version ${{ steps.determine_version.outputs.semVer }}
         --format zip
-        --include **/*
-        --basePath cypress-frontend
+        --outFolder ..
       shell: bash
-      working-directory: js
+      working-directory: js/cypress-frontend
 
     # The Cypress package is pushed to the Octopus built-in feed.
     - name: Push Cypress Package
@@ -174,9 +196,28 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy Frontend Service"
+        --project "Frontend WebApp"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --package frontend:${{ steps.determine_version.outputs.semVer }}
+        --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
+      shell: bash
+
+    - name: Create a release
+      if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'app-builder-update' }}
+      run: >
+        octo create-release
+        --project "Frontend Feature Branch WebApp"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --package frontend:${{ steps.determine_version.outputs.semVer }}
+        --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
+        --deployTo "Development (App)"
+        --waitForDeployment
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
       shell: bash

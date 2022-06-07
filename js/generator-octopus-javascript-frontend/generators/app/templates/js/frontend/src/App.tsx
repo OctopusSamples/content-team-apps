@@ -44,7 +44,7 @@ function App(settings: RuntimeSettings) {
     let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
     theme = responsiveFontSizes(theme);
 
-    const [developerMode, setDeveloperMode] = useState<boolean>(false);
+    const [developerMode, setDeveloperMode] = useState<boolean>(localStorage.getItem("developerMode") === "true");
     const [partition, setPartition] = useState<string>("");
     const [allBookId, setAllBookId] = useState<string>("");
 

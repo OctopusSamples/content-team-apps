@@ -1,0 +1,175 @@
+name: Terraform Apply
+description: Create an ECS deployment project
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_space:
+    description: 'The name of the app builder space'
+    required: true
+  octopus_k8s_feed_id:
+    description: 'The ID of feed used to supply the K8s deployment. This can be a plain docker feed, or an ECR feed.'
+    required: true
+  backend_docker_image:
+    description: 'The image to be deployed'
+    required: true
+  frontend_docker_image:
+    description: 'The image to be deployed'
+    required: true
+  postman_docker_image:
+    description: 'The worker image hosting Postman'
+    required: true
+  cypress_docker_image:
+    description: 'The worker image hosting Cypress'
+    required: true
+  octopus_aws_account_id:
+    description: 'The AWS account id'
+    required: true
+  octopus_dockerhub_feed_id:
+    description: 'The ID of Dockerhub feed'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The ID of Application lifecycle'
+    required: true
+  octopus_infrastructure_lifecycle_id:
+    description: 'The ID of Infrastructure lifecycle'
+    required: true
+  octopus_library_variable_set_id:
+    description: 'The ID of Octopus library variable set'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  repository_owner:
+    description: 'The github organization'
+    required: true
+  terraform_bucket_suffix:
+    description: 'The unique suffix applied to the Terraform state S3 bucket'
+    required: true
+  terraform_bucket_region:
+    description: 'The region in which the Terraform state bucket resides'
+    required: true
+  github_repo:
+    description: 'The github repo'
+    required: true
+  github_repo_owner:
+    description: 'The github repo owner'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.terraform_bucket_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
+    # CLI tooling to create a unique bucket before Terraform is run.
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.terraform_bucket_region }}
+      with:
+        input: terraform/lambda-deployment/backend.tf
+        output: terraform/lambda-deployment/backend.tf
+
+    # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
+    # we need to manually query the new space for the built-in feed ID.
+    - name: Find the Built-In Feed ID
+      id: octopus_builtin_feed_id
+      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)' | jq -r '.Items[0].Id')\""
+      shell: bash
+
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
+    # deletes project releases.
+    - name: Delete existing projects
+      run: |
+        declare -a arr=("API%20Gateway" "Backend%20Service" "Frontend%20WebApp" "Frontend%20Feature%20Branch%20WebApp" "Backend%20Feature%20Branch%20Service")
+        
+        for i in "${arr[@]}"
+        do
+          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects?name=$i | jq -r ".Items[0].Id")
+          if [[ -n "$ID" && "$ID" != "null" ]]; then
+            echo "Deleting project $i"
+            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          fi
+        done
+      shell: bash
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/lambda-deployment
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply -auto-approve -var="cypress_docker_image=${{ inputs.cypress_docker_image }}" -var="postman_docker_image=${{ inputs.postman_docker_image }}" -var="octopus_server=${{ inputs.octopus_server }}" -var="octopus_apikey=${{ inputs.octopus_apikey }}" -var="octopus_space_id=${{ inputs.octopus_space_id }}" -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}" -var="octopus_infrastructure_lifecycle_id=${{ inputs.octopus_infrastructure_lifecycle_id }}" -var="frontend_docker_image=${{ inputs.frontend_docker_image }}" -var="backend_docker_image=${{ inputs.backend_docker_image }}" -var="octopus_library_variable_set_id=${{ inputs.octopus_library_variable_set_id }}" -var="aws_region=${{ inputs.aws_region }}" -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}" -var="octopus_k8s_feed_id=${{ inputs.octopus_k8s_feed_id }}" -var="github_repo=${{ inputs.github_repo }}" -var="github_repo_owner=${{ inputs.github_repo_owner }}" -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}"
+        
+        if [[ $? -ne 0 ]]; then
+          echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."
+          exit 1
+        fi
+      working-directory: terraform/lambda-deployment
+      shell: bash
+
+    - name: Create the cluster
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "API Gateway"
+        --deployTo "Development (App)"
+        --version "1.0.0"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+      shell: bash

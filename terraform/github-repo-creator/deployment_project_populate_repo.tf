@@ -440,7 +440,7 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
                     LAMBDA_HANDLER: PopulateGithubRepo
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-                MemorySize: 512
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
@@ -453,7 +453,7 @@ resource "octopusdeploy_deployment_process" "populate_repo_project" {
                 FunctionName: !Ref ApplicationLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 5
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:

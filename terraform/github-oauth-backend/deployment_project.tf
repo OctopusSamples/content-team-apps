@@ -408,7 +408,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     GITHUB_LOGIN_REDIRECT: !Ref GithubLoginRedirect
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
@@ -421,7 +421,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 FunctionName: !Ref OauthProxyLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 5
             OauthProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -677,7 +677,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     GITHUB_LOGIN_REDIRECT: !Ref GithubLoginRedirect
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
@@ -685,12 +685,12 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 Runtime: provided
                 Timeout: 30
             'LambdaVersion#{Octopus.Deployment.Id | Replace -}':
-            Type: 'AWS::Lambda::Version'
-            Properties:
-              FunctionName: !Ref OauthProxyLambda
-              Description: !Ref LambdaDescription
-              ProvisionedConcurrencyConfig:
-                ProvisionedConcurrentExecutions: 20
+              Type: 'AWS::Lambda::Version'
+              Properties:
+                FunctionName: !Ref OauthProxyLambda
+                Description: !Ref LambdaDescription
+                ProvisionedConcurrencyConfig:
+                  ProvisionedConcurrentExecutions: 5
             OauthProxyLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:

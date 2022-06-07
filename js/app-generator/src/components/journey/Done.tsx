@@ -7,8 +7,15 @@ import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ErrorIcon from '@mui/icons-material/Error';
 import {generateSpaceName, getOctopusServer} from "../../utils/naming";
 import Cookies from "js-cookie";
+
+/**
+ * Allow up to 5 errors accessing the space proxy. Anything more than that, and we just assume
+ * we won't get a good result.
+ */
+const MAX_SPACE_ERRORS = 5;
 
 const Done: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -18,6 +25,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     const [workflowUrl, setWorkflowUrl] = useState<string | null>(null);
     const [workflowCompleted, setWorkflowCompleted] = useState<boolean>(false);
     const [spaceId, setSpaceId] = useState<string | null>(null);
+    const [spaceErrorCount, setSpaceErrorCount] = useState<number>(0);
 
     const repoUrlValid = () => {
         return !!props.machine.state.context.apiRepoUrl;
@@ -31,10 +39,10 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         // No need to check once the repo is found
         if (repoCreated) {
-            return true;
+            return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject.data.id) {
@@ -54,10 +62,10 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
 
         // No need to check once the repo is found
         if (workflowCompleted) {
-            return true;
+            return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject?.data?.id) {
@@ -80,9 +88,9 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     }
 
     const checkSpaceExists = () => {
-        // No need to check once the space is found
-        if (spaceId) {
-            return true;
+        // No need to check once the space is found, or if we encountered too many errors to continue.
+        if (spaceId || spaceErrorCount >= MAX_SPACE_ERRORS) {
+            return;
         }
 
         const spaceName = generateSpaceName(
@@ -99,14 +107,22 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             + "instance==" + encodeURIComponent(getOctopusServer(props.machine.state.context))
             + "&apiKey=" + encodeURIComponent(manuallyEnteredApiKey);
 
-        getJsonApi(url, context.settings, null)
+        getJsonApi(url, context.settings, null, 0)
             .then(body => {
+                // reset the error count
+                setSpaceErrorCount(0);
+
+                // Try and find the space
                 const bodyObject = body as any;
                 if (bodyObject.data.length !== 0) {
                     setSpaceId(bodyObject.data[0].attributes.Id);
                 }
+
             })
-            .catch(() => {
+            .catch(e => {
+                // count the consecutive errors
+                setSpaceErrorCount(spaceErrorCount + 1);
+                console.log(e);
                 setSpaceId(null);
             });
     }
@@ -131,7 +147,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
     // Make sure people don't exit away unexpectedly
     window.addEventListener("beforeunload", (ev) => {
         ev.preventDefault();
-        return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the App Builder.';
+        return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the Octopus Builder.';
     });
 
     return (
@@ -150,7 +166,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
                         <h2>Your CI/CD pipeline is now being configured.</h2>
                         <p>
-                            The progress of the various resources created by the App Builder are shown below:
+                            The progress of the various resources created by the Octopus Workflow Builder are shown below:
                         </p>
                         <table>
                             <tr>
@@ -171,7 +187,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                         application source code.
                                     </p></span>}
                                     {!repoUrlValid() && <span>There was an error querying the GitHub repo. Please report
-                                        this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"}>here</a>.</span>}
+                                        this issue <a href={"https://github.com/OctopusSamples/content-team-apps/issues"} target={"_blank"} rel={"noreferrer"}>here</a>.</span>}
                                 </td>
                                 <td>{repoUrlValid() && repoCreated &&
                                     <Button sx={openResourceStyle} variant="outlined"
@@ -180,22 +196,40 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                     </Button>}
                                 </td>
                             </tr>
-                            <tr>
-                                <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
-                                    {!spaceId && <CircularProgress size={32} sx={iconStyle}/>}</td>
-                                <td><h3>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
-                                    Octopus space.</h3>
-                                    <p>This is the space that will host the deployment project and other resources required to deploy the sample
-                                        application.</p>
-                                    <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
-                                </td>
-                                <td>{!!spaceId &&
-                                    <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
-                                        {"Open Space >"}
-                                    </Button>}
-                                </td>
-                            </tr>
+                            {spaceErrorCount < MAX_SPACE_ERRORS &&
+                                <tr>
+                                    <td>{!!spaceId && <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
+                                        {!spaceId && <CircularProgress size={32} sx={iconStyle}/>}</td>
+                                    <td>
+                                        <h3>{!!spaceId && <span>Created</span>}{!spaceId && <span>Creating</span>} the
+                                            Octopus space.</h3>
+                                        <p>This is the space that will host the deployment project and other resources required to deploy the sample
+                                            application.</p>
+                                        <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
+                                    </td>
+                                    <td>{!!spaceId &&
+                                        <Button sx={openResourceStyle} variant="outlined"
+                                                onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
+                                            {"Open Space >"}
+                                        </Button>}
+                                    </td>
+                                </tr>
+                            }
+                            {spaceErrorCount >= MAX_SPACE_ERRORS &&
+                                <tr>
+                                    <td><ErrorIcon sx={iconStyle}/></td>
+                                    <td>
+                                        <h3>Failed to detect Octopus space.</h3>
+                                        <p>
+                                            Something went wrong and we were unable to determine the state of the newly created Octopus space. The space
+                                            may still be created, so look for a space with your GitHub username in it once the GitHub Actions workflow
+                                            completes.
+                                        </p>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            }
                             <tr>
                                 <td>{workflowCompleted &&
                                     <CheckCircleOutlineOutlinedIcon sx={iconStyle}/>}
@@ -220,9 +254,24 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             When the GitHub Actions workflow is completed, your Octopus instance is fully populated and ready to perform your first deployment.
                         </p>
                         <p>
-                            Watch the video below to learn how to make the most of your Octopus instance.
+                            We'd also love your feedback! Please leave a comment
+                            on <a href={"https://github.com/OctopusSamples/content-team-apps/issues/13"} target={"_blank"} rel={"noreferrer"}>this GitHub issue</a> to
+                            to let us know how the Octopus Workflow Builder worked for you.
                         </p>
-                        <iframe width="100%" height="522" src="https://www.youtube.com/embed/rvhUkW2k10g" title="YouTube video player" frameBorder="0"
+                        <p>
+                            Watch the videos below to learn how to make the most of your Octopus instance.
+                        </p>
+                        <h3>Introduction</h3>
+                        <iframe width="100%" height="522" src="https://oc.to/QoaFL7" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Testing</h3>
+                        <iframe width="100%" height="522" src="https://oc.to/LdAw6T" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Security Testing</h3>
+                        <iframe width="100%" height="522" src="https://oc.to/tOL83r" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                        <h3>Feature Branching</h3>
+                        <iframe width="100%" height="522" src="https://oc.to/JgsP6z" title="YouTube video player" frameBorder="0" style={{marginTop: "16px"}}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                     </Grid>
                 </Grid>

@@ -110,7 +110,22 @@ resource "octopusdeploy_variable" "cloudformation_code_url" {
   description = "The URL that GitHub will send users back to once the OAuth token has been retrieved."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/"
+  value = "https://octopusworkflowbuilder-test.octopus.com/"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_code_url_prod" {
+  name = "Client.ClientRedirect"
+  type = "String"
+  description = "The URL that GitHub will send users back to once the OAuth token has been retrieved."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com/"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_login_redirect" {
@@ -119,7 +134,22 @@ resource "octopusdeploy_variable" "cloudformation_login_redirect" {
   description = "The URL that GitHub will call with the OAuth code."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/oauth/github/code"
+  value = "https://octopusworkflowbuilder-test.octopus.com/oauth/github/code"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_login_redirect_prod" {
+  name = "GitHub.LoginRedirect"
+  type = "String"
+  description = "The URL that GitHub will call with the OAuth code."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com/oauth/github/code"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_encryption_key_production" {

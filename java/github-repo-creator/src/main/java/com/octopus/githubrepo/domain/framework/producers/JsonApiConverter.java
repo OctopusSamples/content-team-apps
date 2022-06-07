@@ -3,6 +3,7 @@ package com.octopus.githubrepo.domain.framework.producers;
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.SerializationFeature;
+import com.octopus.githubrepo.domain.entities.Audit;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.entities.GenerateTemplate;
 import com.octopus.githubrepo.domain.entities.Health;
@@ -25,7 +26,8 @@ public class JsonApiConverter {
         PopulateGithubRepo.class,
         CreateGithubCommit.class,
         GenerateTemplate.class,
-        Health.class);
+        Health.class,
+        Audit.class);
     resourceConverter.disableDeserializationOption(DeserializationFeature.REQUIRE_RESOURCE_ID);
     resourceConverter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);
     resourceConverter.enableSerializationOption(SerializationFeature.INCLUDE_RELATIONSHIP_ATTRIBUTES);

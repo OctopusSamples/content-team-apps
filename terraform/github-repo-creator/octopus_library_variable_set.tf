@@ -77,6 +77,15 @@ resource "octopusdeploy_variable" "aws_cloudformation_commit_creator" {
   value = "GitHubCreateCommit"
 }
 
+resource "octopusdeploy_variable" "aws_cloudformation_commit_creator_app_client" {
+  name = "CloudFormation.OctopusCreateGithubCommitAppClient"
+  type = "String"
+  description = "The name of the stack creating the Cognito app client."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "GitHubCreateCommitAppClient"
+}
+
 resource "octopusdeploy_variable" "cloudformation_apigateway" {
   name = "CloudFormationName.AppBuilderApiGateway"
   type = "String"
@@ -176,7 +185,22 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_templategenera
   description = "The URL of the template generation service."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
+  value = "https://octopusworkflowbuilder-test.octopus.com"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_externalservice_templategenerator_prod" {
+  name = "ExternalService.TemplateGenerator"
+  type = "String"
+  description = "The URL of the template generation service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator" {
@@ -185,7 +209,22 @@ resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator
   description = "The URL of the repo population service."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
-  value = "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/#{Octopus.Environment.Name}"
+  value = "https://octopusworkflowbuilder-test.octopus.com"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_externalservice_repo_populator_prod" {
+  name = "ExternalService.RepoPopulator"
+  type = "String"
+  description = "The URL of the repo population service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
 }
 
 resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_production" {
@@ -207,6 +246,30 @@ resource "octopusdeploy_variable" "cloudformation_client_private_key_base64_deve
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.library_variable_set.id
   value = var.client_private_key_base64_development
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_audit_client_secret_production" {
+  name = "Cognito.GitHubCommitCreatorAuditClientSecret"
+  type = "String"
+  description = "The Cognito client secret used to authenticate with the audit service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.audit_client_secret_production
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cloudformation_audit_client_secret_development" {
+  name = "Cognito.GitHubCommitCreatorAuditClientSecret"
+  type = "String"
+  description = "The Cognito client secret used to authenticate with the audit service."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = var.audit_client_secret_development
   scope {
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }

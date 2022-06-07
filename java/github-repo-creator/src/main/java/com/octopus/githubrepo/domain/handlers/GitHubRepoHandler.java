@@ -1,5 +1,7 @@
 package com.octopus.githubrepo.domain.handlers;
 
+import static com.google.common.io.Files.asCharSource;
+
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.base.Preconditions;
@@ -81,9 +83,8 @@ import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.internal.DefaultGitHubConnector;
 
 /**
- * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the
- * inputs to POJOs, apply the security rules, create an audit trail, and then pass the requests down
- * to repositories.
+ * Handlers take the raw input from the upstream service, like Lambda or a web server, convert the inputs to POJOs, apply the security rules, create an audit
+ * trail, and then pass the requests down to repositories.
  */
 @ApplicationScoped
 public class GitHubRepoHandler {
@@ -94,10 +95,8 @@ public class GitHubRepoHandler {
   private static final String DEFAULT_BRANCH = "main";
 
   /**
-   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't
-   * overwrite any updates users may have made between running the app-builder. The workflows are
-   * also configured to not run on this branch, so any manual updates made to Octopus won't be
-   * reverted.
+   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't overwrite any updates users may have made between running the
+   * app-builder. The workflows are also configured to not run on this branch, so any manual updates made to Octopus won't be reverted.
    */
   private static final String UPDATE_BRANCH = "app-builder-update";
 
@@ -112,7 +111,7 @@ public class GitHubRepoHandler {
   private static final RetryPolicy<String> RETRY_POLICY = RetryPolicy
       .<String>builder()
       .handle(Exception.class)
-      .withDelay(Duration.ofSeconds(1))
+      .withDelay(Duration.ofSeconds(3))
       .withMaxRetries(3)
       .build();
 
@@ -169,14 +168,11 @@ public class GitHubRepoHandler {
    * Creates a new service account in the Octopus cloud instance.
    *
    * @param document                   The JSONAPI resource to create.
-   * @param authorizationHeader        The OAuth header for user-to-machine communication from the
-   *                                   content team identity management system. Note this is not
+   * @param authorizationHeader        The OAuth header for user-to-machine communication from the content team identity management system. Note this is not
    *                                   Octofront, but probably Cognito.
-   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note
-   *                                   this is not Octofront, but probably Cognito.
+   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note this is not Octofront, but probably Cognito.
    * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI
-   *                                        resource.
+   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
   public String create(
       @NonNull final String document,
@@ -187,8 +183,7 @@ public class GitHubRepoHandler {
       throws DocumentSerializationException {
 
     Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
-    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken),
-        "githubToken can not be blank");
+    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken), "githubToken can not be blank");
 
     if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
@@ -204,15 +199,13 @@ public class GitHubRepoHandler {
 
     try {
       // Extract the create service account action from the HTTP body.
-      final PopulateGithubRepo populateGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(
-          document, PopulateGithubRepo.class);
+      final PopulateGithubRepo populateGithubRepo = jsonApiServiceUtilsCreateGithubRepo.getResourceFromDocument(document, PopulateGithubRepo.class);
 
       // Ensure the validity of the request.
       verifyRequest(populateGithubRepo);
 
       // Decrypt the github token passed in as a cookie.
-      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption,
-          githubSalt);
+      final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption, githubSalt);
 
       // Ensure we have the required scopes
       scopeVerifier.verifyScopes(decryptedGithubToken);
@@ -224,19 +217,20 @@ public class GitHubRepoHandler {
        Ensure the repo exists. We do expect that the repo was created by an upstream service
        before we get here, but we also support creating the repo as part of this request.
        */
-      createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createRepo(decryptedGithubToken, user, populateGithubRepo.getGithubRepository()));
 
       // Create the secrets
-      createSecrets(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createSecrets(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository()));
 
       // Ensure there is an initial commit in the repo to use as the basis of other commits
-      populateInitialFile(decryptedGithubToken, populateGithubRepo, user,
-          populateGithubRepo.getGithubRepository());
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> populateInitialFile(decryptedGithubToken, populateGithubRepo, user, populateGithubRepo.getGithubRepository()));
 
-      // ensure the branch exists
-      createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(),
-          populateGithubRepo.getBranch());
+      // Ensure the branch exists.
+      Failsafe.with(RETRY_POLICY)
+          .run(() -> createBranch(decryptedGithubToken, user, populateGithubRepo.getGithubRepository(), populateGithubRepo.getBranch()));
 
       // Download and extract the template zip file
       final String templateDir = Failsafe.with(RETRY_POLICY)
@@ -258,18 +252,15 @@ public class GitHubRepoHandler {
       // return the details of the new commit
       return jsonApiServiceUtilsCreateGithubRepo.respondWithResource(PopulateGithubRepo
           .builder()
-          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/"
-              + commit)
+          .id(user.getLogin() + "/" + populateGithubRepo.getGithubRepository() + "/commits/" + commit)
           .githubRepository(populateGithubRepo.getGithubRepository())
           .build());
     } catch (final ClientWebApplicationException ex) {
-      Try.run(
-          () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-              + ex.getResponse().readEntity(String.class), ex));
+      Try.run(() ->
+          Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed " + ex.getResponse().readEntity(String.class), ex));
       throw new ServerErrorException();
     } catch (final InvalidInputException | IllegalArgumentException ex) {
-      Log.error(
-          microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
+      Log.error(microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
       throw ex;
     } catch (final Throwable ex) {
       Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
@@ -290,12 +281,10 @@ public class GitHubRepoHandler {
         .options(populateGithubRepo.getOptions())
         .build();
 
-    final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(
-        new JSONAPIDocument<>(generateTemplate)));
+    final String body = new String(jsonApiConverter.buildResourceConverter().writeDocument(new JSONAPIDocument<>(generateTemplate)));
 
     try (final TemporaryResources temp = new TemporaryResources()) {
-      final Path zipFile = downloadTemplateToTempFile(
-          body, temp, authHeader, serviceAuthHeader, routingHeader);
+      final Path zipFile = downloadTemplateToTempFile(body, temp, authHeader, serviceAuthHeader, routingHeader);
       return extractZipToTempDir(zipFile, temp).toString();
     }
   }
@@ -308,11 +297,11 @@ public class GitHubRepoHandler {
       final String routingHeader)
       throws IOException {
 
-    try (final Response response = generateTemplateClient.generateTemplate(
-        body, routingHeader, authHeader, serviceAuthHeader)) {
+    Log.info("Calling template generator");
+
+    try (final Response response = generateTemplateClient.generateTemplate(body, routingHeader, authHeader, serviceAuthHeader)) {
       if (response.getStatus() != 200) {
-        throw new BadRequestException(
-            "Call to template generator resulted in status code " + response.getStatus());
+        throw new BadRequestException("Call to template generator resulted in status code " + response.getStatus());
       }
 
       final InputStream inputStream = response.readEntity(InputStream.class);
@@ -385,7 +374,7 @@ public class GitHubRepoHandler {
 
           treeBuilder = treeBuilder.add(
               relativePath,
-              com.google.common.io.Files.toByteArray(file),
+              getFileContents(file),
               fileIsExecutable(file));
         }
       }
@@ -401,7 +390,7 @@ public class GitHubRepoHandler {
         .tree(treeBuilder.create().getSha())
         // set the parent of the commit as the master branch
         .parent(targetBranch.getSHA1())
-        .message("App Builder repo population")
+        .message("Octopus Builder repo population")
         .create();
 
     repo.getRef("heads/" + branch).updateTo(commit.getSHA1());
@@ -411,6 +400,19 @@ public class GitHubRepoHandler {
 
   private boolean fileIsExecutable(final File file) {
     return "mvnw".equals(file.getName());
+  }
+
+  private byte[] getFileContents(final File file) throws IOException {
+    // Assume executable files must have linux line endings
+    if (fileIsExecutable(file)) {
+      return asCharSource(file, StandardCharsets.UTF_8)
+          .read()
+          .replaceAll("\\r\\n?", "\n")
+          .getBytes();
+    }
+
+    // Everything else is read as is
+    return com.google.common.io.Files.toByteArray(file);
   }
 
   private boolean pathHasIgnoreDirectory(final String path) {
@@ -488,21 +490,34 @@ public class GitHubRepoHandler {
       gitHubClient.createFile(
           GithubFile.builder()
               .content(Base64.getEncoder().encodeToString(
-                  ("# App Builder\n"
-                      + "This repo was populated by the [Octopus App Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
+                  ("# Octopus Builder\n"
+                      + "This repo was populated by the [Octopus Builder](https://github.com/OctopusSamples/content-team-apps) tool. The directory structure is shown below:\n\n"
                       + "* `.github/workflows`: GitHub Action Workflows that populate a cloud Octopus instance, build and deploy the sample code, and initiate a deployment in Octopus.\n"
-                      + "* `github`: Composable GitHub Actions that are called by the workflow files.\n"
-                      + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance.\n"
+                      + "* `github`: [Composable GitHub Actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) that are called by the workflow files.\n"
+                      + "* `terraform`: Terraform templates used to create cloud resources and populate the Octopus cloud instance with the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs).\n"
                       + "* `java`: The sample Java application.\n"
-                      + "* `js`: The sample JavaScript application.\n\n"
-                      + "If you have run the App Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
+                      + "* `js`: The sample JavaScript application.\n"
+                      + "* `golang`: The sample Go application.\n"
+                      + "## Network Diagram\n"
+                      + "![Network Diagram](/images/diagram.png)\n"
+                      + "## Rerunning Octopus Builder\n"
+                      + "If you have run the Octopus Builder for a second time, the files are placed in the `app-builder-update` branch.\n"
                       + "The workflow files are configured to not run from this branch, meaning any changes you have made in the main branch will not be overwritten.\n"
                       + "To replace the `main` branch with the `app-builder-update` branch, [run the following commands](https://stackoverflow.com/a/2862938/157605):\n"
                       + "1. `git checkout app-builder-update`\n"
                       + "2. `git merge -s ours main`\n"
                       + "3. `git checkout main`\n"
                       + "4. `git merge app-builder-update`\n\n"
-                      + "If you would rather see what has changed since you last ran the App Builder, create a regular pull request between the `app-builder-update` and `main` branches.")
+                      + "If you would rather see what has changed since you last ran the Octopus Builder, create a regular pull request between the `app-builder-update` and `main` branches.\n\n"
+                      + "## Videos\n"
+                      + "### Introduction\n"
+                      + "[![Introduction](https://user-images.githubusercontent.com/160104/171066204-faa47ace-9cef-40a5-b919-5074f662c045.png)](https://oc.to/QoaFL7)\n"
+                      + "### Testing\n"
+                      + "[![Testing](https://user-images.githubusercontent.com/160104/171066350-86616af1-1b74-4c3b-b914-636e15b4f0f9.png)](https://oc.to/LdAw6T)\n"
+                      + "### Security Testing\n"
+                      + "[![Security Testing](https://user-images.githubusercontent.com/160104/171066462-15c095b4-f7b7-4a52-b2f4-1b4239c48c74.png)](https://oc.to/tOL83r)\n"
+                      + "### Feature Branching\n"
+                      + "[![Feature Branching](https://user-images.githubusercontent.com/160104/171066536-46a1480d-abe5-44da-b8b3-c69d4fc8274f.png)](https://oc.to/JgsP6z)")
                       .getBytes(StandardCharsets.UTF_8)))
               .message("Adding the initial marker file")
               .branch(DEFAULT_BRANCH)
@@ -573,12 +588,16 @@ public class GitHubRepoHandler {
       final String repoName,
       final String branch) {
     try {
+      Log.info("Searching for branch " + branch + " under " + user.getLogin() + " " + repoName);
+
       // First check to see if we have the branch already.
       gitHubClient.getBranch(
           user.getLogin(),
           repoName,
-          "refs/heads/" + branch,
+          branch,
           "token " + decryptedGithubToken);
+
+      Log.info("Found branch " + branch);
     } catch (ClientWebApplicationException ex) {
       // anything other than a 404 is unexpected
       if (ex.getResponse().getStatus() != 404) {
@@ -593,6 +612,8 @@ public class GitHubRepoHandler {
       final Optional<String> sha = getFirstSha(decryptedGithubToken, user, repoName);
 
       if (sha.isPresent()) {
+        Log.info("Creating branch " + branch);
+
         // create a new branch based on the first commit
         gitHubClient.createBranch(
             GithubRef.builder()

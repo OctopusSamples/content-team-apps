@@ -6,6 +6,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {styles} from "../utils/styles";
 import {getJsonApi, isBranchingEnabled, patchJsonApi} from "../utils/network";
 import {Button, FormLabel, Grid, TextField} from "@mui/material";
+import {convertToObject} from "../utils/parsing";
 
 const UpdateBook: FC<{}> = (): ReactElement => {
 
@@ -22,8 +23,10 @@ const UpdateBook: FC<{}> = (): ReactElement => {
     useEffect(() => {
         getJsonApi<Product|Errors>(context.settings.productEndpoint + "/" + bookId, context.partition)
             .then(data => {
-                if ("data" in data) {
-                    const product = data as Product;
+                const fixedData = convertToObject(data);
+
+                if ("data" in fixedData) {
+                    const product = fixedData as Product;
                     setBook(product);
 
                     if (product?.data?.attributes?.dataPartition !== context.partition) {
@@ -34,8 +37,8 @@ const UpdateBook: FC<{}> = (): ReactElement => {
                         setDisabled(false);
                     }
                 }
-                if ("errors" in data) {
-                    const error = data as Errors;
+                if ("errors" in fixedData) {
+                    const error = fixedData as Errors;
                     setError(error.errors[0].title || "Failed to load book."
                         + (isBranchingEnabled() ? " Branching rules are enabled - double check they are valid, or disable them." : ""));
                 }

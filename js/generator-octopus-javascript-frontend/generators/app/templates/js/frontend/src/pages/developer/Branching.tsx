@@ -4,6 +4,7 @@ import {AppContext} from "../../App";
 import {DataGrid, GridCellEditCommitParams, GridRowId} from "@mui/x-data-grid";
 import {styles} from "../../utils/styles";
 import {Button, Checkbox, FormLabel, Grid} from "@mui/material";
+import {getSavedBranchingRules} from "../../utils/network";
 
 export interface RedirectRule {
     id: number,
@@ -17,8 +18,8 @@ const Branching: FC = (): ReactElement => {
 
     const classes = styles();
 
-    const [rules, setRules] = useState<RedirectRule[]>(JSON.parse(localStorage.getItem("branching") || "[]"));
-    const [rulesEnabled, setRulesEnabled] = useState<boolean>((localStorage.getItem("branchingEnabled") || "").toLowerCase() !== "false");
+    const [rules, setRules] = useState<RedirectRule[]>(JSON.parse(getSavedBranchingRules() || "[]"));
+    const [rulesEnabled, setRulesEnabled] = useState<boolean>((localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true");
 
     const columns = [
         {field: 'id', headerName: 'Index', width: 30},
@@ -62,6 +63,10 @@ const Branching: FC = (): ReactElement => {
                         An example destination is <code>url[https://49c5-94-177-118-180.ngrok.io]</code>, which redirects
                         requests matching the path to the specified URL. Tools like &nbsp;<a href={"https://ngrok.com/"}>ngrok</a>&nbsp;
                         are useful for routing public traffic to your local developer workstation.
+                    </p>
+                    <p>
+                        Destinations prefixed with an underscore, like <code>_url[https://49c5-94-177-118-180.ngrok.io]</code>, are
+                        considered to be disabled. This allows you to save the details of a rule but not have it applied.
                     </p>
                 </Grid>
                 <Grid container={true} className={classes.cell} xs={4}>

@@ -43,6 +43,6 @@ public class HandlerAuthorizedTests extends BaseTest {
   public void testCreateResource() {
     assertThrows(UnauthorizedException.class, () -> handler.create(
         resourceToResourceDocument(resourceConverter, new PopulateGithubRepo()),
-        null, null, null, "blah"));
+        null, null, null, null, null,"blah"));
   }
 }

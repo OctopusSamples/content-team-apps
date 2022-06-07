@@ -10,9 +10,11 @@ import com.octopus.encryption.AsymmetricDecryptor;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.InvalidFilterException;
 import com.octopus.exceptions.JsonSerializationException;
+import com.octopus.exceptions.ServerErrorException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.AdminJwtGroupFeature;
+import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import com.octopus.octopusproxy.domain.entities.Space;
@@ -21,6 +23,7 @@ import com.octopus.octopusproxy.domain.features.ClientPrivateKey;
 import com.octopus.octopusproxy.domain.features.impl.DisableSecurityFeatureImpl;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import io.quarkus.logging.Log;
 import io.vavr.control.Try;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -29,6 +32,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -76,6 +81,9 @@ public class ResourceHandler {
   @Inject
   AsymmetricDecryptor asymmetricDecryptor;
 
+  @Inject
+  MicroserviceNameFeature microserviceNameFeature;
+
   /**
    * Returns the one resource that matches the supplied ID.
    *
@@ -99,6 +107,8 @@ public class ResourceHandler {
 
     // The id of a space is a URL, so check that the ID is valid
     final URI sanitizedId = Try.of(() -> URI.create(id))
+        // URI.create() is surprisingly lenient, so we ensure the instance has a scheme and authority
+        .filter(u -> StringUtils.isNotBlank(u.getScheme()) && StringUtils.isNotBlank(u.getAuthority()))
         /*
          We ignore things like query params and anchors. Ideally clients are not appending these
          things to the URL, but we'll be robust and liberal in what we accept from others.
@@ -120,13 +130,17 @@ public class ResourceHandler {
           if (response.getStatusLine().getStatusCode() == 200) {
             return EntityUtils.toString(response.getEntity());
           }
-          throw new RuntimeException();
+          throw new RuntimeException(EntityUtils.toString(response.getEntity()));
         })
+        // Log any network errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-ApiCallFailed", e))
         // assume any error means the entity does not exist
         .getOrElseThrow(e -> new EntityNotFoundException());
 
     // Convert the response to a space object
     final Space space = Try.of(() -> OBJECT_MAPPER.readValue(spaceJson, Space.class))
+        // Log any JSON deserialization errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Serialization-FailedToDeserialize", e))
         // Any unexpected fields will result in a 500 error message
         .getOrElseThrow(e -> new JsonSerializationException());
 
@@ -175,6 +189,8 @@ public class ResourceHandler {
 
     // The id of a space is a URL, so check that the ID is valid
     final URI sanitizedId = Try.of(() -> URI.create(visitor.getInstanceArgument()))
+        // URI.create() is surprisingly lenient, so we ensure the instance has a scheme and authority
+        .filter(u -> StringUtils.isNotBlank(u.getScheme()) && StringUtils.isNotBlank(u.getAuthority()))
         /*
          We ignore things like query params and anchors, as well as any additional path element.
          Ideally clients are not appending these things to the URL, but we'll be robust and liberal
@@ -196,17 +212,28 @@ public class ResourceHandler {
           final HttpResponse response = client.execute(new HttpGet(
               sanitizedId.toString() + "/api/spaces?partialName="
                   + URLEncoder.encode(visitor.getNameArgument(), StandardCharsets.UTF_8.toString())));
-          if (response.getStatusLine().getStatusCode() == 200) {
-            return EntityUtils.toString(response.getEntity());
+
+          switch (response.getStatusLine().getStatusCode()) {
+            case 200:
+              return EntityUtils.toString(response.getEntity());
+            case 403:
+              throw new UnauthorizedException();
+            case 404:
+              throw new EntityNotFoundException();
+            default:
+              throw new ServerErrorException();
           }
-          throw new RuntimeException();
         })
-        // assume any error means the entity does not exist
-        .getOrElseThrow(e -> new EntityNotFoundException());
+        // Log any network errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Network-SpacesApiCallFailed", e))
+        // get the result or rethrow
+        .get();
 
     // Convert the response to a space object
     final SpaceCollection spaceCollection = Try.of(
             () -> OBJECT_MAPPER.readValue(spaceJson, SpaceCollection.class))
+        // Log any JSON deserialization errors
+        .onFailure(e -> Log.error(microserviceNameFeature.getMicroserviceName() + "-Serialization-FailedToDeserialize", e))
         // Any unexpected fields will result in a 500 error message
         .getOrElseThrow(e -> new JsonSerializationException());
 

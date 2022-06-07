@@ -70,6 +70,12 @@ inputs:
   client_private_key_base64_production:
     description: 'The base 64 copy of the private key matching the public key used by the client to encrypt data'
     required: true
+  audit_client_secret_development:
+    required: true
+    description: The Cognito client ID used to access the audit service
+  audit_client_secret_production:
+    required: true
+    description: The Cognito client ID used to access the audit service
 
 runs:
   using: "composite"
@@ -154,5 +160,7 @@ runs:
         -var="content_team_library_variable_set_id=${{ inputs.content_team_library_variable_set_id }}"
         -var="client_private_key_base64_development=${{ inputs.client_private_key_base64_development }}"
         -var="client_private_key_base64_production=${{ inputs.client_private_key_base64_production }}"
+        -var="audit_client_secret_development=${{ inputs.audit_client_secret_development }}"
+        -var="audit_client_secret_production=${{ inputs.audit_client_secret_production }}"
       working-directory: terraform/github-repo-creator
       shell: bash

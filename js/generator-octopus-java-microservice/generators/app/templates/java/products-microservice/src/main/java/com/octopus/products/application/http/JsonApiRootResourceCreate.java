@@ -15,6 +15,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -40,8 +41,8 @@ public class JsonApiRootResourceCreate {
    *                                        resource.
    */
   @POST
-  @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
-  @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
+  @Produces({Constants.JsonApi.JSONAPI_CONTENT_TYPE, MediaType.APPLICATION_JSON})
+  @Consumes({Constants.JsonApi.JSONAPI_CONTENT_TYPE, MediaType.APPLICATION_JSON})
   @Transactional
   public Response create(
       final String document,

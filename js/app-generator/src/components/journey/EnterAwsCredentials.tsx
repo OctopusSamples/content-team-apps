@@ -13,7 +13,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
 
     const [accessKey, setAccessKey] = useState<string>((props.machine.state && props.machine.state.context.awsAccessKey) || "");
     const [accessKeyError, setAccessKeyError] = useState<string | null>(null);
-    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "us-east-1");
+    const [region, setRegion] = useState<string>((props.machine.state && props.machine.state.context.awsRegion) || "us-west-1");
     const [regionError, setRegionError] = useState<string | null>(null);
     const [secretKey, setSecretKey] = useState<string>(Cookies.get('awsSecretKey') ? mask : "");
     const [secretKeyError, setSecretKeyError] = useState<string | null>(null);
@@ -153,10 +153,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={next}>
                             {"Next >"}
                         </Button>
-                        <p style={{marginTop: "80px", color: "grey"}}>
-                            Octonauts - The credentials from the <strong>AWS CloudDeployer (new account)</strong> entry
-                            in the password manager can be used here.
-                        </p>
                     </Grid>
                 </Grid>
                 <Grid item md={3} xs={0}/>

@@ -368,7 +368,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                     CLIENT_PRIVATE_KEY: !Ref ClientPrivateKey
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
-                MemorySize: 128
+                MemorySize: 1024
                 PackageType: Zip
                 Role: !GetAtt
                   - IamRoleLambdaExecution
@@ -428,7 +428,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 FunctionName: !Ref ApplicationLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 5
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:
@@ -651,7 +651,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                 FunctionName: !Ref ProxyLambda
                 Description: !Ref LambdaDescription
                 ProvisionedConcurrencyConfig:
-                  ProvisionedConcurrentExecutions: 20
+                  ProvisionedConcurrentExecutions: 5
             ApplicationLambdaPermissions:
               Type: 'AWS::Lambda::Permission'
               Properties:

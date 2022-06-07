@@ -121,12 +121,16 @@ public class HandlerTests extends BaseGitHubTest {
           null,
           null,
           null,
-          null);
+          null,
+          null,
+          "blah");
     });
 
     assertThrows(NullPointerException.class, () -> {
       final CreateGithubCommit resource = createResource();
       handler.create(resourceToResourceDocument(resourceConverter, resource),
+          null,
+          null,
           null,
           null,
           null,

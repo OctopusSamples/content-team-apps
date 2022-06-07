@@ -1,0 +1,18 @@
+{
+  "name": "@octopus-content-team/generator-github-lambda-deployment",
+  "description": "A Yeoman generator to build a Lambda deployment project.",
+  "homepage": "https://github.com/OctopusSamples/content-team-apps",
+  "version": "0.1.9",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^5.6.1"
+  },
+  "scripts": {
+    "pub": "npm version patch --force && npm publish"
+  }
+}

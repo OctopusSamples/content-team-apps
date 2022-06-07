@@ -92,8 +92,8 @@ public class AuditRepository {
        Makes use of RSQL queries to filter any responses:
        https://github.com/jirutka/rsql-parser
       */
-      final RSQLVisitor<Predicate, EntityManager> visitor =
-          new JpaPredicateVisitor<Audit>().defineRoot(root);
+      final JpaPredicateVisitor<Audit> visitor = new JpaPredicateVisitor<Audit>().defineRoot(root);
+      visitor.getBuilderTools().setArgumentParser(new CustomizedArgumentParser());
       final Node rootNode = new RSQLParser().parse(filter);
       final Predicate filterPredicate = rootNode.accept(visitor, em);
 

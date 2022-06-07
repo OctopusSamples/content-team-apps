@@ -21,3 +21,5 @@ jobs:
         github_user: ${{ github.actor }}
         aws_access_key: ${{ secrets.DEVELOPMENT_AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.DEVELOPMENT_AWS_SECRET_ACCESS_KEY }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
+        dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}

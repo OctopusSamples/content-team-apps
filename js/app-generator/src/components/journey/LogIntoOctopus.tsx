@@ -102,7 +102,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Log into you cloud Octopus instance.</h2>
                             <p>
-                                You must log into your cloud Octopus instance to allow the app builder to configure your
+                                You must log into your cloud Octopus instance to allow the Octopus Workflow Builder to configure your
                                 application deployment process.
                             </p>
                             <p>
@@ -123,11 +123,6 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
                                 {context.settings.disableOctofrontLogin ? "Next >" : "Login >"}
                             </Button>
-                            <p style={{marginTop: "80px", color: "grey"}}>
-                                Octonauts - If you don't have a hosted instance, use <strong>main.testoctopus.app</strong>.
-                                Ping the team in #secops-requests to get access to this instance if you don't already
-                                have it.
-                            </p>
                         </Grid>
                     </Grid>
                     <Grid item md={3} xs={0}/>

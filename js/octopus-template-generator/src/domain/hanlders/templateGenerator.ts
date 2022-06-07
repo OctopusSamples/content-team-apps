@@ -11,7 +11,7 @@ export class TemplateGenerator {
 
   async generateTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
 
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "temnplate"));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
     try {
       const env = yeoman.createEnv({cwd: tempDir});

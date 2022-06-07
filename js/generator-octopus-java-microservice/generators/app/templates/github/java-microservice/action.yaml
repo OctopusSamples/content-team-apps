@@ -88,27 +88,27 @@ runs:
       shell: bash
 
     - name: Checkstyle
-      run: mvn --batch-mode checkstyle:check
+      run: ./mvnw --batch-mode checkstyle:check
       shell: bash
       working-directory: java
 
     - name: Install modules
-      run: mvn --batch-mode install -DskipTests
+      run: ./mvnw --batch-mode install -DskipTests
       shell: bash
       working-directory: java
 
     - name: Test Backend
-      run: mvn --batch-mode test
+      run: ./mvnw --batch-mode test
       shell: bash
       working-directory: java/products-microservice
 
     - name: Test Shared Library
-      run: mvn --batch-mode test
+      run: ./mvnw --batch-mode test
       shell: bash
       working-directory: java/microservice-utils
 
     - name: Build with Maven
-      run: mvn --batch-mode package --file pom.xml -DskipTests
+      run: ./mvnw --batch-mode package --file pom.xml -DskipTests
       shell: bash
       working-directory: java/products-microservice
 
@@ -141,7 +141,7 @@ runs:
     # This step generates a Source Bill of Materials (SBOM) package that captures all the dependencies compiled
     # into the application.
     - name: Generate SBOM
-      run: mvn cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
+      run: ./mvnw cyclonedx:makeAggregateBom -DskipTests --no-transfer-progress --batch-mode
       shell: bash
       working-directory: java
 
@@ -205,8 +205,28 @@ runs:
     # two packages in Octopus.
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
-        docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        if [[ -n "${{ inputs.image_tag }}" ]]
+        then
+          docker build -f src/main/docker/Dockerfile.legacy-jar -t ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }} .
+          docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
+        fi
+      shell: bash
+      working-directory: java/products-microservice
+
+    - name: Build and push lambda package
+      run: |
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas
+          ls -la target
+          mv target/function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip
+          octo push \
+            --package products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
+            --server ${{ inputs.octopus_server }} \
+            --apiKey ${{ inputs.octopus_apikey }} \
+            --space "${{ inputs.octopus_space }}" \
+            --overwrite-mode OverwriteExisting
+        fi
       shell: bash
       working-directory: java/products-microservice
 
@@ -214,9 +234,28 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy Backend Service"
+        --project "Backend Service"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --defaultPackageVersion ${{ steps.determine_version.outputs.semVer }}
+        --package products:${{ steps.determine_version.outputs.semVer }}
+        --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
+      shell: bash
+
+    - name: Create a release
+      if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'app-builder-update' }}
+      run: >
+        octo create-release
+        --project "Backend Feature Branch Service"
+        --server ${{ inputs.octopus_server }}
+        --apiKey ${{ inputs.octopus_apikey }}
+        --space "${{ inputs.octopus_space }}"
+        --package products:${{ steps.determine_version.outputs.semVer }}
+        --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
+        --deployTo "Development (App)"
+        --waitForDeployment
+        --version ${{ steps.determine_version.outputs.semVer }}
+        --ignoreExisting
       shell: bash

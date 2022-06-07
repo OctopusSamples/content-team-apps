@@ -25,7 +25,7 @@ jobs:
           octopus_built_in_feed_id: Feeds-2301
           octopus_content_team_maven_feed_id: Feeds-2481
           # WorkerPools-1282 is Hosted Ubuntu
-          octopus_worker_pool_id: WorkerPools-1301           
+          octopus_worker_pool_id: WorkerPools-1301
           octopus_application_lifecycle_id: Lifecycles-2221
           octopus_development_environment_id: Environments-3322
           octopus_development_security_environment_id: Environments-3341
@@ -42,3 +42,5 @@ jobs:
           content_team_library_variable_set_id: LibraryVariableSets-1282
           client_private_key_base64_development: ${{ secrets.APP_BUILDER_CLIENT_PRIVATE_KEY_DEVELOPMENT }}
           client_private_key_base64_production: ${{ secrets.APP_BUILDER_CLIENT_PRIVATE_KEY_PRODUCTION }}
+          audit_client_secret_development: ${{ secrets.APP_BUILDER_AUDIT_CLIENT_SECRET_DEVELOPMENT }}
+          audit_client_secret_production: ${{ secrets.APP_BUILDER_AUDIT_CLIENT_SECRET_PRODUCTION }}

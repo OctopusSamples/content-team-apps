@@ -3,22 +3,22 @@
   "branch": "main",
   "disableOctofrontLogin": true,
   "disableExternalCalls": true,
-  "title": "App Builder",
+  "title": "Octopus Workflow Builder",
   "octofrontOauthEndpoint": "http://localhost:10000/oauth/octopus/login",
   "githubOauthEndpoint": "http://localhost:9000/oauth/github/login",
   "serviceAccountEndpoint": "http://localhost:12000/api/serviceaccounts",
   "githubCommitEndpoint": "http://localhost:13000/api/githubcommit",
   "octoSpaceEndpoint": "http://localhost:8083/api/octopusspace",
-  "githubRepoEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/api/githubrepo",
+  "githubRepoEndpoint": "https://octopusworkflowbuilder-test.octopus.com/api/githubrepo",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
-  "healthEndpoint": "https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/health",
+  "healthEndpoint": "https://octopusworkflowbuilder-test.octopus.com//health",
   "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
   "google": {
     "tag": ""
   },
   "aws": {
     "cognitoDeveloperGroup": "Developers",
-    "cognitoLogin": "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=68sn92d4lgqotokg7oo082ildj&response_type=token&scope=email+openid+profile&redirect_uri=https://o9rot8lk3g.execute-api.us-west-1.amazonaws.com/Development/",
+    "cognitoLogin": "https://content-team-octopus.auth.us-west-1.amazoncognito.com/login?client_id=68sn92d4lgqotokg7oo082ildj&response_type=token&scope=email+openid+profile&redirect_uri=https://octopusworkflowbuilder-test.octopus.com/",
     "jwk": {
       "keys": [
         {

@@ -128,11 +128,11 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Deploy%20Backend%20Service" "Deploy%20Frontend%20WebApp" "Deploy%20EKS%20Cluster")
+        declare -a arr=("Backend%20Service" "Frontend%20WebApp" "EKS%20Cluster" "Backend%20Feature%20Branch%20Service" "Frontend%20Feature%20Branch%20WebApp")
         
         for i in "${arr[@]}"
         do
-          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/all?name=$i | jq -r ".[0].Id")
+          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects?name=$i | jq -r ".Items[0].Id")
           if [[ -n "$ID" && "$ID" != "null" ]]; then
             echo "Deleting project $i"
             curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
@@ -166,8 +166,9 @@ runs:
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
-        --project "Deploy EKS Cluster"
+        --project "EKS Cluster"
         --deployTo "Development (App)"
+        --version "1.0.0"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"

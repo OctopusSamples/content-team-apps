@@ -8,8 +8,8 @@ resource "octopusdeploy_project" "deploy_frontend_project" {
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = "Deploy Frontend Service"
-  project_group_id                     = octopusdeploy_project_group.backend_project_group.id
+  name                                 = "Frontend WebApp"
+  project_group_id                     = octopusdeploy_project_group.frontend_project_group.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
@@ -49,9 +49,22 @@ resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
+resource "octopusdeploy_variable" "cypress_baseurl_variable" {
+  name         = "baseUrl"
+  type         = "String"
+  description  = "A structured variable replacement for the Cypress test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value        = "http://#{Octopus.Action[Get AWS Resources].Output.DNSName}"
+}
+
+
 locals {
   frontend_package_name = "frontend"
   frontend_port         = "5000"
+  # This needs to be under 32 characters, and yet still unique per user / environment. We trim a few strings to try and keep it under the limit.
+  frontend_target_group_name = "ECS-FE-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}"
+  frontend_service_name = "Web-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_frontend" {
@@ -82,13 +95,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   }
   step {
     condition           = "Success"
-    name                = "Deploy ECS Service"
+    name                = "Frontend WebApp"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Deploy ECS Service"
-      notes          = "Deploy the task definition, service, target group and listener rule via CloudFormation. The end result is a ECS service exposed by the load balancer created by the Create ECS Cluster project."
+      name           = "Frontend WebApp"
+      notes          = "Deploy the task definition, service, target group and listener rule via CloudFormation. The end result is a ECS service exposed by the load balancer created by the ECS Cluster project."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -131,7 +144,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 HealthyThresholdCount: 2
                 Matcher:
                   HttpCode: '200'
-                Name: OctopubFrontendTargetGroup
+                Name: ${local.frontend_target_group_name}
                 Port: ${local.frontend_port}
                 Protocol: HTTP
                 TargetType: ip
@@ -153,7 +166,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                       Values:
                         - /*
                 ListenerArn: !Ref Listener
-                Priority: 100
+                Priority: 1000
               DependsOn:
                 - TargetGroup
             CloudWatchLogsGroup:
@@ -164,7 +177,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             ServiceBackend:
               Type: AWS::ECS::Service
               Properties:
-                ServiceName: OctopubFrontend
+                ServiceName: ${local.frontend_service_name}
                 Cluster:
                   Ref: ClusterName
                 TaskDefinition:
@@ -188,7 +201,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 DeploymentConfiguration:
                   MaximumPercent: 200
                   MinimumHealthyPercent: 100
-              DependsOn: TaskDefinitionBackend
+              DependsOn:
+                - TaskDefinitionBackend
+                - ListenerRule
             TaskDefinitionBackend:
               Type: AWS::ECS::TaskDefinition
               Properties:
@@ -262,7 +277,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           Parameters:
             ClusterName:
               Type: String
-              Default: app-builder-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
+              Default: app-builder-${var.github_repo_owner}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}
             TaskDefinitionName:
               Type: String
               Default: frontend
@@ -325,28 +340,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account",
         "Octopus.Action.Aws.Region" : var.aws_region,
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          # Get the containers
-          echo "Downloading Docker images"
-          echo "##octopus[stdout-verbose]"
-          docker pull amazon/aws-cli 2>&1
-          docker pull imega/jq 2>&1
-          echo "##octopus[stdout-default]"
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-          alias jq="docker run --rm -i imega/jq"
-
-          # Get the environmen name (or at least up until the first space)
-          ENVIRONMENT="#{Octopus.Environment.Name | ToLower}"
-          ENVIRONMENT_ARRAY=($ENVIRONMENT)
-          FIXED_ENVIRONMENT=$${ENVIRONMENT_ARRAY[0]}
-
-          DNSNAME=$(aws cloudformation describe-stacks --stack-name "AppBuilder-ECS-LB-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}" --query "Stacks[0].Outputs[?OutputKey=='DNSName'].OutputValue" --output text)
-
-          set_octopusvariable "DNSName" "$${DNSNAME}"
-
-          echo "Open [http://$${DNSNAME}/index.html](http://$${DNSNAME}/index.html) to view the frontend webapp."
+          write_highlight "Open [http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html](http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html) to view the frontend webapp."
         EOT
       }
     }
@@ -372,10 +366,22 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       script_body = <<-EOT
-          CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Find the LoadBalancer URL].Output.DNSName}/index.html)
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
+          for i in {1..30}
+          do
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Get AWS Resources].Output.DNSName}/index.html)
+              if [[ "$${CODE}" == "200" ]]
+              then
+                break
+              fi
+              echo "Waiting for DNS name to be resolvable and for service to respond"
+              sleep 10
+          done
 
           echo "response code: $${CODE}"
-          if [ "$${CODE}" == "200" ]
+          if [[ "$${CODE}" == "200" ]]
           then
             echo "success"
             exit 0;
@@ -383,6 +389,65 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             echo "error"
             exit 1;
           fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Cypress E2E Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Cypress E2E Test"
+      notes                              = "Use cypress to perform an end to end test of the frontend web app."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.cypress_docker_image
+      }
+      package {
+        name                      = "octopub-frontend-cypress"
+        package_id                = "octopub-frontend-cypress"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+      }
+      script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          cd octopub-frontend-cypress
+          OUTPUT=$(cypress run 2>&1)
+          RESULT=$?
+          echo "##octopus[stdout-default]"
+
+          # Print the output stripped of ANSI colour codes
+          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+
+          if [[ -f mochawesome.html ]]
+          then
+            inline-assets mochawesome.html selfcontained.html
+            new_octopusartifact "$${PWD}/selfcontained.html" "html-report.html"
+          fi
+          if [[ -d cypress/screenshots/sample_spec.js ]]
+          then
+            zip -r screenshots.zip cypress/screenshots/sample_spec.js
+            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
+          fi
+          exit $${RESULT}
         EOT
     }
   }

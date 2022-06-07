@@ -18,6 +18,7 @@ import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestBodyExtractor;
 import com.octopus.lambda.RequestMatcher;
 import io.quarkus.logging.Log;
+import io.vavr.control.Try;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
@@ -30,8 +31,7 @@ import lombok.NonNull;
  * The Lambda entry point used to create a GitHub commit.
  *
  * <p>Note that Quarkus (at least at 2.7) had issues running both a web server and the mock Lambda
- * server at the same time. This is solved by not compiling the io.quarkus:quarkus-amazon-lambda
- * dependency into builds that expose a web server.
+ * server at the same time. This is solved by not compiling the io.quarkus:quarkus-amazon-lambda dependency into builds that expose a web server.
  *
  * <p>To include the io.quarkus:quarkus-amazon-lambda dependency, enable the "lambda" Maven profile
  * by running:
@@ -101,30 +101,24 @@ public class CreateGithubCommitApi implements
   }
 
   /**
-   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the
-   * API, but with an additional path that indicates the http method. So, for example, a GET request
-   * to /health/audits/GET will return 200 OK if the service responding to /api/audits is able to
-   * service a GET request, and a GET request to /health/audits/1/DELETE will return 200 OK if the
-   * service responding to /api/audits/1 is available to service a DELETE request.
+   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the API, but with an additional path that indicates the http
+   * method. So, for example, a GET request to /health/audits/GET will return 200 OK if the service responding to /api/audits is able to service a GET request,
+   * and a GET request to /health/audits/1/DELETE will return 200 OK if the service responding to /api/audits/1 is available to service a DELETE request.
    *
    * <p>This approach was taken to support the fact that Lambdas may well have unique services
-   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching
-   * resource collections (i.e. /api/audits), and a dedicated lambda fetching individual resources
-   * (i.e. /api/audits/1). The health of these lambdas may be independent of one another.
+   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching resource collections (i.e. /api/audits), and a dedicated
+   * lambda fetching individual resources (i.e. /api/audits/1). The health of these lambdas may be independent of one another.
    *
    * <p>This is unlike a traditional web service, where it is usually taken for granted that a
-   * single application responds to all these requests, and therefore a single health endpoint can
-   * represent the status of all endpoints.
+   * single application responds to all these requests, and therefore a single health endpoint can represent the status of all endpoints.
    *
    * <p>By ensuring every path has a matching health endpoint, we allow clients to verify the
-   * status of the service without having to know which lambdas respond to which requests. This does
-   * mean that a client may need to verify the health of half a dozen endpoints to fully determine
-   * the state of the client's dependencies, but this is a more accurate representation of the
-   * health of the system.
+   * status of the service without having to know which lambdas respond to which requests. This does mean that a client may need to verify the health of half a
+   * dozen endpoints to fully determine the state of the client's dependencies, but this is a more accurate representation of the health of the system.
    *
    * <p>This particular service will typically be deployed with one lambda responding to many
-   * endpoints, but clients can not assume this is always the case, and must check the health of
-   * each endpoint to accurately evaluate the health of the service.
+   * endpoints, but clients can not assume this is always the case, and must check the health of each endpoint to accurately evaluate the health of the
+   * service.
    *
    * @param input The request details
    * @return The optional proxy response
@@ -136,56 +130,50 @@ public class CreateGithubCommitApi implements
       return Optional.empty();
     }
 
-    try {
-      return Optional.of(
-          new ApiGatewayProxyResponseEventWithCors()
-              .withStatusCode(200)
-              .withBody(healthHandler.getHealth(
-                  input.getPath().substring(0, input.getPath().lastIndexOf("/")),
-                  input.getPath().substring(input.getPath().lastIndexOf("/")))));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e));
-    }
+    return Try.of(() -> Optional.of(
+            new ApiGatewayProxyResponseEventWithCors()
+                .withStatusCode(200)
+                .withBody(healthHandler.getHealth(
+                    input.getPath().substring(0, input.getPath().lastIndexOf("/")),
+                    input.getPath().substring(input.getPath().lastIndexOf("/"))))))
+        .onFailure(Throwable::printStackTrace)
+        .recover(e -> Optional.of(proxyResponseBuilder.buildError(e)))
+        .get();
   }
 
   /**
-   * Create a github commit. Note this endpoint returns a 202, as the actual commit is created
-   * in an async operation after this request has returned. The returned entity contains the
-   * details of the repo that the commit will be placed into.
+   * Create a github commit. Note this endpoint returns a 202, as the actual commit is created in an async operation after this request has returned. The
+   * returned entity contains the details of the repo that the commit will be placed into.
    *
    * @param input The Lambda request.
    * @return The Lambda response.
    */
   private Optional<APIGatewayProxyResponseEvent> createOne(
       final APIGatewayProxyRequestEvent input) {
-    try {
-      if (requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
-        return Optional.of(
+    if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
+      return Optional.empty();
+    }
+
+    return Try.of(() -> Optional.of(
             new ApiGatewayProxyResponseEventWithCors()
                 .withStatusCode(202)
                 .withBody(
                     gitHubCommitHandler.create(
                         requestBodyExtractor.getBody(input),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION)
-                            .orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
-                        lambdaHttpHeaderExtractor.getFirstHeader(input,
-                            Constants.ROUTING_HEADER).orElse(null),
-                        lambdaHttpCookieExtractor.getCookieValue(input,
-                            ServiceConstants.GITHUB_SESSION_COOKIE).orElse(""))));
-      }
-    } catch (final UnauthorizedException e) {
-      return Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e));
-    } catch (final InvalidInputException | IllegalArgumentException e) {
-      return Optional.of(proxyResponseBuilder.buildBadRequest(e));
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input)));
-    }
-
-    return Optional.empty();
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, HttpHeaders.AUTHORIZATION).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.SERVICE_AUTHORIZATION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.ROUTING_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.DATA_PARTITION_HEADER).orElse(null),
+                        lambdaHttpHeaderExtractor.getFirstHeader(input, Constants.AMAZON_TRACE_ID_HEADER).orElse(null),
+                        lambdaHttpCookieExtractor.getCookieValue(input, ServiceConstants.GITHUB_SESSION_COOKIE).orElse("")))))
+        .recover(UnauthorizedException.class, e -> Optional.of(proxyResponseBuilder.buildUnauthorizedRequest(e)))
+        .recover(InvalidInputException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+        .recover(IllegalArgumentException.class, e -> Optional.of(proxyResponseBuilder.buildBadRequest(e)))
+        // Any other kind of exception is probably a server side error. Log the exception so it can be diagnosed later on.
+        .onFailure(Throwable::printStackTrace)
+        // Recover from any other kind of exception.
+        .recover(e -> Optional.of(proxyResponseBuilder.buildError(e, requestBodyExtractor.getBody(input))))
+        .get();
   }
 
   private APIGatewayProxyResponseEvent notFound(@NonNull final APIGatewayProxyRequestEvent input) {

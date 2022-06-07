@@ -1,9 +1,9 @@
-describe('Random Quotes', () => {
-    it('Can refresh', () => {
+describe('Octopub', () => {
+    it('Can open book', () => {
         cy.visit('/')
-        cy.get('#refreshQuote').click()
+        cy.get('#book1').click()
         cy.wait(1000)
-        cy.get('#quoteText')
-            .should('not.be.empty')
+        cy.get('#coverimage')
+            .should('be.visible')
     })
 })

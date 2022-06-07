@@ -203,10 +203,12 @@ runs:
         project: App Builder Frontend
         server: ${{ inputs.octopus_server }}
         deploy_to: Development
-        packages: app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
+        packages: |
+          app-builder-frontend:${{ steps.determine_version.outputs.semVer }}
+          app-builder-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
         wait_for_deployment: true
-        deployment_timeout: 1800
+        deployment_timeout: 00:30:00
         release_number: ${{ steps.determine_version.outputs.semVer }}
 
     - name: Trigger deployment to Security env

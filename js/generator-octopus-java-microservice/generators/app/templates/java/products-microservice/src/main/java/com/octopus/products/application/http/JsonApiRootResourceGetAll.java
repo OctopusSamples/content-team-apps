@@ -15,6 +15,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -40,7 +41,7 @@ public class JsonApiRootResourceGetAll {
    *                                        resource.
    */
   @GET
-  @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
+  @Produces({Constants.JsonApi.JSONAPI_CONTENT_TYPE, MediaType.APPLICATION_JSON})
   @Transactional
   public Response getAll(
       @HeaderParam(Constants.DATA_PARTITION_HEADER) final List<String> dataPartitionHeaders,

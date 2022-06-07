@@ -12,6 +12,7 @@ import Template from "../pages/Template";
 // interface
 import RouteItem from '../model/RouteItem.model';
 import Settings from "../pages/Settings";
+import Reports from "../pages/Reports";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -92,6 +93,16 @@ export const routes: Array<RouteItem> = [
         path: "/branching",
         enabled: true,
         component: () => () => <Branching/>,
+        icon: HomeIcon,
+        appendDivider: true
+    },
+    {
+        key: "router-reports",
+        title: "Reports",
+        tooltip: "Reports",
+        path: "/reports",
+        enabled: true,
+        component: () => () => <Reports/>,
         icon: HomeIcon,
         appendDivider: true
     }

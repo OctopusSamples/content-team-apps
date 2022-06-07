@@ -107,13 +107,12 @@ runs:
     - name: Trigger deployment Jenkins Pipelines
       run: >
         octo create-release
-        --project "Jenkins Pipeline Generator Frontend"
+        --project "Jenkins Pipelines Generator Frontend"
         --deployTo "Development"
         --waitForDeployment
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
-        --gitRef "main"
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --ignoreExisting
@@ -123,7 +122,7 @@ runs:
     - name: Trigger deployment Jenkins Pipelines Security env
       run: >
         octo promote-release
-        --project "Jenkins Pipeline Generator Frontend"
+        --project "Jenkins Pipelines Generator Frontend"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
@@ -141,7 +140,6 @@ runs:
         --server ${{ inputs.octopus_server_url }}
         --apiKey ${{ inputs.octopus_api_token }}
         --space "Content Team"
-        --gitRef "main"
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --ignoreExisting

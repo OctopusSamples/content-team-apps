@@ -1,5 +1,6 @@
 package com.octopus.products.infrastructure.repositories;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.tennaito.rsql.jpa.JpaPredicateVisitor;
 import com.octopus.Constants;
 import com.octopus.products.domain.entities.Product;
@@ -8,6 +9,8 @@ import com.octopus.wrappers.FilteredResultWrapper;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
+import dev.failsafe.RetryPolicy;
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +33,7 @@ import org.h2.util.StringUtils;
  * business logic, security rules, or manual audit logging.
  */
 @ApplicationScoped
-public class CustomersRepository {
+public class ProductsRepository {
 
   @Inject
   EntityManager em;
