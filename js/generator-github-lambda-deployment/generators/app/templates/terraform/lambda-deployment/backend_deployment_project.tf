@@ -473,12 +473,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     DATABASE_PASSWORD: !Ref "DBPassword"
                     MIGRATE_AT_START: !!str "false"
                     LAMBDA_NAME: "DatabaseInit"
+                    QUARKUS_PROFILE: "faas"
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}-DBMigration'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
                 Role: !GetAtt
-                  - IamRoleProxyLambdaExecution
+                  - IamRoleLambdaExecution
                   - Arn
                 Runtime: provided
                 Timeout: 600
@@ -503,12 +504,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     DATABASE_USERNAME: !Ref "DBUsername"
                     DATABASE_PASSWORD: !Ref "DBPassword"
                     MIGRATE_AT_START: !!str "false"
+                    QUARKUS_PROFILE: "faas"
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: not.used.in.provided.runtime
                 MemorySize: 256
                 PackageType: Zip
                 Role: !GetAtt
-                  - IamRoleProxyLambdaExecution
+                  - IamRoleLambdaExecution
                   - Arn
                 Runtime: provided
                 Timeout: 600
