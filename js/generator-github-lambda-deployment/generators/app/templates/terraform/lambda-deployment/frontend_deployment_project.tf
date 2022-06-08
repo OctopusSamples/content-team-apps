@@ -83,7 +83,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "#{Octopus.Action[Get Stack Outputs].Output.StageURL}/index.html"
+  value        = "#{Octopus.Action[Get Stage Outputs].Output.StageURL}"
 }
 
 locals {
@@ -177,32 +177,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           echo "Root resource ID: $ROOT_RESOURCE_ID"
 
           if [[ -z "$${ROOT_RESOURCE_ID}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
-          fi
-
-          STAGE_URL=$(aws cloudformation \
-              describe-stacks \
-              --stack-name "${local.api_gateway_stage_stack}" \
-              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "StageURL" $${STAGE_URL}
-
-          if [[ -z "$${STAGE_URL}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
-          fi
-
-          DNS_NAME=$(aws cloudformation \
-              describe-stacks \
-              --stack-name "${local.api_gateway_stage_stack}" \
-              --query "Stacks[0].Outputs[?OutputKey=='DnsName'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "DNSName" $${DNS_NAME}
-
-          if [[ -z "$${DNS_NAME}" ]]; then
             echo "Run the API Gateway project first"
             exit 1
           fi
@@ -678,6 +652,14 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 Variables:
                   indexPage: !Sub /index.html
           Outputs:
+            DnsName:
+              Value:
+                'Fn::Join':
+                  - ''
+                  - - Ref: ApiGatewayId
+                    - .execute-api.
+                    - Ref: 'AWS::Region'
+                    - .amazonaws.com
             StageURL:
               Description: The url of the stage
               Value: !Join
@@ -728,6 +710,63 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   }
   step {
     condition           = "Success"
+    name                = "Get Stage Outputs"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stage Outputs"
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
+          STAGE_URL=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "StageURL" $${STAGE_URL}
+          echo "Stage URL: $STAGE_URL"
+
+          DNS_NAME=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='DnsName'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "DNSName" $${DNS_NAME}
+          echo "DNS Name: $DNS_NAME"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "HTTP Smoke Test"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -752,7 +791,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..30}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" #{Octopus.Action[Get Stack Outputs].Output.StageURL}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" #{Octopus.Action[Get Stage Outputs].Output.StageURL}/index.html)
               if [[ "$${CODE}" == "200" ]]
               then
                 break
@@ -811,6 +850,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       script_body = <<-EOT
           echo "##octopus[stdout-verbose]"
           cd octopub-frontend-cypress
+          cat cypress.json
           OUTPUT=$(cypress run 2>&1)
           RESULT=$?
           echo "##octopus[stdout-default]"

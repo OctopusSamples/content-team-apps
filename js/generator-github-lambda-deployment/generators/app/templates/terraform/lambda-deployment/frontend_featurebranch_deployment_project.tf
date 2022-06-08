@@ -77,6 +77,15 @@ resource "octopusdeploy_variable" "auditHealthEndpoint_deploy_frontend_featurebr
   owner_id = octopusdeploy_project.deploy_frontend_featurebranch_project.id
 }
 
+resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
+  name         = "baseUrl"
+  type         = "String"
+  description  = "A structured variable replacement for the Cypress test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_featurebranch_project.id
+  value        = "#{Octopus.Action[Get Stage Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html"
+}
+
 locals {
   featurebranch_frontend_s3_bucket_stack = "OctopusBuilder-WebApp-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
 }
@@ -159,31 +168,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
             exit 1
           fi
 
-          STAGE_URL=$(aws cloudformation \
-              describe-stacks \
-              --stack-name "${local.api_gateway_stage_stack}" \
-              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "StageURL" $${STAGE_URL}
-
-          if [[ -z "$${STAGE_URL}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
-          fi
-
-          DNS_NAME=$(aws cloudformation \
-              describe-stacks \
-              --stack-name "${local.api_gateway_stage_stack}" \
-              --query "Stacks[0].Outputs[?OutputKey=='DnsName'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "DNSName" $${DNS_NAME}
-
-          if [[ -z "$${DNS_NAME}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
-          fi
+          set_octopusvariable "BranchName" "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+          echo "Branch Name: #{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -656,6 +642,14 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                 Variables:
                   indexPage: !Sub /index.html
           Outputs:
+            DnsName:
+              Value:
+                'Fn::Join':
+                  - ''
+                  - - Ref: ApiGatewayId
+                    - .execute-api.
+                    - Ref: 'AWS::Region'
+                    - .amazonaws.com
             StageURL:
               Description: The url of the stage
               Value: !Join
@@ -706,12 +700,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
   }
   step {
     condition           = "Success"
-    name                = "Get Stage URL"
+    name                = "Get Stage Outputs"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Get Stage URL"
+      name           = "Get Stage Outputs"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -725,12 +719,149 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          write_highlight "Open [#{Octopus.Action[Get Stack Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html](#{Octopus.Action[Get Stack Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
+          STAGE_URL=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "StageURL" $${STAGE_URL}
+          echo "Stage URL: $STAGE_URL"
+
+          DNS_NAME=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='DnsName'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "DNSName" $${DNS_NAME}
+          echo "DNS Name: $DNS_NAME"
+
+          write_highlight "Open [$STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html]($STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
       }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "HTTP Smoke Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "HTTP Smoke Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      script_body = <<-EOT
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
+          for i in {1..30}
+          do
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" $STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html)
+              if [[ "$${CODE}" == "200" ]]
+              then
+                break
+              fi
+              echo "Waiting for DNS name to be resolvable and for service to respond"
+              sleep 10
+          done
+
+          echo "response code: $${CODE}"
+          if [[ "$${CODE}" == "200" ]]
+          then
+            echo "success"
+            exit 0;
+          else
+            echo "error"
+            exit 1;
+          fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Cypress E2E Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Cypress E2E Test"
+      notes                              = "Use cypress to perform an end to end test of the frontend web app."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.cypress_docker_image
+      }
+      package {
+        name                      = "octopub-frontend-cypress"
+        package_id                = "octopub-frontend-cypress"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+      }
+      script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          cd octopub-frontend-cypress
+          cat cypress.json
+          OUTPUT=$(cypress run 2>&1)
+          RESULT=$?
+          echo "##octopus[stdout-default]"
+
+          # Print the output stripped of ANSI colour codes
+          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+
+          if [[ -f mochawesome.html ]]
+          then
+            inline-assets mochawesome.html selfcontained.html
+            new_octopusartifact "$${PWD}/selfcontained.html" "html-report.html"
+          fi
+          if [[ -d cypress/screenshots/sample_spec.js ]]
+          then
+            zip -r screenshots.zip cypress/screenshots/sample_spec.js
+            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
+          fi
+          exit $${RESULT}
+        EOT
     }
   }
   step {
