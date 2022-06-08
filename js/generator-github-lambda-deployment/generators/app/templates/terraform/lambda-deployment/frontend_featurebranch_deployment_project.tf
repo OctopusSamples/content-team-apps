@@ -83,7 +83,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_featurebranch_project.id
-  value        = "#{Octopus.Action[Get Stage Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html"
+  value        = "#{Octopus.Action[Get Stage Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
 }
 
 locals {
@@ -168,8 +168,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
             exit 1
           fi
 
-          set_octopusvariable "BranchName" "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
-          echo "Branch Name: #{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+          set_octopusvariable "BranchName" "#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease | Replace "\..*" "" | ToLower}"
+          echo "Branch Name: #{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease | Replace "\..*" "" | ToLower}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -749,7 +749,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
           set_octopusvariable "DNSName" $${DNS_NAME}
           echo "DNS Name: $DNS_NAME"
 
-          write_highlight "Open [$STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html]($STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
+          write_highlight "Open [$${STAGE_URL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html]($${STAGE_URL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -783,7 +783,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..30}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" $STAGE_URL#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" #{Octopus.Action[Get Stage Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html)
               if [[ "$${CODE}" == "200" ]]
               then
                 break
