@@ -58,7 +58,6 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   value        = "http://#{Octopus.Action[Get AWS Resources].Output.DNSName}"
 }
 
-
 locals {
   frontend_package_name = "frontend"
   frontend_port         = "5000"

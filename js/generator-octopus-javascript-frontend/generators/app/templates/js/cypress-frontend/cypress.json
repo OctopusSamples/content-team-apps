@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://localhost:5000",
   "reporter": "mochawesome",
+  "chromeWebSecurity": false,
   "reporterOptions": {
     "charts": true,
     "overwrite": false,

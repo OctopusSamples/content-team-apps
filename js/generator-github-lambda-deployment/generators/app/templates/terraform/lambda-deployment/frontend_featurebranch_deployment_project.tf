@@ -159,10 +159,31 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
             exit 1
           fi
 
-          BRANCH_NAME="#{Octopus.Action[Upload Frontend].Package[].PackageVersion | VersionPreRelease | Replace "\..*" "" | ToLower}"
-          set_octopusvariable "BranchName" $${BRANCH_NAME}
+          STAGE_URL=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
+              --output text)
 
-          echo "Branch Name: $${BRANCH_NAME}"
+          set_octopusvariable "StageURL" $${STAGE_URL}
+
+          if [[ -z "$${STAGE_URL}" ]]; then
+            echo "Run the API Gateway project first"
+            exit 1
+          fi
+
+          DNS_NAME=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.api_gateway_stage_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='DnsName'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "DNSName" $${DNS_NAME}
+
+          if [[ -z "$${DNS_NAME}" ]]; then
+            echo "Run the API Gateway project first"
+            exit 1
+          fi
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -704,27 +725,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Script.ScriptBody" : <<-EOT
-          echo "Downloading Docker images"
-
-          echo "##octopus[stdout-verbose]"
-
-          docker pull amazon/aws-cli 2>&1
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-
-          echo "##octopus[stdout-default]"
-
-          STAGE_URL=$(aws cloudformation \
-              describe-stacks \
-              --stack-name "${local.api_gateway_stage_stack}" \
-              --query "Stacks[0].Outputs[?OutputKey=='StageURL'].OutputValue" \
-              --output text)
-
-          set_octopusvariable "StageURL" $${STAGE_URL}
-
-          write_highlight "Open [$${STAGE_URL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html]($${STAGE_URL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
+          write_highlight "Open [#{Octopus.Action[Get Stack Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html](#{Octopus.Action[Get Stack Outputs].Output.StageURL}#{Octopus.Action[Get Stack Outputs].Output.BranchName}/index.html) to view the frontend web app."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
