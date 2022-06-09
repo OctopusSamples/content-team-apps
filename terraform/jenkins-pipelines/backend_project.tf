@@ -93,7 +93,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
             echo "GITHUB_CLIENT_ID=#{GitHub.GitHubAppClientId};GITHUB_CLIENT_SECRET=#{GitHub.GitHubAppClientSecret};GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_LOGIN_PAGE=/oauth/github/login;COGNITO_AUDIT_CLIENT_ID=#{Cognito.AuditClientId};COGNITO_AUDIT_CLIENT_SECRET=#{Cognito.AuditClientSecret};COGNITO_JWK=#{Cognito.JWK};COGNITO_SERVICE=#{Cognito.Service};AUDIT_SERVICE=#{ApiGateway.ContentTeamUrl};COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_ID=#{Cognito.ServiceBusProxyClientId};COGNITO_AZURE_SERVICE_BUS_PROXY_CLIENT_SECRET=#{Cognito.ServiceBusProxyClientSecret};SERVICE_BUS_SERVICE=#{ServiceBusProxy.Url}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
-        "Octopus.Action.Script.Syntax" : "Powershell"
+        "Octopus.Action.Script.Syntax" : "PowerShell"
       }
     }
   }
