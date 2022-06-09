@@ -209,7 +209,7 @@ resource "octopusdeploy_variable" "config_json_octoSpaceEndpoint" {
 }
 
 resource "octopusdeploy_variable" "cognito_development" {
-  name = "settings:aws:cognitoLogin"
+  name = "aws:cognitoLogin"
   type = "String"
   description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
@@ -221,7 +221,7 @@ resource "octopusdeploy_variable" "cognito_development" {
 }
 
 resource "octopusdeploy_variable" "cognito_production" {
-  name = "settings:aws:cognitoLogin"
+  name = "aws:cognitoLogin"
   type = "String"
   description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
