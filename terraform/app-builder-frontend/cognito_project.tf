@@ -151,7 +151,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
           },
           {
             ParameterKey : "CallbackUrl"
-            ParameterValue : "https://octopusworkflowbuilder-test.octopus.com/"
+            ParameterValue : "#{Cognito.RedirectUrl}"
           },
           {
             ParameterKey : "CognitoDomain"
@@ -169,7 +169,7 @@ resource "octopusdeploy_deployment_process" "cognito_project" {
           },
           {
             ParameterKey : "CallbackUrl"
-            ParameterValue : "https://octopusworkflowbuilder-test.octopus.com/"
+            ParameterValue : "#{Cognito.RedirectUrl}"
           },
           {
             ParameterKey : "CognitoDomain"

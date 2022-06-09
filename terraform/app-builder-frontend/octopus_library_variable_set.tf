@@ -31,6 +31,30 @@ resource "octopusdeploy_variable" "aws_production_account" {
   }
 }
 
+resource "octopusdeploy_variable" "cognito_redirect_url_development" {
+  name = "Cognito.RedirectUrl"
+  type = "String"
+  description = "The redirect URL when returning from a Cognito login. Don't edit these variables directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://octopusworkflowbuilder-test.octopus.com/"
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "cognito_redirect_url_production" {
+  name = "Cognito.RedirectUrl"
+  type = "String"
+  description = "The redirect URL when returning from a Cognito login. Don't edit these variables directly - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://octopusworkflowbuilder.octopus.com/"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
 resource "octopusdeploy_variable" "aws_region" {
   name = "AWS.Region"
   type = "String"
