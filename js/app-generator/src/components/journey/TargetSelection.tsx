@@ -1,13 +1,17 @@
-import {FC, ReactElement, useState} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid} from "@mui/material";
 import {buttonStyle, journeyContainer, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from '@mui/material/LinearProgress';
+import {AppContext} from "../../App";
+import {loginRequired} from "../../utils/security";
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+    const context = useContext(AppContext);
+    const loginIsRequired = loginRequired(context.settings, context.partition);
 
-    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(loginIsRequired);
 
     const next = (state: string, platform: string) => {
         setButtonDisabled(true);
@@ -49,6 +53,10 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                             Select the platform that you wish to deploy the sample microservice application to using
                             Octopus.
                         </p>
+                        {loginIsRequired && <>
+                            <p>YOU HAVE ENABLED THE "REQUIRE TESTING PARTITION" OPTION.</p>
+                            <p>LOGIN FROM THE SETTINGS PAGE, AND DEFINE A PARTITION OTHER THAN MAIN.</p>
+                        </>}
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}

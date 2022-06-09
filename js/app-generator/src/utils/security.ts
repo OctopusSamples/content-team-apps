@@ -194,3 +194,20 @@ export async function encryptAndSaveInCookie(value: string, cookie: string, expi
     const encrypted = encrypt.encrypt(value) || "";
     Cookies.set(cookie, encrypted, {expires});
 }
+
+export function loginRequired(settings: RuntimeSettings, partition: string) {
+    const testPartitionRequired = (localStorage.getItem("testPartitionRequired") || "").toLowerCase() === "true";
+    const accessToken = getAccessToken(settings);
+
+    if (testPartitionRequired) {
+        if (!accessToken) {
+            return true;
+        }
+
+        if (partition === "" || partition === "main") {
+            return true;
+        }
+    }
+
+    return false;
+}
