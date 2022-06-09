@@ -759,7 +759,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           set_octopusvariable "DNSName" $${DNS_NAME}
           echo "DNS Name: $DNS_NAME"
 
-          write_highlight "Open [$${STAGE_URL}index.html]($${STAGE_URL}#index.html) to view the frontend web app."
+          write_highlight "Open [$${STAGE_URL}index.html]($${STAGE_URL}index.html) to view the frontend web app."
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
