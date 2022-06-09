@@ -33,7 +33,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                 }
             }
         };
-        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings)
+        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings, context.partition)
             .then(body => {
                 const bodyObject = body as any;
                 callback(
@@ -111,7 +111,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             }
         }
 
-        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubCommitEndpoint, context.settings, null, false, null, true)
+        postJsonApi(JSON.stringify(populateRepoBody), context.settings.githubCommitEndpoint, context.settings, context.partition, false, null, true)
             .then(body => {
                 if (props.machine.state) {
                     const bodyObject = body as any;

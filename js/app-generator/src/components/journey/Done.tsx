@@ -42,7 +42,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject.data.id) {
@@ -65,7 +65,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, null, 0)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject?.data?.id) {
@@ -107,7 +107,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             + "instance==" + encodeURIComponent(getOctopusServer(props.machine.state.context))
             + "&apiKey=" + encodeURIComponent(manuallyEnteredApiKey);
 
-        getJsonApi(url, context.settings, null, 0)
+        getJsonApi(url, context.settings, context.partition, 0)
             .then(body => {
                 // reset the error count
                 setSpaceErrorCount(0);
