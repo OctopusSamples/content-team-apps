@@ -231,3 +231,27 @@ resource "octopusdeploy_variable" "cognito_production" {
     environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "audit_development" {
+  name = "auditEndpoint"
+  type = "String"
+  description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits"
+  scope {
+    environments = [var.octopus_development_environment_id, var.octopus_development_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "audit_production" {
+  name = "auditEndpoint"
+  type = "String"
+  description = "The cognito login page - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
+  value = "https://dodwbeqe6g.execute-api.us-west-1.amazonaws.com/Production/api/audits"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
