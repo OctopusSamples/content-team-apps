@@ -133,7 +133,6 @@ runs:
         if [[ -n "${{ inputs.image_tag }}" ]]
         then
           docker push ${{ inputs.image_tag }}:${{ steps.determine_version.outputs.semVer }}
-          docker push ${{ inputs.image_tag }}
         fi
       shell: bash
       working-directory: js/frontend
