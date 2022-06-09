@@ -923,7 +923,7 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       properties = {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           echo "The following string can be pasted into an IntelliJ run configuration as environment variables."
-          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};REPO_POPULATOR=#{ExternalService.RepoPopulator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=CreateGithubCommit;COGNITO_CLIENT_ID=#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId};COGNITO_CLIENT_SECRET=#{Cognito.AuditClientSecret}"
+          echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt};GITHUB_DISABLE_REPO_CREATION=False;TEMPLATE_GENERATOR=#{ExternalService.TemplateGenerator};REPO_POPULATOR=#{ExternalService.RepoPopulator};CLIENT_PRIVATE_KEY=#{Client.ClientPrivateKey};LAMBDA_HANDLER=CreateGithubCommit;COGNITO_CLIENT_ID=#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId};COGNITO_CLIENT_SECRET=#{Cognito.AuditClientSecret};AUDIT_SERVICE=#{Audit.Service};COGNITO_SERVICE=#{Cognito.Service}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Powershell"
