@@ -45,7 +45,7 @@ function App(settings: RuntimeSettings) {
     theme = responsiveFontSizes(theme);
 
     const [developerMode, setDeveloperMode] = useState<boolean>(localStorage.getItem("developerMode") === "true");
-    const [partition, setPartition] = useState<string>("");
+    const [partition, setPartition] = useState<string>(localStorage.getItem("partition") || "main");
     const [allBookId, setAllBookId] = useState<string>("");
 
     return <>

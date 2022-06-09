@@ -50,7 +50,7 @@ function App(settings: RuntimeSettings) {
 
     const [requireLogin, setRequireLogin] = useState<boolean>(false);
     const [developerMode, setDeveloperMode] = useState<boolean>(localStorage.getItem("developerMode") === "true");
-    const [partition, setPartition] = useState<string>("");
+    const [partition, setPartition] = useState<string>(localStorage.getItem("partition") || "main");
 
     const keys = settings.aws?.jwk?.keys;
     const developerGroup = settings.aws?.cognitoDeveloperGroup;
