@@ -88,6 +88,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
 
 locals {
   featurebranch_frontend_s3_bucket_stack = "OctopusBuilder-WebApp-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
+  featurebranch_frontend_stack           = "OctopusBuilder-WebApp-${lower(var.github_repo_owner)}-${local.fixed_environment}-#{Octopus.Action[Get Stack Outputs].Output.BranchName}"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
@@ -344,7 +345,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.frontend_cloudformation_tags
-        "Octopus.Action.Aws.CloudFormationStackName" : local.frontend_stack
+        "Octopus.Action.Aws.CloudFormationStackName" : local.featurebranch_frontend_stack
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
             EnvironmentName:
@@ -837,7 +838,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         extract_during_deployment = true
       }
       properties = {
-        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets" : "**/cypress.json"
       }
       script_body = <<-EOT
           echo "##octopus[stdout-verbose]"
