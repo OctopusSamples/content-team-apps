@@ -96,7 +96,7 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
           echo "GITHUB_ENCRYPTION=#{Client.EncryptionKey};GITHUB_SALT=#{Client.EncryptionSalt}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
-        "Octopus.Action.Script.Syntax" : "Bash"
+        "Octopus.Action.Script.Syntax" : "Powershell"
       }
     }
   }
