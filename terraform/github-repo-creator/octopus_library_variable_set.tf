@@ -274,3 +274,27 @@ resource "octopusdeploy_variable" "cloudformation_audit_client_secret_developmen
     environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
   }
 }
+
+resource "octopusdeploy_variable" "audit_service_production" {
+  name = "Audit.Service"
+  type = "String"
+  description = "The audit service URL."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://dodwbeqe6g.execute-api.us-west-1.amazonaws.com/Production"
+  scope {
+    environments = [var.octopus_production_environment_id, var.octopus_production_security_environment_id]
+  }
+}
+
+resource "octopusdeploy_variable" "audit_service_development" {
+  name = "Audit.Service"
+  type = "String"
+  description = "The audit service URL."
+  is_sensitive = false
+  owner_id = octopusdeploy_library_variable_set.library_variable_set.id
+  value = "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development"
+  scope {
+    environments = [var.octopus_development_security_environment_id, var.octopus_development_environment_id]
+  }
+}

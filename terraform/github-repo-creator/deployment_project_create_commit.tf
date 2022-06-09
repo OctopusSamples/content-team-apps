@@ -16,7 +16,8 @@ resource "octopusdeploy_project" "create_commit_project" {
     template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
   }
   included_library_variable_sets = [
-    octopusdeploy_library_variable_set.library_variable_set.id, var.cognito_library_variable_set_id,
+    octopusdeploy_library_variable_set.library_variable_set.id,
+    var.cognito_library_variable_set_id,
     var.content_team_library_variable_set_id
   ]
 
@@ -64,7 +65,7 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
       environments   = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
-      properties     = {
+      properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name}\"},{\"key\":\"Deployment Project\",\"value\":\"Deploy Octopus Service Account Creator\"},{\"key\":\"Team\",\"value\":\"Content Marketing\"}]"
         "Octopus.Action.Aws.CloudFormationStackName" : "#{CloudFormation.CommitCreatorS3Bucket}"
@@ -305,6 +306,10 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
               Type: String
             AuditClientId:
               Type: String
+            AuditService:
+              Type: String
+            CognitoService:
+              Type: String
           Resources:
             AppLogGroupProxy:
               Type: 'AWS::Logs::LogGroup'
@@ -436,6 +441,8 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
                     LAMBDA_HANDLER: CreateGithubCommit
                     COGNITO_CLIENT_SECRET: !Ref AuditClientSecret
                     COGNITO_CLIENT_ID: !Ref AuditClientId
+                    AUDIT_SERVICE: !Ref AuditService
+                    COGNITO_SERVICE: !Ref CognitoService
                 FunctionName: !Sub '$${EnvironmentName}-$${LambdaName}'
                 Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
                 MemorySize: 1024
@@ -517,8 +524,194 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
               Description: The Lambda description
               Value: !Ref LambdaDescription
             EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[{\"ParameterKey\":\"AuditClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId}\"},{\"ParameterKey\":\"AuditClientSecret\",\"ParameterValue\":\"#{Cognito.GitHubCommitCreatorAuditClientSecret}\"},{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[{\"ParameterKey\":\"AuditClientId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId}\"},{\"ParameterKey\":\"AuditClientSecret\",\"ParameterValue\":\"#{Cognito.GitHubCommitCreatorAuditClientSecret}\"},{\"ParameterKey\":\"EnvironmentName\",\"ParameterValue\":\"#{Octopus.Environment.Name}\"},{\"ParameterKey\":\"RestApi\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.RestApi}\"},{\"ParameterKey\":\"ResourceId\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.Api}\"},{\"ParameterKey\":\"LambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"LambdaS3Bucket\",\"ParameterValue\":\"#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}\"},{\"ParameterKey\":\"TemplateGenerator\",\"ParameterValue\":\"#{ExternalService.TemplateGenerator}\"},{\"ParameterKey\":\"RepoPopulator\",\"ParameterValue\":\"#{ExternalService.RepoPopulator}\"},{\"ParameterKey\":\"GitHubDisableRepoCreation\",\"ParameterValue\":\"#{Service.Disable}\"},{\"ParameterKey\":\"GitHubEncryption\",\"ParameterValue\":\"#{Client.EncryptionKey}\"},{\"ParameterKey\":\"GitHubSalt\",\"ParameterValue\":\"#{Client.EncryptionSalt}\"},{\"ParameterKey\":\"LambdaName\",\"ParameterValue\":\"#{Lambda.GitHubCommitCreatorName}\"},{\"ParameterKey\":\"LambdaDescription\",\"ParameterValue\":\"#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}\"},{\"ParameterKey\":\"CognitoPool\",\"ParameterValue\":\"#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}\"},{\"ParameterKey\":\"CognitoJwk\",\"ParameterValue\":\"#{Cognito.JWK}\"},{\"ParameterKey\":\"CognitoRequiredGroup\",\"ParameterValue\":\"#{Cognito.RequiredGroup}\"},{\"ParameterKey\":\"CognitoRegion\",\"ParameterValue\":\"#{Cognito.Region}\"},{\"ParameterKey\":\"ProxyLambdaS3Key\",\"ParameterValue\":\"#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip\"},{\"ParameterKey\":\"ClientPrivateKey\",\"ParameterValue\":\"#{Client.ClientPrivateKey}\"}]"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey : "AuditClientId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId}"
+          },
+          {
+            ParameterKey : "AuditClientSecret"
+            ParameterValue : "#{Cognito.GitHubCommitCreatorAuditClientSecret}"
+          },
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "LambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "LambdaS3Bucket"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+          },
+          {
+            ParameterKey : "TemplateGenerator"
+            ParameterValue : "#{ExternalService.TemplateGenerator}"
+          },
+          {
+            ParameterKey : "RepoPopulator"
+            ParameterValue : "#{ExternalService.RepoPopulator}"
+          },
+          {
+            ParameterKey : "GitHubDisableRepoCreation"
+            ParameterValue : "#{Service.Disable}"
+          },
+          {
+            ParameterKey : "GitHubEncryption"
+            ParameterValue : "#{Client.EncryptionKey}"
+          },
+          {
+            ParameterKey : "GitHubSalt"
+            ParameterValue : "#{Client.EncryptionSalt}"
+          },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : "#{Lambda.GitHubCommitCreatorName}"
+          },
+          {
+            ParameterKey : "LambdaDescription"
+            ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "CognitoPool"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          },
+          {
+            ParameterKey : "CognitoJwk"
+            ParameterValue : "#{Cognito.JWK}"
+          },
+          {
+            ParameterKey : "CognitoRequiredGroup"
+            ParameterValue : "#{Cognito.RequiredGroup}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          },
+          {
+            ParameterKey : "ProxyLambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "ClientPrivateKey"
+            ParameterValue : "#{Client.ClientPrivateKey}"
+          },
+          {
+            ParameterKey : "AuditService"
+            ParameterValue : "#{Audit.Service}"
+          },
+          {
+            ParameterKey : "CognitoService"
+            ParameterValue : "#{Cognito.Service}"
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey : "AuditClientId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoAuditClientId}"
+          },
+          {
+            ParameterKey : "AuditClientSecret"
+            ParameterValue : "#{Cognito.GitHubCommitCreatorAuditClientSecret}"
+          },
+          {
+            ParameterKey : "EnvironmentName"
+            ParameterValue : "#{Octopus.Environment.Name}"
+          },
+          {
+            ParameterKey : "RestApi"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.RestApi}"
+          },
+          {
+            ParameterKey : "ResourceId"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.Api}"
+          },
+          {
+            ParameterKey : "LambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda].Package[].PackageId}.#{Octopus.Action[Upload Lambda].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "LambdaS3Bucket"
+            ParameterValue : "#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[LambdaS3Bucket]}"
+          },
+          {
+            ParameterKey : "TemplateGenerator"
+            ParameterValue : "#{ExternalService.TemplateGenerator}"
+          },
+          {
+            ParameterKey : "RepoPopulator"
+            ParameterValue : "#{ExternalService.RepoPopulator}"
+          },
+          {
+            ParameterKey : "GitHubDisableRepoCreation"
+            ParameterValue : "#{Service.Disable}"
+          },
+          {
+            ParameterKey : "GitHubEncryption"
+            ParameterValue : "#{Client.EncryptionKey}"
+          },
+          {
+            ParameterKey : "GitHubSalt"
+            ParameterValue : "#{Client.EncryptionSalt}"
+          },
+          {
+            ParameterKey : "LambdaName"
+            ParameterValue : "#{Lambda.GitHubCommitCreatorName}"
+          },
+          {
+            ParameterKey : "LambdaDescription"
+            ParameterValue : "#{Octopus.Deployment.Id} v#{Octopus.Action[Upload Lambda].Package[].PackageVersion}"
+          },
+          {
+            ParameterKey : "CognitoPool"
+            ParameterValue : "#{Octopus.Action[Get Stack Outputs].Output.CognitoPoolId}"
+          },
+          {
+            ParameterKey : "CognitoJwk"
+            ParameterValue : "#{Cognito.JWK}"
+          },
+          {
+            ParameterKey : "CognitoRequiredGroup"
+            ParameterValue : "#{Cognito.RequiredGroup}"
+          },
+          {
+            ParameterKey : "CognitoRegion"
+            ParameterValue : "#{Cognito.Region}"
+          },
+          {
+            ParameterKey : "ProxyLambdaS3Key"
+            ParameterValue : "#{Octopus.Action[Upload Lambda Proxy].Package[].PackageId}.#{Octopus.Action[Upload Lambda Proxy].Package[].PackageVersion}.zip"
+          },
+          {
+            ParameterKey : "ClientPrivateKey"
+            ParameterValue : "#{Client.ClientPrivateKey}"
+          },
+          {
+            ParameterKey : "AuditService"
+            ParameterValue : "#{Audit.Service}"
+          },
+          {
+            ParameterKey : "CognitoService"
+            ParameterValue : "#{Client.ClientPrivateKey}"
+          },
+          {
+            ParameterKey : "AuditService"
+            ParameterValue : "#{Audit.Service}"
+          },
+          {
+            ParameterKey : "CognitoService"
+            ParameterValue : "#{Cognito.Service}"
+          }
+        ])
         "Octopus.Action.Aws.IamCapabilities" : "[\"CAPABILITY_AUTO_EXPAND\",\"CAPABILITY_IAM\",\"CAPABILITY_NAMED_IAM\"]"
         "Octopus.Action.Aws.Region" : "#{AWS.Region}"
         "Octopus.Action.Aws.TemplateSource" : "Inline"
@@ -720,10 +913,10 @@ resource "octopusdeploy_deployment_process" "create_commit_project" {
     start_trigger       = "StartAfterPrevious"
     target_roles        = ["LocalDevelopment"]
     action {
-      action_type    = "Octopus.Script"
-      name           = "Capture Local Dev Settings ${var.run_number}"
-      run_on_server  = false
-      environments   = [
+      action_type   = "Octopus.Script"
+      name          = "Capture Local Dev Settings ${var.run_number}"
+      run_on_server = false
+      environments  = [
         var.octopus_production_environment_id, var.octopus_development_environment_id
       ]
 
