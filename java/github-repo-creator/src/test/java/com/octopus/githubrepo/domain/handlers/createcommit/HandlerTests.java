@@ -12,11 +12,10 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
+import com.octopus.githubrepo.domain.audit.AuditGenerator;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
-import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
-import com.octopus.githubrepo.infrastructure.clients.GenerateTemplateClient;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import com.octopus.jwt.JwtInspector;
@@ -36,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.github.GitHubBuilder;
 import org.mockito.Mockito;
 
 @QuarkusTest
@@ -80,6 +78,9 @@ public class HandlerTests extends BaseGitHubTest {
   @RestClient
   @InjectMock
   PopulateRepoClient populateRepoClient;
+
+  @InjectMock
+  AuditGenerator auditGenerator;
 
   @BeforeAll
   public void setup() throws IOException {

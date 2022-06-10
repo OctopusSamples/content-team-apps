@@ -10,6 +10,7 @@ import com.octopus.encryption.CryptoUtils;
 import com.octopus.features.AdminJwtClaimFeature;
 import com.octopus.features.DisableSecurityFeature;
 import com.octopus.githubrepo.TestingProfile;
+import com.octopus.githubrepo.domain.audit.AuditGenerator;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
@@ -69,6 +70,9 @@ public class HandlerAuthorizedWithMockedUserTokenTests extends BaseGitHubTest {
   @RestClient
   @InjectMock
   PopulateRepoClient populateRepoClient;
+
+  @InjectMock
+  AuditGenerator auditGenerator;
 
   @BeforeAll
   public void setup() throws IOException {
