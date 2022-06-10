@@ -9,6 +9,7 @@ public interface CognitoAccessTokenGenerator {
 
   /**
    * Get a access token.
+   *
    * @return OAuth access token.
    */
   Try<String> getAccessToken();

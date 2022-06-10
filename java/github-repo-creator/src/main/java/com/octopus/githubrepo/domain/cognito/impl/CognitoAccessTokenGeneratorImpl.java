@@ -16,8 +16,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
+/**
+ * A service that creates and caches an access token.
+ */
 @ApplicationScoped
 public class CognitoAccessTokenGeneratorImpl implements CognitoAccessTokenGenerator {
+
   private static long expiry;
   private static String accessToken;
 
