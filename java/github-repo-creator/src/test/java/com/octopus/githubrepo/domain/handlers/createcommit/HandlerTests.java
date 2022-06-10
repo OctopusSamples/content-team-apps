@@ -3,6 +3,7 @@ package com.octopus.githubrepo.domain.handlers.createcommit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
@@ -31,14 +32,16 @@ import javax.ws.rs.core.Response;
 import lombok.NonNull;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_METHOD)
 @TestProfile(TestingProfile.class)
 public class HandlerTests extends BaseGitHubTest {
 
@@ -82,7 +85,7 @@ public class HandlerTests extends BaseGitHubTest {
   @InjectMock
   AuditGenerator auditGenerator;
 
-  @BeforeAll
+  @BeforeEach
   public void setup() throws IOException {
     mockGitHubClient(gitHubClient);
 
@@ -114,7 +117,6 @@ public class HandlerTests extends BaseGitHubTest {
   }
 
   @Test
-  @Transactional
   public void createResourceTestNull() {
     assertThrows(NullPointerException.class, () -> {
       handler.create(
@@ -140,9 +142,14 @@ public class HandlerTests extends BaseGitHubTest {
   }
 
   @Test
-  @Transactional
   public void testCreateResource() throws DocumentSerializationException {
     final CreateGithubCommit resultObject = createResource(handler, resourceConverter);
     assertEquals("myrepo", resultObject.getGithubRepository());
+  }
+
+  @Test
+  public void testCreateResourceWithNewRepo() throws DocumentSerializationException {
+    final CreateGithubCommit resultObject = createResource(handler, resourceConverter, true, true);
+    assertTrue(resultObject.getGithubRepository().matches("myrepo\\d+"));
   }
 }

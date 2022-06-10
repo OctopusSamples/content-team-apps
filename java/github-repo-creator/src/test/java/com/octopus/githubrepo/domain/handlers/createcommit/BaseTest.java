@@ -12,12 +12,13 @@ import lombok.NonNull;
 
 public class BaseTest {
   protected CreateGithubCommit createResource() {
-    return createResource(true);
+    return createResource(true, false);
   }
 
-  protected CreateGithubCommit createResource(final boolean addSecrets) {
+  protected CreateGithubCommit createResource(final boolean addSecrets, final boolean createNewRepo) {
     final CreateGithubCommit resource = new CreateGithubCommit();
     resource.setGithubRepository("myrepo");
+    resource.setCreateNewRepo(createNewRepo);
     if (addSecrets) {
       resource.setSecrets(List.of(
         Secret.builder().name("secret").value("secret").encrypted(false).build(),
@@ -32,15 +33,16 @@ public class BaseTest {
   protected CreateGithubCommit createResource(
       @NonNull final GitHubCommitHandler handler,
       @NonNull final ResourceConverter resourceConverter) throws DocumentSerializationException {
-    return createResource(handler, resourceConverter, true);
+    return createResource(handler, resourceConverter, true, false);
   }
 
   protected CreateGithubCommit createResource(
       @NonNull final GitHubCommitHandler handler,
       @NonNull final ResourceConverter resourceConverter,
-      final boolean addSecrets)
+      final boolean addSecrets,
+      final boolean createNewRepo)
       throws DocumentSerializationException {
-    final CreateGithubCommit resource = createResource(addSecrets);
+    final CreateGithubCommit resource = createResource(addSecrets, createNewRepo);
     final String result =
         handler.create(
             resourceToResourceDocument(resourceConverter, resource),
