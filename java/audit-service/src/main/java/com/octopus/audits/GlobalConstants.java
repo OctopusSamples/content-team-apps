@@ -19,6 +19,7 @@ public final class GlobalConstants {
    * support OBO, so we need to work around the limitation by passing both user and machine tokens.
    */
   public static final String SERVICE_AUTHORIZATION_HEADER = "Service-Authorization";
+  public static final String ORIGIN_HEADER = "Origin";
   public static final String FILTER_QUERY_PARAM = "filter";
   public static final String PAGE_OFFSET_QUERY_PARAM = "page[offset]";
   public static final String PAGE_LIMIT_QUERY_PARAM = "page[limit]";

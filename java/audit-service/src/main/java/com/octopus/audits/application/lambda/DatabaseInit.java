@@ -29,7 +29,7 @@ public class DatabaseInit implements RequestHandler<Map<String, Object>, ProxyRe
      */
     try {
       liquidbaseUpdater.update();
-      return new ProxyResponse("200", "ok");
+      return new ProxyResponse("200", "ok", "");
     } catch (final LiquibaseException | SQLException ex) {
       return handleRequest(stringObjectMap, context);
     }

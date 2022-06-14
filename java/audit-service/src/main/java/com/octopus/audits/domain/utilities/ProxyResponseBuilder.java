@@ -15,9 +15,9 @@ public class ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildError(@NonNull final Exception ex) {
+  public static ProxyResponse buildError(@NonNull final Exception ex, @NonNull final String origin) {
     return new ProxyResponse(
-        "500", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
+        "500", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}", origin);
   }
 
   /**
@@ -28,14 +28,15 @@ public class ProxyResponseBuilder {
    * @param requestBody The request body
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildError(@NonNull final Exception ex, @NonNull final String requestBody) {
+  public static ProxyResponse buildError(@NonNull final Exception ex, @NonNull final String requestBody, @NonNull final String origin) {
     return new ProxyResponse(
         "500",
         "{\"errors\": [{\"code\": \""
             + ex.getClass().getCanonicalName()
             + "\", \"meta\": {\"requestBody\": \""
             + StringEscapeUtils.escapeJson(requestBody)
-            + "\"}}]}");
+            + "\"}}]}",
+        origin);
   }
 
   /**
@@ -43,8 +44,8 @@ public class ProxyResponseBuilder {
    *
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildNotFound() {
-    return new ProxyResponse("404", "{\"errors\": [{\"title\": \"Resource not found\"}]}");
+  public static ProxyResponse buildNotFound(@NonNull final String origin) {
+    return new ProxyResponse("404", "{\"errors\": [{\"title\": \"Resource not found\"}]}", origin);
   }
 
   /**
@@ -53,9 +54,9 @@ public class ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildBadRequest(@NonNull final Exception ex) {
+  public static ProxyResponse buildBadRequest(@NonNull final Exception ex, @NonNull final String origin) {
     return new ProxyResponse(
-        "400", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}");
+        "400", "{\"errors\": [{\"code\": \"" + ex.getClass().getCanonicalName() + "\"}]}", origin);
   }
 
   /**
@@ -64,7 +65,7 @@ public class ProxyResponseBuilder {
    * @param ex The exception
    * @return The ProxyResponse representing the error.
    */
-  public static ProxyResponse buildUnauthorizedRequest(@NonNull final Exception ex) {
-    return new ProxyResponse("403", "{\"errors\": [{\"title\": \"Unauthorized\"}]}");
+  public static ProxyResponse buildUnauthorizedRequest(@NonNull final Exception ex, @NonNull final String origin) {
+    return new ProxyResponse("403", "{\"errors\": [{\"title\": \"Unauthorized\"}]}", origin);
   }
 }

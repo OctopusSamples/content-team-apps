@@ -24,16 +24,24 @@ import javax.transaction.Transactional;
 import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 
-/** The Lambda entry point used to return audit resources. */
+/**
+ * The Lambda entry point used to return audit resources.
+ */
 @Named("Audits")
 @ApplicationScoped
 public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, ProxyResponse> {
 
-  /** A regular expression matching the collection of entities. */
+  /**
+   * A regular expression matching the collection of entities.
+   */
   public static final Pattern ROOT_RE = Pattern.compile("/api/audits/?");
-  /** A regular expression matching a single entity. */
+  /**
+   * A regular expression matching a single entity.
+   */
   public static final Pattern INDIVIDUAL_RE = Pattern.compile("/api/audits/(?<id>\\d+)");
-  /** A regular expression matching a health endpoint. */
+  /**
+   * A regular expression matching a health endpoint.
+   */
   public static final Pattern HEALTH_RE =
       Pattern.compile("/health/audits/(GET|POST|[A-Za-z0-9]+/(GET|DELETE|PATCH))");
 
@@ -52,7 +60,7 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
   /**
    * See https://github.com/quarkusio/quarkus/issues/5811 for why we need @Transactional.
    *
-   * @param input The request details
+   * @param input   The request details
    * @param context The request context
    * @return The proxy response
    */
@@ -70,39 +78,35 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
         .or(() -> getOne(input))
         .or(() -> createOne(input))
         .or(() -> checkHealth(input))
-        .orElse(ProxyResponseBuilder.buildNotFound());
+        .orElse(ProxyResponseBuilder.buildNotFound(lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.ORIGIN_HEADER).orElse("")));
   }
 
   /**
-   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the
-   * API, but with an additional path that indicates the http method. So, for example, a GET request
-   * to /health/audits/GET will return 200 OK if the service responding to /api/audits is able
-   * to service a GET request, and a GET request to /health/audits/1/DELETE will return 200 OK if
-   * the service responding to /api/audits/1 is available to service a DELETE request.
+   * Health checks sit parallel to the /api endpoint under /health. The health endpoints mirror the API, but with an additional path that indicates the http
+   * method. So, for example, a GET request to /health/audits/GET will return 200 OK if the service responding to /api/audits is able to service a GET request,
+   * and a GET request to /health/audits/1/DELETE will return 200 OK if the service responding to /api/audits/1 is available to service a DELETE request.
    *
    * <p>This approach was taken to support the fact that Lambdas may well have unique services
-   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching
-   * resource collections (i.e. /api/audits), and a dedicated lambda fetching individual resources
-   * (i.e. /api/audits/1). The health of these lambdas may be independent of one another.
+   * responding to each individual endpoint. For example, you may have a dedicated lambda fetching resource collections (i.e. /api/audits), and a dedicated
+   * lambda fetching individual resources (i.e. /api/audits/1). The health of these lambdas may be independent of one another.
    *
    * <p>This is unlike a traditional web service, where it is usually taken for granted that a
-   * single application responds to all these requests, and therefore a single health endpoint can
-   * represent the status of all endpoints.
+   * single application responds to all these requests, and therefore a single health endpoint can represent the status of all endpoints.
    *
    * <p>By ensuring every path has a matching health endpoint, we allow clients to verify the status
-   * of the service without having to know which lambdas respond to which requests. This does mean
-   * that a client may need to verify the health of half a dozen endpoints to fully determine the
-   * state of the client's dependencies, but this is a more accurate representation of the health of
-   * the system.
+   * of the service without having to know which lambdas respond to which requests. This does mean that a client may need to verify the health of half a dozen
+   * endpoints to fully determine the state of the client's dependencies, but this is a more accurate representation of the health of the system.
    *
    * <p>This particular service will typically be deployed with one lambda responding to many
-   * endpoints, but clients can not assume this is always the case, and must check the health of
-   * each endpoint to accurately evaluate the health of the service.
+   * endpoints, but clients can not assume this is always the case, and must check the health of each endpoint to accurately evaluate the health of the
+   * service.
    *
    * @param input The request details
    * @return The optional proxy response
    */
   private Optional<ProxyResponse> checkHealth(final APIGatewayProxyRequestEvent input) {
+
+    final String origin = lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.ORIGIN_HEADER).orElse("");
 
     if (requestIsMatch(input, HEALTH_RE, GlobalConstants.GET_METHOD)) {
       try {
@@ -111,10 +115,11 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                 "200",
                 healthHandler.getHealth(
                     input.getPath().substring(0, input.getPath().lastIndexOf("/")),
-                    input.getPath().substring(input.getPath().lastIndexOf("/")))));
+                    input.getPath().substring(input.getPath().lastIndexOf("/"))),
+                origin));
       } catch (final Exception e) {
         e.printStackTrace();
-        return Optional.of(ProxyResponseBuilder.buildError(e));
+        return Optional.of(ProxyResponseBuilder.buildError(e, origin));
       }
     }
 
@@ -128,6 +133,9 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @return The Lambda response.
    */
   private Optional<ProxyResponse> getAll(final APIGatewayProxyRequestEvent input) {
+
+    final String origin = lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.ORIGIN_HEADER).orElse("");
+
     try {
       if (requestIsMatch(input, ROOT_RE, GlobalConstants.GET_METHOD)) {
         return Optional.of(
@@ -139,15 +147,17 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     lambdaHttpValueExtractor.getQueryParam(input, GlobalConstants.PAGE_OFFSET_QUERY_PARAM).orElse(null),
                     lambdaHttpValueExtractor.getQueryParam(input, GlobalConstants.PAGE_LIMIT_QUERY_PARAM).orElse(null),
                     lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null)),
+                origin
+            ));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e, origin));
     } catch (final RSQLParserException e) {
-      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildBadRequest(e, origin));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e));
+      return Optional.of(ProxyResponseBuilder.buildError(e, origin));
     }
 
     return Optional.empty();
@@ -160,6 +170,8 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @return The Lambda response.
    */
   private Optional<ProxyResponse> getOne(final APIGatewayProxyRequestEvent input) {
+    final String origin = lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.ORIGIN_HEADER).orElse("");
+
     try {
 
       if (requestIsMatch(input, INDIVIDUAL_RE, GlobalConstants.GET_METHOD)) {
@@ -173,17 +185,20 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                   lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
                   lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null));
 
-          return Optional.of(new ProxyResponse("200", entity));
+          return Optional.of(new ProxyResponse(
+              "200",
+              entity,
+              origin));
         }
-        return Optional.of(ProxyResponseBuilder.buildNotFound());
+        return Optional.of(ProxyResponseBuilder.buildNotFound(origin));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e, origin));
     } catch (final EntityNotFound ex) {
-      return Optional.of(ProxyResponseBuilder.buildNotFound());
+      return Optional.of(ProxyResponseBuilder.buildNotFound(origin));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e));
+      return Optional.of(ProxyResponseBuilder.buildError(e, origin));
     }
 
     return Optional.empty();
@@ -196,6 +211,8 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
    * @return The Lambda response.
    */
   private Optional<ProxyResponse> createOne(final APIGatewayProxyRequestEvent input) {
+    final String origin = lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.ORIGIN_HEADER).orElse("");
+
     try {
       if (requestIsMatch(input, ROOT_RE, GlobalConstants.POST_METHOD)) {
         return Optional.of(
@@ -205,15 +222,16 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
                     getBody(input),
                     lambdaHttpHeaderExtractor.getAllHeaders(input, GlobalConstants.DATA_PARTITION_HEADER),
                     lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.AUTHORIZATION_HEADER).orElse(null),
-                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null))));
+                    lambdaHttpHeaderExtractor.getFirstHeader(input, GlobalConstants.SERVICE_AUTHORIZATION_HEADER).orElse(null)),
+                origin));
       }
     } catch (final Unauthorized e) {
-      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildUnauthorizedRequest(e, origin));
     } catch (final InvalidInput e) {
-      return Optional.of(ProxyResponseBuilder.buildBadRequest(e));
+      return Optional.of(ProxyResponseBuilder.buildBadRequest(e, origin));
     } catch (final Exception e) {
       e.printStackTrace();
-      return Optional.of(ProxyResponseBuilder.buildError(e, getBody(input)));
+      return Optional.of(ProxyResponseBuilder.buildError(e, getBody(input), origin));
     }
 
     return Optional.empty();
@@ -222,8 +240,8 @@ public class AuditApi implements RequestHandler<APIGatewayProxyRequestEvent, Pro
   /**
    * Determine if the Lambda request matches path and method.
    *
-   * @param input The Lmabda request.
-   * @param regex The path regex.
+   * @param input  The Lmabda request.
+   * @param regex  The path regex.
    * @param method The HTTP method.
    * @return true if this request matches the supplied values, and false otherwise.
    */

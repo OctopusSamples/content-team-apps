@@ -19,11 +19,11 @@ public class ProxyResponseBuilderTest {
   @Test
   public void testNulls() {
     assertThrows(NullPointerException.class, () -> {
-      ProxyResponseBuilder.buildError(null);
+      ProxyResponseBuilder.buildError(null, "");
     });
 
     assertThrows(NullPointerException.class, () -> {
-      ProxyResponseBuilder.buildError(new Exception(), null);
+      ProxyResponseBuilder.buildError(new Exception(), null, "");
     });
 
     assertThrows(NullPointerException.class, () -> {
@@ -31,17 +31,17 @@ public class ProxyResponseBuilderTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      ProxyResponseBuilder.buildUnauthorizedRequest(null);
+      ProxyResponseBuilder.buildUnauthorizedRequest(null, "");
     });
 
     assertThrows(NullPointerException.class, () -> {
-      ProxyResponseBuilder.buildBadRequest(null);
+      ProxyResponseBuilder.buildBadRequest(null, "");
     });
   }
 
   @Test
   public void testBuildError() throws JsonProcessingException {
-    final ProxyResponse response = ProxyResponseBuilder.buildError(new Exception());
+    final ProxyResponse response = ProxyResponseBuilder.buildError(new Exception(), "*");
     final Map<String, Object> parsedBody = OBJECT_MAPPER.readValue(response.body, Map.class);
     assertTrue(parsedBody.containsKey("errors"));
     assertFalse(((List)parsedBody.get("errors")).isEmpty());
@@ -64,13 +64,13 @@ public class ProxyResponseBuilderTest {
 
   @Test
   public void testBuildNotFound() {
-    final ProxyResponse response = ProxyResponseBuilder.buildNotFound();
+    final ProxyResponse response = ProxyResponseBuilder.buildNotFound("*");
     assertEquals("404", response.statusCode);
   }
 
   @Test
   public void testBuildUnauthorized() throws JsonProcessingException {
-    final ProxyResponse response = ProxyResponseBuilder.buildUnauthorizedRequest(new Exception());
+    final ProxyResponse response = ProxyResponseBuilder.buildUnauthorizedRequest(new Exception(), "*");
     final Map<String, Object> parsedBody = OBJECT_MAPPER.readValue(response.body, Map.class);
     assertTrue(parsedBody.containsKey("errors"));
     assertFalse(((List)parsedBody.get("errors")).isEmpty());
@@ -80,7 +80,7 @@ public class ProxyResponseBuilderTest {
 
   @Test
   public void testBuildBadRequest() throws JsonProcessingException {
-    final ProxyResponse response = ProxyResponseBuilder.buildBadRequest(new Exception());
+    final ProxyResponse response = ProxyResponseBuilder.buildBadRequest(new Exception(), "*");
     final Map<String, Object> parsedBody = OBJECT_MAPPER.readValue(response.body, Map.class);
     assertTrue(parsedBody.containsKey("errors"));
     assertFalse(((List)parsedBody.get("errors")).isEmpty());
