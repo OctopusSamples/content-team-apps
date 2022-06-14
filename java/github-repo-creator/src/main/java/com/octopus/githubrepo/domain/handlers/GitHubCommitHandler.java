@@ -178,6 +178,7 @@ public class GitHubCommitHandler {
 
       // Audit the Octopus server that the templates will populate
       auditOctopusServer(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
+      auditTemplate(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
 
       // Decrypt the github token passed in as a cookie.
       final String decryptedGithubToken = cryptoUtils.decrypt(
@@ -403,5 +404,23 @@ public class GitHubCommitHandler {
             routingHeader,
             dataPartitionHeaders,
             authorizationHeader));
+  }
+
+  private void auditTemplate(
+      final CreateGithubCommit createGithubRepo,
+      final String xray,
+      final String routingHeader,
+      final String dataPartitionHeaders,
+      final String authorizationHeader) {
+    auditGenerator.createAuditEvent(new Audit(
+            microserviceNameFeature.getMicroserviceName(),
+            GlobalConstants.POPULATED_REPO_WITH_TEMPLATE,
+            createGithubRepo.getGenerator(),
+            false,
+            false),
+        xray,
+        routingHeader,
+        dataPartitionHeaders,
+        authorizationHeader);
   }
 }
