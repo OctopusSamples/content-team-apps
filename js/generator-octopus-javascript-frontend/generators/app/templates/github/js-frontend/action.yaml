@@ -155,7 +155,12 @@ runs:
       working-directory: js/frontend
 
     # The Docker image used to run Cypress tests is built and pushed.
+    # Note this is only done for the main branch. Unlike containers that are deployed by a step, container images
+    # have their tags hard coded in a deployment process. There is no facility to define the specific tag
+    # of a container image at release creation time. This means there is no facility to create a feature branch
+    # version of a container image and test it in isolation as part of a deployment.
     - name: Build, tag, and push postman image to Amazon ECR
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: |
         cd cypress
         docker build -t ${{ inputs.cypress_image_tag }} .
