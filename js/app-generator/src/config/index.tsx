@@ -6,6 +6,7 @@ import Health from "../pages/developer/Health";
 import RouteItem from '../model/RouteItem.model';
 import Settings from "../pages/developer/Settings";
 import Home from "../pages/Home";
+import Audits from "../pages/developer/Audits";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -52,6 +53,15 @@ export const routes: Array<RouteItem> = [
         path: "/branching",
         enabled: true,
         component: () => () => <Branching/>,
+        appendDivider: true
+    },
+    {
+        key: "router-audits",
+        title: "Audits",
+        tooltip: "Audits",
+        path: "/audits",
+        enabled: true,
+        component: () => () => <Audits/>,
         appendDivider: true
     }
 ]

@@ -7,6 +7,10 @@ export const styles = makeStyles((theme) => {
             container: {
                 height: "fit-content"
             },
+            fullHeightContainer: {
+                height: "100%",
+                backgroundColor: theme.palette.background.default
+            },
             cell: {
                 padding: "8px",
                 alignItems: "center"
@@ -20,6 +24,12 @@ export const styles = makeStyles((theme) => {
             icon: {
                 width: "32px",
                 height: "32px"
+            },
+            mainContent: {
+                height: "calc(100% - 56px)"
+            },
+            buttonRow: {
+                height: "40px"
             }
         }
     }
