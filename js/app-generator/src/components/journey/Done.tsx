@@ -42,7 +42,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0, false, true)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject.data.id) {
@@ -65,7 +65,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
             return;
         }
 
-        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0)
+        getJsonApi(context.settings.githubRepoEndpoint + "/" + encodeURIComponent(props.machine.state.context.apiRepoUrl), context.settings, context.partition, 0, false, true)
             .then(body => {
                 const bodyObject = body as any;
                 if (bodyObject?.data?.id) {
