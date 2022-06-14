@@ -4,11 +4,6 @@ import {RuntimeSettings} from "../config/runtimeConfig";
 
 const GET_RETRIES = 5;
 const JSON_TYPES = ["application/vnd.api+json", "application/json"];
-/*
- Can be 'include', 'same-origin', or 'omit'
- https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#sending_a_request_with_credentials_included
- */
-const FETCH_CREDENTIALS = "omit";
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
@@ -44,7 +39,7 @@ function responseIsJson(contentType: string | null) {
     return false;
 }
 
-export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: number): Promise<T> {
+export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: number, includeCredentials?: boolean): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/json');
@@ -54,7 +49,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: FETCH_CREDENTIALS
+        credentials: includeCredentials ? 'include' : 'omit'
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -75,7 +70,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
         });
 }
 
-export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<T> {
+export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean, includeCredentials?: boolean): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -86,7 +81,7 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: FETCH_CREDENTIALS
+        credentials: includeCredentials ? 'include' : 'omit'
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -113,7 +108,7 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
         });
 }
 
-export function patchJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<T> {
+export function patchJsonApi<T>(resource: string, url: string, settings: RuntimeSettings, partition?: string | null, retryCount?: number, ignoreReturn?: boolean, includeCredentials?: boolean): Promise<T> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -126,7 +121,7 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
         method: 'PATCH',
         headers: requestHeaders,
         body: resource,
-        credentials: FETCH_CREDENTIALS
+        credentials: includeCredentials ? 'include' : 'omit'
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -147,7 +142,7 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return patchJsonApi<T>(resource, url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
+                return patchJsonApi<T>(resource, url, settings, partition, (retryCount || 0) + 1, ignoreReturn, includeCredentials);
             }
             return Promise.reject(response);
         });
@@ -160,7 +155,8 @@ export function postJsonApi<T>(
     ignoreReturn?: boolean | null,
     getHeaders?: (() => Headers) | null,
     retryServerSideErrors?: boolean | null,
-    retryCount?: number | null): Promise<T> {
+    retryCount?: number | null,
+    includeCredentials?: boolean): Promise<T> {
 
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = getHeaders ? getHeaders() : new Headers();
@@ -174,7 +170,7 @@ export function postJsonApi<T>(
         method: 'POST',
         headers: requestHeaders,
         body: resource,
-        credentials: FETCH_CREDENTIALS
+        credentials: includeCredentials ? 'include' : 'omit'
     })
         .then(response => {
             if (response.ok) {
@@ -191,14 +187,14 @@ export function postJsonApi<T>(
 
             // We optionally allow the request to be retried if the server responded with an error
             if (retryServerSideErrors && responseIsServerError(response.status) && (retryCount || 0) <= GET_RETRIES) {
-                return postJsonApi(resource, url, settings, partition, ignoreReturn, getHeaders, retryServerSideErrors, (retryCount || 0) + 1);
+                return postJsonApi(resource, url, settings, partition, ignoreReturn, getHeaders, retryServerSideErrors, (retryCount || 0) + 1, includeCredentials);
             }
 
             return Promise.reject(response);
         });
 }
 
-export function deleteJsonApi(url: string, settings: RuntimeSettings, partition: string | null, retryCount?: number, ignoreReturn?: boolean): Promise<Response> {
+export function deleteJsonApi(url: string, settings: RuntimeSettings, partition: string | null, retryCount?: number, ignoreReturn?: boolean, includeCredentials?: boolean): Promise<Response> {
     const accessToken = getAccessToken(settings);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/vnd.api+json');
@@ -210,7 +206,7 @@ export function deleteJsonApi(url: string, settings: RuntimeSettings, partition:
     return fetch(url, {
         method: 'DELETE',
         headers: requestHeaders,
-        credentials: FETCH_CREDENTIALS
+        credentials: includeCredentials ? 'include' : 'omit'
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -229,7 +225,7 @@ export function deleteJsonApi(url: string, settings: RuntimeSettings, partition:
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return deleteJsonApi(url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
+                return deleteJsonApi(url, settings, partition, (retryCount || 0) + 1, ignoreReturn, includeCredentials);
             }
             return Promise.reject(response);
         });
