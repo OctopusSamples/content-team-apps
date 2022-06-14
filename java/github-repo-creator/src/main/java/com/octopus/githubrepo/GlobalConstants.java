@@ -18,4 +18,5 @@ public final class GlobalConstants {
   public static final String AUDIT_SCOPE = "audit.content-team/admin";
   public static final String POPULATED_REPO_FOR_CUSTOMER = "PopulatedRepoForCustomer";
   public static final String POPULATED_REPO_FOR_INSTANCE = "PopulatedRepoForInstance";
+  public static final String OCTOPUS_SERVER_SECRET_NAME = "OCTOPUS_SERVER";
 }

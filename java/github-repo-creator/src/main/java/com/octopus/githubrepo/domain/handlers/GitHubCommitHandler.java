@@ -15,6 +15,7 @@ import com.octopus.githubrepo.domain.entities.Audit;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommit;
 import com.octopus.githubrepo.domain.entities.CreateGithubCommitMeta;
 import com.octopus.githubrepo.domain.entities.PopulateGithubRepo;
+import com.octopus.githubrepo.domain.entities.Secret;
 import com.octopus.githubrepo.domain.entities.github.GitHubEmail;
 import com.octopus.githubrepo.domain.entities.github.GitHubUser;
 import com.octopus.githubrepo.domain.entities.github.GithubRepo;
@@ -27,10 +28,13 @@ import com.octopus.githubrepo.domain.utils.ServiceAuthUtils;
 import com.octopus.githubrepo.infrastructure.clients.GitHubClient;
 import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import io.quarkus.logging.Log;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -171,6 +175,9 @@ public class GitHubCommitHandler {
 
       // Ensure the validity of the request.
       verifyRequest(createGithubRepo);
+
+      // Audit the Octopus server that the templates will populate
+      auditOctopusServer(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
 
       // Decrypt the github token passed in as a cookie.
       final String decryptedGithubToken = cryptoUtils.decrypt(
@@ -369,6 +376,32 @@ public class GitHubCommitHandler {
     }
 
     throw new InvalidInputException(
-        violations.stream().map(cv -> cv.getMessage()).collect(Collectors.joining(", ")));
+        violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", ")));
+  }
+
+  private void auditOctopusServer(
+      final CreateGithubCommit createGithubRepo,
+      final String xray,
+      final String routingHeader,
+      final String dataPartitionHeaders,
+      final String authorizationHeader) {
+    // Audit the octopus instance that this request is being made for
+    Objects.requireNonNullElse(createGithubRepo.getSecrets(), List.<Secret>of())
+        .stream()
+        // find the secret that includes the octopus server name
+        .filter(s -> GlobalConstants.OCTOPUS_SERVER_SECRET_NAME.equals(s.getName()))
+        // we expect, but don't assume, one value
+        .findFirst()
+        // if there was a secret holding the octopus server value, audit it
+        .ifPresent(secret -> auditGenerator.createAuditEvent(new Audit(
+                microserviceNameFeature.getMicroserviceName(),
+                GlobalConstants.POPULATED_REPO_FOR_INSTANCE,
+                secret.getValue(),
+                false,
+                false),
+            xray,
+            routingHeader,
+            dataPartitionHeaders,
+            authorizationHeader));
   }
 }
