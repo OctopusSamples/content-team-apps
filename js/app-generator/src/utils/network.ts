@@ -4,6 +4,11 @@ import {RuntimeSettings} from "../config/runtimeConfig";
 
 const GET_RETRIES = 5;
 const JSON_TYPES = ["application/vnd.api+json", "application/json"];
+/*
+ Can be 'include', 'same-origin', or 'omit'
+ https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#sending_a_request_with_credentials_included
+ */
+const FETCH_CREDENTIALS = "omit";
 
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
@@ -49,7 +54,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: FETCH_CREDENTIALS
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -81,7 +86,7 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: FETCH_CREDENTIALS
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -121,7 +126,7 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
         method: 'PATCH',
         headers: requestHeaders,
         body: resource,
-        credentials: "include"
+        credentials: FETCH_CREDENTIALS
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -169,7 +174,7 @@ export function postJsonApi<T>(
         method: 'POST',
         headers: requestHeaders,
         body: resource,
-        credentials: "include"
+        credentials: FETCH_CREDENTIALS
     })
         .then(response => {
             if (response.ok) {
@@ -205,7 +210,7 @@ export function deleteJsonApi(url: string, settings: RuntimeSettings, partition:
     return fetch(url, {
         method: 'DELETE',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: FETCH_CREDENTIALS
     })
         .then(response => {
             if (!responseIsError(response.status)) {
