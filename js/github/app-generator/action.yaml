@@ -170,7 +170,7 @@ runs:
     - name: Build, tag, and push image to Amazon ECR
       run: |
         docker push octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }}
-        docker image tag ctopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuilderfrontend
+        docker image tag octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuilderfrontend
         docker push octopussamples/workflowbuilderfrontend
       shell: bash
 
