@@ -33,8 +33,17 @@ resource "octopusdeploy_variable" "aws_account_deploy_infrastructure_project" {
 }
 
 locals {
-  api_gateway_stack = "OctopusBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
-  api_gateway_cloudformation_tags = "[{\"key\":\"Environment\",\"value\":\"#{Octopus.Environment.Name | Replace \" .*\" \"\"}\"},{\"key\":\"DeploymentProject\",\"value\":\"API_Gateway\"}]"
+  api_gateway_stack               = "OctopusBuilder-APIGateway-${lower(var.github_repo_owner)}-#{Octopus.Environment.Name | Replace \" .*\" \"\" | ToLower}"
+  api_gateway_cloudformation_tags = jsonencode([
+    {
+      key : "Environment"
+      value : "#{Octopus.Environment.Name | Replace \" .*\" \"\"}"
+    },
+    {
+      key : "DeploymentProject"
+      value : "API_Gateway"
+    }
+  ])
 }
 
 resource "octopusdeploy_deployment_process" "deploy_cluster" {
@@ -55,10 +64,10 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
       ]
 
       properties = {
-        "Octopus.Action.Aws.AssumeRole": "False"
-        "Octopus.Action.Aws.CloudFormation.Tags": local.api_gateway_cloudformation_tags
-        "Octopus.Action.Aws.CloudFormationStackName": local.api_gateway_stack
-        "Octopus.Action.Aws.CloudFormationTemplate": <<-EOT
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.CloudFormation.Tags" : local.api_gateway_cloudformation_tags
+        "Octopus.Action.Aws.CloudFormationStackName" : local.api_gateway_stack
+        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Resources:
             RestApi:
               Type: 'AWS::ApiGateway::RestApi'
@@ -118,13 +127,13 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
               Description: ID of the resource exposing the web app frontend
               Value: !Ref Web
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters": "[]"
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw": "[]"
-        "Octopus.Action.Aws.Region": var.aws_region
-        "Octopus.Action.Aws.TemplateSource": "Inline"
-        "Octopus.Action.Aws.WaitForCompletion": "True"
-        "Octopus.Action.AwsAccount.UseInstanceRole": "False"
-        "Octopus.Action.AwsAccount.Variable": "AWS Account"
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : "[]"
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : "[]"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.Aws.TemplateSource" : "Inline"
+        "Octopus.Action.Aws.WaitForCompletion" : "True"
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
       }
     }
   }
