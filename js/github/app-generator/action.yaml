@@ -113,13 +113,25 @@ runs:
         name: Dependencies Updates
         path: js/app-generator/dependencyUpdates.txt
 
-    - name: Test
-      run: yarn test || true
+    - name: Build image
+      uses: mamezou-tech/buildpacks-action@master
+      with:
+        image: 'octopussamples/workflowbuilderfrontend'
+        tag: '${{ steps.determine_version.outputs.semVer }}'
+        path: 'js/app-generator'
+        builder: 'heroku/buildpacks:20'
+        buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
+        env: NODE_OPTIONS=--openssl-legacy-provider
+
+    - name: Build, tag, and push image to Amazon ECR
+      run: |
+        docker push octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }}
+        docker image tag octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuilderfrontend
+        docker push octopussamples/workflowbuilderfrontend
       shell: bash
-      working-directory: js/app-generator
 
     - name: Build
-      run: npm run build
+      run: yarn run build
       shell: bash
       working-directory: js/app-generator
 
@@ -156,23 +168,6 @@ runs:
          --include '**/*.Procfile'
       shell: bash
       working-directory: js/app-generator
-
-    - name: Build image
-      uses: mamezou-tech/buildpacks-action@master
-      with:
-        image: 'octopussamples/workflowbuilderfrontend'
-        tag: '${{ steps.determine_version.outputs.semVer }}'
-        path: 'js/app-generator/build'
-        builder: 'heroku/buildpacks:20'
-        buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
-        env: NODE_OPTIONS=--openssl-legacy-provider
-
-    - name: Build, tag, and push image to Amazon ECR
-      run: |
-        docker push octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }}
-        docker image tag octopussamples/workflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuilderfrontend
-        docker push octopussamples/workflowbuilderfrontend
-      shell: bash
 
     - name: Tag Release
       uses: mathieudutour/github-tag-action@v6.0
