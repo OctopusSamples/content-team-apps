@@ -248,6 +248,7 @@ runs:
         --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting
+        --deploymentTimeout 00:30:00
       shell: bash
 
     - name: Create a release
@@ -264,4 +265,5 @@ runs:
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting
+        --deploymentTimeout 00:30:00
       shell: bash
