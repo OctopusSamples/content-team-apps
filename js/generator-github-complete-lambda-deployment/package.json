@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-lambda-deployment",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "description": "",
   "files": [
     "generators"
@@ -11,7 +11,7 @@
   "dependencies": {
     "yeoman-generator": "^5.6.1",
     "@octopus-content-team/generator-octopus-java-microservice": "0.1.74",
-    "@octopus-content-team/generator-octopus-js-frontend": "0.1.30",
+    "@octopus-content-team/generator-octopus-js-frontend": "0.1.33",
     "@octopus-content-team/generator-octopus-reverse-proxy": "0.1.2",
     "@octopus-content-team/generator-github-shared-space": "0.1.24",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.19",
