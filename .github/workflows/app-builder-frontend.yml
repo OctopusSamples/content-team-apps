@@ -26,3 +26,5 @@ jobs:
           aws_region: us-west-1
           run_number: ${{ github.run_number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}
