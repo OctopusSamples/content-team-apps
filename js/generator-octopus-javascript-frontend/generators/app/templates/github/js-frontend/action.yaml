@@ -44,6 +44,12 @@ runs:
     - name: Clone code repo
       uses: actions/checkout@v2
 
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 14
+        cache: 'npm'
+        cache-dependency-path: js/frontend/yarn.lock
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
