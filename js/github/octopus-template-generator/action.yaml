@@ -43,6 +43,12 @@ inputs:
   github_token:
     required: true
     description: 'The GitHub token'
+  dockerhub_username:
+    required: true
+    description: The DockerHub username
+  dockerhub_password:
+    required: true
+    description: The DockerHub password
 
 runs:
   using: "composite"
@@ -118,10 +124,21 @@ runs:
         name: Dependencies Updates
         path: js/octopus-template-generator/dependencyUpdates.txt
 
-    - name: Test
-      run: npm test || true
+    - name: Build image
+      uses: mamezou-tech/buildpacks-action@master
+      with:
+        image: 'octopussamples/workflowbuildertemplategenerator'
+        tag: '${{ steps.determine_version.outputs.semVer }}'
+        path: 'js/octopus-template-generator'
+        builder: 'heroku/buildpacks:20'
+        env: NODE_OPTIONS=--openssl-legacy-provider
+
+    - name: Build, tag, and push image to Amazon ECR
+      run: |
+        docker push octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }}
+        docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuildertemplategenerator
+        docker push octopussamples/workflowbuildertemplategenerator
       shell: bash
-      working-directory: js/octopus-template-generator
 
     - name: Build
       run: npm run build
