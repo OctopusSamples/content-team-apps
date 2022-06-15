@@ -162,7 +162,7 @@ runs:
       with:
         image: 'octopussamples/workflowbuilderfrontend'
         tag: '${{ steps.determine_version.outputs.semVer }}'
-        path: 'js/app-generator'
+        path: 'js/app-generator/build'
         builder: 'heroku/buildpacks:20'
         buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
         env: NODE_OPTIONS=--openssl-legacy-provider
