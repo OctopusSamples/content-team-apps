@@ -1249,6 +1249,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             DeploymentId:
               Description: The deployment id
               Value: !Ref 'Deployment#{Octopus.Deployment.Id | Replace -}'
+            ApiProductsMethod:
+              Description: The method hosting the root api endpoint
+              Value: !Ref ApiProductsMethod
+            ApiProxyProductsMethod:
+              Description: The method hosting the api endpoint subdirectories
+              Value: !Ref ApiProxyProductsMethod
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
