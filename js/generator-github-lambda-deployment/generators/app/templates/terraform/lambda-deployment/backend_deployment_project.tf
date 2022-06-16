@@ -172,6 +172,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
       name           = "Create S3 bucket"
+      notes          = "Create an S3 bucket to hold the Lambda application code that is to be deployed."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -211,6 +212,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       action_type    = "Octopus.AwsUploadS3"
       name           = "Upload Lambda"
       run_on_server  = true
+      notes          = "Upload the Lambda application packages to the S3 bucket created in the previous step."
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
@@ -249,6 +251,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       action_type    = "Octopus.AwsUploadS3"
       name           = "Upload Lambda Proxy"
       run_on_server  = true
+      notes          = "Upload the \"dumb\" reverse proxy application code to the S3 bukcet."
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
         data.octopusdeploy_environments.development.environments[0].id,
@@ -286,6 +289,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     action {
       action_type    = "Octopus.AwsRunScript"
       name           = "Get Stack Outputs"
+      notes          = "Read the CloudFormation outputs from the stack that created the shared API Gateway instance."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
