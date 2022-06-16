@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.NonNull;
 
 /**
  * Handle entity lookup requests.
@@ -53,7 +54,7 @@ public class LambdaRequestHandlerGetOne implements LambdaRequestHandler {
    * @return A populated response event, or an empty optional if this service did not handle the event.
    */
   @Override
-  public Optional<APIGatewayProxyResponseEvent> handleRequest(final APIGatewayProxyRequestEvent input) {
+  public Optional<APIGatewayProxyResponseEvent> handleRequest(@NonNull final APIGatewayProxyRequestEvent input) {
 
     if (!requestMatcher.requestIsMatch(input, INDIVIDUAL_RE, Constants.Http.GET_METHOD)) {
       return Optional.empty();

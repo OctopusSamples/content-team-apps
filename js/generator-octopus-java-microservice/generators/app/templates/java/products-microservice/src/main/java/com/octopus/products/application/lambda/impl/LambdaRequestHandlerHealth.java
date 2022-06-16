@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.NonNull;
 
 /**
  * Handle health check requests.
@@ -62,7 +63,7 @@ public class LambdaRequestHandlerHealth implements LambdaRequestHandler {
    * @return The optional proxy response
    */
   @Override
-  public Optional<APIGatewayProxyResponseEvent> handleRequest(final APIGatewayProxyRequestEvent input) {
+  public Optional<APIGatewayProxyResponseEvent> handleRequest(@NonNull final APIGatewayProxyRequestEvent input) {
     if (!requestMatcher.requestIsMatch(input, HEALTH_RE, Constants.Http.GET_METHOD)) {
       return Optional.empty();
     }

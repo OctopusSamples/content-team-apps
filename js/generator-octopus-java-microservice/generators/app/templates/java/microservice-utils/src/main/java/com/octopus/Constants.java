@@ -40,5 +40,6 @@ public final class Constants {
   public final class Http {
     public static final String GET_METHOD = "get";
     public static final String POST_METHOD = "post";
+    public static final String OPTIONS_METHOD = "options";
   }
 }

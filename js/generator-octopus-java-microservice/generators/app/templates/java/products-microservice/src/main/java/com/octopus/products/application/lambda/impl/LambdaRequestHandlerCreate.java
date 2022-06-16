@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.NonNull;
 
 /**
  * Handle entity creation requests.
@@ -54,7 +55,7 @@ public class LambdaRequestHandlerCreate implements LambdaRequestHandler {
    * @return A populated response event, or an empty optional if this service did not handle the event.
    */
   @Override
-  public Optional<APIGatewayProxyResponseEvent> handleRequest(final APIGatewayProxyRequestEvent input) {
+  public Optional<APIGatewayProxyResponseEvent> handleRequest(@NonNull final APIGatewayProxyRequestEvent input) {
 
     if (!requestMatcher.requestIsMatch(input, ROOT_RE, Constants.Http.POST_METHOD)) {
       return Optional.empty();
