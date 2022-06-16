@@ -58,7 +58,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: "omit"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -88,7 +88,7 @@ export function getJsonApi<T>(url: string, partition?: string | null, retryCount
     return fetch(url, {
         method: 'GET',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: "omit"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -126,7 +126,7 @@ export function patchJsonApi<T>(resource: string, url: string, partition?: strin
         method: 'PATCH',
         headers: requestHeaders,
         body: resource,
-        credentials: "include"
+        credentials: "omit"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
@@ -164,7 +164,7 @@ export function postJsonApi<T>(resource: string, url: string, partition?: string
         method: 'POST',
         headers: requestHeaders,
         body: resource,
-        credentials: "include"
+        credentials: "omit"
     })
         .then(response => {
             if (response.ok) {
@@ -192,7 +192,7 @@ export function deleteJsonApi(url: string, partition: string | null, retryCount?
     return fetch(url, {
         method: 'DELETE',
         headers: requestHeaders,
-        credentials: "include"
+        credentials: "omit"
     })
         .then(response => {
             if (!responseIsError(response.status)) {
