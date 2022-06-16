@@ -52,28 +52,28 @@ resource "octopusdeploy_variable" "aws_account_deploy_frontend_project" {
 resource "octopusdeploy_variable" "productEndpoint_deploy_frontend_project" {
   name     = "productEndpoint"
   type     = "String"
-  value    = "/${local.fixed_environment_upper}/api/products"
+  value    = "https://#{Octopus.Action[Get Stack Outputs].Output.RestApi}.execute-api.${var.aws_region}.amazonaws.com/${local.fixed_environment_upper}/api/products"
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
 resource "octopusdeploy_variable" "productHealthEndpoint_deploy_frontend_project" {
   name     = "productHealthEndpoint"
   type     = "String"
-  value    = "/${local.fixed_environment_upper}/health/products"
+  value    = "https://#{Octopus.Action[Get Stack Outputs].Output.RestApi}.execute-api.${var.aws_region}.amazonaws.com/${local.fixed_environment_upper}/health/products"
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
 resource "octopusdeploy_variable" "auditEndpoint_deploy_frontend_project" {
   name     = "auditEndpoint"
   type     = "String"
-  value    = "/${local.fixed_environment_upper}/api/audits"
+  value    = "https://#{Octopus.Action[Get Stack Outputs].Output.RestApi}.execute-api.${var.aws_region}.amazonaws.com/${local.fixed_environment_upper}/api/audits"
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
 resource "octopusdeploy_variable" "auditHealthEndpoint_deploy_frontend_project" {
   name     = "auditHealthEndpoint"
   type     = "String"
-  value    = "/${local.fixed_environment_upper}/health/audits"
+  value    = "https://#{Octopus.Action[Get Stack Outputs].Output.RestApi}.execute-api.${var.aws_region}.amazonaws.com/${local.fixed_environment_upper}/health/audits"
   owner_id = octopusdeploy_project.deploy_frontend_project.id
 }
 
