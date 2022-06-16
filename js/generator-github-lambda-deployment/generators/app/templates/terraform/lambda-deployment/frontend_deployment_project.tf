@@ -644,6 +644,18 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               Description: The deployment id
               Value:
                 Ref: 'Deployment#{Octopus.Deployment.Id | Replace -}'
+            DownstreamService:
+              Description: The function that was configured to accept traffic.
+              Value:
+                'Fn::Join':
+                  - ''
+                  - - 'http://'
+                    - Ref: BucketName
+                    - .s3-website-us-west-1.amazonaws.com/
+                    - Ref: PackageId
+                    - .
+                    - Ref: PackageVersion
+                    - '/{proxy}'
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {

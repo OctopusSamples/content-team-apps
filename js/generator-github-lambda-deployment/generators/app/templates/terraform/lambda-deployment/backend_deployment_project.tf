@@ -1377,6 +1377,17 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             ApiProxyProductsMethod:
               Description: The method hosting the api endpoint subdirectories
               Value: !Ref ApiProxyProductsMethod
+            DownstreamService:
+              Description: The function that was configured to accept traffic.
+              Value: !Join
+                - ''
+                - - 'arn:'
+                  - !Ref 'AWS::Partition'
+                  - ':apigateway:'
+                  - !Ref 'AWS::Region'
+                  - ':lambda:path/2015-03-31/functions/'
+                  - !Ref ProxyLambdaVersion
+                  - /invocations
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
