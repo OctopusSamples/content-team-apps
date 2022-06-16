@@ -868,14 +868,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     }
   }
   step {
-    condition           = "Success"
-    name                = "HTTP Smoke Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
+    condition            = "Variable"
+    condition_expression = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+    name                 = "HTTP Smoke Test"
+    package_requirement  = "LetOctopusDecide"
+    start_trigger        = "StartAfterPrevious"
     run_script_action {
       can_be_used_for_project_versioning = false
-      condition                          = "Variable"
-      condition_expression               = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+      condition                          = "Success"
       is_disabled                        = false
       is_required                        = true
       script_syntax                      = "Bash"
@@ -915,14 +915,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     }
   }
   step {
-    condition           = "Success"
-    name                = "Postman Integration Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
+    condition            = "Variable"
+    condition_expression = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+    name                 = "Postman Integration Test"
+    package_requirement  = "LetOctopusDecide"
+    start_trigger        = "StartAfterPrevious"
     run_script_action {
       can_be_used_for_project_versioning = false
-      condition                          = "Variable"
-      condition_expression               = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+      condition                          = "Success"
       is_disabled                        = false
       is_required                        = true
       script_syntax                      = "Bash"
