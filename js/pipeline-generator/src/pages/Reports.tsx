@@ -16,7 +16,7 @@ const Reports: FC<{}> = (): ReactElement => {
         const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
         const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
 
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateFor;time>=" + fourWeeksAgo.toISOString(), "main")
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateFor%3Btime>=" + fourWeeksAgo.toISOString(), "main")
             .then(data => {
                 setEmailAuditsFourWeeks(data);
                 setEmailAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
@@ -29,7 +29,7 @@ const Reports: FC<{}> = (): ReactElement => {
         const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
         const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
 
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing;time>=" + fourWeeksAgo.toISOString(), "main")
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing%3Btime>=" + fourWeeksAgo.toISOString(), "main")
             .then(data => {
                 setTemplateAuditsFourWeeks(data);
                 setTemplateAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
