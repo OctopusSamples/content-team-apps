@@ -83,7 +83,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "#{Octopus.Action[Get Stage Outputs].Output.StageURL}"
+  value        = "http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-us-west-1.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
 }
 
 locals {
@@ -334,6 +334,113 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
         "Octopus.Action.Package.PackageId" : local.frontend_package_name
       }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "HTTP Smoke Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "HTTP Smoke Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      script_body = <<-EOT
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
+          for i in {1..30}
+          do
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-us-west-1.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/index.html)
+              if [[ "$${CODE}" == "200" ]]
+              then
+                break
+              fi
+              echo "Waiting for DNS name to be resolvable and for service to respond"
+              sleep 10
+          done
+
+          echo "response code: $${CODE}"
+          if [[ "$${CODE}" == "200" ]]
+          then
+            echo "success"
+            exit 0;
+          else
+            echo "error"
+            exit 1;
+          fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Cypress E2E Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Cypress E2E Test"
+      notes                              = "Use cypress to perform an end to end test of the frontend web app."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.cypress_docker_image
+      }
+      package {
+        name                      = "octopub-frontend-cypress"
+        package_id                = "octopub-frontend-cypress"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
+      }
+      script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          cd octopub-frontend-cypress
+          cat cypress.json
+          OUTPUT=$(cypress run 2>&1)
+          RESULT=$?
+          echo "##octopus[stdout-default]"
+
+          # Print the output stripped of ANSI colour codes
+          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
+
+          if [[ -f mochawesome.html ]]
+          then
+            inline-assets mochawesome.html selfcontained.html
+            new_octopusartifact "$${PWD}/selfcontained.html" "html-report.html"
+          fi
+          if [[ -d cypress/screenshots/sample_spec.js ]]
+          then
+            zip -r screenshots.zip cypress/screenshots/sample_spec.js
+            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
+          fi
+          exit $${RESULT}
+        EOT
     }
   }
   step {
@@ -765,113 +872,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
       }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "HTTP Smoke Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      can_be_used_for_project_versioning = false
-      condition                          = "Success"
-      is_disabled                        = false
-      is_required                        = true
-      script_syntax                      = "Bash"
-      script_source                      = "Inline"
-      run_on_server                      = true
-      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name                               = "HTTP Smoke Test"
-      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
-      environments                       = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      script_body = <<-EOT
-          # Load balancers can take a minute or so before their DNS is propagated.
-          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
-          echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
-          for i in {1..30}
-          do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" #{Octopus.Action[Get Stage Outputs].Output.StageURL}/index.html)
-              if [[ "$${CODE}" == "200" ]]
-              then
-                break
-              fi
-              echo "Waiting for DNS name to be resolvable and for service to respond"
-              sleep 10
-          done
-
-          echo "response code: $${CODE}"
-          if [[ "$${CODE}" == "200" ]]
-          then
-            echo "success"
-            exit 0;
-          else
-            echo "error"
-            exit 1;
-          fi
-        EOT
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Cypress E2E Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      can_be_used_for_project_versioning = false
-      condition                          = "Success"
-      is_disabled                        = false
-      is_required                        = true
-      script_syntax                      = "Bash"
-      script_source                      = "Inline"
-      run_on_server                      = true
-      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name                               = "Cypress E2E Test"
-      notes                              = "Use cypress to perform an end to end test of the frontend web app."
-      environments                       = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      features = ["Octopus.Features.JsonConfigurationVariables"]
-      container {
-        feed_id = var.octopus_k8s_feed_id
-        image   = var.cypress_docker_image
-      }
-      package {
-        name                      = "octopub-frontend-cypress"
-        package_id                = "octopub-frontend-cypress"
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "Server"
-        extract_during_deployment = true
-      }
-      properties = {
-        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/cypress.json"
-      }
-      script_body = <<-EOT
-          echo "##octopus[stdout-verbose]"
-          cd octopub-frontend-cypress
-          cat cypress.json
-          OUTPUT=$(cypress run 2>&1)
-          RESULT=$?
-          echo "##octopus[stdout-default]"
-
-          # Print the output stripped of ANSI colour codes
-          echo -e "$${OUTPUT}" | sed 's/\x1b\[[0-9;]*m//g'
-
-          if [[ -f mochawesome.html ]]
-          then
-            inline-assets mochawesome.html selfcontained.html
-            new_octopusartifact "$${PWD}/selfcontained.html" "html-report.html"
-          fi
-          if [[ -d cypress/screenshots/sample_spec.js ]]
-          then
-            zip -r screenshots.zip cypress/screenshots/sample_spec.js
-            new_octopusartifact "$${PWD}/screenshots.zip" "screenshots.zip"
-          fi
-          exit $${RESULT}
-        EOT
     }
   }
   step {
