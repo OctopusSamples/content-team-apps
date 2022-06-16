@@ -98,6 +98,21 @@ resource "octopusdeploy_variable" "postman_raw_path_variable" {
   value        = "[\"${local.fixed_environment_upper}\", \"api\", \"products\", \"\"]"
 }
 
+resource "octopusdeploy_variable" "postman_header_variable" {
+  name         = "item:0:request:header"
+  type         = "String"
+  description  = "A structured variable replacement for the Postman test."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_backend_project.id
+  value        = jsonencode([
+    {
+      key : "Routing"
+      value : "route[/api/products:GET]=lambda[#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}]"
+      type : "text"
+    }
+  ])
+}
+
 locals {
   mainline_s3_bucket_stack    = "OctopusBuilder-Lambda-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   product_api_gateway_stack   = "OctopusBuilder-Product-APIGateway-${lower(var.github_repo_owner)}-${local.fixed_environment}"
@@ -370,6 +385,17 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             echo "Run the API Gateway project first"
             exit 1
           fi
+
+          # The presence of this output tells us if this is the first deployment or not.
+          # We can make some decisions later on to account for the unique state of the
+          # environment during the very first deployment.
+          APIMETHOD=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "${local.product_api_gateway_stack}" \
+              --query "Stacks[0].Outputs[?OutputKey=='ApiProductsMethod'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "ApiMethod" $${APIMETHOD}
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -839,6 +865,98 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
       }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "HTTP Smoke Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Variable"
+      condition_expression               = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "HTTP Smoke Test"
+      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      script_body = <<-EOT
+          # Load balancers can take a minute or so before their DNS is propagated.
+          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          for i in {1..30}
+          do
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" --header "Routing: route[/api/products:GET]=lambda[#{Octopus.Action[Deploy Application Lambda Version].Output.AwsOutputs[LambdaVersion]}]" #{Octopus.Action[Get Stack Outputs].Output.StageURL}api/products)
+              if [[ "$${CODE}" == "200" ]]
+              then
+                break
+              fi
+              echo "Waiting for DNS name to be resolvable and for service to respond"
+              sleep 10
+          done
+
+          echo "response code: $${CODE}"
+          if [[ "$${CODE}" == "200" ]]
+          then
+            echo "success"
+            exit 0;
+          else
+            echo "error"
+            exit 1;
+          fi
+        EOT
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Postman Integration Test"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Variable"
+      condition_expression               = "#{Octopus.Action[Get Stack Outputs].Output.ApiMethod}"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      name                               = "Postman Integration Test"
+      notes                              = "Perform an integration test with the Postman CLI called newman."
+      environments                       = [
+        data.octopusdeploy_environments.development.environments[0].id,
+        data.octopusdeploy_environments.production.environments[0].id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      container {
+        feed_id = var.octopus_k8s_feed_id
+        image   = var.postman_docker_image
+      }
+      package {
+        name                      = "products-microservice-postman"
+        package_id                = "products-microservice-postman"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets" : "**/*.json"
+      }
+      script_body = <<-EOT
+          echo "##octopus[stdout-verbose]"
+          cat products-microservice-postman/test.json
+          echo "##octopus[stdout-default]"
+
+          newman run products-microservice-postman/test.json 2>&1
+        EOT
     }
   }
   step {
@@ -1484,96 +1602,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
       }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "HTTP Smoke Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      can_be_used_for_project_versioning = false
-      condition                          = "Success"
-      is_disabled                        = false
-      is_required                        = true
-      script_syntax                      = "Bash"
-      script_source                      = "Inline"
-      run_on_server                      = true
-      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name                               = "HTTP Smoke Test"
-      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
-      environments                       = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      script_body = <<-EOT
-          # Load balancers can take a minute or so before their DNS is propagated.
-          # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
-          for i in {1..30}
-          do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" #{Octopus.Action[Get Stack Outputs].Output.StageURL}health/products/GET)
-              if [[ "$${CODE}" == "200" ]]
-              then
-                break
-              fi
-              echo "Waiting for DNS name to be resolvable and for service to respond"
-              sleep 10
-          done
-
-          echo "response code: $${CODE}"
-          if [[ "$${CODE}" == "200" ]]
-          then
-            echo "success"
-            exit 0;
-          else
-            echo "error"
-            exit 1;
-          fi
-        EOT
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Postman Integration Test"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      can_be_used_for_project_versioning = false
-      condition                          = "Success"
-      is_disabled                        = false
-      is_required                        = true
-      script_syntax                      = "Bash"
-      script_source                      = "Inline"
-      run_on_server                      = true
-      worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      name                               = "Postman Integration Test"
-      notes                              = "Use curl to perform a smoke test of a HTTP endpoint."
-      environments                       = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
-      ]
-      features = ["Octopus.Features.JsonConfigurationVariables"]
-      container {
-        feed_id = var.octopus_k8s_feed_id
-        image   = var.postman_docker_image
-      }
-      package {
-        name                      = "products-microservice-postman"
-        package_id                = "products-microservice-postman"
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "Server"
-        extract_during_deployment = true
-      }
-      properties = {
-        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/*.json"
-      }
-      script_body = <<-EOT
-          echo "##octopus[stdout-verbose]"
-          cat products-microservice-postman/test.json
-          echo "##octopus[stdout-default]"
-
-          newman run products-microservice-postman/test.json 2>&1
-        EOT
     }
   }
   step {
