@@ -68,7 +68,7 @@ const Reports: FC<{}> = (): ReactElement => {
     return <div>
         {error && <span>{error}</span>}
         <p>Note some of these email addresses are unusable "no-reply" addresses. Upload the private key using the button below to allow the report to filter
-            no-reply email addresses,</p>
+            no-reply email addresses.</p>
         <form encType="multipart/form-data">
             <input id="upload" type="file" accept=".pem" name="files[]" size={30} onChange={(evt) => {
                 const files = evt.target.files || [];
