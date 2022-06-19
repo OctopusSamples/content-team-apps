@@ -2,6 +2,7 @@ import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {AppContext} from "../App";
 import {AuditsCollection} from "./Audits";
+import {JSEncrypt} from "jsencrypt";
 
 const Reports: FC<{}> = (): ReactElement => {
     const context = useContext(AppContext);
@@ -10,20 +11,46 @@ const Reports: FC<{}> = (): ReactElement => {
     const [templateAuditsFourWeeks, setTemplateAuditsFourWeeks] = useState<AuditsCollection | null>(null);
     const [templateAuditsOneWeek, setTemplateAuditsOneWeek] = useState<AuditsCollection | null>(null);
     const [error, setError] = useState<string | null>(null);
-
+    const [privateKey, setPrivateKey] = useState<string | null>(null);
 
     useEffect(() => {
+        const decrypt = (email: string): string => {
+            if (!privateKey) {
+                return email;
+            }
+
+            try {
+                const decrypt = new JSEncrypt();
+                decrypt.setPrivateKey(privateKey);
+                return decrypt.decrypt(email).toString();
+            } catch {
+                // If the wrong key is used, fail silently
+                return email;
+            }
+        }
+
+        const processAudits = (audits: AuditsCollection): AuditsCollection => {
+            return {
+                ...audits, data: audits.data
+                    ?.map(a => {
+                        a.attributes.object = decrypt(a.attributes.object);
+                        return a;
+                    })
+                    ?.filter(a => !a.attributes.object.endsWith("users.noreply.github.com"))
+            }
+        }
+
         const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
         const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
 
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateFor%3Btime>=" + fourWeeksAgo.toISOString(), "main")
             .then(data => {
-                setEmailAuditsFourWeeks(data);
-                setEmailAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
+                setEmailAuditsFourWeeks(processAudits(data));
+                setEmailAuditsOneWeek(processAudits({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())}));
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
-    }, [setEmailAuditsFourWeeks, setEmailAuditsOneWeek, context.settings.auditEndpoint]);
+    }, [setEmailAuditsFourWeeks, setEmailAuditsOneWeek, context.settings.auditEndpoint, privateKey]);
 
     useEffect(() => {
         const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
@@ -36,11 +63,26 @@ const Reports: FC<{}> = (): ReactElement => {
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
-    }, [setEmailAuditsFourWeeks, setTemplateAuditsOneWeek, context.settings.auditEndpoint]);
+    }, [setEmailAuditsFourWeeks, setTemplateAuditsOneWeek, context.settings.auditEndpoint, privateKey]);
 
     return <div>
         {error && <span>{error}</span>}
-        <p>Note some of these email addresses are unusable "no-reply" addresses.</p>
+        <p>Note some of these email addresses are unusable "no-reply" addresses. Upload the private key using the button below to allow the report to filter
+            no-reply email addresses,</p>
+        <form encType="multipart/form-data">
+            <input id="upload" type="file" accept=".pem" name="files[]" size={30} onChange={(evt) => {
+                const files = evt.target.files || [];
+                const f = files[0];
+                const reader = new FileReader();
+
+                // Closure to capture the file information.
+                reader.onload = function (e) {
+                    setPrivateKey(e.target?.result?.toString() || null);
+                };
+
+                reader.readAsText(f);
+            }}/>
+        </form>
         <table>
             <tr>
                 <td style={{padding: "32px"}}>
