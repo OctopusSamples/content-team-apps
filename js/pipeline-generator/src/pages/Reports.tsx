@@ -3,6 +3,7 @@ import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {AppContext} from "../App";
 import {AuditsCollection} from "./Audits";
 import {JSEncrypt} from "jsencrypt";
+import {Chart, ChartConfiguration} from "chart.js";
 
 const Reports: FC<{}> = (): ReactElement => {
     const context = useContext(AppContext);
@@ -56,10 +57,52 @@ const Reports: FC<{}> = (): ReactElement => {
         const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
         const oneWeekAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
 
+        const buildLanguageReport = (audits: AuditsCollection) => {
+            const data = {
+                labels: ['Java', '.NET Core', 'Node.js', 'Go', 'Python', 'PHP', 'Ruby'],
+                datasets: [
+                    {
+                        data: [
+                            audits?.data?.filter(a => a.attributes.object === "Java Maven").length,
+                            audits?.data?.filter(a => a.attributes.object === "DotNET Core").length,
+                            audits?.data?.filter(a => a.attributes.object === "Node.js").length,
+                            audits?.data?.filter(a => a.attributes.object === "Go").length,
+                            audits?.data?.filter(a => a.attributes.object === "Python").length,
+                            audits?.data?.filter(a => a.attributes.object === "PHP").length,
+                            audits?.data?.filter(a => a.attributes.object === "Ruby").length
+                        ]
+                    }
+                ]
+            };
+
+            const config: ChartConfiguration = {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Language Report'
+                        }
+                    }
+                },
+            };
+
+            const languageReport = document.getElementById('languageReport') as HTMLCanvasElement;
+            if (languageReport) {
+                new Chart(languageReport, config);
+            }
+        }
+
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing%3Btime>=" + fourWeeksAgo.toISOString(), "main")
             .then(data => {
                 setTemplateAuditsFourWeeks(data);
                 setTemplateAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
+                buildLanguageReport(data);
             })
             .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
                 + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
@@ -114,6 +157,9 @@ const Reports: FC<{}> = (): ReactElement => {
                     <p>PHP templates: {templateAuditsOneWeek?.data?.filter(a => a.attributes.object === "PHP").length}</p>
                     <p>Python templates: {templateAuditsOneWeek?.data?.filter(a => a.attributes.object === "Python").length}</p>
                     <p>Ruby templates: {templateAuditsOneWeek?.data?.filter(a => a.attributes.object === "Ruby").length}</p>
+                </td>
+                <td style={{padding: "32px"}}>
+                    <canvas id="languageReport"></canvas>
                 </td>
             </tr>
         </table>
