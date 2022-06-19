@@ -69,6 +69,7 @@ const Reports: FC<{}> = (): ReactElement => {
                 datasets: [
                     {
                         data: [
+                            // Ignore gradle as it is the default template returned, which skews the results
                             audits?.data?.filter(a => a.attributes.object === "Java Maven").length,
                             audits?.data?.filter(a => a.attributes.object === "DotNET Core").length,
                             audits?.data?.filter(a => a.attributes.object === "Node.js").length,
@@ -93,7 +94,7 @@ const Reports: FC<{}> = (): ReactElement => {
                         },
                         title: {
                             display: true,
-                            text: 'Language Report'
+                            text: 'Language Report (28 days)'
                         }
                     }
                 },
@@ -104,12 +105,49 @@ const Reports: FC<{}> = (): ReactElement => {
                 new Chart(languageReport, config);
             }
         }
+        const buildPlatformReport = (audits: AuditsCollection) => {
+            const data = {
+                labels: ['Jenkins', 'GitHub Actions'],
+                datasets: [
+                    {
+                        data: [
+                            audits?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length,
+                            audits?.data?.filter(a => a.attributes.subject === "GithubActionWorkflowBuilder").length
+                        ],
+                        backgroundColor: chartColors
+                    }
+                ]
+            };
+
+            const config: ChartConfiguration = {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Platform Report (28 days)'
+                        }
+                    }
+                },
+            };
+
+            const languageReport = document.getElementById('platformReport') as HTMLCanvasElement;
+            if (languageReport) {
+                new Chart(languageReport, config);
+            }
+        }
 
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing%3Btime>=" + fourWeeksAgo.toISOString(), "main")
             .then(data => {
                 setTemplateAuditsFourWeeks(data);
                 setTemplateAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
                 buildLanguageReport(data);
+                buildPlatformReport(data);
             })
             .catch(err => {
                 setError("Failed to retrieve audit resources. Make sure you are logged in. "
@@ -170,6 +208,9 @@ const Reports: FC<{}> = (): ReactElement => {
                 </td>
                 <td style={{padding: "32px"}}>
                     <canvas id="languageReport"></canvas>
+                </td>
+                <td style={{padding: "32px"}}>
+                    <canvas id="platformReport"></canvas>
                 </td>
             </tr>
         </table>
