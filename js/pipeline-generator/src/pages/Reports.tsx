@@ -4,6 +4,7 @@ import {AppContext} from "../App";
 import {AuditsCollection} from "./Audits";
 import {JSEncrypt} from "jsencrypt";
 import {Chart, ChartConfiguration, registerables} from "chart.js";
+import {chartColors} from "../utils/charts";
 
 Chart.register(...registerables);
 
@@ -75,7 +76,8 @@ const Reports: FC<{}> = (): ReactElement => {
                             audits?.data?.filter(a => a.attributes.object === "Python").length,
                             audits?.data?.filter(a => a.attributes.object === "PHP").length,
                             audits?.data?.filter(a => a.attributes.object === "Ruby").length
-                        ]
+                        ],
+                        backgroundColor: chartColors
                     }
                 ]
             };
