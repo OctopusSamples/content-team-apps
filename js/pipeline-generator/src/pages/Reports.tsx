@@ -3,7 +3,9 @@ import {getJsonApi, isBranchingEnabled} from "../utils/network";
 import {AppContext} from "../App";
 import {AuditsCollection} from "./Audits";
 import {JSEncrypt} from "jsencrypt";
-import {Chart, ChartConfiguration} from "chart.js";
+import {Chart, ChartConfiguration, registerables} from "chart.js";
+
+Chart.register(...registerables);
 
 const Reports: FC<{}> = (): ReactElement => {
     const context = useContext(AppContext);
