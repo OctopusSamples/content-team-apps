@@ -3,9 +3,9 @@ package com.octopus.products.application.http;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.products.application.Paths;
-import com.octopus.products.domain.handlers.ResourceHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
+import com.octopus.products.application.Paths;
+import com.octopus.products.domain.handlers.ResourceHandlerGetAll;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 public class JsonApiRootResourceGetAll {
 
   @Inject
-  ResourceHandler resourceHandler;
+  ResourceHandlerGetAll resourceHandler;
 
   @Inject
   AcceptHeaderVerifier acceptHeaderVerifier;

@@ -43,7 +43,7 @@ public class HandlerAuthorizedPostWithMockedUserTokenTests extends BaseTest {
   JwtUtils jwtUtils;
 
   @Inject
-  ResourceHandler resourceHandler;
+  ResourceHandlerCreate resourceHandler;
 
   @Inject
   ResourceConverter resourceConverter;

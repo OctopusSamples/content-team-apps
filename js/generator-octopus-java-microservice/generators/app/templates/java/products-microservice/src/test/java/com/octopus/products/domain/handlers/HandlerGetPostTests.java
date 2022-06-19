@@ -33,7 +33,13 @@ public class HandlerGetPostTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  ResourceHandler handler;
+  ResourceHandlerCreate handlerCreate;
+
+  @Inject
+  ResourceHandlerGetOne handlerGetOne;
+
+  @Inject
+  ResourceHandlerGetAll handlerGetAll;
 
   @Inject
   ResourceConverter resourceConverter;
@@ -47,7 +53,7 @@ public class HandlerGetPostTests extends BaseTest {
   @Transactional
   public void createResourceTestNull() {
     assertThrows(NullPointerException.class, () -> {
-      handler.create(
+      handlerCreate.create(
           null,
           List.of("testing"),
           null,
@@ -56,7 +62,7 @@ public class HandlerGetPostTests extends BaseTest {
 
     assertThrows(NullPointerException.class, () -> {
       final Product resource = createResource("subject");
-      handler.create(resourceToResourceDocument(resourceConverter, resource),
+      handlerCreate.create(resourceToResourceDocument(resourceConverter, resource),
           null,
           null,
           null);
@@ -66,7 +72,7 @@ public class HandlerGetPostTests extends BaseTest {
   @Test
   @Transactional
   public void testCreateResource() throws DocumentSerializationException {
-    final Product resultObject = createResource(handler, resourceConverter, "testing");
+    final Product resultObject = createResource(handlerCreate, resourceConverter, "testing");
     assertNotNull(resultObject.getId());
     assertEquals("testing", resultObject.getDataPartition());
     assertEquals("myname", resultObject.getName());
@@ -80,14 +86,14 @@ public class HandlerGetPostTests extends BaseTest {
   public void getResource() throws DocumentSerializationException {
     final Product resource = createResource("subject");
     final String result =
-        handler.create(
+        handlerCreate.create(
             resourceToResourceDocument(resourceConverter, resource),
             List.of("testing"),
             null, null);
     final Product resultObject = getResourceFromDocument(resourceConverter, result);
 
     final String getResult =
-        handler.getOne(
+        handlerGetOne.getOne(
             resultObject.getId().toString(),
             List.of("testing"),
             null, null);
@@ -106,14 +112,14 @@ public class HandlerGetPostTests extends BaseTest {
   public void getAllResource() throws DocumentSerializationException {
     final Product resource = createResource("subject");
     final String result =
-        handler.create(
+        handlerCreate.create(
             resourceToResourceDocument(resourceConverter, resource),
             List.of("testing"),
             null, null);
     final Product resultObject = getResourceFromDocument(resourceConverter, result);
 
     final String getResult =
-        handler.getAll(
+        handlerGetAll.getAll(
             List.of("testing"),
             "id==" + resultObject.getId(),
             null,
@@ -145,14 +151,14 @@ public class HandlerGetPostTests extends BaseTest {
   public void failGetResources(final String partition) throws DocumentSerializationException {
     final Product resource = createResource("subject");
     final String result =
-        handler.create(
+        handlerCreate.create(
             resourceToResourceDocument(resourceConverter, resource),
             List.of("testing"),
             null, null);
     final Product resultObject = getResourceFromDocument(resourceConverter, result);
 
     final String getResult =
-        handler.getAll(
+        handlerGetAll.getAll(
             List.of("" + partition),
             "",
             null,
@@ -163,7 +169,7 @@ public class HandlerGetPostTests extends BaseTest {
 
     assertFalse(getResultObjects.stream().anyMatch(p -> p.getId().equals(resultObject.getId())));
 
-    final String getResult2 = handler.getAll(
+    final String getResult2 = handlerGetAll.getAll(
         List.of(),
         "",
         null,

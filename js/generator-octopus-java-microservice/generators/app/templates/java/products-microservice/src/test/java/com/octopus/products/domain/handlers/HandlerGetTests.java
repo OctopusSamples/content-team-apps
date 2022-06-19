@@ -31,7 +31,13 @@ public class HandlerGetTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  ResourceHandler handler;
+  ResourceHandlerGetAll handler;
+
+  @Inject
+  ResourceHandlerGetOne handlerGetOne;
+
+  @Inject
+  ResourceHandlerCreate handlerCreate;
 
   @Inject
   HealthHandler healthHandler;
@@ -62,7 +68,7 @@ public class HandlerGetTests extends BaseTest {
   @Transactional
   public void getOneResourceTestNull() {
     assertThrows(NullPointerException.class, () -> {
-      handler.getOne(
+      handlerGetOne.getOne(
           null,
           List.of("testing"),
           null,
@@ -70,7 +76,7 @@ public class HandlerGetTests extends BaseTest {
     });
 
     assertThrows(NullPointerException.class, () -> {
-      handler.getOne(
+      handlerGetOne.getOne(
           "1",
           null,
           null,
@@ -82,7 +88,7 @@ public class HandlerGetTests extends BaseTest {
   @Transactional
   public void getMissingResource() {
     assertThrows(EntityNotFoundException.class, () ->
-      handler.getOne(
+        handlerGetOne.getOne(
           "1000000000000000000",
           List.of("main"),
           null, null)
@@ -101,7 +107,7 @@ public class HandlerGetTests extends BaseTest {
   public void failGetResource(final String partition) throws DocumentSerializationException {
     final Product resource = createResource("subject");
     final String result =
-        handler.create(
+        handlerCreate.create(
             resourceToResourceDocument(resourceConverter, resource),
             List.of("testing"),
             null, null);
@@ -110,14 +116,14 @@ public class HandlerGetTests extends BaseTest {
     assertThrows(
         EntityNotFoundException.class,
         () ->
-            handler.getOne(
+            handlerGetOne.getOne(
                 resultObject.getId().toString(),
                 List.of("" + partition),
                 null, null));
 
     assertThrows(
         EntityNotFoundException.class,
-        () -> handler.getOne(resultObject.getId().toString(), List.of(), null, null));
+        () -> handlerGetOne.getOne(resultObject.getId().toString(), List.of(), null, null));
   }
 
 }

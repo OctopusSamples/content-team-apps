@@ -26,7 +26,11 @@ public class HandlerAuthorizedGetTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  ResourceHandler handler;
+  ResourceHandlerGetOne handlerGetOne;
+
+
+  @Inject
+  ResourceHandlerGetAll handlerGetAll;
 
   @InjectMock
   DisableSecurityFeature cognitoDisableAuth;
@@ -40,7 +44,7 @@ public class HandlerAuthorizedGetTests extends BaseTest {
   @Test
   @Transactional
   public void testGetResource() {
-    assertThrows(UnauthorizedException.class, () -> handler.getOne(
+    assertThrows(UnauthorizedException.class, () -> handlerGetOne.getOne(
         "1",
         List.of("main"),
         null, null));
@@ -49,7 +53,7 @@ public class HandlerAuthorizedGetTests extends BaseTest {
   @Test
   @Transactional
   public void testGetAllResource() {
-    assertThrows(UnauthorizedException.class, () -> handler.getAll(
+    assertThrows(UnauthorizedException.class, () -> handlerGetAll.getAll(
         List.of("main"),
         null, null, null, null, null));
   }

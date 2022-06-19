@@ -47,7 +47,7 @@ public class HandlerAuthorizedPostWithMockedServiceTokenTests extends BaseTest {
   JwtUtils jwtUtils;
 
   @Inject
-  ResourceHandler handler;
+  ResourceHandlerCreate handler;
 
   @Inject
   ResourceConverter resourceConverter;

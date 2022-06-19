@@ -30,7 +30,7 @@ public class HandlerPostTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  ResourceHandler handler;
+  ResourceHandlerCreate handler;
 
   @Inject
   ResourceConverter resourceConverter;
