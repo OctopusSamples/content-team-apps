@@ -51,8 +51,11 @@ const Reports: FC<{}> = (): ReactElement => {
                 setEmailAuditsFourWeeks(processAudits(data));
                 setEmailAuditsOneWeek(processAudits({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())}));
             })
-            .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
-                + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
+            .catch(err => {
+                setError("Failed to retrieve audit resources. Make sure you are logged in. "
+                    + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : ""));
+                console.log(err);
+            })
     }, [setEmailAuditsFourWeeks, setEmailAuditsOneWeek, context.settings.auditEndpoint, privateKey]);
 
     useEffect(() => {
@@ -106,8 +109,11 @@ const Reports: FC<{}> = (): ReactElement => {
                 setTemplateAuditsOneWeek({...data, data: data.data?.filter(a => a.attributes.time >= oneWeekAgo.getTime())});
                 buildLanguageReport(data);
             })
-            .catch(() => setError("Failed to retrieve audit resources. Make sure you are logged in. "
-                + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : "")))
+            .catch(err => {
+                setError("Failed to retrieve audit resources. Make sure you are logged in. "
+                    + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : ""));
+                console.log(err);
+            })
     }, [setEmailAuditsFourWeeks, setTemplateAuditsOneWeek, context.settings.auditEndpoint, privateKey]);
 
     return <div>
