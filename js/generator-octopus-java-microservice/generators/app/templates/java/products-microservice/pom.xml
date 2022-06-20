@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.octopus</groupId>
@@ -235,6 +237,34 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.1.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>de.andrena.tools.nopackagecycles</groupId>
+            <artifactId>no-package-cycles-enforcer-rule</artifactId>
+            <version>1.0.9</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>enforce-no-package-cycles</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <rules>
+                <NoPackageCyclesRule
+                  implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule">
+                  <includeTests>false</includeTests>
+                </NoPackageCyclesRule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -258,9 +288,12 @@
                 </goals>
                 <configuration>
                   <systemPropertyVariables>
-                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    <java.util.logging.manager>org.jboss.logmanager.LogManager
+                    </java.util.logging.manager>
                     <maven.home>${maven.home}</maven.home>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                    <native.image.path>
+                      ${project.build.directory}/${project.build.finalName}-runner
+                    </native.image.path>
                   </systemPropertyVariables>
                 </configuration>
               </execution>
