@@ -23,6 +23,7 @@ public class OctopusMetricsServer {
     @Path("v1beta1/namespaces/{namespace}/services/{service}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
     public String metric(@PathParam("namespace") final String namespace, @PathParam("service") final String service) {
+        final int tasks = 3;
         return "{\n"
             + "        kind: \"MetricValueList\",\n"
             + "        apiVersion: \"custom.metrics.k8s.io/v1beta1\",\n"
@@ -33,13 +34,13 @@ public class OctopusMetricsServer {
             + "            {\n"
             + "                describedObject: {\n"
             + "                    kind: \"Service\",\n"
-            + "                    namespace: \"default\",\n"
-            + "                    name: \"octopus-metrics-server\",\n"
+            + "                    namespace: \"" + namespace + "\",\n"
+            + "                    name: \"" + service + "\",\n"
             + "                    apiVersion: \"/v1beta1\"\n"
             + "                },\n"
             + "                metricName: \"tasks\",\n"
             + "                timestamp: " + ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT ) + ",\n"
-            + "                value: 3\n"
+            + "                value: " + tasks + "\n"
             + "            }\n"
             + "        ]\n"
             + "    })\n"
