@@ -5,6 +5,8 @@ package com.octopus.products.domain.features;
  */
 public interface CognitoClientIdFeature {
   /**
+   * Returns the cognito client id.
+   *
    * @return The Cognito client ID.
    */
   String getCognitoClientId();
