@@ -114,7 +114,7 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             - name: fp-products
               selectors:
                 - labels:
-                    app: frontend
+                    app: products
             - name: fp-frontend
               selectors:
                 - labels:
