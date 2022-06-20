@@ -113,16 +113,10 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
                 - namespace: kube-system
             - name: fp-products
               selectors:
-                - labels:
-                    app: products
+                - namespace: $${FIXED_ENVIRONMENT}-backend
             - name: fp-frontend
               selectors:
-                - labels:
-                    app: frontend
-            - name: fp-worker
-              selectors:
-                - labels:
-                    app: worker
+                - namespace: $${FIXED_ENVIRONMENT}-frontend
           EOF
 
             # Use eksctl to create the new cluster.
