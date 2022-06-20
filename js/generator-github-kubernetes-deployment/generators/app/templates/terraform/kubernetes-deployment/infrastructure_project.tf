@@ -97,15 +97,6 @@ resource "octopusdeploy_deployment_process" "deploy_cluster" {
             name: app-builder-${lower(var.github_repo_owner)}-$${FIXED_ENVIRONMENT}
             region: ${var.aws_region}
 
-          nodeGroups:
-            - name: ng-1
-              instanceType: t3a.small
-              desiredCapacity: 1
-              volumeSize: 80
-              iam:
-                withAddonPolicies:
-                  imageBuilder: true
-
           fargateProfiles:
             - name: fp-default
               selectors:
