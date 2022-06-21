@@ -100,13 +100,19 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&
                             <p>
                                 A sample IAM policy for working with EKS can be found <a
-                                href={"https://github.com/OctopusSamples/content-team-apps/wiki/App-Builder-Sample-IAM-Policy"}>here</a>.
+                                href={"https://oc.to/VSW4tL"}>here</a>.
                             </p>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "ECS" &&
                             <p>
                                 A sample IAM policy for working with ECS can be found <a
-                                href={"https://github.com/OctopusSamples/content-team-apps/wiki/App-Builder-ECS-Sample-Policy"}>here</a>.
+                                href={"https://oc.to/KmRF6D"}>here</a>.
+                            </p>
+                        }
+                        {props.machine.state && props.machine.state.context.targetPlatform === "LAM" &&
+                            <p>
+                                A sample IAM policy for working with LAM can be found <a
+                                href={"https://oc.to/WTPojc"}>here</a>.
                             </p>
                         }
                         <h3>AWS Credentials</h3>
