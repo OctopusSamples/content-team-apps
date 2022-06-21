@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  frontend:
+    image: "octopussamples/workflowbuilderfrontend"
+    ports:
+      - "5000:5000"
+  templategenerator:
+    image: "octopussamples/workflowbuildertemplategenerator"
+    ports:
+      - "4000:4000"
+  audit:
+    image: "octopussamples/auditsservice"
+    ports:
+      - "10000:8083"
+  repocreator:
+    image: "octopussamples/githubrepocreator"
+    ports:
+      - "11000:13000"
+  repoproxy:
+    image: "octopussamples/githubrepoproxy"
+    ports:
+      - "12000:8083"
+  octopusproxy:
+    image: "octopussamples/octopusproxy"
+    ports:
+      - "13000:8083"
+
+
+      
+
+      
+
