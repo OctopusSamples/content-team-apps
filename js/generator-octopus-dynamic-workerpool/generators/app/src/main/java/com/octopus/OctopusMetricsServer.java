@@ -39,7 +39,7 @@ public class OctopusMetricsServer {
             + "                    \"apiVersion\": \"/v1\"\n"
             + "                },\n"
             + "                \"metricName\": \"tasks\",\n"
-            + "                \"timestamp\": " + ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT ) + ",\n"
+            + "                \"timestamp\": \"" + ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT ) + "\",\n"
             + "                \"value\": " + tasks + "\n"
             + "            }\n"
             + "        ]\n"
