@@ -94,7 +94,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
                             resources that host your sample application. You can find more information about creating
-                            access keys in the <a href={"https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys"}>AWS documentation</a>.
+                            access keys in the <a href={"https://oc.to/HK4CQc"}>AWS documentation</a>.
                         </p>
                         <h3>Required Permissions</h3>
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&

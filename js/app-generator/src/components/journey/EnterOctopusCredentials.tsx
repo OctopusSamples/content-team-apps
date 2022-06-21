@@ -73,8 +73,8 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
                             </p>
                             <p>
                                 You can learn more about creating an API
-                                key <a href={"https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key"}>here</a>,
-                                and learn more about users and teams <a href={"https://octopus.com/docs/security/users-and-teams"}>here</a>.
+                                key <a href={"https://oc.to/Fj6a3a"}>here</a>,
+                                and learn more about users and teams <a href={"https://oc.to/b1yjtf"}>here</a>.
                             </p>
                             <h3>Required Permissions</h3>
                             <p>
