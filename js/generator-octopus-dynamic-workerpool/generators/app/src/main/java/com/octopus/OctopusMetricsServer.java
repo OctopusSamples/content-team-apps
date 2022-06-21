@@ -43,7 +43,6 @@ public class OctopusMetricsServer {
             + "                \"value\": " + tasks + "\n"
             + "            }\n"
             + "        ]\n"
-            + "    }\n"
             + "}";
     }
 }
