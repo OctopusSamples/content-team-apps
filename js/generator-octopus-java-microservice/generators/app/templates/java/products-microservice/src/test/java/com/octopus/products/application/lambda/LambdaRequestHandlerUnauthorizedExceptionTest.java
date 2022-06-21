@@ -7,10 +7,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.products.BaseTest;
 import com.octopus.products.application.Paths;
-import com.octopus.products.domain.handlers.ResourceHandler;
-import com.octopus.exceptions.UnauthorizedException;
+import com.octopus.products.domain.handlers.ResourceHandlerCreate;
+import com.octopus.products.domain.handlers.ResourceHandlerGetAll;
+import com.octopus.products.domain.handlers.ResourceHandlerGetOne;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -31,13 +33,19 @@ public class LambdaRequestHandlerUnauthorizedExceptionTest extends BaseTest {
   LambdaRequestEntryPoint api;
 
   @InjectMock
-  ResourceHandler handler;
+  ResourceHandlerGetOne handlerGetOne;
+
+  @InjectMock
+  ResourceHandlerGetAll handlerGetAll;
+
+  @InjectMock
+  ResourceHandlerCreate handlerCreate;
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
-    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
-    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handlerGetOne.getOne(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handlerGetAll.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new UnauthorizedException());
+    Mockito.when(handlerCreate.create(any(), any(), any(), any())).thenThrow(new UnauthorizedException());
   }
 
   @Test

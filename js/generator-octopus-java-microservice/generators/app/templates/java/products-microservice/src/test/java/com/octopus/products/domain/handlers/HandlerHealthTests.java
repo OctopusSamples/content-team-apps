@@ -29,9 +29,6 @@ public class HandlerHealthTests extends BaseTest {
   LiquidbaseUpdater liquidbaseUpdater;
 
   @Inject
-  ResourceHandler handler;
-
-  @Inject
   HealthHandler healthHandler;
 
   @BeforeAll

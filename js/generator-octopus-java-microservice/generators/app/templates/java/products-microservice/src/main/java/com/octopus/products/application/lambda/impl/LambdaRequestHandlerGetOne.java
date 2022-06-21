@@ -4,15 +4,15 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.net.HttpHeaders;
 import com.octopus.Constants;
-import com.octopus.products.application.Paths;
-import com.octopus.products.application.lambda.LambdaRequestHandler;
-import com.octopus.products.domain.handlers.ResourceHandler;
 import com.octopus.exceptions.EntityNotFoundException;
 import com.octopus.exceptions.UnauthorizedException;
 import com.octopus.lambda.ApiGatewayProxyResponseEventWithCors;
 import com.octopus.lambda.LambdaHttpHeaderExtractor;
 import com.octopus.lambda.ProxyResponseBuilder;
 import com.octopus.lambda.RequestMatcher;
+import com.octopus.products.application.Paths;
+import com.octopus.products.application.lambda.LambdaRequestHandler;
+import com.octopus.products.domain.handlers.ResourceHandlerGetOne;
 import com.octopus.utilties.RegExUtils;
 import io.vavr.control.Try;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class LambdaRequestHandlerGetOne implements LambdaRequestHandler {
   RequestMatcher requestMatcher;
 
   @Inject
-  ResourceHandler resourceHandler;
+  ResourceHandlerGetOne resourceHandler;
 
   @Inject
   LambdaHttpHeaderExtractor lambdaHttpHeaderExtractor;

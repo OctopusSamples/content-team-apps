@@ -10,7 +10,9 @@ import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.products.BaseTest;
 import com.octopus.products.application.Paths;
 import com.octopus.products.domain.handlers.HealthHandler;
-import com.octopus.products.domain.handlers.ResourceHandler;
+import com.octopus.products.domain.handlers.ResourceHandlerCreate;
+import com.octopus.products.domain.handlers.ResourceHandlerGetAll;
+import com.octopus.products.domain.handlers.ResourceHandlerGetOne;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.HashMap;
@@ -31,16 +33,22 @@ public class LambdaRequestHandlerBackendFailureTest extends BaseTest {
   LambdaRequestEntryPoint api;
 
   @InjectMock
-  ResourceHandler handler;
+  ResourceHandlerGetOne handlerGetOne;
+
+  @InjectMock
+  ResourceHandlerGetAll handlerGetAll;
+
+  @InjectMock
+  ResourceHandlerCreate handlerCreate;
 
   @InjectMock
   HealthHandler healthHandler;
 
   @BeforeEach
   public void setup() throws DocumentSerializationException {
-    Mockito.when(handler.getOne(any(), any(), any(), any())).thenThrow(new RuntimeException());
-    Mockito.when(handler.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
-    Mockito.when(handler.create(any(), any(), any(), any())).thenThrow(new RuntimeException());
+    Mockito.when(handlerGetOne.getOne(any(), any(), any(), any())).thenThrow(new RuntimeException());
+    Mockito.when(handlerGetAll.getAll(any(), any(), any(), any(), any(), any())).thenThrow(new RuntimeException());
+    Mockito.when(handlerCreate.create(any(), any(), any(), any())).thenThrow(new RuntimeException());
     Mockito.when(healthHandler.getHealth(any(), any())).thenThrow(new RuntimeException());
   }
 
