@@ -146,7 +146,7 @@ runs:
 
     - name: Build Docker Image
       run: |
-        docker build -f src/main/docker/Dockerfile.native-distroless -t octopussamples/auditsservice:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker build -f src/main/docker/Dockerfile.native -t octopussamples/auditsservice:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
         docker push octopussamples/auditsservice:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         docker image tag octopussamples/auditsservice:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/auditsservice
         docker push octopussamples/auditsservice
