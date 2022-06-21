@@ -67,10 +67,25 @@ runs:
       shell: bash
       working-directory: java/github-repo-creator
 
+    # Build the package for web apps by not including the lambda profile.
+    - name: Build with Maven for web
+      run: ./mvnw --batch-mode clean package --file pom.xml -DskipTests "-Dquarkus.profile=prod"
+      shell: bash
+      working-directory: java/github-repo-creator
+
+    - name: Build Docker Image
+      run: |
+        docker build -f src/main/docker/Dockerfile.legacy-jar -t octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker push octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
+        docker image tag octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githubrepocreator
+        docker push octopussamples/githubrepocreator
+      shell: bash
+      working-directory: java/github-repo-creator
+
     # Build the package with the lambda profile by setting the "lambda" property. This ensures the
     # io.quarkus:quarkus-amazon-lambda dependency is included. See the pom.xml file for details
     # on the lambda profile.
-    - name: Build with Maven
+    - name: Build with Maven for lambda
       run: ./mvnw --batch-mode clean package --file pom.xml -Plambda -DskipTests "-Dquarkus.profile=prod"
       shell: bash
       working-directory: java/github-repo-creator
@@ -88,15 +103,6 @@ runs:
         jacoco-csv-file: java/github-repo-creator/target/jacoco-report/jacoco.csv
         coverage-badge-filename: repocreator.svg
         branches-badge-filename: repocreatorbranches.svg
-
-    - name: Build Docker Image
-      run: |
-        docker build -f src/main/docker/Dockerfile.legacy-jar -t octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
-        docker push octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
-        docker image tag octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githubrepocreator
-        docker push octopussamples/githubrepocreator
-      shell: bash
-      working-directory: java/github-repo-creator
 
     - name: Update resources
       if: ${{ env.BRANCH_NAME == 'main' }}
