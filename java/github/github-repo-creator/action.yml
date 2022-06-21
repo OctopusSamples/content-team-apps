@@ -91,7 +91,7 @@ runs:
 
     - name: Build Docker Image
       run: |
-        docker build -f src/main/docker/Dockerfile -t octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker build -f src/main/docker/Dockerfile.jvm -t octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
         docker push octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         docker image tag octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githubrepocreator
         docker push octopussamples/githubrepocreator
