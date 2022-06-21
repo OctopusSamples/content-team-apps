@@ -76,6 +76,15 @@ runs:
       shell: bash
       working-directory: java/github-oauth-backend
 
+    - name: Build Docker Image
+      run: |
+        docker build -f src/main/docker/Dockerfile.native-distroless -t octopussamples/githuboauthbackend:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker push octopussamples/githuboauthbackend:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
+        docker image tag octopussamples/githuboauthbackend:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githuboauthbackend
+        docker push octopussamples/githuboauthbackend
+      shell: bash
+      working-directory: java/github-oauth-backend
+
     - name: Test Backend
       run: mvn --batch-mode test
       shell: bash

@@ -89,6 +89,15 @@ runs:
         coverage-badge-filename: repocreator.svg
         branches-badge-filename: repocreatorbranches.svg
 
+    - name: Build Docker Image
+      run: |
+        docker build -f src/main/docker/Dockerfile -t octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker push octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
+        docker image tag octopussamples/githubrepocreator:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githubrepocreator
+        docker push octopussamples/githubrepocreator
+      shell: bash
+      working-directory: java/github-repo-creator
+
     - name: Update resources
       if: ${{ env.BRANCH_NAME == 'main' }}
       uses: test-room-7/action-update-file@v1.6.0

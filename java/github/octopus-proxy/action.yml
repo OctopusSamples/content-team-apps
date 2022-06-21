@@ -78,6 +78,15 @@ runs:
       shell: bash
       working-directory: java/octopus-proxy
 
+    - name: Build Docker Image
+      run: |
+        docker build -f src/main/docker/Dockerfile.native-distroless -t octopussamples/octopusproxy:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} .
+        docker push octopussamples/octopusproxy:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
+        docker image tag octopussamples/octopusproxy:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/octopusproxy
+        docker push octopussamples/octopusproxy
+      shell: bash
+      working-directory: java/github-repo-proxy
+
     - name: Test Backend
       run: ./mvnw --batch-mode test
       shell: bash
