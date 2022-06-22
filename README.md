@@ -8,7 +8,11 @@ And architecture diagram can be found [here](https://app.cloudcraft.co/view/089e
 
 [Docker compose files have been provided](https://github.com/OctopusSamples/content-team-apps/tree/main/docker/workflow-builder) if you are interested in using the Workflow Builder locally.
 
-The Workflow Builder requires a [GitHub OAuth app](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app) with the callback URL set to http://localhost:9000. The Client ID is defined in the [GITHUB_OAUTH_APP_CLIENT_ID](https://github.com/OctopusSamples/content-team-apps/blob/main/docker/workflow-builder/.env#L1) environment variable, and the Client Secret is defined in the [GITHUB_OAUTH_APP_CLIENT_SECRET](https://github.com/OctopusSamples/content-team-apps/blob/main/docker/workflow-builder/.env#L2) environment variable.
+The Workflow Builder requires a [GitHub OAuth app](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app) with the callback URL set to http://localhost:9000. 
+
+![image](https://user-images.githubusercontent.com/160104/175141466-36c2181c-198d-4c00-a900-81ed73bbd838.png)
+
+The Client ID is defined in the [GITHUB_OAUTH_APP_CLIENT_ID](https://github.com/OctopusSamples/content-team-apps/blob/main/docker/workflow-builder/.env#L1) environment variable, and the Client Secret is defined in the [GITHUB_OAUTH_APP_CLIENT_SECRET](https://github.com/OctopusSamples/content-team-apps/blob/main/docker/workflow-builder/.env#L2) environment variable.
 
 Start the app with the command:
 
