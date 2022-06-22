@@ -49,7 +49,6 @@ public class JsonApiRootResource {
   @GET
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Path("{id}")
-  @Transactional
   public Response getOne(
       @PathParam("id") final String id,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
