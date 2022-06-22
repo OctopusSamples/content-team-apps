@@ -60,8 +60,10 @@ public class AuditGeneratorFailedAuthTest {
         "partition",
         "auth"));
 
-    // But we should not make the call to create an audit
-    verify(auditClient, times(0)).createAudit(any(), any(), any(), any(), any(), any(), any());
-    verify(cognitoAccessTokenGenerator, times(1)).getAccessToken();
+    // Auth is disabled, so we should attempt to create the audit
+    verify(auditClient, times(1)).createAudit(any(), any(), any(), any(), any(), any(), any());
+
+    // Auth is disabled, so we should not call the token generator
+    verify(cognitoAccessTokenGenerator, times(0)).getAccessToken();
   }
 }
