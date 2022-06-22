@@ -2,6 +2,7 @@ package com.octopus.githubrepo.domain.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
+import com.octopus.features.DisableSecurityFeature;
 import com.octopus.features.MicroserviceNameFeature;
 import com.octopus.githubrepo.GlobalConstants;
 import com.octopus.githubrepo.domain.cognito.CognitoAccessTokenGenerator;
@@ -31,6 +32,9 @@ public class AuditGenerator {
   CognitoAccessTokenGenerator cognitoAccessTokenGenerator;
 
   @Inject
+  DisableSecurityFeature disableSecurityFeature;
+
+  @Inject
   JsonApiConverter jsonApiConverter;
 
   @Inject
@@ -51,7 +55,11 @@ public class AuditGenerator {
       @NonNull final String dataPartitionHeaders,
       @NonNull final String authHeaders) {
 
-    cognitoAccessTokenGenerator.getAccessToken()
+    final Try<String> authHeader = disableSecurityFeature.getCognitoAuthDisabled()
+        ? Try.of(() -> "")
+        : cognitoAccessTokenGenerator.getAccessToken();
+
+    authHeader
         .andThenTry(auditAccessToken ->
             auditClient.createAudit(
                 new String(jsonApiConverter.buildResourceConverter().writeDocument(
@@ -69,4 +77,6 @@ public class AuditGenerator {
           Try.run(() -> Log.error(OBJECT_MAPPER.writer().writeValueAsString(audit)));
         });
   }
+
+
 }
