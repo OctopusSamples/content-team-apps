@@ -9,10 +9,10 @@
   "serviceAccountEndpoint": "",
   "githubCommitEndpoint": "http://localhost:11000/api/githubcommit",
   "octoSpaceEndpoint": "http://localhost:13000/api/octopusspace",
-  "githubRepoEndpoint": "https://localhost:12000/api/githubrepo",
-  "generateApiPath": "https://localhost:4000/api/pipeline/github/generate",
+  "githubRepoEndpoint": "http://localhost:12000/api/githubrepo",
+  "generateApiPath": "http://localhost:4000/api/pipeline/github/generate",
   "healthEndpoint": "",
-  "auditEndpoint": "https://localhost:10000/api/audits",
+  "auditEndpoint": "http://localhost:10000/api/audits",
   "google": {
     "tag": ""
   },
