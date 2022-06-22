@@ -1,4 +1,4 @@
-package com.octopus.audits.domain.features;
+package com.octopus.audits.domain.features.impl;
 
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

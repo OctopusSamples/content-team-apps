@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.nimbusds.jose.JOSEException;
-import com.octopus.audits.domain.features.CognitoJwkBase64Feature;
-import com.octopus.audits.domain.features.DisableSecurityFeature;
-import com.octopus.audits.domain.utilities.JwtUtils;
+import com.octopus.audits.domain.features.impl.CognitoJwkBase64Feature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.io.IOException;
@@ -19,10 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import liquibase.exception.LiquibaseException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
 @QuarkusTest

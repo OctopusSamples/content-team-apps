@@ -1,17 +1,15 @@
 package com.octopus.audits.domain.utilities;
 
 import com.octopus.audits.domain.Constants;
-import com.octopus.audits.domain.features.AdminJwtGroupFeature;
-import com.octopus.audits.domain.features.DisableSecurityFeature;
+import com.octopus.audits.domain.features.impl.AdminJwtGroupFeature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * A utility class with methods to extract data partition information from headers.

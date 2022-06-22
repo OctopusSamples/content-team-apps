@@ -4,12 +4,13 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.audits.domain.Constants;
+import com.octopus.audits.domain.features.UntrustedActions;
 import com.octopus.audits.domain.jsonapi.PagedResultsLinksBuilder;
 import com.octopus.audits.domain.entities.Audit;
 import com.octopus.audits.domain.exceptions.EntityNotFound;
 import com.octopus.audits.domain.exceptions.InvalidInput;
 import com.octopus.audits.domain.exceptions.Unauthorized;
-import com.octopus.audits.domain.features.DisableSecurityFeature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtUtils;
 import com.octopus.audits.domain.utilities.PartitionIdentifier;
 import com.octopus.audits.domain.utilities.impl.JoseJwtVerifier;
@@ -102,6 +103,9 @@ public class AuditsHandler {
   @Inject
   JwtUtils jwtUtils;
 
+  @Inject
+  UntrustedActions untrustedActions;
+
   /**
    * Returns all matching resources.
    *
@@ -158,11 +162,12 @@ public class AuditsHandler {
       final String serviceAuthorizationHeader)
       throws DocumentSerializationException {
 
-    if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
+    final Audit audit = getResourceFromDocument(document);
+
+    if (!(untrustedActions.getUntrustedActions().contains(audit.getAction())
+        || isAuthorized(authorizationHeader, serviceAuthorizationHeader))) {
       throw new Unauthorized();
     }
-
-    final Audit audit = getResourceFromDocument(document);
 
     audit.dataPartition = partitionIdentifier.getPartition(
         dataPartitionHeaders,

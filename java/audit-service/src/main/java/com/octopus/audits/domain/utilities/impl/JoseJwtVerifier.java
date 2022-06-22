@@ -2,28 +2,19 @@ package com.octopus.audits.domain.utilities.impl;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
 import com.octopus.audits.GlobalConstants;
-import com.octopus.audits.domain.features.CognitoJwkBase64Feature;
-import com.octopus.audits.domain.features.DisableSecurityFeature;
+import com.octopus.audits.domain.features.impl.CognitoJwkBase64Feature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import com.octopus.audits.domain.utilities.JwtVerifier;
 import io.quarkus.logging.Log;
-import java.io.Console;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**

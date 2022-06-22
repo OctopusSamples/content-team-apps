@@ -2,7 +2,7 @@ package com.octopus.audits.domain.utilities.impl;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.octopus.audits.domain.features.DisableSecurityFeature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.sql.SQLException;

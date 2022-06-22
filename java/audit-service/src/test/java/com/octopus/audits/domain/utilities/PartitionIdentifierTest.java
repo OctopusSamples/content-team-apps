@@ -1,6 +1,6 @@
 package com.octopus.audits.domain.utilities;
 
-import com.octopus.audits.domain.features.DisableSecurityFeature;
+import com.octopus.audits.domain.features.impl.DisableSecurityFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.util.ArrayList;
