@@ -4,6 +4,9 @@ services:
     image: "octopussamples/workflowbuilderfrontend"
     ports:
       - "5000:5000"
+    volumes:
+      - ${PWD}/config.json:/workspace/build/config.json
+      - ${PWD}/server.cert:/workspace/build/public_key.pem
   templategenerator:
     image: "octopussamples/workflowbuildertemplategenerator"
     ports:
