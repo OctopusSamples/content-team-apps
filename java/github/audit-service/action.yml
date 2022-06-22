@@ -140,7 +140,7 @@ runs:
         github-token: ${{ inputs.github_token }}
 
     - name: Build with Maven for web server
-      run: ./mvnw --batch-mode --no-transfer-progress clean package --file pom.xml -Pnative package -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode --no-transfer-progress clean package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/audit-service
 
@@ -154,7 +154,7 @@ runs:
       working-directory: java/audit-service
 
     - name: Build with Maven for lambda
-      run: ./mvnw --batch-mode --no-transfer-progress clean package --file pom.xml -Pnative -Plambda package -DskipTests -Dquarkus.profile=prod
+      run: ./mvnw --batch-mode --no-transfer-progress clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/audit-service
 
