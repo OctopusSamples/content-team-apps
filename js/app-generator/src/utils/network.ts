@@ -66,7 +66,7 @@ export function getJson<T>(url: string, settings: RuntimeSettings, retryCount?: 
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return getJson<T>(url, settings, (retryCount || 0) + 1);
+                return getJson<T>(url, settings, (retryCount || 0) + 1, includeCredentials);
             }
             return Promise.reject(response);
         });
@@ -104,7 +104,7 @@ export function getJsonApi<T>(url: string, settings: RuntimeSettings, partition?
                  Some lambdas are slow, and initial requests timeout with a 504 response.
                  We automatically retry these requests.
                  */
-                return getJsonApi<T>(url, settings, partition, (retryCount || 0) + 1, ignoreReturn);
+                return getJsonApi<T>(url, settings, partition, (retryCount || 0) + 1, ignoreReturn, includeCredentials);
             }
             return Promise.reject(response);
         });
