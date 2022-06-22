@@ -189,10 +189,15 @@ export async function encryptAndSaveInCookie(value: string, cookie: string, expi
             throw new Error("Failed to load the public key");
         });
 
-    const encrypt = new JSEncrypt();
-    encrypt.setPublicKey(key);
-    const encrypted = encrypt.encrypt(value) || "";
-    Cookies.set(cookie, encrypted, {expires});
+    try {
+        const encrypt = new JSEncrypt();
+        encrypt.setPublicKey(key);
+        const encrypted = encrypt.encrypt(value) || "";
+        Cookies.set(cookie, encrypted, {expires});
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
 }
 
 export function loginRequired(settings: RuntimeSettings, partition: string) {
