@@ -70,6 +70,7 @@ services:
       - GITHUB_OAUTH_APP_CLIENT_SECRET
       - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
       - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
+      - LAMBDA_HANDLER=thisvalueisunused
       
 
       
