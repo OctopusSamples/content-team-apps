@@ -45,9 +45,9 @@ services:
       - COGNITO_DISABLE_AUTH=true
       - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
       - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
-      - REPO_POPULATOR=http://repocreator:11000
-      - TEMPLATE_GENERATOR=http://templategenerator:4000
-      - AUDIT_SERVICE=http://audits:10000
+      - REPO_POPULATOR=http://localhost:11000
+      - TEMPLATE_GENERATOR=http://localhost:4000
+      - AUDIT_SERVICE=http://localhost:10000
       # Create this key with:
       # openssl req  -nodes -new -x509  -keyout server.key -out server.cert
       # cat server.key | base64 -w0

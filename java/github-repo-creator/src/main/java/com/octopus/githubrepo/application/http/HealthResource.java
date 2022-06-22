@@ -28,7 +28,7 @@ public class HealthResource {
   @Path("GET")
   @Transactional
   public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers", "GET")).build();
+    return Response.ok(healthHandler.getHealth("/health/populategithubrepo", "GET")).build();
   }
 
   /**
@@ -42,7 +42,7 @@ public class HealthResource {
   @Path("POST")
   @Transactional
   public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers", "POST")).build();
+    return Response.ok(healthHandler.getHealth("/health/populategithubrepo", "POST")).build();
   }
 
   /**
