@@ -76,7 +76,9 @@ public class AuditGeneratorTest {
         eq("auth"),
         any(),
         any());
-    verify(cognitoAccessTokenGenerator, times(1)).getAccessToken();
+
+    // Auth is disabled, so we should not try to generate a token
+    verify(cognitoAccessTokenGenerator, times(0)).getAccessToken();
   }
 
   @Test

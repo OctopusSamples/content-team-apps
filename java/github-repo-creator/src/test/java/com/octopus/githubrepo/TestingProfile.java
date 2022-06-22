@@ -15,6 +15,7 @@ public class TestingProfile implements QuarkusTestProfile {
         .put("quarkus.lambda.handler", "PopulateGithubRepo")
         .put("cognito.client-id", "cognito-id")
         .put("cognito.client-secret", "cognito-secret")
+        .put("cognito.disable-auth", "true")
         .build();
   }
 }
