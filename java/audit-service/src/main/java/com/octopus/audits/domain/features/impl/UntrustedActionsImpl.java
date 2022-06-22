@@ -27,7 +27,7 @@ public class UntrustedActionsImpl implements UntrustedActions {
         .stream()
         .flatMap(a -> Arrays.stream(a.split(",")))
         .map(String::trim)
-        .filter(StringUtils::isBlank)
+        .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
   }
 }
