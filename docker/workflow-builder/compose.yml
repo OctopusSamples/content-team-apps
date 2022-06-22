@@ -59,8 +59,17 @@ services:
       - "13000:8083"
     environment:
       - COGNITO_DISABLE_AUTH=true
-
-
+  githuboauth:
+    image: "octopussamples/githuboauthbackend"
+    ports:
+      - "14000:9000"
+    environment:
+      - GITHUB_REDIRECT=http://localhost:5000
+      - GITHUB_LOGIN_REDIRECT=http://localhost:14000/oauth/github/code
+      - GITHUB_OAUTH_APP_CLIENT_ID
+      - GITHUB_OAUTH_APP_CLIENT_SECRET
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
       
 
       
