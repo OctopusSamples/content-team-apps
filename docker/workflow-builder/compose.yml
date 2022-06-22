@@ -11,6 +11,8 @@ services:
     image: "octopussamples/workflowbuildertemplategenerator"
     ports:
       - "4000:4000"
+    expose:
+      - "4000"
   auditdb:
     image: mysql:5.7
     restart: always
@@ -26,7 +28,7 @@ services:
   audit:
     image: "octopussamples/auditsservice"
     ports:
-      - "10000:8083"
+      - "10000:10000"
     depends_on:
       - "auditdb"
     environment:
@@ -40,14 +42,16 @@ services:
   repocreator:
     image: "octopussamples/githubrepocreator"
     ports:
-      - "11000:13000"
+      - "11000:11000"
+    expose:
+      - "10000"
     environment:
       - COGNITO_DISABLE_AUTH=true
       - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
       - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
-      - REPO_POPULATOR=http://localhost:11000
-      - TEMPLATE_GENERATOR=http://localhost:4000
-      - AUDIT_SERVICE=http://localhost:10000
+      - REPO_POPULATOR=http://repocreator:11000
+      - TEMPLATE_GENERATOR=http://templategenerator:4000
+      - AUDIT_SERVICE=http://audit:10000
       # Create this key with:
       # openssl req  -nodes -new -x509  -keyout server.key -out server.cert
       # cat server.key | base64 -w0
@@ -56,7 +60,9 @@ services:
   repoproxy:
     image: "octopussamples/githubrepoproxy"
     ports:
-      - "12000:8083"
+      - "12000:12000"
+    expose:
+      - "12000"      
     environment:
       - COGNITO_DISABLE_AUTH=true
       - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
@@ -64,13 +70,17 @@ services:
   octopusproxy:
     image: "octopussamples/octopusproxy"
     ports:
-      - "13000:8083"
+      - "13000:13000"
+    expose:
+      - "13000"
     environment:
       - COGNITO_DISABLE_AUTH=true
   githuboauth:
     image: "octopussamples/githuboauthbackend"
     ports:
-      - "14000:9000"
+      - "14000:14000"
+    expose:
+      - "14000"
     environment:
       - GITHUB_REDIRECT=http://localhost:5000
       - GITHUB_LOGIN_REDIRECT=http://localhost:14000/oauth/github/code
