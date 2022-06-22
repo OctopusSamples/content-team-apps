@@ -8,22 +8,57 @@ services:
     image: "octopussamples/workflowbuildertemplategenerator"
     ports:
       - "4000:4000"
+  auditdb:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'audit'
+      MYSQL_USER: 'audits'
+      MYSQL_PASSWORD: 'Password01!'
+      MYSQL_ROOT_PASSWORD: 'Password01!'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
   audit:
     image: "octopussamples/auditsservice"
     ports:
       - "10000:8083"
+    depends_on:
+      - "auditdb"
+    environment:
+      - DATABASE_HOSTNAME=auditdb
+      - DATABASE_PORT=3306
+      - DATABASE_USERNAME=audits
+      - DATABASE_PASSWORD=Password01!
+      - COGNITO_DISABLE_AUTH=true
+      - MIGRATE_AT_START=true
+    command: ["./wait-for-it.sh", "auditdb:3306", "--strict", "--", "./application", "-Dquarkus.http.host=0.0.0.0"]
   repocreator:
     image: "octopussamples/githubrepocreator"
     ports:
       - "11000:13000"
+    environment:
+      - COGNITO_DISABLE_AUTH=true
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
+      - REPO_POPULATOR=http://repocreator:11000
+      - TEMPLATE_GENERATOR=http://templategenerator:4000
+      - AUDIT_SERVICE=http://audits:10000
   repoproxy:
     image: "octopussamples/githubrepoproxy"
     ports:
       - "12000:8083"
+    environment:
+      - COGNITO_DISABLE_AUTH=true
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
   octopusproxy:
     image: "octopussamples/octopusproxy"
     ports:
       - "13000:8083"
+    environment:
+      - COGNITO_DISABLE_AUTH=true
 
 
       
