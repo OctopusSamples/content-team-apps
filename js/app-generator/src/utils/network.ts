@@ -35,7 +35,7 @@ function responseIsClientError(status: number) {
 function responseIsJson(contentType: string | null) {
     if (contentType) {
         // turn "application/vnd.api+json;charset=UTF-8" into "application/vnd.api+json"
-        const cleanContentType = contentType.toLowerCase().split(";")[0];
+        const cleanContentType = contentType.toLowerCase().split(";")[0].trim();
         return JSON_TYPES.indexOf(cleanContentType) !== -1;
     }
     return false;
