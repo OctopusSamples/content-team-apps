@@ -22,6 +22,8 @@ import Done from "../components/journey/Done";
 import EnterAwsCredentials from "../components/journey/EnterAwsCredentials";
 import Error from "../components/journey/Error";
 import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentials";
+import {RuntimeSettings} from "../config/runtimeConfig";
+import {auditPageVisit} from "../utils/audit";
 
 /**
  * Return the state context from local storage.
@@ -106,6 +108,14 @@ export function saveCurrentState(stateName: string) {
         if (event.type !== "xstate.init") {
             localStorage.setItem("appBuilderStateContext", JSON.stringify({...context, form: null}))
             localStorage.setItem("appBuilderState", stateName);
+        }
+    }
+}
+
+function auditState(stateName: string, settings: RuntimeSettings) {
+    return (context: StateContext, event: AnyEventObject) => {
+        if (event.type !== "xstate.init") {
+            auditPageVisit(stateName, settings);
         }
     }
 }
@@ -210,7 +220,7 @@ const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
 /**
  * The state machine defining the journey.
  */
-export const appBuilderMachine = createMachine<StateContext>({
+export const appBuilderMachine = (settings: RuntimeSettings) => createMachine<StateContext>({
             id: 'appBuilder',
             context: getInitialStateContext(),
             initial: getInitialState(),
@@ -223,6 +233,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("selectTarget", settings),
                         saveCurrentState("selectTarget"),
                         assignForm(TargetSelection)
                     ]
@@ -233,6 +244,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("selectedTargetNotAvailable", settings),
                         saveCurrentState("selectedTargetNotAvailable"),
                     ]
                 },
@@ -244,6 +256,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("doYouHaveCloudOctopus", settings),
                         saveCurrentState("doYouHaveCloudOctopus"),
                         assignForm(DoYouHaveCloudOctopus)
                     ]
@@ -255,6 +268,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("signUpForCloudOctopus", settings),
                         saveCurrentState("signUpForCloudOctopus"),
                         assignForm(SignUpForCloudOctopus)
                     ]
@@ -267,6 +281,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("logIntoOctopus", settings),
                         saveCurrentState("logIntoOctopus"),
                         assignForm(LogIntoOctopus)
                     ]
@@ -278,6 +293,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("enterOctopusCredentials", settings),
                         saveCurrentState("enterOctopusCredentials"),
                         assignForm(EnterOctopusCredentials)
                     ]
@@ -290,6 +306,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("loggedIntoOctopus", settings),
                         saveCurrentState("loggedIntoOctopus"),
                         assignForm(LoggedIntoOctopus)
                     ]
@@ -301,6 +318,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("logIntoGitHub", settings),
                         saveCurrentState("logIntoGitHub"),
                         assignForm(LogIntoGitHub)
                     ]
@@ -312,6 +330,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("loggedIntoGithub", settings),
                         saveCurrentState("loggedIntoGithub"),
                         assignForm(LoggedIntoGithub)
                     ]
@@ -323,6 +342,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'},
                     },
                     entry: [
+                        auditState("enterAwsCredentials", settings),
                         saveCurrentState("enterAwsCredentials"),
                         assignForm(EnterAwsCredentials)
                     ]
@@ -334,6 +354,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                         ERROR: {target: 'error'}
                     },
                     entry: [
+                        auditState("pushPackage", settings),
                         saveCurrentState("pushPackage"),
                         assignForm(PushPackage)
                     ]
@@ -341,6 +362,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 done: {
                     type: 'final',
                     entry: [
+                        auditState("done", settings),
                         saveCurrentState(""),
                         assignForm(Done)
                     ]
@@ -348,6 +370,7 @@ export const appBuilderMachine = createMachine<StateContext>({
                 error: {
                     type: 'final',
                     entry: [
+                        auditState("error", settings),
                         saveCurrentState(""),
                         assignForm(Error)
                     ]

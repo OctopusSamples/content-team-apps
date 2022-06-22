@@ -151,7 +151,8 @@ export function patchJsonApi<T>(resource: string, url: string, settings: Runtime
 }
 
 export function postJsonApi<T>(
-    resource: string, url: string,
+    resource: string,
+    url: string,
     settings: RuntimeSettings,
     partition?: string | null,
     ignoreReturn?: boolean | null,
