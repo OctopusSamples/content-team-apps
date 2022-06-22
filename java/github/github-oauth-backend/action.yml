@@ -71,8 +71,8 @@ runs:
       shell: bash
       working-directory: java/github-oauth-backend
 
-    - name: Build with Maven
-      run: mvn --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
+    - name: Build with Maven for web
+      run: mvn --batch-mode clean package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/github-oauth-backend
 
@@ -82,6 +82,11 @@ runs:
         docker push octopussamples/githuboauthbackend:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }}
         docker image tag octopussamples/githuboauthbackend:1.0.${{ inputs.run_number }}${{ env.PRERELEASE }} octopussamples/githuboauthbackend
         docker push octopussamples/githuboauthbackend
+      shell: bash
+      working-directory: java/github-oauth-backend
+
+    - name: Build with Maven
+      run: mvn --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod
       shell: bash
       working-directory: java/github-oauth-backend
 
