@@ -57,7 +57,8 @@ public class AuditGenerator {
 
     final Try<String> authHeader = disableSecurityFeature.getCognitoAuthDisabled()
         ? Try.of(() -> "")
-        : cognitoAccessTokenGenerator.getAccessToken();
+        : cognitoAccessTokenGenerator.getAccessToken()
+            .map(t -> "Bearer " + t);
 
     authHeader
         .andThenTry(auditAccessToken ->
@@ -68,7 +69,7 @@ public class AuditGenerator {
                 routingHeaders,
                 dataPartitionHeaders,
                 authHeaders,
-                "Bearer " + auditAccessToken,
+                auditAccessToken,
                 GlobalConstants.ASYNC_INVOCATION_TYPE))
         .onFailure(e -> {
           // Note the failure
