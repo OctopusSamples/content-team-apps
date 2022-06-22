@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.octopus</groupId>
@@ -45,17 +47,22 @@
       <version>2.0.SP1</version>
       <scope>provided</scope>
     </dependency>
+    <!--
+        quarkus-resteasy-reactive-jackson and quarkus-rest-client-reactive-jackson are a required
+        combination.
+        https://github.com/quarkusio/quarkus/issues/21133
+    -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-arc</artifactId>
+      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
@@ -228,9 +235,12 @@
                 </goals>
                 <configuration>
                   <systemPropertyVariables>
-                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    <java.util.logging.manager>org.jboss.logmanager.LogManager
+                    </java.util.logging.manager>
                     <maven.home>${maven.home}</maven.home>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                    <native.image.path>
+                      ${project.build.directory}/${project.build.finalName}-runner
+                    </native.image.path>
                   </systemPropertyVariables>
                 </configuration>
               </execution>
