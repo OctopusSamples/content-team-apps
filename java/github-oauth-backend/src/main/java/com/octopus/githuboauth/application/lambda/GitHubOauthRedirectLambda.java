@@ -10,6 +10,7 @@ import com.octopus.githuboauth.domain.handlers.SimpleResponse;
 import com.octopus.lambda.LambdaHttpCookieExtractor;
 import com.octopus.lambda.LambdaHttpValueExtractor;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.NonNull;
@@ -20,6 +21,7 @@ import lombok.NonNull;
  * https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#2-users-are-redirected-back-to-your-site-by-github
  */
 @Named("accessToken")
+@ApplicationScoped
 public class GitHubOauthRedirectLambda implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
