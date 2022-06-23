@@ -61,6 +61,7 @@ const Reports: FC = (): ReactElement => {
                     responsive: true,
                     plugins: {
                         legend: {
+                            display: false,
                             position: 'top',
                         },
                         title: {
