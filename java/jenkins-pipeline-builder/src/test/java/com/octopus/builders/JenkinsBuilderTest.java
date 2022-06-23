@@ -109,7 +109,7 @@ public class JenkinsBuilderTest {
   public GenericContainer jenkins = new GenericContainer(new ImageFromDockerfile()
       .withDockerfileFromBuilder(builder ->
           builder
-              .from("jenkins/jenkins:lts")
+              .from("jenkins/jenkins:2.342")
               .user("root")
               // install plugins
               .run("jenkins-plugin-cli --plugins "
