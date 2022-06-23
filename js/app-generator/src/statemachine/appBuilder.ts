@@ -114,9 +114,7 @@ export function saveCurrentState(stateName: string) {
 
 function auditState(stateName: string, settings: RuntimeSettings, partition: string) {
     return (context: StateContext, event: AnyEventObject) => {
-        if (event.type !== "xstate.init") {
-            auditPageVisit(stateName, settings, partition);
-        }
+        auditPageVisit(stateName, settings, partition);
     }
 }
 
