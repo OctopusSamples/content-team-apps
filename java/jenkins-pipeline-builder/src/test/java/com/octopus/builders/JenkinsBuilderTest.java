@@ -106,10 +106,10 @@ public class JenkinsBuilderTest {
    * initial wizard disabled, and other customizations.
    */
   @Container
-  public GenericContainer jenkins = new GenericContainer(new ImageFromDockerfile()
+  public GenericContainer jenkins = new GenericContainer(new ImageFromDockerfile("jenkinspipelinestest", false)
       .withDockerfileFromBuilder(builder ->
           builder
-              .from("jenkins/jenkins:2.342")
+              .from("jenkins/jenkins:2.319.3")
               .user("root")
               // install plugins
               .run("jenkins-plugin-cli --plugins "
