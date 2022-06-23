@@ -66,7 +66,7 @@ const Audits: FC<{}> = (): ReactElement => {
             return;
         }
 
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?filter=subject==GithubRepo,subject==GitHubRepoFrontend&page[limit]=" + pageSize + "&page[offset]=" + (page * pageSize), context.settings, context.partition)
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?filter=subject==GithubRepo%2Csubject==GitHubRepoFrontend&page[limit]=" + pageSize + "&page[offset]=" + (page * pageSize), context.settings, context.partition)
             .then(data => {
                 setAudits(data);
                 setRows(data.links?.first?.meta?.total ?? FALLBACK_ROW_COUNT);
@@ -78,7 +78,7 @@ const Audits: FC<{}> = (): ReactElement => {
     const refresh = () => {
         setAudits(null);
         setError(null);
-        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?filter=subject,subject==GitHubRepoFrontend==GithubRepo&page[offset]=" + (page * pageSize) + "&page[limit]=" + pageSize, context.settings, context.partition)
+        getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?filter=subject==GithubRepo%2Csubject==GitHubRepoFrontend&page&page[offset]=" + (page * pageSize) + "&page[limit]=" + pageSize, context.settings, context.partition)
             .then(data => {
                 setAudits(data);
                 setRows(data.links?.first?.meta?.total ?? FALLBACK_ROW_COUNT);
