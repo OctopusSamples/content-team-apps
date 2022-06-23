@@ -24,6 +24,9 @@ public class CreateGithubCommit {
   @Id
   private String id;
 
+  /**
+   * The name of the repo to create or populate with a secondary branch.
+   */
   @NotBlank
   private String githubRepository;
 
@@ -31,8 +34,15 @@ public class CreateGithubCommit {
 
   private String githubBranch;
 
+  /**
+   * The Yeoman generator to populate the repo with.
+   */
+  @NotBlank
   private String generator;
 
+  /**
+   * The options to be passed to the Yeoman template.
+   */
   private Map<String, String> options;
 
   private Collection<Secret> secrets;
