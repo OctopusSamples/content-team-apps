@@ -78,7 +78,7 @@ const Reports: FC = (): ReactElement => {
         }
 
         getJsonApi<AuditsCollection>(
-            context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==GitHubRepoFrontend%3Btime>=" + fourWeeksAgo.toISOString(),
+            context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==VisitedPage%3Btime>=" + fourWeeksAgo.toISOString(),
             context.settings,
             "main")
             .then(data => {
