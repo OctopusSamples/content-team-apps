@@ -1,13 +1,21 @@
-import {FC, ReactElement, useState} from "react";
+import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from "@mui/material/LinearProgress";
+import {auditPageVisit} from "../../utils/audit";
+import {AppContext} from "../../App";
 
 const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
+    const context = useContext(AppContext);
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
+    const openSignUp = () => {
+        auditPageVisit("externalOctopusSignup", context.settings, context.partition);
+        window.open("https://octopus.com/start/cloud");
+    }
 
     return (
         <>
@@ -33,8 +41,7 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                             Once you have completed the signup for the cloud trial, return to this page, and click the
                             next button.
                         </p>
-                        <Button sx={buttonStyle} variant="outlined"
-                                onClick={() => window.open("https://octopus.com/start/cloud")}>
+                        <Button sx={buttonStyle} variant="outlined" onClick={openSignUp}>
                             {"Signup"}
                         </Button>
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {

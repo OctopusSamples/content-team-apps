@@ -21,6 +21,7 @@ const Reports: FC = (): ReactElement => {
                     'selectedTargetNotAvailable',
                     'doYouHaveCloudOctopus',
                     'signUpForCloudOctopus',
+                    'externalOctopusSignup',
                     'logIntoOctopus',
                     'enterOctopusCredentials',
                     'loggedIntoOctopus',
@@ -29,6 +30,9 @@ const Reports: FC = (): ReactElement => {
                     'enterAwsCredentials',
                     'pushPackage',
                     'done',
+                    'externalGitHubRepo',
+                    'externalOctopusSpace',
+                    'externalGitHubWorkflow',
                     'error'
                 ],
                 datasets: [
@@ -39,6 +43,7 @@ const Reports: FC = (): ReactElement => {
                             audits?.data?.filter(a => a.attributes.object === "selectedTargetNotAvailable").length,
                             audits?.data?.filter(a => a.attributes.object === "doYouHaveCloudOctopus").length,
                             audits?.data?.filter(a => a.attributes.object === "signUpForCloudOctopus").length,
+                            audits?.data?.filter(a => a.attributes.object === "externalOctopusSignup").length,
                             audits?.data?.filter(a => a.attributes.object === "logIntoOctopus").length,
                             audits?.data?.filter(a => a.attributes.object === "enterOctopusCredentials").length,
                             audits?.data?.filter(a => a.attributes.object === "loggedIntoOctopus").length,
@@ -47,6 +52,9 @@ const Reports: FC = (): ReactElement => {
                             audits?.data?.filter(a => a.attributes.object === "enterAwsCredentials").length,
                             audits?.data?.filter(a => a.attributes.object === "pushPackage").length,
                             audits?.data?.filter(a => a.attributes.object === "done").length,
+                            audits?.data?.filter(a => a.attributes.object === "externalGitHubRepo").length,
+                            audits?.data?.filter(a => a.attributes.object === "externalOctopusSpace").length,
+                            audits?.data?.filter(a => a.attributes.object === "externalGitHubWorkflow").length,
                             audits?.data?.filter(a => a.attributes.object === "error").length
                         ],
                         backgroundColor: chartColors

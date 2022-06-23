@@ -10,6 +10,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ErrorIcon from '@mui/icons-material/Error';
 import {generateSpaceName, getOctopusServer} from "../../utils/naming";
 import Cookies from "js-cookie";
+import {auditPageVisit} from "../../utils/audit";
 
 /**
  * Allow up to 5 errors accessing the space proxy. Anything more than that, and we just assume
@@ -150,6 +151,23 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
         return ev.returnValue = 'Are you sure you want to close? This page has important information regarding the new resources being created by the Octopus Builder.';
     });
 
+    const openGitRepo = () => {
+        auditPageVisit("externalGitHubRepo", context.settings, context.partition);
+        window.open(props.machine.state.context.browsableRepoUrl, "_blank");
+    }
+
+    const openSpace = () => {
+        auditPageVisit("externalOctopusSpace", context.settings, context.partition);
+        window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank");
+    }
+
+    const openWorkflow = () => {
+        if (workflowUrl) {
+            auditPageVisit("externalGitHubWorkflow", context.settings, context.partition);
+            window.open(workflowUrl, "_blank");
+        }
+    }
+
     return (
         <>
             <Grid
@@ -190,8 +208,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                         this issue <a href={"https://oc.to/FIxUUB"} target={"_blank"} rel={"noreferrer"}>here</a>.</span>}
                                 </td>
                                 <td>{repoUrlValid() && repoCreated &&
-                                    <Button sx={openResourceStyle} variant="outlined"
-                                            onClick={() => window.open(props.machine.state.context.browsableRepoUrl, "_blank")}>
+                                    <Button sx={openResourceStyle} variant="outlined" onClick={openGitRepo}>
                                         {"Open GitHub >"}
                                     </Button>}
                                 </td>
@@ -208,8 +225,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                         <p>It can take a minute or so for the GitHub Actions workflow to populate this space after it has been created.</p>
                                     </td>
                                     <td>{!!spaceId &&
-                                        <Button sx={openResourceStyle} variant="outlined"
-                                                onClick={() => window.open(getOctopusServer(props.machine.state.context) + "/app#/" + spaceId, "_blank")}>
+                                        <Button sx={openResourceStyle} variant="outlined" onClick={openSpace}>
                                             {"Open Space >"}
                                         </Button>}
                                     </td>
@@ -242,8 +258,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                                         and all other supporting resources (like Docker repositories) will be created.
                                     </p>
                                 </td>
-                                <td>{!!workflowUrl && <Button sx={openResourceStyle} variant="outlined"
-                                                              onClick={() => window.open(workflowUrl, "_blank")}>
+                                <td>{!!workflowUrl && <Button sx={openResourceStyle} variant="outlined" onClick={openWorkflow}>
                                     {"Open Workflows >"}
                                 </Button>}
                                 </td>
