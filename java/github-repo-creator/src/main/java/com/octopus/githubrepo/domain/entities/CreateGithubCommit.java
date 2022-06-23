@@ -30,8 +30,14 @@ public class CreateGithubCommit {
   @NotBlank
   private String githubRepository;
 
+  /**
+   * The owner of the repo is returned to the caller.
+   */
   private String githubOwner;
 
+  /**
+   * The created branch is returned to the caller.
+   */
   private String githubBranch;
 
   /**
@@ -45,8 +51,15 @@ public class CreateGithubCommit {
    */
   private Map<String, String> options;
 
+  /**
+   * The secret values to be saved in the GitHub repo.
+   */
   private Collection<Secret> secrets;
 
+  /**
+   * Set this to true to generate a new repository every time. If false,
+   * subsequent requests will populate a branch in the existing repo.
+   */
   private boolean createNewRepo;
 
   @Meta
