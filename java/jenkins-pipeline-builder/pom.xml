@@ -52,13 +52,13 @@
       <artifactId>testcontainers</artifactId>
       <groupId>org.testcontainers</groupId>
       <scope>test</scope>
-      <version>1.16.0</version>
+      <version>1.17.2</version>
     </dependency>
     <dependency>
       <artifactId>junit-jupiter</artifactId>
       <groupId>org.testcontainers</groupId>
       <scope>test</scope>
-      <version>1.16.0</version>
+      <version>1.17.2</version>
     </dependency>
 
     <dependency>
