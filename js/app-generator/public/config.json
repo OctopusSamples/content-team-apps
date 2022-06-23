@@ -12,7 +12,7 @@
   "githubRepoEndpoint": "https://octopusworkflowbuilder-test.octopus.com/api/githubrepo",
   "generateApiPath": "https://development.githubactionworkflows.com/api/pipeline/github/generate",
   "healthEndpoint": "https://octopusworkflowbuilder-test.octopus.com//health",
-  "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
+  "auditEndpoint": "http://localhost:10000/api/audits",
   "google": {
     "tag": ""
   },

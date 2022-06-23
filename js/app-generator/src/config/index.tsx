@@ -7,6 +7,7 @@ import RouteItem from '../model/RouteItem.model';
 import Settings from "../pages/developer/Settings";
 import Home from "../pages/Home";
 import Audits from "../pages/developer/Audits";
+import Reports from "../pages/developer/Reports";
 
 // define app routes
 export const routes: Array<RouteItem> = [
@@ -62,6 +63,15 @@ export const routes: Array<RouteItem> = [
         path: "/audits",
         enabled: true,
         component: () => () => <Audits/>,
+        appendDivider: true
+    },
+    {
+        key: "router-reports",
+        title: "Reports",
+        tooltip: "Reports",
+        path: "/reports",
+        enabled: true,
+        component: () => () => <Reports/>,
         appendDivider: true
     }
 ]

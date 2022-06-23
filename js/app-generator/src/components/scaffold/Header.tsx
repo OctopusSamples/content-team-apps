@@ -5,7 +5,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness3Icon from "@mui/icons-material/Brightness3";
 import {FC, useContext} from "react";
 import {AppContext} from "../../App";
-import {History, LocalHospital, SettingsApplications, Share} from "@mui/icons-material";
+import {History, LocalHospital, PieChart, SettingsApplications, Share} from "@mui/icons-material";
 import {useHistory} from "react-router-dom";
 import {startAtBeginning} from "../../statemachine/appBuilder";
 
@@ -71,6 +71,11 @@ const Header: FC<HeaderProps> = ({
                     </Link>
                 </div>
                 {context.developerMode && <div>
+                    <IconButton onClick={() => history.push('/reports')}>
+                        <Tooltip title={"Reports"} placement={"bottom"}>
+                            <PieChart/>
+                        </Tooltip>
+                    </IconButton>
                     <IconButton onClick={() => history.push('/audits')} size="large">
                         <Tooltip title={"Audits"} placement={"bottom"}>
                             <History/>
