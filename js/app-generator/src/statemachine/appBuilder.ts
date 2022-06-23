@@ -24,6 +24,7 @@ import Error from "../components/journey/Error";
 import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentials";
 import {RuntimeSettings} from "../config/runtimeConfig";
 import {auditPageVisit} from "../utils/audit";
+import {loginRequired} from "../utils/security";
 
 /**
  * Return the state context from local storage.
@@ -114,7 +115,13 @@ export function saveCurrentState(stateName: string) {
 
 function auditState(stateName: string, settings: RuntimeSettings, partition: string) {
     return (context: StateContext, event: AnyEventObject) => {
-        auditPageVisit(stateName, settings, partition);
+        /*
+         Don't audit page loads under the main partition for test users.
+         So check the status of the login before auditing.
+         */
+        if (!loginRequired(settings, partition)) {
+            auditPageVisit(stateName, settings, partition);
+        }
     }
 }
 
