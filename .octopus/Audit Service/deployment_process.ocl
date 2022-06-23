@@ -761,7 +761,7 @@ step "Deploy Lambda" {
                 				"StatusCode": 200,
                 				"ContentHandling": "CONVERT_TO_TEXT",
                 				"ResponseParameters": {
-                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,Routing,Service-Authorization,Data-Partition,X-Amz-Security-Token'",
+                				  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,Routing,Service-Authorization,Data-Partition,X-Amz-Security-Token,Invocation-Type'",
                 				  "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,DELETE,PATCH'",
                 				  "method.response.header.Access-Control-Allow-Origin": "'*'"
                 				},
