@@ -8,7 +8,10 @@ export function auditPageVisit(page: string, settings: RuntimeSettings, partitio
                 attributes: {
                     subject: "GitHubRepoFrontend",
                     action: "VisitedPage",
-                    object: page
+                    object: page,
+                    dataPartition: partition,
+                    encryptedSubject: false,
+                    encryptedObject: false
                 }
             }
         }),
