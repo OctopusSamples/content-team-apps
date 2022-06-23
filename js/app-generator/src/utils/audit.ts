@@ -11,7 +11,8 @@ export function auditPageVisit(page: string, settings: RuntimeSettings, partitio
                     object: page,
                     dataPartition: partition,
                     encryptedSubject: false,
-                    encryptedObject: false
+                    encryptedObject: false,
+                    time: new Date().getTime()
                 }
             }
         }),
