@@ -66,14 +66,14 @@ public class AuditsHandler {
 
   /**
    * Write requests are assumed to be fire and forget, which means we are not bound by the API Gateway timeouts.
-   * So we retry for up to 60 seconds to create a new record.
+   * So we retry for up to 2 minutes to create a new record.
    */
   private static final RetryPolicy<Audit> RETRY_POLICY_CREATE_ONE = RetryPolicy
       .<Audit>builder()
       .handle(Exception.class)
       .abortOn(InvalidInput.class)
       .withDelay(Duration.ofSeconds(5))
-      .withMaxRetries(12)
+      .withMaxRetries(24)
       .build();
 
   @ConfigProperty(name = "cognito.admin-claim")
