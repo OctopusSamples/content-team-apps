@@ -84,7 +84,7 @@ function App(settings: RuntimeSettings) {
         }
     }, [returningFromLogin])
 
-    const machine = useInterpret(appBuilderMachine(settings));
+    const machine = useInterpret(appBuilderMachine(settings, partition));
 
     return <>
         <Helmet>
