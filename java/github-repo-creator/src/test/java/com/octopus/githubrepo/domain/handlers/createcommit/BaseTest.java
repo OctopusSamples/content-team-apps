@@ -18,6 +18,7 @@ public class BaseTest {
   protected CreateGithubCommit createResource(final boolean addSecrets, final boolean createNewRepo) {
     final CreateGithubCommit resource = new CreateGithubCommit();
     resource.setGithubRepository("myrepo");
+    resource.setGenerator("mygenerator");
     resource.setCreateNewRepo(createNewRepo);
     if (addSecrets) {
       resource.setSecrets(List.of(
