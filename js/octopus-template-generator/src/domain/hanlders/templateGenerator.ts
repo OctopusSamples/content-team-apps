@@ -114,7 +114,7 @@ export class TemplateGenerator {
 
         try {
             const env = yeoman.createEnv({cwd: tempDir});
-            env.register(this.resolveGenerator(generator + "/generators/app"), 'octopus-generator:app');
+            env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
             await env.run('octopus-generator:app', options);
 
@@ -146,6 +146,7 @@ export class TemplateGenerator {
              try downloading the module and return it.
              */
             if (e.code === "MODULE_NOT_FOUND" && enableNpmInstall() && attemptInstall) {
+                console.log("Attempting to run npm install " + generator);
                 execSync("npm install " + generator);
                 return this.resolveGenerator(generator, false)
             } else {
