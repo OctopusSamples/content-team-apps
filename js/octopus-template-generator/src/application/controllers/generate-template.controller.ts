@@ -56,7 +56,7 @@ export class GenerateTemplateController {
             response.setHeader("Content-Type", "application/zip");
             response.download(templateZip, "template.zip", (err: Error) => {
                 if (err) {
-                    console.log(err);
+                    console.log("TemplateGenerator-Download-GeneralError: " + err);
                 }
             });
 
@@ -88,7 +88,7 @@ export class GenerateTemplateController {
         response.setHeader("Content-Type", "application/zip");
         response.download(templateZip, "template.zip", (err: Error) => {
             if (err) {
-                console.log(err);
+                console.log("TemplateGenerator-GenerateAndDownload-GeneralError: " + err);
             }
         });
         return response;

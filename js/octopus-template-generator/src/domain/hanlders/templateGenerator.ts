@@ -97,7 +97,7 @@ export class TemplateGenerator {
         } finally {
             lockFile.unlock(zipPath + ".lock", (err: never) => {
                 if (err) {
-                    console.error('Failed to unlock the file: ' + err)
+                    console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
                 }
             });
         }
@@ -126,7 +126,7 @@ export class TemplateGenerator {
             try {
                 fs.rmSync(tempDir, {recursive: true});
             } catch {
-                console.error('The temporary directory was not removed.')
+                console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed.')
             }
         }
     }
