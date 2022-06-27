@@ -1,5 +1,3 @@
-import * as crypto from 'crypto';
-
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
 const os = require('os');
@@ -46,6 +44,11 @@ export class TemplateGenerator {
   }
 
   async buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
+    // If two requests were queued up, just process one of them
+    if (fs.existsSync(zipPath)) {
+      return zipPath;
+    }
+
     try {
       const env = yeoman.createEnv({cwd: tempDir});
       env.register(require.resolve(generator + "/generators/app"), 'octopus-generator:app');
