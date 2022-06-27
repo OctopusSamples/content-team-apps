@@ -2,6 +2,9 @@
  * A no-op adapter that fails if any questions are asked, as there is no way to respond from a REST API.
  */
 export class NonInteractiveAdapter {
+    /**
+     * We can't respond to a prompt from an API. This method then logs the questions and throws an error.
+     */
     prompt(questions: Object|Object[], answers: never, cb: never) {
         if (Array.isArray(questions)) {
             questions.forEach(q => console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + JSON.stringify(q)));
