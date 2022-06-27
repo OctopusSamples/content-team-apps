@@ -11,8 +11,13 @@ export class NonInteractiveAdapter {
         throw new Error("Was prompted for questions");
     }
 
+    /**
+     * Each time the generator is run, it is done in an empty temporary directory. So there should never be a reason
+     * to diff any files.
+     */
     diff() {
-        // no op
+        console.log("TemplateGenerator-GenerateTemplate-DiffRequested: Was prompted to display a diff")
+        throw new Error("Was asked to diff files");
     }
 
     log() {
