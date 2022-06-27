@@ -1,4 +1,5 @@
 import {enableNpmInstall} from "../features/enbaleNpmInstall";
+import {NonInteractiveAdapter} from "../yeoman/adapter";
 
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
@@ -113,7 +114,7 @@ export class TemplateGenerator {
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         try {
-            const env = yeoman.createEnv({cwd: tempDir});
+            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter());
             env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
             await env.run('octopus-generator:app', options);
