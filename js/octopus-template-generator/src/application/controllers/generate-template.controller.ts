@@ -28,7 +28,7 @@ export class GenerateTemplateController {
             parsedBody.data.generator,
             parsedBody.data.options);
 
-        const returnValue =  serialise("template", {id: hash});
+        const returnValue = serialise("template", {id: hash});
         response.send(returnValue);
         return response;
     }
@@ -46,7 +46,13 @@ export class GenerateTemplateController {
         const templateZip = await this.templateGenerator.getTemplate(id);
 
         if (templateZip) {
-            // If the zip file exists, download it
+            /*
+                If the zip file exists, download it.
+                Note this does require that all instances of this service share the same temp directory, otherwise
+                one instance may build the template and the second tries to find the resulting files in it's own
+                temp dir that will never be populated.
+             */
+
             response.setHeader("Content-Type", "application/zip");
             response.download(templateZip, "template.zip", (err: Error) => {
                 if (err) {
