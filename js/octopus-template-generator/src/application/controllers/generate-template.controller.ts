@@ -10,6 +10,11 @@ export class GenerateTemplateController {
         this.templateGenerator = new TemplateGenerator();
     }
 
+    /**
+     * This endpoint is suitable for long-lived servers where a cached file can be assumed to be
+     * available between when it is saved and when it is requested. It generates the template file and
+     * returns the ID of the template to be downloaded with a call to /api/template/{id}.
+     */
     @post('/api/template')
     async generateTemplate(
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -28,6 +33,11 @@ export class GenerateTemplateController {
         return response;
     }
 
+    /**
+     * Generating templates can take a bit of time, so clients can make a POST request to /api/template,
+     * save the ID returned by the response, and then download it at a later time with this endpoint.
+     * Typically, clients will poll this endpoint waiting for a valid response.
+     */
     @get('/api/template/{id}')
     async returnTemplate(
         @param.path.string('id') id: string,
@@ -52,6 +62,11 @@ export class GenerateTemplateController {
         return response;
     }
 
+    /**
+     * This endpoint is suitable for lambdas where we don't have any guarantee that a cached file
+     * will persist between when it is saved and when it is retrieved. It generates, saves, and download
+     * the template file. It may make use of a cached version, but does not assume any caching is available.
+     */
     @post('/api/generatetemplate')
     async generateAndReturnTemplate(
         // eslint-disable-next-line @typescript-eslint/naming-convention
