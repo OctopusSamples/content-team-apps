@@ -5,21 +5,49 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const AdmZip = require("adm-zip");
+const argon2 = require('argon2');
+
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
 export class TemplateGenerator {
   constructor() {}
 
+  async getTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
+    // Create a hash based on the generator and the options
+    const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    // This is where the template is created
+    const zipPath = path.join(os.tmpdir(), hash + '.zip');
+
+    // If the template does nopt exist, build it
+    if (fs.existsSync(zipPath)) {
+      return zipPath;
+    }
+
+    return "";
+  }
+
   async generateTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
 
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
+    // Create a hash based on the generator and the options
+    const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    // This is where the template is created
+    const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
+    // If the template does nopt exist, build it
+    if (!fs.existsSync(zipPath)) {
+      await this.buildNewTemplate(generator, options, zipPath);
+    }
+
+    return zipPath;
+  }
+
+  async buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
     try {
       const env = yeoman.createEnv({cwd: tempDir});
       env.register(require.resolve(generator + "/generators/app"), 'octopus-generator:app');
 
       await env.run('octopus-generator:app', options);
 
-      const zipPath = path.join(os.tmpdir(), crypto.randomUUID() + '.zip');
       const zip = new AdmZip();
       zip.addLocalFolder(tempDir);
       zip.writeZip(zipPath);
