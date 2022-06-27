@@ -26,7 +26,7 @@ export class TemplateGenerator {
     return "";
   }
 
-  async generateTemplate(generator: string, options: { [key: string]: string; }, sync = true): Promise<string> {
+  async generateTemplateSync(generator: string, options: { [key: string]: string; }): Promise<string> {
 
     // Create a hash based on the generator and the options
     const hash = await this.getTemplateId(generator, options);
@@ -35,16 +35,27 @@ export class TemplateGenerator {
 
     // If the template does nopt exist, build it
     if (!fs.existsSync(zipPath)) {
-      if (sync) {
         await this.buildNewTemplate(generator, options, zipPath);
-      } else {
-        // trigger the build, but don't wait for it
-        this.buildNewTemplate(generator, options, zipPath)
-            .catch(e => console.log(e));
-      }
     }
 
     return zipPath;
+  }
+
+  async generateTemplate(generator: string, options: { [key: string]: string; },): Promise<string> {
+
+    // Create a hash based on the generator and the options
+    const hash = await this.getTemplateId(generator, options);
+    // This is where the template is created
+    const zipPath = path.join(os.tmpdir(), hash + '.zip');
+
+    // If the template does nopt exist, build it
+    if (!fs.existsSync(zipPath)) {
+        // trigger the build, but don't wait for it
+        this.buildNewTemplate(generator, options, zipPath)
+            .catch(e => console.log(e));
+    }
+
+    return hash;
   }
 
   async buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
