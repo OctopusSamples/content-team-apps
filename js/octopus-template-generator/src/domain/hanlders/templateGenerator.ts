@@ -37,7 +37,9 @@ export class TemplateGenerator {
 
     // If the template does nopt exist, build it
     if (!fs.existsSync(zipPath)) {
-      await this.buildNewTemplate(generator, options, zipPath);
+      // trigger the build, but don't wait for it
+      this.buildNewTemplate(generator, options, zipPath)
+          .catch(e => console.log(e));
     }
 
     return zipPath;
