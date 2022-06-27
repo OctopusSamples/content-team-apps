@@ -10,7 +10,8 @@ export class TemplateGenerator {
   constructor() {}
 
   private async getTemplateId(generator: string, options: { [key: string]: string; }): Promise<string> {
-    return argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    return new Buffer(hash).toString('base64');
   }
 
   async getTemplate(id: string): Promise<string> {
