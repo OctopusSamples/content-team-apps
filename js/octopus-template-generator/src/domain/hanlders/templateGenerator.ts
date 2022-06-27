@@ -12,11 +12,13 @@ const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 export class TemplateGenerator {
   constructor() {}
 
-  async getTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
-    // Create a hash based on the generator and the options
-    const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+  private async getTemplateId(generator: string, options: { [key: string]: string; }): Promise<string> {
+    return argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+  }
+
+  async getTemplate(id: string): Promise<string> {
     // This is where the template is created
-    const zipPath = path.join(os.tmpdir(), hash + '.zip');
+    const zipPath = path.join(os.tmpdir(), id + '.zip');
 
     // If the template does nopt exist, build it
     if (fs.existsSync(zipPath)) {
@@ -29,7 +31,7 @@ export class TemplateGenerator {
   async generateTemplate(generator: string, options: { [key: string]: string; }): Promise<string> {
 
     // Create a hash based on the generator and the options
-    const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    const hash = await this.getTemplateId(generator, options);
     // This is where the template is created
     const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
