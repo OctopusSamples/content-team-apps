@@ -4,8 +4,7 @@ const os = require('os');
 const path = require('path');
 const AdmZip = require("adm-zip");
 const argon2 = require('argon2');
-
-const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
+const lockFile = require('lockfile');
 
 export class TemplateGenerator {
   constructor() {}
@@ -53,10 +52,25 @@ export class TemplateGenerator {
   }
 
   async buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
-    // If two requests were queued up, just process one of them
-    if (fs.existsSync(zipPath)) {
+    try {
+      lockFile.lockSync(zipPath + ".lock");
+
+      // If two requests were queued up, just process one of them
+      if (!fs.existsSync(zipPath)) {
+        await this.writeTemplate(generator, options, zipPath);
+      }
+
       return zipPath;
+
+    } finally {
+      lockFile.unlock(zipPath + ".lock", (err: never) => {
+        console.error('Failed to unlock the file: ' + err)
+      });
     }
+  }
+
+  private async writeTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
     try {
       const env = yeoman.createEnv({cwd: tempDir});
@@ -67,9 +81,6 @@ export class TemplateGenerator {
       const zip = new AdmZip();
       zip.addLocalFolder(tempDir);
       zip.writeZip(zipPath);
-
-      return zipPath;
-
     } finally {
       try {
         fs.rmSync(tempDir, { recursive: true });
