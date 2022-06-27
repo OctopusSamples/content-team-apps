@@ -65,7 +65,9 @@ export class TemplateGenerator {
 
     } finally {
       lockFile.unlock(zipPath + ".lock", (err: never) => {
-        console.error('Failed to unlock the file: ' + err)
+        if (err) {
+          console.error('Failed to unlock the file: ' + err)
+        }
       });
     }
   }
