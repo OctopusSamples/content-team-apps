@@ -114,7 +114,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
             props.machine.send("NEXT");
         } else {
             setLoading(true);
-            const manuallyEnteredApiKey = Cookies.get("octopusApiKey");
+            const manuallyEnteredApiKey = Cookies.get("octopusApiKey") || "";
             populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer(props.machine.state.context));
         }
     }
