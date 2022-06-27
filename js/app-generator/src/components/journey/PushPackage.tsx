@@ -21,35 +21,6 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         return "OctopusBuilder-" + props.machine.state.context.targetPlatform;
     }
 
-    const createServiceAccount = (callback: (apiKey: string, apiKeyEncrypted: boolean, server: string) => void) => {
-        const body = {
-            "data": {
-                "type": "createserviceaccount",
-                "attributes": {
-                    "username": "OctopusBuilder",
-                    "displayName": "Octopus Builder Service Account",
-                    "isService": true,
-                    "octopusServer": getOctopusServer(props.machine.state.context)
-                }
-            }
-        };
-        postJsonApi(JSON.stringify(body), context.settings.serviceAccountEndpoint, context.settings, context.partition)
-            .then(body => {
-                const bodyObject = body as any;
-                callback(
-                    bodyObject.included
-                        .filter((i: any) => i.type === "apikey")
-                        .map((i: any) => i.attributes?.apiKey)
-                        .pop(),
-                    false,
-                    bodyObject.data.attributes.octopusServer);
-            })
-            .catch(() => {
-                setLoading(false);
-                props.machine.send("ERROR");
-            });
-    }
-
     /**
      * Determines if the values we have allow for a valid repo to be created.
      * We can't continue if there is no generator defined, or if the cookies holding
@@ -144,17 +115,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
         } else {
             setLoading(true);
             const manuallyEnteredApiKey = Cookies.get("octopusApiKey");
-
-            /*
-                If we manually enter the API key, create the GitHub repo with the entered credentials.
-                If there is no manually entered API key, assume the service account is to be created using the ID token
-                from an octofront login.
-             */
-            if (manuallyEnteredApiKey) {
-                populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer(props.machine.state.context));
-            } else {
-                createServiceAccount(populateGitHubRepo);
-            }
+            populateGitHubRepo(manuallyEnteredApiKey, true, getOctopusServer(props.machine.state.context));
         }
     }
 

@@ -19,6 +19,7 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import com.octopus.exceptions.ServerErrorException;
@@ -94,7 +95,10 @@ public class HandlerBadUpstreamRequestTests extends BaseGitHubTest {
 
     final Response acceptedResponse = Mockito.mock(Response.class);
     Mockito.when(acceptedResponse.getStatus()).thenReturn(202);
-    Mockito.when(populateRepoClient.populateRepo(any(), any(), any(), any(), any(), any())).thenReturn(acceptedResponse);
+    final CompletableFuture<Response> eventualResponse = new CompletableFuture<>();
+    eventualResponse.complete(acceptedResponse);
+
+    Mockito.when(populateRepoClient.populateRepo(any(), any(), any(), any(), any(), any())).thenReturn(eventualResponse);
   }
 
   @Test

@@ -13,6 +13,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import java.util.concurrent.CompletionStage;
+
 /**
   A REST client accessing the repo population service.
  */
@@ -23,7 +25,7 @@ public interface PopulateRepoClient {
   @Path("populategithubrepo")
   @Produces(JsonApi.JSONAPI_CONTENT_TYPE)
   @Consumes(JsonApi.JSONAPI_CONTENT_TYPE)
-  Response populateRepo(
+  CompletionStage<Response> populateRepo(
       String generateTemplate,
       @HeaderParam(GlobalConstants.ROUTING_HEADER) String routing,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth,

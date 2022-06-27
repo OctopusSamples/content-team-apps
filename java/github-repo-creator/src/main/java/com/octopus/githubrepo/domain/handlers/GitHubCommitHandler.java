@@ -30,6 +30,7 @@ import com.octopus.githubrepo.infrastructure.clients.PopulateRepoClient;
 import io.quarkus.logging.Log;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -37,6 +38,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,6 +47,7 @@ import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.core.Response;
+
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -74,353 +78,367 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
 @ApplicationScoped
 public class GitHubCommitHandler {
 
-  /**
-   * The default branch.
-   */
-  private static final String DEFAULT_BRANCH = "main";
+    /**
+     * We have a hard limit with API gateways of 29 seconds. Direct calls from browser timeout anywhere from 90 to
+     * 300 seconds.
+     */
+    private static final int UPSTREAM_TIMEOUT = 5;
 
-  /**
-   * The branch we place any subsequent app builder deployments into. Doing so ensures we don't overwrite any updates users may have made between running the
-   * app-builder. The workflows are also configured to not run on this branch, so any manual updates made to Octopus won't be reverted.
-   */
-  private static final String UPDATE_BRANCH = "app-builder-update";
+    /**
+     * The default branch.
+     */
+    private static final String DEFAULT_BRANCH = "main";
 
-  @ConfigProperty(name = "github.encryption")
-  String githubEncryption;
+    /**
+     * The branch we place any subsequent app builder deployments into. Doing so ensures we don't overwrite any updates users may have made between running the
+     * app-builder. The workflows are also configured to not run on this branch, so any manual updates made to Octopus won't be reverted.
+     */
+    private static final String UPDATE_BRANCH = "app-builder-update";
 
-  @ConfigProperty(name = "github.salt")
-  String githubSalt;
+    @ConfigProperty(name = "github.encryption")
+    String githubEncryption;
 
-  @Inject
-  MicroserviceNameFeature microserviceNameFeature;
+    @ConfigProperty(name = "github.salt")
+    String githubSalt;
 
-  @RestClient
-  GitHubClient gitHubClient;
+    @Inject
+    MicroserviceNameFeature microserviceNameFeature;
 
-  @RestClient
-  PopulateRepoClient populateRepoClient;
+    @RestClient
+    GitHubClient gitHubClient;
 
-  @Inject
-  AuditGenerator auditGenerator;
+    @RestClient
+    PopulateRepoClient populateRepoClient;
 
-  @Inject
-  ServiceAuthUtils serviceAuthUtils;
+    @Inject
+    AuditGenerator auditGenerator;
 
-  @Inject
-  @Named("JsonApiServiceUtilsCreateGithubCommit")
-  JsonApiResourceUtils<CreateGithubCommit> jsonApiServiceUtilsCreateGithubCommit;
+    @Inject
+    ServiceAuthUtils serviceAuthUtils;
 
-  @Inject
-  @Named("JsonApiServiceUtilsCreateGithubRepo")
-  JsonApiResourceUtils<PopulateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
+    @Inject
+    @Named("JsonApiServiceUtilsCreateGithubCommit")
+    JsonApiResourceUtils<CreateGithubCommit> jsonApiServiceUtilsCreateGithubCommit;
 
-  @Inject
-  CryptoUtils cryptoUtils;
+    @Inject
+    @Named("JsonApiServiceUtilsCreateGithubRepo")
+    JsonApiResourceUtils<PopulateGithubRepo> jsonApiServiceUtilsCreateGithubRepo;
 
-  @Inject
-  Validator validator;
+    @Inject
+    CryptoUtils cryptoUtils;
 
-  @Inject
-  DisableServiceFeature disableServiceFeature;
+    @Inject
+    Validator validator;
 
-  @Inject
-  ScopeVerifier scopeVerifier;
+    @Inject
+    DisableServiceFeature disableServiceFeature;
 
-  @Inject
-  PublicEmailTester publicEmailTester;
+    @Inject
+    ScopeVerifier scopeVerifier;
 
-  @Inject
-  AsymmetricEncryptor asymmetricEncryptor;
+    @Inject
+    PublicEmailTester publicEmailTester;
 
-  /**
-   * Creates a new service account in the Octopus cloud instance.
-   *
-   * @param document                   The JSONAPI resource to create.
-   * @param authorizationHeader        The OAuth header for user-to-machine communication from the content team identity management system. Note this is not
-   *                                   Octofront, but probably Cognito.
-   * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note this is not Octofront, but probably Cognito.
-   * @return The newly created resource
-   * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
-   */
-  public String create(
-      @NonNull final String document,
-      final String authorizationHeader,
-      final String serviceAuthorizationHeader,
-      final String routingHeader,
-      final String dataPartitionHeaders,
-      final String xray,
-      @NonNull final String githubToken)
-      throws DocumentSerializationException {
+    @Inject
+    AsymmetricEncryptor asymmetricEncryptor;
 
-    Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
-    Preconditions.checkArgument(StringUtils.isNotBlank(githubToken),
-        "githubToken can not be blank");
+    /**
+     * Creates a new service account in the Octopus cloud instance.
+     *
+     * @param document                   The JSONAPI resource to create.
+     * @param authorizationHeader        The OAuth header for user-to-machine communication from the content team identity management system. Note this is not
+     *                                   Octofront, but probably Cognito.
+     * @param serviceAuthorizationHeader The OAuth header for machine-to-machine communication. Note this is not Octofront, but probably Cognito.
+     * @return The newly created resource
+     * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
+     */
+    public String create(
+            @NonNull final String document,
+            final String authorizationHeader,
+            final String serviceAuthorizationHeader,
+            final String routingHeader,
+            final String dataPartitionHeaders,
+            final String xray,
+            @NonNull final String githubToken)
+            throws DocumentSerializationException {
 
-    if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
-      throw new UnauthorizedException();
-    }
+        Preconditions.checkArgument(StringUtils.isNotBlank(document), "document can not be blank");
+        Preconditions.checkArgument(StringUtils.isNotBlank(githubToken),
+                "githubToken can not be blank");
 
-    if (disableServiceFeature.getDisableRepoCreation()) {
-      return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
-          .builder()
-          .id("")
-          .githubRepository("")
-          .build());
-    }
-
-    try {
-      // Extract the create service account action from the HTTP body.
-      final CreateGithubCommit createGithubRepo = jsonApiServiceUtilsCreateGithubCommit
-          .getResourceFromDocument(document, CreateGithubCommit.class);
-
-      // Ensure the validity of the request.
-      verifyRequest(createGithubRepo);
-
-      // Audit the Octopus server that the templates will populate
-      auditOctopusServer(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
-      auditTemplate(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
-
-      // Decrypt the github token passed in as a cookie.
-      final String decryptedGithubToken = cryptoUtils.decrypt(
-          githubToken,
-          githubEncryption,
-          githubSalt);
-
-      // Log the access
-      auditEmail(authorizationHeader, routingHeader, dataPartitionHeaders, xray, decryptedGithubToken);
-
-      // Ensure we have the required scopes
-      scopeVerifier.verifyScopes(decryptedGithubToken);
-
-      // Get the GitHub login name
-      final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
-
-      // Get the destination repo name
-      final String repoName = createGithubRepo.isCreateNewRepo()
-          ? getUniqueRepoName(decryptedGithubToken, createGithubRepo, user)
-          : createGithubRepo.getGithubRepository();
-
-      // Create the repo
-      final String branch = createRepo(decryptedGithubToken, user, repoName)
-          ? DEFAULT_BRANCH : UPDATE_BRANCH;
-
-      // Make an async call to populate the new repo
-      try (final Response response = populateRepoClient.populateRepo(jsonApiServiceUtilsCreateGithubRepo.respondWithResource(
-              PopulateGithubRepo
-                  .builder()
-                  .generator(createGithubRepo.getGenerator())
-                  .githubRepository(repoName)
-                  .branch(branch)
-                  .options(createGithubRepo.getOptions())
-                  .secrets(createGithubRepo.getSecrets())
-                  .build()),
-          routingHeader,
-          authorizationHeader,
-          null,
-          GlobalConstants.ASYNC_INVOCATION_TYPE,
-          githubToken)) {
-        if (response.getStatus() != 202 && response.getStatus() != 200) {
-          Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + response.getStatus()
-              + " but expected a 202 or 200");
-          throw new UnexpectedResponseException();
+        if (!serviceAuthUtils.isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
+            throw new UnauthorizedException();
         }
-      }
 
-      // return the details of the new repo
-      return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
-          .builder()
-          /*
-            Every object needs an ID. For addressable resources, the ID is either internally
-            managed and unique, or an external URL to a GET endpoint that identifies the resource.
-            In this case though the CreateGithubCommit "resource" is an action rather than a
-            traditional resource. It is given a unique ID, but this is never recorded anywhere
-            and there is no way to look this ID up again.
-           */
-          .id(UUID.randomUUID().toString())
-          .githubRepository(repoName)
-          .githubOwner(user.getLogin())
-          .githubBranch(branch)
-          .meta(CreateGithubCommitMeta
-              .builder()
-              .browsableRepoUrl("https://github.com/" + user.getLogin() + "/" + repoName)
-              .apiRepoUrl("https://api.github.com/repos/" + user.getLogin() + "/" + repoName)
-              .owner(user.getLogin())
-              .repoName(repoName)
-              .build())
-          .build());
-    } catch (final ClientWebApplicationException ex) {
-      Try.run(
-          () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
-              + ex.getResponse().readEntity(String.class), ex));
-      throw new ServerErrorException();
-    } catch (final InvalidInputException | IllegalArgumentException ex) {
-      Log.error(
-          microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
-      throw ex;
-    } catch (final Throwable ex) {
-      Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
-      throw new ServerErrorException();
+        if (disableServiceFeature.getDisableRepoCreation()) {
+            return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
+                    .builder()
+                    .id("")
+                    .githubRepository("")
+                    .build());
+        }
+
+        try {
+            // Extract the create service account action from the HTTP body.
+            final CreateGithubCommit createGithubRepo = jsonApiServiceUtilsCreateGithubCommit
+                    .getResourceFromDocument(document, CreateGithubCommit.class);
+
+            // Ensure the validity of the request.
+            verifyRequest(createGithubRepo);
+
+            // Audit the Octopus server that the templates will populate
+            auditOctopusServer(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
+            auditTemplate(createGithubRepo, xray, routingHeader, dataPartitionHeaders, authorizationHeader);
+
+            // Decrypt the github token passed in as a cookie.
+            final String decryptedGithubToken = cryptoUtils.decrypt(
+                    githubToken,
+                    githubEncryption,
+                    githubSalt);
+
+            // Log the access
+            auditEmail(authorizationHeader, routingHeader, dataPartitionHeaders, xray, decryptedGithubToken);
+
+            // Ensure we have the required scopes
+            scopeVerifier.verifyScopes(decryptedGithubToken);
+
+            // Get the GitHub login name
+            final GitHubUser user = gitHubClient.getUser("token " + decryptedGithubToken);
+
+            // Get the destination repo name
+            final String repoName = createGithubRepo.isCreateNewRepo()
+                    ? getUniqueRepoName(decryptedGithubToken, createGithubRepo, user)
+                    : createGithubRepo.getGithubRepository();
+
+            // Create the repo
+            final String branch = createRepo(decryptedGithubToken, user, repoName)
+                    ? DEFAULT_BRANCH : UPDATE_BRANCH;
+
+            // Make an async call to populate the new repo
+            final CompletionStage<Response> response = populateRepoClient.populateRepo(jsonApiServiceUtilsCreateGithubRepo.respondWithResource(
+                            PopulateGithubRepo
+                                    .builder()
+                                    .generator(createGithubRepo.getGenerator())
+                                    .githubRepository(repoName)
+                                    .branch(branch)
+                                    .options(createGithubRepo.getOptions())
+                                    .secrets(createGithubRepo.getSecrets())
+                                    .build()),
+                    routingHeader,
+                    authorizationHeader,
+                    null,
+                    GlobalConstants.ASYNC_INVOCATION_TYPE,
+                    githubToken);
+
+            /*
+             The call above is expected to be done asynchronously. However, that does assume there is some proxy that
+             understands the "Invocation-Type" header. So we either get a response fairly quickly to show success or
+             error, or we assume the upstream call worked as expected.
+             */
+            Try.of(() -> response.toCompletableFuture().get(UPSTREAM_TIMEOUT, TimeUnit.SECONDS))
+                    .onSuccess(r -> {
+                        if (r.getStatus() != 202 && r.getStatus() != 200) {
+                            Log.error(microserviceNameFeature.getMicroserviceName() + "-PopulateRepo-UnexpectedResponse Response code was " + r.getStatus()
+                                    + " but expected a 202 or 200");
+                            throw new UnexpectedResponseException();
+                        }
+                    });
+
+            // return the details of the new repo
+            return jsonApiServiceUtilsCreateGithubCommit.respondWithResource(CreateGithubCommit
+                    .builder()
+                    /*
+                      Every object needs an ID. For addressable resources, the ID is either internally
+                      managed and unique, or an external URL to a GET endpoint that identifies the resource.
+                      In this case though the CreateGithubCommit "resource" is an action rather than a
+                      traditional resource. It is given a unique ID, but this is never recorded anywhere
+                      and there is no way to look this ID up again.
+                     */
+                    .id(UUID.randomUUID().toString())
+                    .githubRepository(repoName)
+                    .githubOwner(user.getLogin())
+                    .githubBranch(branch)
+                    .meta(CreateGithubCommitMeta
+                            .builder()
+                            .browsableRepoUrl("https://github.com/" + user.getLogin() + "/" + repoName)
+                            .apiRepoUrl("https://api.github.com/repos/" + user.getLogin() + "/" + repoName)
+                            .owner(user.getLogin())
+                            .repoName(repoName)
+                            .build())
+                    .build());
+        } catch (final ClientWebApplicationException ex) {
+            Try.run(
+                    () -> Log.error(microserviceNameFeature.getMicroserviceName() + "-ExternalRequest-Failed "
+                            + ex.getResponse().readEntity(String.class), ex));
+            throw new ServerErrorException();
+        } catch (final InvalidInputException | IllegalArgumentException ex) {
+            Log.error(
+                    microserviceNameFeature.getMicroserviceName() + "-Request-Failed", ex);
+            throw ex;
+        } catch (final Throwable ex) {
+            Log.error(microserviceNameFeature.getMicroserviceName() + "-General-Failure", ex);
+            throw new ServerErrorException();
+        }
     }
-  }
 
-  private void auditEmail(
-      final String authorizationHeader,
-      final String routingHeader,
-      final String dataPartitionHeaders,
-      final String xray,
-      final String githubToken) {
+    private void auditEmail(
+            final String authorizationHeader,
+            final String routingHeader,
+            final String dataPartitionHeaders,
+            final String xray,
+            final String githubToken) {
 
     /*
       Auditing is a best effort exercise. We don't throw any exceptions here, nor do we block any processing if anything goes wrong.
       Start by loading the public key.
      */
-    final List<String> emails = Try.of(() -> Resources.toByteArray(Resources.getResource("public_key.der")))
-        // convert it to a base64 string
-        .map(Base64.getEncoder()::encodeToString)
-        // now try and get the email addresses associated with the github user
-        .map(k -> Arrays.stream(gitHubClient.publicEmails("token " + githubToken))
-            // extract the email
-            .map(GitHubEmail::getEmail)
-            // limit the results to public emails
-            .filter(publicEmailTester::isPublicEmail)
-            // encrypt the email
-            .map(e -> asymmetricEncryptor.encrypt(e, k))
-            // collect the list
-            .collect(Collectors.toList()))
-        // get the resulting list, or an empty list if anything went wrong.
-        .getOrElse(List.of());
+        final List<String> emails = Try.of(() -> Resources.toByteArray(Resources.getResource("public_key.der")))
+                // convert it to a base64 string
+                .map(Base64.getEncoder()::encodeToString)
+                // now try and get the email addresses associated with the github user
+                .map(k -> Arrays.stream(gitHubClient.publicEmails("token " + githubToken))
+                        // extract the email
+                        .map(GitHubEmail::getEmail)
+                        // limit the results to public emails
+                        .filter(publicEmailTester::isPublicEmail)
+                        // encrypt the email
+                        .map(e -> asymmetricEncryptor.encrypt(e, k))
+                        // collect the list
+                        .collect(Collectors.toList()))
+                // get the resulting list, or an empty list if anything went wrong.
+                .getOrElse(List.of());
 
-    for (final String email : emails) {
-      auditGenerator.createAuditEvent(new Audit(
-              microserviceNameFeature.getMicroserviceName(),
-              GlobalConstants.POPULATED_REPO_FOR_CUSTOMER,
-              email,
-              true,
-              false),
-          xray,
-          routingHeader,
-          dataPartitionHeaders,
-          authorizationHeader);
-    }
-  }
-
-  private String getUniqueRepoName(
-      final String decryptedGithubToken,
-      final CreateGithubCommit createGithubRepo,
-      final GitHubUser user) {
-    String repoName = createGithubRepo.getGithubRepository();
-
-    // If we want to create a fresh repo every time, add a counter to the end of the repo name
-    for (int i = 1; i <= 100; ++i) {
-
-      if (doesRepoExist(decryptedGithubToken, user, repoName)) {
-        repoName = createGithubRepo.getGithubRepository() + i;
-      } else {
-        break;
-      }
+        for (final String email : emails) {
+            auditGenerator.createAuditEvent(new Audit(
+                            microserviceNameFeature.getMicroserviceName(),
+                            GlobalConstants.POPULATED_REPO_FOR_CUSTOMER,
+                            email,
+                            true,
+                            false),
+                    xray,
+                    routingHeader,
+                    dataPartitionHeaders,
+                    authorizationHeader);
+        }
     }
 
-    return repoName;
-  }
+    private String getUniqueRepoName(
+            final String decryptedGithubToken,
+            final CreateGithubCommit createGithubRepo,
+            final GitHubUser user) {
+        String repoName = createGithubRepo.getGithubRepository();
 
-  private boolean createRepo(final String decryptedGithubToken,
-      final GitHubUser user,
-      final String repoName) {
+        // If we want to create a fresh repo every time, add a counter to the end of the repo name
+        for (int i = 1; i <= 100; ++i) {
+
+            if (doesRepoExist(decryptedGithubToken, user, repoName)) {
+                repoName = createGithubRepo.getGithubRepository() + i;
+            } else {
+                break;
+            }
+        }
+
+        return repoName;
+    }
+
+    private boolean createRepo(final String decryptedGithubToken,
+                               final GitHubUser user,
+                               final String repoName) {
 
     /*
      If we are creating a unique repo name, or creating a new common repo, go ahead and
      create a new GitHub repo.
      */
-    if (!doesRepoExist(decryptedGithubToken, user, repoName)) {
-      gitHubClient.createRepo(
-          GithubRepo.builder().name(repoName).build(),
-          "token " + decryptedGithubToken);
-      return true;
+        if (!doesRepoExist(decryptedGithubToken, user, repoName)) {
+            gitHubClient.createRepo(
+                    GithubRepo.builder().name(repoName).build(),
+                    "token " + decryptedGithubToken);
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
-  }
+    private boolean doesRepoExist(
+            final String decryptedGithubToken,
+            final GitHubUser user,
+            final String repoName) {
+        try {
+            final Response response = gitHubClient.getRepo(
+                    user.getLogin(),
+                    repoName,
+                    "token " + decryptedGithubToken);
 
-  private boolean doesRepoExist(
-      final String decryptedGithubToken,
-      final GitHubUser user,
-      final String repoName) {
-    try {
-      final Response response = gitHubClient.getRepo(
-          user.getLogin(),
-          repoName,
-          "token " + decryptedGithubToken);
-
-      if (response.getStatus() == 200) {
-        return true;
-      }
-    } catch (ClientWebApplicationException ex) {
-      if (ex.getResponse().getStatus() != 404) {
+            if (response.getStatus() == 200) {
+                return true;
+            }
+        } catch (ClientWebApplicationException ex) {
+            if (ex.getResponse().getStatus() != 404) {
         /*
           Anything else was unexpected, and will result in an error.
          */
-        Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-FindRepoError", ex);
-        throw ex;
-      }
+                Log.error(microserviceNameFeature.getMicroserviceName() + "-CreateRepo-FindRepoError", ex);
+                throw ex;
+            }
+        }
+
+        return false;
     }
 
-    return false;
-  }
+    /**
+     * Ensure the service account being created has the correct values.
+     */
+    private void verifyRequest(final CreateGithubCommit resource) {
+        final Set<ConstraintViolation<CreateGithubCommit>> violations = validator.validate(resource);
+        if (violations.isEmpty()) {
+            return;
+        }
 
-  /**
-   * Ensure the service account being created has the correct values.
-   */
-  private void verifyRequest(final CreateGithubCommit resource) {
-    final Set<ConstraintViolation<CreateGithubCommit>> violations = validator.validate(resource);
-    if (violations.isEmpty()) {
-      return;
+        throw new InvalidInputException(
+                violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", ")));
     }
 
-    throw new InvalidInputException(
-        violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", ")));
-  }
+    private void auditOctopusServer(
+            final CreateGithubCommit createGithubRepo,
+            final String xray,
+            final String routingHeader,
+            final String dataPartitionHeaders,
+            final String authorizationHeader) {
+        // Audit the octopus instance that this request is being made for
+        Objects.requireNonNullElse(createGithubRepo.getSecrets(), List.<Secret>of())
+                .stream()
+                // find the secret that includes the octopus server name
+                .filter(s -> GlobalConstants.OCTOPUS_SERVER_SECRET_NAME.equals(s.getName()))
+                // we expect, but don't assume, one value
+                .findFirst()
+                // if there was a secret holding the octopus server value, audit it
+                .ifPresent(secret -> auditGenerator.createAuditEvent(new Audit(
+                                microserviceNameFeature.getMicroserviceName(),
+                                GlobalConstants.POPULATED_REPO_FOR_INSTANCE,
+                                secret.getValue(),
+                                false,
+                                false),
+                        xray,
+                        routingHeader,
+                        dataPartitionHeaders,
+                        authorizationHeader));
+    }
 
-  private void auditOctopusServer(
-      final CreateGithubCommit createGithubRepo,
-      final String xray,
-      final String routingHeader,
-      final String dataPartitionHeaders,
-      final String authorizationHeader) {
-    // Audit the octopus instance that this request is being made for
-    Objects.requireNonNullElse(createGithubRepo.getSecrets(), List.<Secret>of())
-        .stream()
-        // find the secret that includes the octopus server name
-        .filter(s -> GlobalConstants.OCTOPUS_SERVER_SECRET_NAME.equals(s.getName()))
-        // we expect, but don't assume, one value
-        .findFirst()
-        // if there was a secret holding the octopus server value, audit it
-        .ifPresent(secret -> auditGenerator.createAuditEvent(new Audit(
-                microserviceNameFeature.getMicroserviceName(),
-                GlobalConstants.POPULATED_REPO_FOR_INSTANCE,
-                secret.getValue(),
-                false,
-                false),
-            xray,
-            routingHeader,
-            dataPartitionHeaders,
-            authorizationHeader));
-  }
-
-  private void auditTemplate(
-      final CreateGithubCommit createGithubRepo,
-      final String xray,
-      final String routingHeader,
-      final String dataPartitionHeaders,
-      final String authorizationHeader) {
-    auditGenerator.createAuditEvent(new Audit(
-            microserviceNameFeature.getMicroserviceName(),
-            GlobalConstants.POPULATED_REPO_WITH_TEMPLATE,
-            createGithubRepo.getGenerator(),
-            false,
-            false),
-        xray,
-        routingHeader,
-        dataPartitionHeaders,
-        authorizationHeader);
-  }
+    private void auditTemplate(
+            final CreateGithubCommit createGithubRepo,
+            final String xray,
+            final String routingHeader,
+            final String dataPartitionHeaders,
+            final String authorizationHeader) {
+        auditGenerator.createAuditEvent(new Audit(
+                        microserviceNameFeature.getMicroserviceName(),
+                        GlobalConstants.POPULATED_REPO_WITH_TEMPLATE,
+                        createGithubRepo.getGenerator(),
+                        false,
+                        false),
+                xray,
+                routingHeader,
+                dataPartitionHeaders,
+                authorizationHeader);
+    }
 }
