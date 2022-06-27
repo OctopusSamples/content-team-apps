@@ -1,17 +1,46 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
+import inquirer, {Answers, PromptModule} from "inquirer";
+import {Interface as ReadlineInterface} from "readline";
+import PromptState = inquirer.prompts.PromptState;
+
+class DummyPrompt {
+    question: any;
+    suppliedAnswers: { [key: string]: string; };
+    status: PromptState;
+
+    constructor(suppliedAnswers:{ [key: string]: string; }, question: any, readLine: ReadlineInterface, answers: Answers) {
+        this.status = "answered";
+        this.suppliedAnswers = suppliedAnswers;
+        this.question = question;
+    }
+
+    run(): Promise<any> {
+        if (this.suppliedAnswers[this.question.name]) {
+            return Promise.resolve(this.suppliedAnswers[this.question.name]);
+        }
+        console.log("TemplateGenerator-GenerateTemplate-MissingAnswer: Answer to " + this.question.name + " was not provided");
+        return Promise.reject("Answer to " + this.question.name + " was not provided");
+    }
+}
+
 /**
- * A no-op adapter that fails if any questions are asked, as there is no way to respond from a REST API.
+ * An adapter that responds with predetermined answers to questions.
  */
 export class NonInteractiveAdapter {
+    promptModule: PromptModule;
+
+    constructor(suppliedAnswers:{ [key: string]: string; }) {
+        this.promptModule = inquirer.createPromptModule();
+        Object.keys(this.promptModule.prompts).forEach((promptName) =>
+            this.promptModule.registerPrompt(promptName, DummyPrompt.bind(DummyPrompt, suppliedAnswers)));
+    }
+
     /**
-     * We can't respond to a prompt from an API. This method then logs the questions and throws an error.
+     * Attempt to respond with a predetermined answer.
      */
     prompt(questions: Object|Object[], answers: never, cb: never) {
-        if (Array.isArray(questions)) {
-            questions.forEach(q => console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + JSON.stringify(q)));
-        } else {
-            console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + JSON.stringify(questions))
-        }
-        throw new Error("Was prompted for questions");
+        return this.promptModule(questions).then(cb || undefined);
     }
 
     /**
