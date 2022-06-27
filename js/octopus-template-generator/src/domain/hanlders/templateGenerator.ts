@@ -33,10 +33,7 @@ export class TemplateGenerator {
     // This is where the template is created
     const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
-    // If the template does nopt exist, build it
-    if (!fs.existsSync(zipPath)) {
-        await this.buildNewTemplate(generator, options, zipPath);
-    }
+    await this.buildNewTemplate(generator, options, zipPath);
 
     return zipPath;
   }
@@ -48,12 +45,9 @@ export class TemplateGenerator {
     // This is where the template is created
     const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
-    // If the template does nopt exist, build it
-    if (!fs.existsSync(zipPath)) {
-        // trigger the build, but don't wait for it
-        this.buildNewTemplate(generator, options, zipPath)
-            .catch(e => console.log(e));
-    }
+    // trigger the build, but don't wait for it
+    this.buildNewTemplate(generator, options, zipPath)
+        .catch(e => console.log(e));
 
     return hash;
   }
