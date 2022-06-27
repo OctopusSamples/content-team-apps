@@ -4,9 +4,9 @@
 export class NonInteractiveAdapter {
     prompt(questions: Object|Object[], answers: never, cb: never) {
         if (Array.isArray(questions)) {
-            questions.forEach(q => console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + q));
+            questions.forEach(q => console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + JSON.stringify(q)));
         } else {
-            console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + questions)
+            console.log("TemplateGenerator-GenerateTemplate-IncompleteOptions: Was prompted for " + JSON.stringify(questions))
         }
         throw new Error("Was prompted for questions");
     }
