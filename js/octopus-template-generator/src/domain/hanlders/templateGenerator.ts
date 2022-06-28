@@ -121,6 +121,8 @@ export class TemplateGenerator {
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
             zip.writeZip(zipPath);
+
+            return zipPath;
         } finally {
             try {
                 fs.rmSync(tempDir, {recursive: true});
