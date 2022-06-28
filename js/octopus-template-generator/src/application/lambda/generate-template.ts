@@ -27,7 +27,7 @@ async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     // Convert the JSONAPI body to a plain object
     const body = deserialise(JSON.parse(requestBody));
 
-    const templateZip = await new TemplateGenerator().generateTemplate(
+    const templateZip = await new TemplateGenerator().generateTemplateSync(
         body.data.generator,
         body.data.options);
 
