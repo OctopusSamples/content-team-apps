@@ -89,9 +89,7 @@ export class TemplateGenerator {
                 if (err) return reject(err);
 
                 if (!fs.existsSync(zipPath)) {
-                    return this.writeTemplate(generator, options, zipPath)
-                        .then(() => resolve(zipPath))
-                        .catch((err3) => reject(err3));
+                    return resolve(this.writeTemplate(generator, options, zipPath));
                 }
 
                 resolve(zipPath);
