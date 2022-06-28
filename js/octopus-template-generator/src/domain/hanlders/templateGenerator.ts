@@ -1,5 +1,6 @@
-const enableNpmInstall = require("../features/enbaleNpmInstall");
-const NonInteractiveAdapter = require("../yeoman/adapter")
+import NonInteractiveAdapter from "../yeoman/adapter";
+import enableNpmInstall from "../features/enbaleNpmInstall";
+
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
 const os = require('os');

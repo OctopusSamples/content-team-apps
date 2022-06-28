@@ -27,7 +27,7 @@ class DummyPrompt {
 /**
  * An adapter that responds with predetermined answers to questions.
  */
-export class NonInteractiveAdapter {
+export default class NonInteractiveAdapter {
     promptModule: PromptModule;
 
     constructor(suppliedAnswers:{ [key: string]: string; }) {
