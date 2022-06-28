@@ -83,24 +83,26 @@ export class TemplateGenerator {
      * @param options The generator options.
      * @param zipPath The path to save the template to.
      */
-    async buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
-        try {
-            lockFile.lockSync(zipPath + ".lock");
+    buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
+        const lockFilePath = zipPath + ".lock";
+        return new Promise((resolve, reject) => {
+            lockFile.lock(lockFilePath, (err: never) => {
+                if (err) return reject(err);
 
-            // If two requests were queued up, just process one of them
-            if (!fs.existsSync(zipPath)) {
-                await this.writeTemplate(generator, options, zipPath);
-            }
-
-            return zipPath;
-
-        } finally {
-            lockFile.unlock(zipPath + ".lock", (err: never) => {
-                if (err) {
-                    console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
+                if (!fs.existsSync(zipPath)) {
+                    return this.writeTemplate(generator, options, zipPath)
+                        .then(() => resolve(zipPath))
+                        .catch((err3) => reject(err3));
                 }
-            });
-        }
+
+                resolve(zipPath);
+            })
+        })
+        .finally(() => lockFile.unlock(lockFilePath, (err: never) => {
+            if (err) {
+                console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
+            }
+        }));
     }
 
     /**
@@ -114,7 +116,7 @@ export class TemplateGenerator {
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         try {
-            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter());
+            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
             env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
             await env.run('octopus-generator:app', options);
