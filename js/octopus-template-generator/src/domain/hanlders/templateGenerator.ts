@@ -1,6 +1,5 @@
-import {enableNpmInstall} from "../features/enbaleNpmInstall";
-import {NonInteractiveAdapter} from "../yeoman/adapter";
-
+const enableNpmInstall = require("../features/enbaleNpmInstall");
+const NonInteractiveAdapter = require("../yeoman/adapter")
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
 const os = require('os');
@@ -8,7 +7,7 @@ const path = require('path');
 const AdmZip = require("adm-zip");
 const argon2 = require('argon2');
 const lockFile = require('lockfile');
-const {execSync} = require('child_process')
+const {execSync} = require('child_process');
 
 export class TemplateGenerator {
     constructor() {
