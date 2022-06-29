@@ -115,7 +115,7 @@ export class TemplateGenerator {
 
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
-            env.register(require.resolve(generator + "/generators/app"), 'octopus-generator:app');
+            env.register(generator);
 
             /*
                 See https://github.com/SharePoint/sp-dev-docs/issues/235#issuecomment-255013438 for a discussion
@@ -123,7 +123,7 @@ export class TemplateGenerator {
              */
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            await env.run('octopus-generator:app', {'skip-install': !enableNpmInstall()}, options);
+            await env.run(generator, {'skip-install': !enableNpmInstall()}, options);
 
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
