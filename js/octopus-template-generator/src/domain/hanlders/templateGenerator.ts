@@ -8,7 +8,6 @@ const path = require('path');
 const AdmZip = require("adm-zip");
 const argon2 = require('argon2');
 const lockFile = require('lockfile');
-const {execSync} = require('child_process');
 
 export class TemplateGenerator {
     constructor() {
@@ -115,7 +114,6 @@ export class TemplateGenerator {
 
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
-            env.register(generator);
 
             /*
                 See https://github.com/SharePoint/sp-dev-docs/issues/235#issuecomment-255013438 for a discussion
