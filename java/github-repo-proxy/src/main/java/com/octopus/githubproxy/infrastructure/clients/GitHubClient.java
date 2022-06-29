@@ -2,6 +2,7 @@ package com.octopus.githubproxy.infrastructure.clients;
 
 import com.octopus.githubproxy.domain.entities.WorkflowRuns;
 import com.octopus.githubproxy.domain.entities.Repo;
+import io.smallrye.mutiny.Uni;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -20,7 +21,7 @@ public interface GitHubClient {
   @GET
   @Path("/repos/{owner}/{repo}")
   @Produces(MediaType.APPLICATION_JSON)
-  Repo getRepo(
+  Uni<Repo> getRepo(
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);
@@ -28,7 +29,7 @@ public interface GitHubClient {
   @GET
   @Path("/repos/{owner}/{repo}/actions/runs")
   @Produces(MediaType.APPLICATION_JSON)
-  WorkflowRuns getWorkflowRuns(
+  Uni<WorkflowRuns> getWorkflowRuns(
       @PathParam("owner") final String owner,
       @PathParam("repo") final String repo,
       @HeaderParam(HttpHeaders.AUTHORIZATION) String auth);

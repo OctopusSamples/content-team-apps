@@ -2,6 +2,8 @@ package com.octopus.githubproxy.domain.handlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.jasminb.jsonapi.JSONAPIDocument;
@@ -19,6 +21,7 @@ import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import io.smallrye.mutiny.Uni;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.inject.Inject;
@@ -64,16 +67,16 @@ public class HandlerGetTests {
       final String repo = invocation.getArgument(1, String.class);
 
       if ("owner".equals(owner) && "repo".equals(repo)) {
-        return Repo
+        return Uni.createFrom().item(Repo
             .builder()
             .owner(RepoOwner.builder().login("owner").build())
-            .name("repo").build();
+            .name("repo").build());
       }
 
-      throw new ClientWebApplicationException(missingResponse);
+      return Uni.createFrom().failure(new ClientWebApplicationException(missingResponse));
     });
 
-    Mockito.when(gitHubClient.getWorkflowRuns(any(), any(), any())).thenReturn(WorkflowRuns.builder().build());
+    Mockito.when(gitHubClient.getWorkflowRuns(any(), any(), any())).thenReturn(Uni.createFrom().item(WorkflowRuns.builder().build()));
 
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }
@@ -111,32 +114,33 @@ public class HandlerGetTests {
   @Test
   public void getMissingResource() {
     assertThrows(EntityNotFoundException.class, () ->
-      handler.getOne(
-          "1000000000000000000",
-          List.of("main"),
-          null,
-          null,
-          "")
-    );
-
-    assertThrows(EntityNotFoundException.class, () ->
         handler.getOne(
-            "https://api.github.com/repos/blah/blah",
+            "1000000000000000000",
             List.of("main"),
             null,
             null,
             "")
     );
+
+    handler.getOne(
+            "https://api.github.com/repos/blah/blah",
+            List.of("main"),
+            null,
+            null,
+            "")
+        .onFailure().invoke(e -> assertTrue(e instanceof EntityNotFoundException))
+        .subscribe().with(s -> fail());
   }
 
   @Test
   public void getResource() throws DocumentSerializationException {
     final String result = handler.getOne(
-        "https://api.github.com/repos/owner/repo",
-        List.of("main"),
-        null,
-        null,
-        "");
+            "https://api.github.com/repos/owner/repo",
+            List.of("main"),
+            null,
+            null,
+            "")
+        .await().indefinitely();
 
     final JSONAPIDocument<GitHubRepo> document = resourceConverter.readDocument(
         result.getBytes(StandardCharsets.UTF_8),

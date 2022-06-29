@@ -21,6 +21,8 @@ import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtUtils;
 import io.quarkus.logging.Log;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vavr.control.Try;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -84,12 +86,11 @@ public class ResourceHandler {
    * @return The matching resource.
    * @throws DocumentSerializationException Thrown if the entity could not be converted to a JSONAPI resource.
    */
-  public String getOne(@NonNull final String id,
+  public Uni<String> getOne(@NonNull final String id,
       @NonNull final List<String> dataPartitionHeaders,
       final String authorizationHeader,
       final String serviceAuthorizationHeader,
-      @NonNull final String githubToken)
-      throws DocumentSerializationException {
+      @NonNull final String githubToken) {
     if (!isAuthorized(authorizationHeader, serviceAuthorizationHeader)) {
       throw new UnauthorizedException();
     }
@@ -106,23 +107,20 @@ public class ResourceHandler {
     final String decryptedGithubToken = cryptoUtils.decrypt(githubToken, githubEncryption, githubSalt);
 
     // Attempt to get the repo
-    final Repo repo = getRepo(repoId.get(), decryptedGithubToken);
-
-    // Attempt to get the runs
-    final List<GitHubWorkflowRun> runs = getWorkflowRuns(repoId.get(), decryptedGithubToken);
-
-    // Return the simplified copy of the response back to the client
-    return respondWithResource(GitHubRepo
-        .builder()
-        .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
-        .workflowRuns(runs)
-        .meta(GitHubRepoMeta
-            .builder()
-            .browsableUrl("https://github.com/" + repo.getOwner().getLogin() + "/" + repo.getName())
-            .build())
-        .owner(repo.getOwner().getLogin())
-        .repo(repo.getName())
-        .build());
+    return getRepo(repoId.get(), decryptedGithubToken)
+        .flatMap(d -> getWorkflowRuns(d, repoId.get(), decryptedGithubToken))
+        .map(Unchecked.function(d -> respondWithResource(
+            GitHubRepo
+                .builder()
+                .id(URLDecoder.decode(id, StandardCharsets.UTF_8))
+                .workflowRuns(d.runs)
+                .meta(GitHubRepoMeta
+                    .builder()
+                    .browsableUrl("https://github.com/" + d.repo.getOwner().getLogin() + "/" + d.repo.getName())
+                    .build())
+                .owner(d.repo.getOwner().getLogin())
+                .repo(d.repo.getName())
+                .build())));
   }
 
   /**
@@ -141,44 +139,34 @@ public class ResourceHandler {
     return ex;
   }
 
-  private Repo getRepo(final RepoId repoId, final String decryptedGithubToken) {
-    try {
-      return gitHubClient.getRepo(
-          repoId.getOwner(),
-          repoId.getRepo(),
-          "token " + decryptedGithubToken);
-    } catch (final ClientWebApplicationException ex) {
-      throw handleException(ex);
-    }
+  private Uni<GitHubDetails> getRepo(final RepoId repoId, final String decryptedGithubToken) {
+    return gitHubClient.getRepo(
+            repoId.getOwner(),
+            repoId.getRepo(),
+            "token " + decryptedGithubToken)
+        .map(GitHubDetails::new)
+        .onFailure(ClientWebApplicationException.class)
+        .transform(e -> handleException((ClientWebApplicationException) e));
   }
 
-  private List<GitHubWorkflowRun> getWorkflowRuns(final RepoId repoId, final String decryptedGithubToken) {
-    try {
-      // Attempt to get the runs
-      final List<WorkflowRun> runs =
-          gitHubClient.getWorkflowRuns(
-                  repoId.getOwner(),
-                  repoId.getRepo(),
-                  "token " + decryptedGithubToken)
-              .getWorkflowRuns();
-
-      // Deal with the possibility that there is no list
-      if (runs == null) {
-        return List.of();
-      }
-
-      // Convert the upstream objects into downstream objects
-      return runs.stream()
-          .map(w -> GitHubWorkflowRun.builder()
-              .id(w.getId())
-              .status(w.getStatus())
-              .htmlUrl(w.getHtmlUrl())
-              .runNumber(w.getRunNumber())
-              .build())
-          .collect(Collectors.toList());
-    } catch (final ClientWebApplicationException ex) {
-      throw handleException(ex);
-    }
+  private Uni<GitHubDetails> getWorkflowRuns(final GitHubDetails details, final RepoId repoId, final String decryptedGithubToken) {
+    return gitHubClient.getWorkflowRuns(
+            repoId.getOwner(),
+            repoId.getRepo(),
+            "token " + decryptedGithubToken)
+        .map(w -> w == null || w.getWorkflowRuns() == null
+            ? List.<GitHubWorkflowRun>of()
+            : w.getWorkflowRuns().stream()
+                .map(x -> GitHubWorkflowRun.builder()
+                    .id(x.getId())
+                    .status(x.getStatus())
+                    .htmlUrl(x.getHtmlUrl())
+                    .runNumber(x.getRunNumber())
+                    .build())
+                .collect(Collectors.toList()))
+        .map(w -> new GitHubDetails(details.repo, w))
+        .onFailure(ClientWebApplicationException.class)
+        .transform(e -> handleException((ClientWebApplicationException) e));
   }
 
   private String respondWithResource(final GitHubRepo gitHubRepo)
@@ -234,5 +222,27 @@ public class ResourceHandler {
         .map(jwt -> jwtInspector.jwtContainsCognitoGroup(jwt,
             adminJwtGroupFeature.getAdminGroup().get()))
         .orElse(false);
+  }
+
+  private static class GitHubDetails {
+
+    public Repo repo;
+    public List<GitHubWorkflowRun> runs;
+    public String branch;
+
+    public GitHubDetails(Repo repo) {
+      this.repo = repo;
+    }
+
+    public GitHubDetails(Repo repo, List<GitHubWorkflowRun> runs) {
+      this.repo = repo;
+      this.runs = runs;
+    }
+
+    public GitHubDetails(Repo repo, List<GitHubWorkflowRun> runs, String branch) {
+      this.repo = repo;
+      this.runs = runs;
+      this.branch = branch;
+    }
   }
 }

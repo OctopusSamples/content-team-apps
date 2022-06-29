@@ -19,6 +19,7 @@ import com.octopus.githubproxy.infrastructure.clients.GitHubClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import io.smallrye.mutiny.Uni;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -67,13 +68,14 @@ public class LambdaRequestHandlerTest {
       final String repo = invocation.getArgument(1, String.class);
 
       if ("owner".equals(owner) && "repo".equals(repo)) {
-        return Repo.builder().owner(RepoOwner.builder().login("owner").build()).name("repo")
-            .build();
+        return Uni.createFrom().item(
+            Repo.builder().owner(RepoOwner.builder().login("owner").build()).name("repo")
+                .build());
       }
 
-      throw new ClientWebApplicationException(missingResponse);
+      return Uni.createFrom().failure(new ClientWebApplicationException(missingResponse));
     });
-    Mockito.when(gitHubClient.getWorkflowRuns(any(), any(), any())).thenReturn(WorkflowRuns.builder().build());
+    Mockito.when(gitHubClient.getWorkflowRuns(any(), any(), any())).thenReturn(Uni.createFrom().item(WorkflowRuns.builder().build()));
 
     Mockito.when(cryptoUtils.decrypt(any(), any(), any())).thenReturn("decrypted");
   }

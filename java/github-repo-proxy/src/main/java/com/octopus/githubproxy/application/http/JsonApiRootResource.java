@@ -59,12 +59,12 @@ public class JsonApiRootResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    final String response = resourceHandler.getOne(
+    return resourceHandler.getOne(
             id,
             dataPartitionHeaders,
             authorizationHeader,
             serviceAuthorizationHeader,
-            githubToken);
-    return Uni.createFrom().item(Response.ok(response).build());
+            githubToken)
+        .map(r -> Response.ok(r).build());
   }
 }
