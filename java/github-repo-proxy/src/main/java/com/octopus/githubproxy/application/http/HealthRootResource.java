@@ -3,6 +3,7 @@ package com.octopus.githubproxy.application.http;
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.githubproxy.application.Paths;
 import com.octopus.githubproxy.domain.handlers.HealthHandler;
+import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -27,10 +28,9 @@ public class HealthRootResource {
    */
   @GET
   @Path("{id}/GET")
-  @Transactional
-  public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
-    return Response
+  public Uni<Response> healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
+    return Uni.createFrom().item(Response
         .ok(healthHandler.getHealth(Paths.HEALTH_ENDPOINT + id, "GET"))
-        .build();
+        .build());
   }
 }

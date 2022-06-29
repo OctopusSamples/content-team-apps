@@ -6,6 +6,7 @@ import com.octopus.Constants;
 import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
+import io.smallrye.mutiny.Uni;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -42,8 +43,7 @@ public class GitHubRepoResource {
   @Path("/populategithubrepo")
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
-  @Transactional
-  public Response create(
+  public Uni<Response> create(
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
@@ -52,13 +52,13 @@ public class GitHubRepoResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.ok(
+    return Uni.createFrom().item(Response.ok(
             gitHubRepoHandler.create(
                 document,
                 authorizationHeader,
                 serviceAuthorizationHeader,
                 routingHeader,
                 githubToken))
-        .build();
+        .build());
   }
 }

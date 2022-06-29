@@ -8,6 +8,7 @@ import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
 import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
+import io.smallrye.mutiny.Uni;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -45,8 +46,7 @@ public class GitHubCommitResource {
   @Path("/githubcommit")
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
-  @Transactional
-  public Response create(
+  public Uni<Response> create(
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
@@ -57,7 +57,7 @@ public class GitHubCommitResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Response.accepted(
+    return Uni.createFrom().item(Response.accepted(
             gitHubCommitHandler.create(
                 document,
                 authorizationHeader,
@@ -66,6 +66,6 @@ public class GitHubCommitResource {
                 dataPartition,
                 xray,
                 githubToken))
-        .build();
+        .build());
   }
 }

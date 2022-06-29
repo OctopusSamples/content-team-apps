@@ -2,6 +2,7 @@ package com.octopus.githubrepo.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
 import com.octopus.githubrepo.domain.handlers.HealthHandler;
+import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -26,9 +27,9 @@ public class HealthResource {
    */
   @GET
   @Path("GET")
-  @Transactional
-  public Response healthCollectionGet() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/populategithubrepo", "GET")).build();
+  public Uni<Response> healthCollectionGet() throws DocumentSerializationException {
+    return Uni.createFrom().item(
+        Response.ok(healthHandler.getHealth("/health/populategithubrepo", "GET")).build());
   }
 
   /**
@@ -40,9 +41,9 @@ public class HealthResource {
    */
   @GET
   @Path("POST")
-  @Transactional
-  public Response healthCollectionPost() throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/populategithubrepo", "POST")).build();
+  public Uni<Response> healthCollectionPost() throws DocumentSerializationException {
+    return Uni.createFrom().item(
+        Response.ok(healthHandler.getHealth("/health/populategithubrepo", "POST")).build());
   }
 
   /**
@@ -54,8 +55,8 @@ public class HealthResource {
    */
   @GET
   @Path("{id}/GET")
-  @Transactional
-  public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
-    return Response.ok(healthHandler.getHealth("/health/customers/" + id, "GET")).build();
+  public Uni<Response> healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
+    return Uni.createFrom().item(
+        Response.ok(healthHandler.getHealth("/health/customers/" + id, "GET")).build());
   }
 }

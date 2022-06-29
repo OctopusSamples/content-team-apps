@@ -1,5 +1,6 @@
 package com.octopus.githubrepo.application.http;
 
+import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,7 +18,7 @@ public class RootResource {
    * @return a HTTP response object.
    */
   @GET
-  public Response healthCollectionGet()  {
-    return Response.ok().build();
+  public Uni<Response> healthCollectionGet()  {
+    return Uni.createFrom().item(Response.ok().build());
   }
 }

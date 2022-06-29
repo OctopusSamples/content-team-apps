@@ -7,6 +7,7 @@ import com.octopus.githubproxy.ServiceConstants;
 import com.octopus.githubproxy.application.Paths;
 import com.octopus.githubproxy.domain.handlers.ResourceHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
+import io.smallrye.mutiny.Uni;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
@@ -49,7 +50,7 @@ public class JsonApiRootResource {
   @GET
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Path("{id}")
-  public Response getOne(
+  public Uni<Response> getOne(
       @PathParam("id") final String id,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
@@ -64,6 +65,6 @@ public class JsonApiRootResource {
             authorizationHeader,
             serviceAuthorizationHeader,
             githubToken);
-    return Response.ok(response).build();
+    return Uni.createFrom().item(Response.ok(response).build());
   }
 }
