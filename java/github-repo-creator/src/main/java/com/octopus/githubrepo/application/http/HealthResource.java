@@ -5,7 +5,6 @@ import com.octopus.githubrepo.domain.handlers.HealthHandler;
 import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

@@ -10,7 +10,6 @@ import io.smallrye.mutiny.Uni;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;

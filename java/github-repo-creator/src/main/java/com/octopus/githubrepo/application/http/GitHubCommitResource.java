@@ -6,13 +6,11 @@ import com.octopus.Constants;
 import com.octopus.githubrepo.GlobalConstants;
 import com.octopus.githubrepo.domain.ServiceConstants;
 import com.octopus.githubrepo.domain.handlers.GitHubCommitHandler;
-import com.octopus.githubrepo.domain.handlers.GitHubRepoHandler;
 import com.octopus.jsonapi.AcceptHeaderVerifier;
 import io.smallrye.mutiny.Uni;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
@@ -20,7 +18,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import org.gradle.internal.service.scopes.Scope.Global;
 
 /** WHen this app is run as a web server, this class defines the REST API endpoints. */
 @Path("/api")
