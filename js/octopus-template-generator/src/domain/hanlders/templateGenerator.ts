@@ -117,7 +117,8 @@ export class TemplateGenerator {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
             env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
-            await env.run('octopus-generator:app', options);
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            await env.run('octopus-generator:app', {'skip-install': true}, options);
 
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
