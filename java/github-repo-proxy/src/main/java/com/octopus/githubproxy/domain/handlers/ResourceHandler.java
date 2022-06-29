@@ -154,19 +154,25 @@ public class ResourceHandler {
             repoId.getOwner(),
             repoId.getRepo(),
             "token " + decryptedGithubToken)
-        .map(w -> w == null || w.getWorkflowRuns() == null
-            ? List.<GitHubWorkflowRun>of()
-            : w.getWorkflowRuns().stream()
-                .map(x -> GitHubWorkflowRun.builder()
-                    .id(x.getId())
-                    .status(x.getStatus())
-                    .htmlUrl(x.getHtmlUrl())
-                    .runNumber(x.getRunNumber())
-                    .build())
-                .collect(Collectors.toList()))
+        .map(this::convertWorkflowRuns)
         .map(w -> new GitHubDetails(details.repo, w))
         .onFailure(ClientWebApplicationException.class)
         .transform(e -> handleException((ClientWebApplicationException) e));
+  }
+
+  private List<GitHubWorkflowRun> convertWorkflowRuns(final WorkflowRuns workflowRuns) {
+    if (workflowRuns == null || workflowRuns.getWorkflowRuns() == null) {
+      return List.of();
+    }
+
+    return workflowRuns.getWorkflowRuns().stream()
+        .map(x -> GitHubWorkflowRun.builder()
+            .id(x.getId())
+            .status(x.getStatus())
+            .htmlUrl(x.getHtmlUrl())
+            .runNumber(x.getRunNumber())
+            .build())
+        .collect(Collectors.toList());
   }
 
   private String respondWithResource(final GitHubRepo gitHubRepo)
