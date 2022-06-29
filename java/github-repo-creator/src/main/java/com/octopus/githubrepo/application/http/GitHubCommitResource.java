@@ -43,7 +43,7 @@ public class GitHubCommitResource {
   @Path("/githubcommit")
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
-  public Uni<Response> create(
+  public Response create(
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
@@ -54,7 +54,7 @@ public class GitHubCommitResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Uni.createFrom().item(Response.accepted(
+    return Response.accepted(
             gitHubCommitHandler.create(
                 document,
                 authorizationHeader,
@@ -63,6 +63,6 @@ public class GitHubCommitResource {
                 dataPartition,
                 xray,
                 githubToken))
-        .build());
+        .build();
   }
 }

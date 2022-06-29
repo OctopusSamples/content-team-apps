@@ -42,7 +42,7 @@ public class GitHubRepoResource {
   @Path("/populategithubrepo")
   @Consumes(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
   @Produces(Constants.JsonApi.JSONAPI_CONTENT_TYPE)
-  public Uni<Response> create(
+  public Response create(
       final String document,
       @HeaderParam(HttpHeaders.ACCEPT) final List<String> acceptHeader,
       @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorizationHeader,
@@ -51,13 +51,13 @@ public class GitHubRepoResource {
       @CookieParam(ServiceConstants.GITHUB_SESSION_COOKIE) final String githubToken)
       throws DocumentSerializationException {
     acceptHeaderVerifier.checkAcceptHeader(acceptHeader);
-    return Uni.createFrom().item(Response.ok(
+    return Response.ok(
             gitHubRepoHandler.create(
                 document,
                 authorizationHeader,
                 serviceAuthorizationHeader,
                 routingHeader,
                 githubToken))
-        .build());
+        .build();
   }
 }
