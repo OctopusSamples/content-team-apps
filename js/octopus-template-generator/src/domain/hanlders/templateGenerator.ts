@@ -124,7 +124,7 @@ export class TemplateGenerator {
              */
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            await env.run(generator, {'skip-install': !enableNpmInstall()}, options);
+            await env.run(generator, {...options, 'skip-install': !enableNpmInstall()});
 
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
