@@ -6,9 +6,9 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const AdmZip = require("adm-zip");
-const argon2 = require('argon2');
 const lockFile = require('lockfile');
 const {execSync} = require('child_process');
+const md5 = require("md5")
 
 export class TemplateGenerator {
     constructor() {
@@ -21,9 +21,10 @@ export class TemplateGenerator {
      * @private
      */
     private async getTemplateId(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }): Promise<string> {
-        const hash = await argon2.hash(generator
+        const id = generator
             + Object.keys(options).sort().map(k => k + options[k]).join("")
-            + Object.keys(questions).sort().map(k => k + questions[k]).join(""));
+            + Object.keys(questions).sort().map(k => k + questions[k]).join("");
+        const hash = md5(id);
         return new Buffer(hash).toString('base64');
     }
 
@@ -130,8 +131,8 @@ export class TemplateGenerator {
         } finally {
             try {
                 fs.rmSync(tempDir, {recursive: true});
-            } catch {
-                console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed.')
+            } catch (err) {
+                console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed because' + err)
             }
         }
     }
