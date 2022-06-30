@@ -7,7 +7,7 @@ const os = require('os');
 const path = require('path');
 const AdmZip = require("adm-zip");
 const lockFile = require('lockfile');
-const {execSync} = require('child_process');
+const {exec} = require('child_process');
 const md5 = require("md5")
 
 export class TemplateGenerator {
@@ -118,7 +118,7 @@ export class TemplateGenerator {
 
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(questions));
-            env.register(this.resolveGenerator(generator), 'octopus-generator:app');
+            env.register(await this.resolveGenerator(generator), 'octopus-generator:app');
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             await env.run('octopus-generator:app', {...(options || {}), 'skip-install': true});
@@ -144,9 +144,9 @@ export class TemplateGenerator {
      * of additional generators is also defined by the enableNpmInstall() feature.
      * @private
      */
-    private resolveGenerator(generator: string, attemptInstall = true): string {
+    private async resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
         try {
-            return require.resolve(generator + "/generators/app")
+            return require.resolve(generator + "/generators/app");
         } catch (e) {
             /*
              If the module was not found, we allow module downloading, and this is the first attempt,
@@ -154,11 +154,18 @@ export class TemplateGenerator {
              */
             if (e.code === "MODULE_NOT_FOUND" && enableNpmInstall() && attemptInstall) {
                 console.log("Attempting to run npm install " + generator);
-                execSync("npm install " + generator);
-                return this.resolveGenerator(generator, false)
-            } else {
-                throw e;
+                return new Promise((resolve, reject) => {
+                    exec("npm install " + generator, (error: never) => {
+                        if (error) {
+                            return reject(error);
+                        }
+
+                        return resolve(this.resolveGenerator(generator, false));
+                    });
+                });
             }
+
+            throw e;
         }
     }
 }
