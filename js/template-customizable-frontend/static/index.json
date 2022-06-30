@@ -1,0 +1,20 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Select your generator"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "Spring Boot",
+      "verb": "openCard",
+      "data": {
+        "filename": "springboot.json"
+      }
+    }
+  ]
+}

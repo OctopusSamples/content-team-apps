@@ -1,0 +1,30 @@
+name: template-customizable-frontend
+
+on:
+  push:
+    paths:
+    - 'js/github/template-customizable-frontend/**'
+    - 'js/template-customizable-frontend/**'
+    - '.github/workflows/template-customizable-frontend.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./js/github/template-customizable-frontend
+        with:
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-west-1
+          run_number: ${{ github.run_number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_SAMPLES_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_SAMPLES_PASSWORD }}

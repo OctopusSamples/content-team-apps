@@ -1,0 +1,221 @@
+name: Node.js Build
+description: Build the customizable frontend web app
+'on':
+  workflow_dispatch: {}
+  push: {}
+inputs:
+  octopus_server:
+    description: "The Octopus server"
+    required: true
+  octopus_apikey:
+    description: "The Octopus API token"
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The application deployment lifecycle'
+    required: true
+  octopus_development_aws_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_production_aws_account_id:
+    description: 'The production AWS account id'
+    required: true
+  octopus_worker_pool_id:
+    description: 'The worker pool id used for the deployment steps'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  aws_terraform_state_bucket_region:
+    description: 'The AWS terraform state bucket region'
+    required: true
+  run_number:
+    required: true
+    description: 'The GitHub run number'
+  github_token:
+    required: true
+    description: 'The GitHub token'
+  dockerhub_username:
+    required: true
+    description: The DockerHub username
+  dockerhub_password:
+    required: true
+    description: The DockerHub password
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: '0'
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: lts/*
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_password }}
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+
+    - name: Install Octopus Deploy CLI
+      uses: OctopusDeploy/install-octocli@v1.1.1
+      with:
+        version: latest
+
+    - name: Install Dependencies
+      run: npm install
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: List Dependencies
+      run: npm list --all > dependencies.txt
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: js/template-customizable-frontend/dependencies.txt
+
+    - name: List Dependency Updates
+      run: yarn outdated > dependencyUpdates.txt || true
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: js/template-customizable-frontend/dependencyUpdates.txt
+
+    - name: Build image
+      uses: mamezou-tech/buildpacks-action@master
+      with:
+        image: 'octopussamples/customizableworkflowbuilderfrontend'
+        tag: '${{ steps.determine_version.outputs.semVer }}'
+        path: 'js/template-customizable-frontend'
+        builder: 'heroku/buildpacks:20'
+        buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
+        env: NODE_OPTIONS=--openssl-legacy-provider
+
+    - name: Build, tag, and push image to Amazon ECR
+      run: |
+        docker push octopussamples/customizableworkflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }}
+        docker image tag octopussamples/customizableworkflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuilderfrontend
+        docker push octopussamples/customizableworkflowbuilderfrontend
+      shell: bash
+
+    - name: Build
+      run: npm run build
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Package
+      run: |-
+        SOURCEPATH=.
+        OUTPUTPATH=.
+        # If there is a build directory, assume that is what we want to package
+        if [[ -d "dist" ]]; then
+          SOURCEPATH=dist
+        fi
+        octo pack \
+         --basePath ${SOURCEPATH} \
+         --outFolder ${OUTPUTPATH} \
+         --id customizable-workflow-builder-frontend \
+         --version ${{ steps.determine_version.outputs.semVer }} \
+         --format zip \
+         --overwrite \
+         --include '**/*.html' \
+         --include '**/*.htm' \
+         --include '**/*.css' \
+         --include '**/*.js' \
+         --include '**/*.min' \
+         --include '**/*.map' \
+         --include '**/*.sql' \
+         --include '**/*.png' \
+         --include '**/*.jpg' \
+         --include '**/*.jpeg' \
+         --include '**/*.gif' \
+         --include '**/*.json' \
+         --include '**/*.env' \
+         --include '**/*.txt' \
+         --include '**/*.pem' \
+         --include '**/*.Procfile'
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Tag Release
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        custom_tag: ${{ steps.determine_version.outputs.semVer }}
+        github_token: ${{ inputs.github_token }}
+
+    - name: Push to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/template-customizable-frontend/customizable-workflow-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
+    - name: Generate Octopus Deploy build information
+      uses: xo-energy/action-octopus-build-information@v1.1.2
+      with:
+        octopus_api_key: ${{ inputs.octopus_apikey }}
+        octopus_project: App Builder Frontend
+        octopus_server:  ${{ inputs.octopus_server }}
+        push_version: ${{ steps.determine_version.outputs.semVer }}
+        push_package_ids: customizable-workflow-builder-frontend
+        push_overwrite_mode: OverwriteExisting
+        output_path: octopus
+        octopus_space: "Content Team"
+
+    - name: Install CycloneDX
+      run: npm install -g @cyclonedx/bom
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Generate SBOM
+      run: cyclonedx-bom
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Create SBOM zip
+      run: zip customizable-workflow-builder-frontend-sbom.${{ steps.determine_version.outputs.semVer }}.zip bom.xml
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Push SBOM to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/template-customizable-frontend/customizable-workflow-builder-frontend-sbom.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
