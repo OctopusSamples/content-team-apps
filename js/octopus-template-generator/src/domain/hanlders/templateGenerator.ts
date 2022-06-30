@@ -115,6 +115,7 @@ export class TemplateGenerator {
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
 
+            // See https://yeoman.github.io/environment/ for an example
             env.lookup();
 
             /*
