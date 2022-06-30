@@ -121,7 +121,6 @@ runs:
         path: 'js/template-customizable-frontend'
         builder: 'heroku/buildpacks:20'
         buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
-        env: NODE_OPTIONS=--openssl-legacy-provider
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
