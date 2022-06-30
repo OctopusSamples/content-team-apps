@@ -2,7 +2,8 @@
 
 import inquirer, {Answers, PromptModule} from "inquirer";
 import {Interface as ReadlineInterface} from "readline";
-import createLogger, {Logger} from 'yeoman-environment/lib/util/log'
+import createLogger from 'yeoman-environment/lib/util/log'
+import {Logger} from 'yeoman-environment'
 import diff, {Change} from 'diff';
 import PromptState = inquirer.prompts.PromptState;
 
