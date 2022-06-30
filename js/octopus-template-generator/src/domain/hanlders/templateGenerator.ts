@@ -115,6 +115,8 @@ export class TemplateGenerator {
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
 
+            env.lookup();
+
             /*
                 See https://github.com/SharePoint/sp-dev-docs/issues/235#issuecomment-255013438 for a discussion
                 on the skip-install option.

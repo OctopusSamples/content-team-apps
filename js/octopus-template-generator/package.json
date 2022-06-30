@@ -58,22 +58,23 @@
     "@octopus-content-team/generator-github-complete-ecs-deployment": "0.1.166",
     "@octopus-content-team/generator-github-complete-eks-deployment": "0.1.258",
     "@octopus-content-team/generator-github-complete-lambda-deployment": "0.1.44",
-    "@types/archiver": "^5.3.1",
-    "@types/aws-lambda": "^8.10.93",
     "adm-zip": "^0.5.9",
     "argon2": "^0.28.5",
+    "inquirer": "^8.0.0",
     "kitsu-core": "^10.0.0-alpha.22",
     "lockfile": "^1.0.4",
     "tslib": "^2.0.0",
-    "yeoman-environment": "^3.9.1",
-    "inquirer": "^8.0.0"
+    "yeoman-environment": "^3.9.1"
   },
   "devDependencies": {
     "@loopback/build": "^8.1.1",
     "@loopback/eslint-config": "^12.0.3",
     "@loopback/testlab": "^4.1.1",
-    "@types/node": "^17.0.21",
     "@types/inquirer": "^8.2.1",
+    "@types/node": "^17.0.21",
+    "@types/archiver": "^5.3.1",
+    "@types/aws-lambda": "^8.10.93",
+    "@types/yeoman-environment": "^2.10.7",
     "eslint": "^8.10.0",
     "source-map-support": "^0.5.21",
     "typescript": "~4.6.2"
