@@ -64,6 +64,7 @@ export class GenerateTemplateController {
         } else {
             // Otherwise the file doesn't exist.
             response.statusCode = 404;
+            response.send("Not Found");
         }
 
         return response;
