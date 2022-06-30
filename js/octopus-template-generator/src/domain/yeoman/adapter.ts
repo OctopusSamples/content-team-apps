@@ -20,7 +20,9 @@ class DummyPrompt {
     }
 
     run(): Promise<any> {
-        if (this.suppliedAnswers[this.question.name]) {
+        const answer = this.suppliedAnswers[this.question.name];
+
+        if (answer !== null && answer !== undefined) {
             return Promise.resolve(this.suppliedAnswers[this.question.name]);
         }
         console.log("TemplateGenerator-GenerateTemplate-MissingAnswer: Answer to " + this.question.name +
