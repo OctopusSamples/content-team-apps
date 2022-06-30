@@ -2,8 +2,8 @@
 
 import inquirer, {Answers, PromptModule} from "inquirer";
 import {Interface as ReadlineInterface} from "readline";
-import createLogger from 'yeoman-environment/lib/util/log'
-import {Logger} from 'yeoman-environment'
+import log from "yeoman-environment/lib/util/log";
+import {Logger} from 'yeoman-environment';
 import diff, {Change} from 'diff';
 import PromptState = inquirer.prompts.PromptState;
 
@@ -34,7 +34,7 @@ class DummyPrompt {
  */
 export default class NonInteractiveAdapter {
     promptModule: PromptModule;
-    log: Logger = createLogger({});
+    log: Logger = log;
 
     constructor(suppliedAnswers: { [key: string]: string; }) {
         this.promptModule = inquirer.createPromptModule();
