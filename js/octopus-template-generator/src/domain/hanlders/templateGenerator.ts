@@ -22,8 +22,8 @@ export class TemplateGenerator {
      */
     private async getTemplateId(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }): Promise<string> {
         const id = generator
-            + Object.keys(options).sort().map(k => k + options[k]).join("")
-            + Object.keys(questions).sort().map(k => k + questions[k]).join("");
+            + Object.keys(options || {}).sort().map(k => k + options[k]).join("")
+            + Object.keys(questions || {}).sort().map(k => k + questions[k]).join("");
         const hash = md5(id);
         return new Buffer(hash).toString('base64');
     }
