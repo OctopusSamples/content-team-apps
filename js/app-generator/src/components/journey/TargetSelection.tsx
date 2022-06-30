@@ -20,15 +20,15 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
 
             // Match the platform to the Yeoman generator
             if (props.machine.state.context.targetPlatform === "EKS") {
-                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-eks-deployment:app"
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-eks-deployment"
             }
 
             if (props.machine.state.context.targetPlatform === "ECS") {
-                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-ecs-deployment:app"
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-ecs-deployment"
             }
 
             if (props.machine.state.context.targetPlatform === "LAM") {
-                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-lambda-deployment:app"
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-lambda-deployment"
             }
         }
         props.machine.send(state);
