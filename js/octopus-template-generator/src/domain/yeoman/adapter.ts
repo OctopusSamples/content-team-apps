@@ -2,7 +2,7 @@
 
 import inquirer, {Answers, PromptModule} from "inquirer";
 import {Interface as ReadlineInterface} from "readline";
-import log from 'yeoman-environment/lib/util/log'
+import createLogger, {Logger} from 'yeoman-environment/lib/util/log'
 import diff, {Change} from 'diff';
 import PromptState = inquirer.prompts.PromptState;
 
@@ -33,6 +33,7 @@ class DummyPrompt {
  */
 export default class NonInteractiveAdapter {
     promptModule: PromptModule;
+    log: Logger = createLogger({});
 
     constructor(suppliedAnswers: { [key: string]: string; }) {
         this.promptModule = inquirer.createPromptModule();
@@ -83,13 +84,5 @@ export default class NonInteractiveAdapter {
 
         console.log(message);
         return message;
-    }
-
-    /**
-     * Log is a function returning an object that exposes methods and properties for logging.
-     * See https://github.com/yeoman/environment/blob/main/lib/util/log.js
-     */
-    log() {
-        return log;
     }
 }
