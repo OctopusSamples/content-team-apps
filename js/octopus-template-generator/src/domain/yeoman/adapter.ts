@@ -2,6 +2,8 @@
 
 import inquirer, {Answers, PromptModule} from "inquirer";
 import {Interface as ReadlineInterface} from "readline";
+import log from 'yeoman-environment/lib/util/log'
+import diff, {Change} from 'diff';
 import PromptState = inquirer.prompts.PromptState;
 
 class DummyPrompt {
@@ -9,7 +11,7 @@ class DummyPrompt {
     suppliedAnswers: { [key: string]: string; };
     status: PromptState;
 
-    constructor(suppliedAnswers:{ [key: string]: string; }, question: any, readLine: ReadlineInterface, answers: Answers) {
+    constructor(suppliedAnswers: { [key: string]: string; }, question: any, readLine: ReadlineInterface, answers: Answers) {
         this.status = "answered";
         this.suppliedAnswers = suppliedAnswers || {};
         this.question = question;
@@ -32,7 +34,7 @@ class DummyPrompt {
 export default class NonInteractiveAdapter {
     promptModule: PromptModule;
 
-    constructor(suppliedAnswers:{ [key: string]: string; }) {
+    constructor(suppliedAnswers: { [key: string]: string; }) {
         this.promptModule = inquirer.createPromptModule();
         Object.keys(this.promptModule.prompts).forEach((promptName) =>
             this.promptModule.registerPrompt(promptName, DummyPrompt.bind(DummyPrompt, suppliedAnswers)));
@@ -41,20 +43,53 @@ export default class NonInteractiveAdapter {
     /**
      * Attempt to respond with a predetermined answer.
      */
-    prompt(questions: Object|Object[], answers: never, cb: never) {
+    prompt(questions: Object | Object[], answers: never, cb: never) {
         return this.promptModule(questions).then(cb || undefined);
     }
 
     /**
-     * Each time the generator is run, it is done in an empty temporary directory. So there should never be a reason
-     * to diff any files.
+     * Shows a color-based diff of two strings. See https://github.com/yeoman/environment/blob/main/lib/adapter.js
+     *
+     * @param {string} actual
+     * @param {string} expected
+     * @param {Array} changes returned by diff.
      */
-    diff() {
-        console.log("TemplateGenerator-GenerateTemplate-DiffRequested: Was prompted to display a diff")
-        throw new Error("Was asked to diff files");
+    diff(actual:string|[], expected:string, changes:Change[]) {
+
+        changes = Array.isArray(actual)
+            ? actual
+            : diff.diffLines(actual, expected);
+
+        let message = changes.map(string => {
+            if (string.added) {
+                return 'Added';
+            }
+
+            if (string.removed) {
+                return 'Removed';
+            }
+
+            return string.value;
+        }).join('');
+
+        // Legend
+        message = '\n' +
+            'removed' +
+            ' ' +
+            'added' +
+            '\n\n' +
+            message +
+            '\n';
+
+        console.log(message);
+        return message;
     }
 
+    /**
+     * Log is a function returning an object that exposes methods and properties for logging.
+     * See https://github.com/yeoman/environment/blob/main/lib/util/log.js
+     */
     log() {
-        // no op
+        return log;
     }
 }
