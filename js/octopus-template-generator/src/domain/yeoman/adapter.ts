@@ -11,7 +11,7 @@ class DummyPrompt {
 
     constructor(suppliedAnswers:{ [key: string]: string; }, question: any, readLine: ReadlineInterface, answers: Answers) {
         this.status = "answered";
-        this.suppliedAnswers = suppliedAnswers;
+        this.suppliedAnswers = suppliedAnswers || {};
         this.question = question;
     }
 

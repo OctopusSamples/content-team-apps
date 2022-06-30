@@ -26,7 +26,8 @@ export class GenerateTemplateController {
 
         const hash = await this.templateGenerator.generateTemplate(
             parsedBody.data.generator,
-            parsedBody.data.options);
+            parsedBody.data.options,
+            parsedBody.data.questions);
 
         const returnValue = serialise("template", {id: hash});
         response.send(returnValue);
@@ -84,7 +85,8 @@ export class GenerateTemplateController {
 
         const templateZip = await this.templateGenerator.generateTemplateSync(
             parsedBody.data.generator,
-            parsedBody.data.options);
+            parsedBody.data.options,
+            parsedBody.data.questions);
         response.setHeader("Content-Type", "application/zip");
         response.download(templateZip, "template.zip", (err: Error) => {
             if (err) {

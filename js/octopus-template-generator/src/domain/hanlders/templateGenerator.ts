@@ -20,8 +20,10 @@ export class TemplateGenerator {
      * @param options The options applied to the generator.
      * @private
      */
-    private async getTemplateId(generator: string, options: { [key: string]: string; }): Promise<string> {
-        const hash = await argon2.hash(generator + Object.keys(options).sort().map(k => k + options[k]).join(""));
+    private async getTemplateId(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }): Promise<string> {
+        const hash = await argon2.hash(generator
+            + Object.keys(options).sort().map(k => k + options[k]).join("")
+            + Object.keys(questions).sort().map(k => k + questions[k]).join(""));
         return new Buffer(hash).toString('base64');
     }
 
@@ -46,14 +48,14 @@ export class TemplateGenerator {
      * @param generator The name of the generator.
      * @param options The generator options.
      */
-    async generateTemplateSync(generator: string, options: { [key: string]: string; }): Promise<string> {
+    async generateTemplateSync(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }): Promise<string> {
 
         // Create a hash based on the generator and the options
-        const hash = await this.getTemplateId(generator, options);
+        const hash = await this.getTemplateId(generator, options, questions);
         // This is where the template is created
         const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
-        await this.buildNewTemplate(generator, options, zipPath);
+        await this.buildNewTemplate(generator, options, questions, zipPath);
 
         return zipPath;
     }
@@ -63,15 +65,15 @@ export class TemplateGenerator {
      * @param generator The name of the generator.
      * @param options The generator options.
      */
-    async generateTemplate(generator: string, options: { [key: string]: string; },): Promise<string> {
+    async generateTemplate(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }): Promise<string> {
 
         // Create a hash based on the generator and the options
-        const hash = await this.getTemplateId(generator, options);
+        const hash = await this.getTemplateId(generator, options, questions);
         // This is where the template is created
         const zipPath = path.join(os.tmpdir(), hash + '.zip');
 
         // trigger the build, but don't wait for it
-        this.buildNewTemplate(generator, options, zipPath)
+        this.buildNewTemplate(generator, options, questions, zipPath)
             .catch(e => console.log(e));
 
         return hash;
@@ -83,14 +85,14 @@ export class TemplateGenerator {
      * @param options The generator options.
      * @param zipPath The path to save the template to.
      */
-    buildNewTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
+    buildNewTemplate(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }, zipPath: string) {
         const lockFilePath = zipPath + ".lock";
         return new Promise((resolve, reject) => {
             lockFile.lock(lockFilePath, (err: never) => {
                 if (err) return reject(err);
 
                 if (!fs.existsSync(zipPath)) {
-                    return resolve(this.writeTemplate(generator, options, zipPath));
+                    return resolve(this.writeTemplate(generator, options, questions, zipPath));
                 }
 
                 resolve(zipPath);
@@ -110,15 +112,15 @@ export class TemplateGenerator {
      * @param zipPath The path to save the generator ZIP file to.
      * @private
      */
-    private async writeTemplate(generator: string, options: { [key: string]: string; }, zipPath: string) {
+    private async writeTemplate(generator: string, options: { [key: string]: string; }, questions: { [key: string]: string; }, zipPath: string) {
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         try {
-            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
+            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(questions));
             env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            await env.run('octopus-generator:app', {...options, 'skip-install': true});
+            await env.run('octopus-generator:app', {...(options || {}), 'skip-install': true});
 
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);

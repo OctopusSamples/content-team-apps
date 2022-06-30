@@ -29,7 +29,8 @@ async function generateZip(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
 
     const templateZip = await new TemplateGenerator().generateTemplateSync(
         body.data.generator,
-        body.data.options);
+        body.data.options,
+        body.data.questions);
 
     const data = fs.readFileSync(templateZip).toString("base64");
 
