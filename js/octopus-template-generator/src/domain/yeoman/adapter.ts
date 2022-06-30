@@ -35,7 +35,7 @@ class DummyPrompt {
  */
 export default class NonInteractiveAdapter {
     promptModule: PromptModule;
-    log = log;
+    log: any = log({});
 
     constructor(suppliedAnswers: { [key: string]: string; }) {
         this.promptModule = inquirer.createPromptModule();
