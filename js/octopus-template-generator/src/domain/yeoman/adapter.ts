@@ -1,9 +1,10 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import inquirer, {Answers, PromptModule} from "inquirer";
 import {Interface as ReadlineInterface} from "readline";
-import log from "yeoman-environment/lib/util/log";
-import {Logger} from 'yeoman-environment';
+// @ts-ignore
+import log from "yeoman-environment/log";
 import diff, {Change} from 'diff';
 import PromptState = inquirer.prompts.PromptState;
 
@@ -34,7 +35,7 @@ class DummyPrompt {
  */
 export default class NonInteractiveAdapter {
     promptModule: PromptModule;
-    log: Logger = log;
+    log = log;
 
     constructor(suppliedAnswers: { [key: string]: string; }) {
         this.promptModule = inquirer.createPromptModule();
