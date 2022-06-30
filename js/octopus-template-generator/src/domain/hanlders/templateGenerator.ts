@@ -8,6 +8,7 @@ const path = require('path');
 const AdmZip = require("adm-zip");
 const argon2 = require('argon2');
 const lockFile = require('lockfile');
+const {execSync} = require('child_process');
 
 export class TemplateGenerator {
     constructor() {
@@ -95,11 +96,11 @@ export class TemplateGenerator {
                 resolve(zipPath);
             })
         })
-        .finally(() => lockFile.unlock(lockFilePath, (err: never) => {
-            if (err) {
-                console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
-            }
-        }));
+            .finally(() => lockFile.unlock(lockFilePath, (err: never) => {
+                if (err) {
+                    console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
+                }
+            }));
     }
 
     /**
@@ -114,17 +115,10 @@ export class TemplateGenerator {
 
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter({}));
-
-            // See https://yeoman.github.io/environment/ for an example
-            env.lookup();
-
-            /*
-                See https://github.com/SharePoint/sp-dev-docs/issues/235#issuecomment-255013438 for a discussion
-                on the skip-install option.
-             */
+            env.register(this.resolveGenerator(generator), 'octopus-generator:app');
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            await env.run(generator, {...options, 'skip-install': !enableNpmInstall()});
+            await env.run('octopus-generator:app', {...options, 'skip-install': true});
 
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
@@ -136,6 +130,31 @@ export class TemplateGenerator {
                 fs.rmSync(tempDir, {recursive: true});
             } catch {
                 console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed.')
+            }
+        }
+    }
+
+    /**
+     * Resolve the Yeoman generator, and optionally try to install it if it doesn't exist.
+     * @param generator The name of the generator.
+     * @param attemptInstall true if we should attempt to install the generator if it doesn't exist. Note the downloading
+     * of additional generators is also defined by the enableNpmInstall() feature.
+     * @private
+     */
+    private resolveGenerator(generator: string, attemptInstall = true): string {
+        try {
+            return require.resolve(generator + "/generators/app")
+        } catch (e) {
+            /*
+             If the module was not found, we allow module downloading, and this is the first attempt,
+             try downloading the module and return it.
+             */
+            if (e.code === "MODULE_NOT_FOUND" && enableNpmInstall() && attemptInstall) {
+                console.log("Attempting to run npm install " + generator);
+                execSync("npm install " + generator);
+                return this.resolveGenerator(generator, false)
+            } else {
+                throw e;
             }
         }
     }
