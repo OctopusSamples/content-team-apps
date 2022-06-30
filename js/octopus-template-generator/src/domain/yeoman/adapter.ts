@@ -20,14 +20,19 @@ class DummyPrompt {
     }
 
     run(): Promise<any> {
+        console.log("Question details:");
+        console.log(JSON.stringify(this.question));
+
         const answer = this.suppliedAnswers[this.question.name];
 
         if (answer !== null && answer !== undefined) {
             return Promise.resolve(this.suppliedAnswers[this.question.name]);
         }
+
         console.log("TemplateGenerator-GenerateTemplate-MissingAnswer: Answer to \"" + this.question.name +
             "\" was not provided. A blank response is provided instead, but note this is very unlikely to be a suitable response, and you should include an answer to question \""
             + this.question.name + "\" in the request.");
+
         return Promise.resolve("");
     }
 }
