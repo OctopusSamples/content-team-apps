@@ -1,5 +1,3 @@
-import inquirer from "inquirer";
-import log from "yeoman-environment/log";
 import TerminalAdapter from "yeoman-environment/adapter";
 
 /**
