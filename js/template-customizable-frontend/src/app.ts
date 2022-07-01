@@ -1,8 +1,7 @@
-// import the module
 import * as AdaptiveCards from "adaptivecards";
 import {ExecuteAction, OpenUrlAction, parseBool, parseNumber} from "adaptivecards";
 import * as download from "downloadjs";
-import pRetry from 'p-retry';
+import RetryClient from "retry-client";
 
 /**
  * This is the verb used by ExecuteAction buttons to generate and download the template.
@@ -27,14 +26,14 @@ adaptiveCard.hostConfig = new AdaptiveCards.HostConfig({
     This is where we respond to actions from the cards. The specialized logic regards
     building templates and navigating to different cards is defined here.
  */
-adaptiveCard.onExecuteAction = (action) => {
+adaptiveCard.onExecuteAction = async (action) => {
     if (action instanceof OpenUrlAction) {
         window.open(action.url, "_blank");
     }
 
     if (action instanceof ExecuteAction) {
         if (action.verb == DOWNLOAD_TEMPLATE) {
-            downloadTemplate(action);
+            await downloadTemplate(action);
         }
 
         if (action.verb == OPEN_CARD) {
@@ -60,40 +59,46 @@ function hideSpinner() {
 /**
  * Loads the application configuration.
  */
-function loadConfig(): Promise<any> {
+async function loadConfig(): Promise<any> {
     return fetch("config.json")
-        .then(data => data.json());
+        .then(data => data.json())
+        .catch(err => {
+            console.log(err);
+            window.alert("There was an error reading the config.json file. The template can not be downloaded.");
+        });
 }
 
 /**
  * Generate and download a template.
  * @param action The action that triggered the download.
  */
-function downloadTemplate(action: ExecuteAction) {
+async function downloadTemplate(action: ExecuteAction) {
     displaySpinner();
     const request = generateTemplateBody(action.data);
 
-    loadConfig().then(config => {
+    const config = await loadConfig();
+    /*
+        We start by requesting the template be built. The actual process of building
+        the template is done asynchronously, and what is returned here is the ID
+        of the template that we can eventually download.
+     */
+    fetch(config.templateGeneratorHost + "/api/template", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/vnd.api+json'
+            },
+            body: JSON.stringify(request)
+        }
+    )
+        .then(data => data.json())
         /*
-            We start by requesting the template be built. The actual process of building
-            the template is done asynchronously, and what is returned here is the ID
-            of the template that we can eventually download.
+            We then poll the template endpoint with the ID from the previous API call. We expect
+            to receive a few 404 errors as the template is built, but eventually the template
+            is available for download.
          */
-        fetch(config.templateGeneratorHost + "/api/template", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/vnd.api+json'
-                },
-                body: JSON.stringify(request)
-            }
-        )
-            .then(data => data.json())
-            /*
-                We then poll the template endpoint with the ID from the previous API call. We expect
-                to receive a few 404 errors as the template is built, but eventually the template
-                is available for download.
-             */
-            .then((data: any) => pRetry(async () => {
+        .then((data: any) => {
+            const retryClient = new RetryClient({maximumRetryCount: 20, fixedBackOff: 3000});
+            return retryClient.retry(async () => {
                 const response = await fetch(config.templateGeneratorHost + '/download/template/' + data.data.id);
 
                 if (response.status === 404) {
@@ -101,19 +106,21 @@ function downloadTemplate(action: ExecuteAction) {
                 }
 
                 return response.blob();
-            }, {retries: 20, minTimeout: 3000}))
-            // This is where we trigger the download in the browser
-            .then(blob => {
-                console.log(blob);
-                download(blob, "template.zip", "application/zip")
-            })
-            .catch(err => console.log(err))
-            // The last step is to remove the loading screen
-            .finally(() => {
-                hideSpinner();
-            })
-    })
-    .catch(err => console.log(err));
+            });
+        })
+        // This is where we trigger the download in the browser
+        .then(blob => {
+            console.log(blob);
+            download(blob, "template.zip", "application/zip")
+        })
+        .catch(err => {
+            console.log(err);
+            window.alert("There was an error generating or downloading the template. Check that the template generator service is available at " + config.templateGeneratorHost);
+        })
+        // The last step is to remove the loading screen
+        .finally(() => {
+            hideSpinner();
+        });
 }
 
 /**
