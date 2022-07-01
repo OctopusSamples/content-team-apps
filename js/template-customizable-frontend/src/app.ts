@@ -95,7 +95,7 @@ function downloadTemplate(action: ExecuteAction) {
                 is available for download.
              */
             .then((data: any) => pRetry(async () => {
-                const response = await fetch(config.templateGeneratorHost + '/api/template/' + data.data.id);
+                const response = await fetch(config.templateGeneratorHost + '/download/template/' + data.data.id);
 
                 if (response.status === 404) {
                     throw new Error(response.statusText);

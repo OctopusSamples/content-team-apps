@@ -39,7 +39,7 @@ export class GenerateTemplateController {
      * save the ID returned by the response, and then download it at a later time with this endpoint.
      * Typically, clients will poll this endpoint waiting for a valid response.
      */
-    @get('/api/template/{id}')
+    @get('/download/template/{id}')
     async returnTemplate(
         @param.path.string('id') id: string,
         @inject(RestBindings.Http.RESPONSE) response: Response): Promise<Response> {
