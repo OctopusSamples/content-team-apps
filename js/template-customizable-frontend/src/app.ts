@@ -58,6 +58,15 @@ function hideSpinner() {
 }
 
 /**
+ * Loads the application configuration.
+ */
+function loadConfig(): Promise<any> {
+    return fetch("config.json")
+        .then(data => data.json())
+        .catch(err => console.log(err));
+}
+
+/**
  * Generate and download a template.
  * @param action The action that triggered the download.
  */
@@ -65,44 +74,46 @@ function downloadTemplate(action: ExecuteAction) {
     displaySpinner();
     const request = generateTemplateBody(action.data);
 
-    /*
-        We start by requesting the template be built. The actual process of building
-        the template is done asynchronously, and what is returned here is the ID
-        of the template that we can eventually download.
-     */
-    fetch("http://localhost:4000/api/template", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/vnd.api+json'
-            },
-            body: JSON.stringify(request)
-        }
-    )
-        .then(data => data.json())
+    loadConfig().then(config => {
         /*
-            We then poll the template endpoint with the ID from the previous API call. We expect
-            to receive a few 404 errors as the template is built, but eventually the template
-            is available for download.
+            We start by requesting the template be built. The actual process of building
+            the template is done asynchronously, and what is returned here is the ID
+            of the template that we can eventually download.
          */
-        .then((data: any) => pRetry(async () => {
-                const response = await fetch('http://localhost:4000/api/template/' + data.data.id);
+        fetch(config.templateGeneratorHost + "/api/template", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/vnd.api+json'
+                },
+                body: JSON.stringify(request)
+            }
+        )
+            .then(data => data.json())
+            /*
+                We then poll the template endpoint with the ID from the previous API call. We expect
+                to receive a few 404 errors as the template is built, but eventually the template
+                is available for download.
+             */
+            .then((data: any) => pRetry(async () => {
+                const response = await fetch(config.templateGeneratorHost + '/api/template/' + data.data.id);
 
                 if (response.status === 404) {
                     throw new Error(response.statusText);
                 }
 
                 return response.blob();
-        }, {retries: 20, minTimeout: 3000}))
-        // This is where we trigger the download in the browser
-        .then(blob => {
-            console.log(blob);
-            download(blob, "template.zip", "application/zip")
-        })
-        .catch(err => console.log(err))
-        // The last step is to remove the loading screen
-        .finally(() => {
-            hideSpinner();
-        });
+            }, {retries: 20, minTimeout: 3000}))
+            // This is where we trigger the download in the browser
+            .then(blob => {
+                console.log(blob);
+                download(blob, "template.zip", "application/zip")
+            })
+            .catch(err => console.log(err))
+            // The last step is to remove the loading screen
+            .finally(() => {
+                hideSpinner();
+            })
+    });
 }
 
 /**
