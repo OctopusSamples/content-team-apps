@@ -1,0 +1,21 @@
+{
+  "name": "yeoman-input-inspector",
+  "version": "1.0.0",
+  "description": "A tool for inspecting the options and questions defined in an Yeoman generator",
+  "main": "cli.js",
+  "preferGlobal": true,
+  "type": "module",
+  "bin": {
+    "yeoman-inspector": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "diff": "^5.1.0",
+    "mem-fs-editor": "^9.4.0",
+    "yeoman-environment": "^3.9.1"
+  }
+}
