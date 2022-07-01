@@ -1,0 +1,117 @@
+version: "3.9"
+services:
+  frontend:
+    image: "octopussamples/workflowbuilderfrontend"
+    pull_policy: always
+    ports:
+      - "5000:5000"
+    volumes:
+      # This configuration file is used to customize the frontend web application.
+      - ${PWD}/config.json:/workspace/build/config.json
+      # This public key is the public half of the key pair referenced by repocreator.
+      - ${PWD}/public_key.pem:/workspace/build/public_key.pem
+  templategenerator:
+    image: "octopussamples/workflowbuildertemplategenerator"
+    pull_policy: always
+    ports:
+      - "4000:4000"
+    expose:
+      - "4000"
+    environment:
+      - ENABLE_NPM_INSTALL=true
+  auditdb:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'audit'
+      MYSQL_USER: 'audits'
+      MYSQL_PASSWORD: 'Password01!'
+      MYSQL_ROOT_PASSWORD: 'Password01!'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+  audit:
+    image: "octopussamples/auditsservice"
+    pull_policy: always
+    ports:
+      - "10000:10000"
+    depends_on:
+      - "auditdb"
+    environment:
+      - DATABASE_HOSTNAME=auditdb
+      - DATABASE_PORT=3306
+      - DATABASE_USERNAME=audits
+      - DATABASE_PASSWORD=Password01!
+      - COGNITO_DISABLE_AUTH=true
+      - MIGRATE_AT_START=true
+    command: ["./wait-for-it.sh", "auditdb:3306", "--strict", "--", "./application", "-Dquarkus.http.host=0.0.0.0"]
+  repocreator:
+    image: "octopussamples/githubrepocreator"
+    pull_policy: always
+    ports:
+      - "11000:11000"
+    expose:
+      - "10000"
+    environment:
+      - COGNITO_DISABLE_AUTH=true
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
+      - REPO_POPULATOR=http://repocreator:11000
+      - TEMPLATE_GENERATOR=http://templategenerator:4000
+      - AUDIT_SERVICE=http://audit:10000
+      # Create this key with:
+      # openssl req -nodes -new -x509 -keyout server.key -out server.cert
+      # Extract the public key (for use with frontend) with:
+      # openssl x509 -pubkey -noout -in cert.pem > public_key.pem
+      # Convert private key pem to der:
+      # openssl pkcs8 -topk8 -inform PEM -outform DER -in server.key -out server.der -nocrypt
+      # Base 64 encode the private key with this command. The CLIENT_PRIVATE_KEY env var is the output of this command:
+      # base64 -w0 server.der   
+      - CLIENT_PRIVATE_KEY=MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCmZzFm8H+w3YtoHh9s2lsHo9Ju3ZW3CRtzUluqLF90eMTDY8AWLnlT1WGa3JjNht/rtEQxAXSnKO7YqqwQZ9O+8rN1muyYKOYaOr8eSQBNHOndlUoE+I61HwONJc+hD5WH9nJNbszndG2Mr+Hgx69VRkY8xQC0lwcJCWIhwQuf3wryOxjYRoBEVo2LWfocVv+FQL+qLon3tHc19SqQYLYs1o+1TbN8dg/ZdqQar3jw9wTIhoFjdAfRvbw0KHwRZjeCgu3VXJGG2Wud0xmnJm+1HdbD9z+Yi43mkbBpEaw8cnegcHrol+Dw8Z+PLSUMCQ0U6oLlSxDA15U6yGfVeDklAgMBAAECggEAIJgT+CrhiB5NIS7NTwASVpPDM04Z9klFZDhclh+s7t59BBy00mN2BnLEdJYDJDboA35C4Sp81AVTi4MawvfjZQKbHk0jTMauE7MwHlmEQpaIRIvqfMDHCzkw8+PVIKIx0vj1+K7cWfXXQ3hsESBr+pMSTPL1qWnvydhZrWznvv+bgUoQ3FhApebF/dACvFE5C96Vl5o8BnmqKESwB7mBv8RBvj7KHamhol+e3KB0YKR+PvPUnQu0viFoAhTs5IiiErLzeVJRqxtWflYMDgVZk1Htp0PrbkOXi4upo04FW29zH/IGbLvujzuM30YAXs+LmbIjXmyQwjGTGgh4cZQqgQKBgQDSXm6u9aUKzGoXQV+cLmlLENUznOvQGto4c1LwXZ/ZRtETWU4Bjqo2uQD10AdKeYeUeZxsR0QzObi+eeoZ0B5v0biUMTZk+f0uTylBy6bDs61t/0miD1SWVwg0ran1WC+NSdZaRawVSzoHYG5ptcG1Se/IKGIlUGaz5zOfXsRmhQKBgQDKf2LV9vMfeVTIXCpWWEMSJGD9BYGr6Kohr4gyVS7gGpHFI5I+g3LhH6MQn1iIGwFMn1w9vDKqnlF8uwru3ACsZx917xi7qwNVn55eWOh6Hc6Y9w+jWwIBArhN57lOKk2Dd75GjTd4i1TMRonueRRsAnbZcBz3MKic+M/nEv+aIQKBgQCN9Ks75Qc6AjaU+shJ3AexX+p+qaV3CKe48BlHmeYD+IWdSOYapuq1gqHjPj2tQ9T5nBax+mVLK+g+oIYYZRgk3KBxX8QU35y5YzGz9HjUFqsxTtOhSDcMPC6NXaMSrC9qaCj9QYad1+WQlMHtE3ljnEDyEE4qX9buD1YGdSyTAQKBgEDuviusJ2PFTUl+PFk5rjAoGC2qUV1lmwB4P+0b4Y8dFfcoI+IF1pWXxnszDXl/Z1hBlZt6OKj7YVfkxmm3hEPEQZNYmw66lLQlHexVCB74ZeIo/wu7yBW44I6iqooFCJwKjqoi6FGwI/3o9JvSmZjU5XVt/OvK35aONmR7dBjhAoGBALXG+eKWK0tE0IagIcyajhsbOFwu+163MoLdizWSRC1F3Lv7+Jm7VRYRSl36qs28/QQn+as1CaaWPmgpgcphPzd3N6tSPCvkQnB3d1QpV6bhLg87ep7Kj9dh53Zv7d5mqF9D+vH4azSCjDPEu9xOfrFMR0cbqcfy04lPSmEn3DpN
+  repoproxy:
+    image: "octopussamples/githubrepoproxy"
+    pull_policy: always
+    ports:
+      - "12000:12000"
+    expose:
+      - "12000"      
+    environment:
+      - COGNITO_DISABLE_AUTH=true
+      # Any random 32 chars will do, but they have to be shared with githuboauth
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      # Any random 32 chars will do, but they have to be shared with githuboauth
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
+  octopusproxy:
+    image: "octopussamples/octopusproxy"
+    pull_policy: always
+    ports:
+      - "13000:13000"
+    expose:
+      - "13000"
+    environment:
+      - COGNITO_DISABLE_AUTH=true
+      - CLIENT_PRIVATE_KEY=MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCmZzFm8H+w3YtoHh9s2lsHo9Ju3ZW3CRtzUluqLF90eMTDY8AWLnlT1WGa3JjNht/rtEQxAXSnKO7YqqwQZ9O+8rN1muyYKOYaOr8eSQBNHOndlUoE+I61HwONJc+hD5WH9nJNbszndG2Mr+Hgx69VRkY8xQC0lwcJCWIhwQuf3wryOxjYRoBEVo2LWfocVv+FQL+qLon3tHc19SqQYLYs1o+1TbN8dg/ZdqQar3jw9wTIhoFjdAfRvbw0KHwRZjeCgu3VXJGG2Wud0xmnJm+1HdbD9z+Yi43mkbBpEaw8cnegcHrol+Dw8Z+PLSUMCQ0U6oLlSxDA15U6yGfVeDklAgMBAAECggEAIJgT+CrhiB5NIS7NTwASVpPDM04Z9klFZDhclh+s7t59BBy00mN2BnLEdJYDJDboA35C4Sp81AVTi4MawvfjZQKbHk0jTMauE7MwHlmEQpaIRIvqfMDHCzkw8+PVIKIx0vj1+K7cWfXXQ3hsESBr+pMSTPL1qWnvydhZrWznvv+bgUoQ3FhApebF/dACvFE5C96Vl5o8BnmqKESwB7mBv8RBvj7KHamhol+e3KB0YKR+PvPUnQu0viFoAhTs5IiiErLzeVJRqxtWflYMDgVZk1Htp0PrbkOXi4upo04FW29zH/IGbLvujzuM30YAXs+LmbIjXmyQwjGTGgh4cZQqgQKBgQDSXm6u9aUKzGoXQV+cLmlLENUznOvQGto4c1LwXZ/ZRtETWU4Bjqo2uQD10AdKeYeUeZxsR0QzObi+eeoZ0B5v0biUMTZk+f0uTylBy6bDs61t/0miD1SWVwg0ran1WC+NSdZaRawVSzoHYG5ptcG1Se/IKGIlUGaz5zOfXsRmhQKBgQDKf2LV9vMfeVTIXCpWWEMSJGD9BYGr6Kohr4gyVS7gGpHFI5I+g3LhH6MQn1iIGwFMn1w9vDKqnlF8uwru3ACsZx917xi7qwNVn55eWOh6Hc6Y9w+jWwIBArhN57lOKk2Dd75GjTd4i1TMRonueRRsAnbZcBz3MKic+M/nEv+aIQKBgQCN9Ks75Qc6AjaU+shJ3AexX+p+qaV3CKe48BlHmeYD+IWdSOYapuq1gqHjPj2tQ9T5nBax+mVLK+g+oIYYZRgk3KBxX8QU35y5YzGz9HjUFqsxTtOhSDcMPC6NXaMSrC9qaCj9QYad1+WQlMHtE3ljnEDyEE4qX9buD1YGdSyTAQKBgEDuviusJ2PFTUl+PFk5rjAoGC2qUV1lmwB4P+0b4Y8dFfcoI+IF1pWXxnszDXl/Z1hBlZt6OKj7YVfkxmm3hEPEQZNYmw66lLQlHexVCB74ZeIo/wu7yBW44I6iqooFCJwKjqoi6FGwI/3o9JvSmZjU5XVt/OvK35aONmR7dBjhAoGBALXG+eKWK0tE0IagIcyajhsbOFwu+163MoLdizWSRC1F3Lv7+Jm7VRYRSl36qs28/QQn+as1CaaWPmgpgcphPzd3N6tSPCvkQnB3d1QpV6bhLg87ep7Kj9dh53Zv7d5mqF9D+vH4azSCjDPEu9xOfrFMR0cbqcfy04lPSmEn3DpN
+  githuboauth:
+    image: "octopussamples/githuboauthbackend"
+    pull_policy: always
+    ports:
+      - "14000:14000"
+    expose:
+      - "14000"
+    environment:
+      - GITHUB_REDIRECT=http://localhost:5000
+      - GITHUB_LOGIN_REDIRECT=http://localhost:14000/oauth/github/code
+      # Create a GitHub Oauth app and set the following env vars to the client ID and secret 
+      - GITHUB_OAUTH_APP_CLIENT_ID
+      - GITHUB_OAUTH_APP_CLIENT_SECRET
+      # Any random 32 chars will do, but they have to be shared with repoproxy
+      - GITHUB_ENCRYPTION=9YhZbd1V3dWwgshtm5XXmGpN83JNTuv1
+      # Any random 32 chars will do, but they have to be shared with repoproxy
+      - GITHUB_SALT=9jjX1i7VxlPptBdw5EqJuC2AK058qYxe
+      # This value is not used, but must still be defined
+      - LAMBDA_HANDLER=thisvalueisunused
+      
+
+      
+

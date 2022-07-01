@@ -1,0 +1,26 @@
+{
+  "basename": "",
+  "branch": "main",
+  "disableOctofrontLogin": true,
+  "disableExternalCalls": false,
+  "title": "Octopus Workflow Builder",
+  "octofrontOauthEndpoint": "",
+  "githubOauthEndpoint": "http://localhost:14000/oauth/github/login",
+  "serviceAccountEndpoint": "",
+  "githubCommitEndpoint": "http://localhost:11000/api/githubcommit",
+  "octoSpaceEndpoint": "http://localhost:13000/api/octopusspace",
+  "githubRepoEndpoint": "http://localhost:12000/api/githubrepo",
+  "generateApiPath": "http://localhost:4000/api/pipeline/github/generate",
+  "healthEndpoint": "",
+  "auditEndpoint": "http://localhost:10000/api/audits",
+  "google": {
+    "tag": ""
+  },
+  "aws": {
+    "cognitoDeveloperGroup": "",
+    "cognitoLogin": "",
+    "jwk": {
+      "keys": []
+    }
+  }
+}

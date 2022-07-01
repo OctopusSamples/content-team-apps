@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  frontend:
+    image: "octopussamples/customizableworkflowbuilderfrontend"
+    pull_policy: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${PWD}/cards:/workspace/dist/cards
+  templategenerator:
+    image: "octopussamples/workflowbuildertemplategenerator"
+    pull_policy: always
+    ports:
+      - "4000:4000"
+    expose:
+      - "4000"
+    environment:
+      - ENABLE_NPM_INSTALL=true
+      
+
