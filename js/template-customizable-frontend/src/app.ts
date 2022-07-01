@@ -27,7 +27,7 @@ adaptiveCard.hostConfig = new AdaptiveCards.HostConfig({
     This is where we respond to actions from the cards. The specialized logic regards
     building templates and navigating to different cards is defined here.
  */
-adaptiveCard.onExecuteAction = function (action) {
+adaptiveCard.onExecuteAction = (action) => {
     if (action instanceof OpenUrlAction) {
         window.open(action.url, "_blank");
     }
@@ -62,8 +62,7 @@ function hideSpinner() {
  */
 function loadConfig(): Promise<any> {
     return fetch("config.json")
-        .then(data => data.json())
-        .catch(err => console.log(err));
+        .then(data => data.json());
 }
 
 /**
@@ -113,7 +112,8 @@ function downloadTemplate(action: ExecuteAction) {
             .finally(() => {
                 hideSpinner();
             })
-    });
+    })
+    .catch(err => console.log(err));
 }
 
 /**
