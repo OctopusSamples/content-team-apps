@@ -176,7 +176,7 @@ function generateTemplateBody(data: object) {
  * @param filename The JSON file to load the card from.
  */
 function loadCard(filename) {
-    fetch(filename)
+    fetch("cards/" + filename)
         .then(data => data.json())
         .then(data => {
             // Parse the card payload
