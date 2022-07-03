@@ -49,7 +49,7 @@ export default function buildAdaptiveCard(questions, generator) {
             card.body.push(input);
         } else if (fixedQuestion["type"] === "confirm") {
             const input = {
-                type: "Input.Text",
+                type: "Input.Toggle",
                 id: "answer.boolean." + fixedQuestion["name"],
                 value: fixedQuestion["default"],
             };
@@ -70,6 +70,13 @@ export default function buildAdaptiveCard(questions, generator) {
                 isMultiSelect: true,
                 value: fixedQuestion["default"],
                 choices: (fixedQuestion["choices"] || []).map(c => {
+                    if (typeof c === 'string' || c instanceof String) {
+                        return {
+                            title: c,
+                            value: c
+                        }
+                    }
+
                     return {
                         title: c["name"],
                         value: c["value"]
@@ -85,6 +92,13 @@ export default function buildAdaptiveCard(questions, generator) {
                 isMultiSelect: false,
                 value: fixedQuestion["default"],
                 choices: (fixedQuestion["choices"] || []).map(c => {
+                    if (typeof c === 'string' || c instanceof String) {
+                        return {
+                            title: c,
+                            value: c
+                        }
+                    }
+
                     return {
                         title: c["name"],
                         value: c["value"]

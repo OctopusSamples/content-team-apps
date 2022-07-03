@@ -1,5 +1,5 @@
 {
-  "name": "yeoman-input-inspector",
+  "name": "@octopus-content-team/yeoman-input-inspector",
   "version": "1.0.0",
   "description": "A tool for inspecting the options and questions defined in an Yeoman generator",
   "main": "cli.js",
@@ -9,7 +9,8 @@
     "yeoman-inspector": "./cli.js"
   },
   "scripts": {
-    "start": "node cli.js"
+    "start": "node cli.js",
+    "pub": "npm version patch --force && npm publish"
   },
   "author": "",
   "license": "ISC",
