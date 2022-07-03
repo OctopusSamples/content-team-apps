@@ -36,7 +36,7 @@ if (args.length === 0) {
 const env = yeoman.createEnv(
     {cwd: fs.mkdtempSync(path.join(os.tmpdir(), "template"))},
     {},
-    new LoggingAdapter());
+    new LoggingAdapter(args[0]));
 env.lookup();
 
 /*

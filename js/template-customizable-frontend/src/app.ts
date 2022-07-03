@@ -178,6 +178,11 @@ function generateTemplateBody(data: object) {
         .filter(k => /^answer\.number/.test(k))
         .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.number\./, "")] = parseNumber(data[k]));
 
+    // Here we get the first character
+    Object.keys(data)
+        .filter(k => /^answer\.char/.test(k))
+        .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.char\./, "")] = data[k].length() >= 1 ? data[k][0] : '');
+
     return generateTemplate;
 }
 

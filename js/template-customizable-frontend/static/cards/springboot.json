@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "generator-springboot",
+      "value": "springboot",
       "isVisible": false
     },
     {
@@ -15,10 +15,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.appName",
-      "placeholder": "The application name",
-      "value": "my-sample-app",
-      "maxLength": 100,
-      "isRequired": true
+      "value": "myservice"
     },
     {
       "type": "TextBlock",
@@ -27,20 +24,17 @@
     {
       "type": "Input.Text",
       "id": "answer.string.packageName",
-      "placeholder": "The package name",
-      "value": "com.octopus",
-      "maxLength": 100,
-      "isRequired": true
+      "value": "com.mycompany.myservice"
     },
     {
       "type": "TextBlock",
-      "text": "Database"
+      "text": "Which type of database you want to use?"
     },
     {
       "type": "Input.ChoiceSet",
       "id": "answer.string.databaseType",
-      "value": "postgresql",
       "isMultiSelect": false,
+      "value": "postgresql",
       "choices": [
         {
           "title": "Postgresql",
@@ -63,8 +57,8 @@
     {
       "type": "Input.ChoiceSet",
       "id": "answer.string.dbMigrationTool",
-      "value": "flywaydb",
       "isMultiSelect": false,
+      "value": "flywaydb",
       "choices": [
         {
           "title": "FlywayDB",
@@ -72,27 +66,11 @@
         },
         {
           "title": "Liquibase",
-          "value": "liquidbase"
-        }
-      ]
-    },
-    {
-      "type": "TextBlock",
-      "text": "Which build tool do you want to use?"
-    },
-    {
-      "type": "Input.ChoiceSet",
-      "id": "answer.string.buildTool",
-      "value": "maven",
-      "isMultiSelect": false,
-      "choices": [
-        {
-          "title": "Maven",
-          "value": "maven"
+          "value": "liquibase"
         },
         {
-          "title": "Gradle",
-          "value": "gradle"
+          "title": "None",
+          "value": "none"
         }
       ]
     },
@@ -103,7 +81,6 @@
     {
       "type": "Input.ChoiceSet",
       "id": "answer.list.features",
-      "value": "",
       "isMultiSelect": true,
       "choices": [
         {
@@ -117,6 +94,26 @@
         {
           "title": "Localstack Docker configuration",
           "value": "localstack"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Which build tool do you want to use?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.buildTool",
+      "isMultiSelect": false,
+      "value": "maven",
+      "choices": [
+        {
+          "title": "Maven",
+          "value": "maven"
+        },
+        {
+          "title": "Gradle",
+          "value": "gradle"
         }
       ]
     }
