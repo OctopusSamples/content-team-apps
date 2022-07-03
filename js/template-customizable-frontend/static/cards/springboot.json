@@ -14,7 +14,7 @@
     },
     {
       "type": "Input.Text",
-      "id": "question.string.appName",
+      "id": "answer.string.appName",
       "placeholder": "The application name",
       "value": "my-sample-app",
       "maxLength": 100,
@@ -26,7 +26,7 @@
     },
     {
       "type": "Input.Text",
-      "id": "question.string.packageName",
+      "id": "answer.string.packageName",
       "placeholder": "The package name",
       "value": "com.octopus",
       "maxLength": 100,
@@ -38,7 +38,7 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "question.string.databaseType",
+      "id": "answer.string.databaseType",
       "value": "postgresql",
       "isMultiSelect": false,
       "choices": [
@@ -62,7 +62,7 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "question.string.dbMigrationTool",
+      "id": "answer.string.dbMigrationTool",
       "value": "flywaydb",
       "isMultiSelect": false,
       "choices": [
@@ -82,7 +82,7 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "question.string.buildTool",
+      "id": "answer.string.buildTool",
       "value": "maven",
       "isMultiSelect": false,
       "choices": [
@@ -102,7 +102,7 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "question.list.features",
+      "id": "answer.list.features",
       "value": "",
       "isMultiSelect": true,
       "choices": [

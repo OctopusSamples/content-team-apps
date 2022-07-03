@@ -115,7 +115,9 @@ async function downloadTemplate(action: ExecuteAction) {
         })
         .catch(err => {
             console.log(err);
-            window.alert("There was an error generating or downloading the template. Check that the template generator service is available at " + config.templateGeneratorHost);
+            window.alert("There was an error generating or downloading the template. "
+            + "Check that the template generator service is available at " + config.templateGeneratorHost + ". "
+            + "Also check the generator logs to see any errors that may indicate required answers were not provided.");
         })
         // The last step is to remove the loading screen
         .finally(() => {
@@ -141,7 +143,8 @@ function generateTemplateBody(data: object) {
             "attributes": {
                 generator: "",
                 options: {},
-                questions: {}
+                answers: {},
+                args: []
             }
         }
     }
@@ -154,26 +157,26 @@ function generateTemplateBody(data: object) {
         .filter(k => /^option\./.test(k))
         .forEach(k => generateTemplate.data.attributes.options[k.replace(/^option\./, "")] = data[k]);
 
-    // Answers all start with "question.type.whatever"
+    // Answers all start with "answers.type.whatever"
     // Here we save the plain string answers
     Object.keys(data)
-        .filter(k => /^question\.string/.test(k))
-        .forEach(k => generateTemplate.data.attributes.questions[k.replace(/^question\.string\./, "")] = data[k]);
+        .filter(k => /^answer\.string/.test(k))
+        .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.string\./, "")] = data[k]);
 
     // Here we split strings on a comma to generate arrays
     Object.keys(data)
-        .filter(k => /^question\.list/.test(k))
-        .forEach(k => generateTemplate.data.attributes.questions[k.replace(/^question\.list\./, "")] = data[k].split(","));
+        .filter(k => /^answer\.list/.test(k))
+        .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.list\./, "")] = data[k].split(","));
 
     // Here we parse a boolean value
     Object.keys(data)
-        .filter(k => /^question\.boolean/.test(k))
-        .forEach(k => generateTemplate.data.attributes.questions[k.replace(/^question\.boolean\./, "")] = parseBool(data[k]));
+        .filter(k => /^answer\.boolean/.test(k))
+        .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.boolean\./, "")] = parseBool(data[k]));
 
     // Here we parse a number value
     Object.keys(data)
-        .filter(k => /^question\.number/.test(k))
-        .forEach(k => generateTemplate.data.attributes.questions[k.replace(/^question\.number\./, "")] = parseNumber(data[k]));
+        .filter(k => /^answer\.number/.test(k))
+        .forEach(k => generateTemplate.data.attributes.answers[k.replace(/^answer\.number\./, "")] = parseNumber(data[k]));
 
     return generateTemplate;
 }
