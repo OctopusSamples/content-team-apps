@@ -14,7 +14,7 @@ export default class LoggingAdapter extends TerminalAdapter {
      * Dump the questions to the console and exit.
      */
     prompt(questions, answers, cb) {
-        console.log("The JSON below represents the list of questions asked by the generator.")
+        console.log("QUESTIONS")
         console.log(JSON.stringify(questions, null, 2));
         process.exit(1);
     }
