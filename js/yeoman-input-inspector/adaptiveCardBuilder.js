@@ -10,7 +10,7 @@ export default function buildAdaptiveCard(questions, generator) {
             {
                 "type": "Input.Text",
                 "id": "generator",
-                "value": generator,
+                "value": "generator-" + generator,
                 "isVisible": false
             }
         ],

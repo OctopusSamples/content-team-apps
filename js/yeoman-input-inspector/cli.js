@@ -43,7 +43,7 @@ env.lookup();
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
-const generator = env.create(args[0], [], {initialGenerator: true});
+const generator = env.create(args[0], [], {skipInstall: true, initialGenerator: true});
 console.log("OPTIONS")
 console.log(JSON.stringify(generator._options, null, 2));
 console.log("ARGUMENTS")
