@@ -74,7 +74,8 @@ env.lookup();
     We don't want to generate the template or write any files. Unfortunately there is
     no such thing as a dry run mode in Yeoman (see https://github.com/yeoman/environment/issues/110),
     so the next best thing we can do that should work generically across templates is
-    to effectively disable any runloop queues that don't relate to the prompting
+    to effectively disable any runloop queues (which relate to method priorities described
+    at https://yeoman.io/authoring/running-context.html#the-run-loop) that don't relate to the prompting
     stage.
  */
 Object.keys(env.runLoop.__queues__).forEach(k => {
