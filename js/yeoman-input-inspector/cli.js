@@ -43,11 +43,11 @@ env.lookup();
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
-const generator = env.create(args[0], [], {skipInstall: true, initialGenerator: true});
+const generator = env.create(args[0], args.splice(1), {skipInstall: true, initialGenerator: true});
 console.log("OPTIONS")
 console.log(JSON.stringify(generator._options, null, 2));
 console.log("ARGUMENTS")
-console.log(JSON.stringify(generator._prompts, null, 2));
+console.log(JSON.stringify(generator._arguments, null, 2));
 
 /*
     Getting access to the questions is a little trickier. We use the LoggingAdapter
