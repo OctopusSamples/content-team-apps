@@ -10,7 +10,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*type*\u001b[39m of application would you like to create?"
+      "text": "Which *type* of application would you like to create?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -39,7 +39,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.baseName",
-      "value": "templateKzDpDb"
+      "value": "template4xVKB8"
     },
     {
       "type": "TextBlock",
@@ -94,7 +94,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*type*\u001b[39m of authentication would you like to use?"
+      "text": "Which *type* of authentication would you like to use?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -104,7 +104,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*type*\u001b[39m of database would you like to use?"
+      "text": "Which *type* of database would you like to use?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -114,7 +114,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*production*\u001b[39m database would you like to use?"
+      "text": "Which *production* database would you like to use?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -124,7 +124,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*development*\u001b[39m database would you like to use?"
+      "text": "Which *development* database would you like to use?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -267,7 +267,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Which \u001b[33m*Framework*\u001b[39m would you like to use for the client?"
+      "text": "Which *Framework* would you like to use for the client?"
     },
     {
       "type": "Input.ChoiceSet",
@@ -861,15 +861,6 @@
     {
       "type": "Input.Toggle",
       "id": "answer.boolean.installModules",
-      "value": false
-    },
-    {
-      "type": "TextBlock",
-      "text": "Would you like to generate code coverage for Cypress tests? [Experimental]"
-    },
-    {
-      "type": "Input.Toggle",
-      "id": "answer.boolean.cypressCoverage",
       "value": false
     }
   ],

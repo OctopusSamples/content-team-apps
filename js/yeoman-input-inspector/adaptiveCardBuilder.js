@@ -152,12 +152,12 @@ export default function buildAdaptiveCard(questions, generator) {
     return card;
 }
 
-function getChoices(choices) {
+function getChoices(choices, answers) {
     const fixedChoices = choices || [];
 
     if (typeof choices === 'function' ) {
         try {
-            return choices();
+            return choices(answers);
         } catch {
             // There is not much we can do here
             return [];
