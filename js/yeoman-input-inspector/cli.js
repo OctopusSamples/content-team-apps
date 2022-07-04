@@ -57,8 +57,15 @@ function dumpInputs(options, args, questions) {
     console.log(JSON.stringify(buildAdaptiveCard(allQuestions, generatorName), null, 2));
 }
 
+/*
+    This tool shouldn't write any files, but if it does for some reason,
+    they should be in the temp dir.
+ */
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
+process.chdir(tempDir);
+
 const env = yeoman.createEnv(
-    {cwd: fs.mkdtempSync(path.join(os.tmpdir(), "template"))},
+    {cwd: tempDir},
     {},
     new LoggingAdapter(questionsCallBack));
 env.lookup();
