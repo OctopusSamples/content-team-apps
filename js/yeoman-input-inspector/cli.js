@@ -60,7 +60,19 @@ const env = yeoman.createEnv(
     {},
     new LoggingAdapter(questionsCallBack));
 env.lookup();
-env.runLoop["writing"].push = function() {}
+
+/*
+    We don't want to generate the template or write any files. Unfortunately there is
+    no such thing as a dry run mode in Yeoman (see https://github.com/yeoman/environment/issues/110),
+    so the next best thing we can do that should work generically across templates is
+    to effectively disable any runloop queues that don't relate to the prompting
+    stage.
+ */
+Object.keys(env.runLoop.__queues__).forEach(k => {
+    if (!(k === "environment:run" || k === "initializing" || k === "prompting")) {
+        env.runLoop.__queues__[k].push = function() {}
+    }
+})
 
 /*
     We can get access to the options and arguments by creating an instance of the
