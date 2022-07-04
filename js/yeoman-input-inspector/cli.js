@@ -116,6 +116,7 @@ env.run(generatorName, {})
     .finally(() => {
         dumpInputs(generator._options, generator._arguments, allQuestions);
         try {
+            process.chdir(os.tmpdir());
             fs.rmSync(tempDir, {recursive: true});
         } catch (err) {
             console.error('The temporary directory was not removed because' + err)
