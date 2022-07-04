@@ -19,8 +19,8 @@ process.on('uncaughtException', (err, origin) => {
 const args = process.argv.splice(2);
 
 if (args.length === 0) {
-    console.log("Pass the generator name as the first argument, for example:")
-    console.log("yeoman-inspector springboot")
+    console.log("Pass the generator name as the first argument, for example:");
+    console.log("yeoman-inspector springboot");
     process.exit(1);
 }
 
@@ -45,7 +45,7 @@ const generatorName = args[0];
     process.
  */
 
-const allQuestions = []
+const allQuestions = [];
 
 function questionsCallBack(questions) {
     const fixedQuestions = Array.isArray(questions) ? questions : [questions];
@@ -91,7 +91,8 @@ env.lookup();
     use cases, the ALLOW_FULL_INSTALL environment variable can be set to true to allow the
     generator to perform a full installation.
  */
-if ((process.env.ALLOW_FULL_INSTALL || "").trim().toLowerCase() !== "true") {
+const allowFullInstall = (process.env.ALLOW_FULL_INSTALL || "").trim().toLowerCase() === "true";
+if (!allowFullInstall) {
     Object.keys(env.runLoop.__queues__).forEach(k => {
         if (!(k === "environment:run"
             || k === "initializing"
@@ -113,6 +114,7 @@ const generator = env.create(generatorName, args.splice(1), {'skip-install': tru
     to get access to the questions.
  */
 env.run(generatorName, {})
+    .catch(err => console.log(err))
     .finally(() => {
         dumpInputs(generator._options, generator._arguments, allQuestions);
         try {
@@ -121,5 +123,12 @@ env.run(generatorName, {})
         } catch (err) {
             console.error('The temporary directory was not removed because' + err)
         }
+        /*
+            I've seen cases (like with generator-radian) where the terminal prompt
+            causes an error. The templates are dumped successfully, but the app doesn't
+            exit. We're never getting any more information at this point though, so
+            force the exit of the process to stop it from hanging.
+         */
+        process.exit(0);
     });
 
