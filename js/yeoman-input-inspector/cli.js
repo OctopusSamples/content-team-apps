@@ -46,10 +46,12 @@ const generatorName = args[0];
  */
 
 const allQuestions = [];
+let allAnswers;
 
-function questionsCallBack(questions) {
+function questionsCallBack(questions, answers) {
     const fixedQuestions = Array.isArray(questions) ? questions : [questions];
     fixedQuestions.forEach(q => allQuestions.push(q));
+    allAnswers = answers;
 }
 
 function dumpInputs(options, args, questions) {
@@ -63,7 +65,7 @@ function dumpInputs(options, args, questions) {
     console.log("QUESTIONS");
     console.log(JSON.stringify(questions, null, 2));
     console.log("ADAPTIVE CARD EXAMPLE");
-    console.log(JSON.stringify(buildAdaptiveCard(allQuestions, generatorName), null, 2));
+    console.log(JSON.stringify(buildAdaptiveCard(allQuestions, allAnswers, generatorName), null, 2));
 }
 
 /*

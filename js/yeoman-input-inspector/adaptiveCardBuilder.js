@@ -4,7 +4,7 @@ import stripAnsi from 'strip-ansi';
  * Converts the questions exposed by a template into an adaptive card template.
  * @param questions The Yeoman generator questions.
  */
-export default function buildAdaptiveCard(questions, generator) {
+export default function buildAdaptiveCard(questions, answers, generator) {
     const card = {
         "type": "AdaptiveCard",
         "version": "1.0",
@@ -70,7 +70,8 @@ export default function buildAdaptiveCard(questions, generator) {
                 type: "Input.ChoiceSet",
                 id: "answer.list." + fixedQuestion["name"],
                 isMultiSelect: true,
-                value: getChoices(fixedQuestion["choices"])
+                value: getChoices(fixedQuestion["choices"], answers)
+                    .filter(c => !!c)
                     .filter(c => c["checked"])
                     .map(c => {
                         if (typeof c === 'string' || c instanceof String) {
@@ -78,34 +79,10 @@ export default function buildAdaptiveCard(questions, generator) {
                         }
                         return c["value"];
                     })
+                    .filter(c => !!c)
                     .join(","),
-                choices: (getChoices(fixedQuestion["choices"])).map(c => {
-                    if (typeof c === 'string' || c instanceof String) {
-                        return {
-                            title: c,
-                            value: c
-                        }
-                    }
-
-                    return {
-                        title: c["name"],
-                        value: c["value"]
-                    }
-                })
-            };
-
-            card.body.push(choiceSet);
-        } else if (fixedQuestion["type"] === "list" || fixedQuestion["type"] === "rawlist") {
-            const choiceSet = {
-                type: "Input.ChoiceSet",
-                id: "answer.string." + fixedQuestion["name"],
-                isMultiSelect: false,
-                /*
-                 The default value from yeoman is the choice name, whereas adaptive cards
-                 requires the default value. So we have to so a transformation between
-                 the two.
-                 */
-                value: getChoices(fixedQuestion["choices"])
+                choices: (getChoices(fixedQuestion["choices"], answers))
+                    .filter(c => !!c)
                     .map(c => {
                         if (typeof c === 'string' || c instanceof String) {
                             return {
@@ -119,22 +96,55 @@ export default function buildAdaptiveCard(questions, generator) {
                             value: c["value"]
                         }
                     })
+                    .filter(c => c.name && c.value)
+            };
+
+            card.body.push(choiceSet);
+        } else if (fixedQuestion["type"] === "list" || fixedQuestion["type"] === "rawlist") {
+            const choiceSet = {
+                type: "Input.ChoiceSet",
+                id: "answer.string." + fixedQuestion["name"],
+                isMultiSelect: false,
+                /*
+                 The default value from yeoman is the choice name, whereas adaptive cards
+                 requires the default value. So we have to so a transformation between
+                 the two.
+                 */
+                value: getChoices(fixedQuestion["choices"], answers)
+                    .filter(c => !!c)
+                    .map(c => {
+                        if (typeof c === 'string' || c instanceof String) {
+                            return {
+                                title: c,
+                                value: c
+                            }
+                        }
+
+                        return {
+                            title: c["name"],
+                            value: c["value"]
+                        }
+                    })
+                    .filter(c => c.name && c.value)
                     .filter(c => c.title === fixedQuestion["default"] || c.value === fixedQuestion["default"])
                     .map(c => c.value)
                     .pop(),
-                choices: (getChoices(fixedQuestion["choices"])).map(c => {
-                    if (typeof c === 'string' || c instanceof String) {
-                        return {
-                            title: c,
-                            value: c
+                choices: (getChoices(fixedQuestion["choices"], answers))
+                    .filter(c => !!c)
+                    .map(c => {
+                        if (typeof c === 'string' || c instanceof String) {
+                            return {
+                                title: c,
+                                value: c
+                            }
                         }
-                    }
 
-                    return {
-                        title: c["name"],
-                        value: c["value"]
-                    }
-                })
+                        return {
+                            title: c["name"],
+                            value: c["value"]
+                        }
+                    })
+                    .filter(c => c.name && c.value)
             };
 
             card.body.push(choiceSet);

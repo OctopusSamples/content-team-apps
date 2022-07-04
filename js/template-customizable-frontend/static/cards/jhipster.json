@@ -39,7 +39,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.baseName",
-      "value": "template4xVKB8"
+      "value": "templateXtsKkc"
     },
     {
       "type": "TextBlock",
@@ -100,7 +100,21 @@
       "type": "Input.ChoiceSet",
       "id": "answer.string.authenticationType",
       "isMultiSelect": false,
-      "choices": []
+      "value": "jwt",
+      "choices": [
+        {
+          "title": "JWT authentication (stateless, with a token)",
+          "value": "jwt"
+        },
+        {
+          "title": "OAuth 2.0 / OIDC Authentication (stateful, works with Keycloak and Okta)",
+          "value": "oauth2"
+        },
+        {
+          "title": "HTTP Session Authentication (stateful, default Spring Security mechanism)",
+          "value": "session"
+        }
+      ]
     },
     {
       "type": "TextBlock",
@@ -110,7 +124,33 @@
       "type": "Input.ChoiceSet",
       "id": "answer.string.databaseType",
       "isMultiSelect": false,
-      "choices": []
+      "value": "sql",
+      "choices": [
+        {
+          "title": "SQL (H2, PostgreSQL, MySQL, MariaDB, Oracle, MSSQL)",
+          "value": "sql"
+        },
+        {
+          "title": "MongoDB",
+          "value": "mongodb"
+        },
+        {
+          "title": "Cassandra",
+          "value": "cassandra"
+        },
+        {
+          "title": "[BETA] Couchbase",
+          "value": "couchbase"
+        },
+        {
+          "title": "[BETA] Neo4j",
+          "value": "neo4j"
+        },
+        {
+          "title": "No database",
+          "value": "no"
+        }
+      ]
     },
     {
       "type": "TextBlock",
@@ -120,7 +160,29 @@
       "type": "Input.ChoiceSet",
       "id": "answer.string.prodDatabaseType",
       "isMultiSelect": false,
-      "choices": []
+      "value": "postgresql",
+      "choices": [
+        {
+          "title": "PostgreSQL",
+          "value": "postgresql"
+        },
+        {
+          "title": "MySQL",
+          "value": "mysql"
+        },
+        {
+          "title": "MariaDB",
+          "value": "mariadb"
+        },
+        {
+          "title": "Oracle",
+          "value": "oracle"
+        },
+        {
+          "title": "Microsoft SQL Server",
+          "value": "mssql"
+        }
+      ]
     },
     {
       "type": "TextBlock",
@@ -130,7 +192,17 @@
       "type": "Input.ChoiceSet",
       "id": "answer.string.devDatabaseType",
       "isMultiSelect": false,
-      "choices": []
+      "value": "h2Disk",
+      "choices": [
+        {
+          "title": "H2 with disk-based persistence",
+          "value": "h2Disk"
+        },
+        {
+          "title": "H2 with in-memory persistence",
+          "value": "h2Memory"
+        }
+      ]
     },
     {
       "type": "TextBlock",
