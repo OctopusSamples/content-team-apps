@@ -10,6 +10,14 @@
   "actions": [
     {
       "type": "Action.Execute",
+      "title": "JHipster",
+      "verb": "openCard",
+      "data": {
+        "filename": "jhipster.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
       "title": "Spring Boot",
       "verb": "openCard",
       "data": {

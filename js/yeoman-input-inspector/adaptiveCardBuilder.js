@@ -1,3 +1,5 @@
+import stripAnsi from 'strip-ansi';
+
 /**
  * Converts the questions exposed by a template into an adaptive card template.
  * @param questions The Yeoman generator questions.
@@ -36,7 +38,7 @@ export default function buildAdaptiveCard(questions, generator) {
     for (const fixedQuestion of fixedQuestions) {
         card.body.push({
             "type": "TextBlock",
-            "text": fixedQuestion["message"]
+            "text": stripAnsi(fixedQuestion["message"])
         });
 
         if (fixedQuestion["type"] === "number") {
