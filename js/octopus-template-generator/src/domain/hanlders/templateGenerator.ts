@@ -15,6 +15,7 @@ const md5 = require("md5");
 /*
     Missing files and other errors will kill the node process by default. This is
     undesirable for a long-running web server, so we catch the exception here.
+    https://nodejs.org/api/process.html#event-uncaughtexception
  */
 process.on('uncaughtException', (err, origin) => {
     console.log(err);
