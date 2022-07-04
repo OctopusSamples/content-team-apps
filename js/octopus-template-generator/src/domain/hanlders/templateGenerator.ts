@@ -1,6 +1,7 @@
 import NonInteractiveAdapter from "../yeoman/adapter";
 import enableNpmInstall from "../features/enbaleNpmInstall";
 import splitGeneratorName from "../utils/generatorSplitter";
+import process from 'node:process';
 
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
@@ -9,7 +10,15 @@ const path = require('path');
 const AdmZip = require("adm-zip");
 const lockFile = require('lockfile');
 const {exec} = require('child_process');
-const md5 = require("md5")
+const md5 = require("md5");
+
+/*
+    Missing files and other errors will kill the node process by default. This is
+    undesirable for a long-running web server, so we catch the exception here.
+ */
+process.on('uncaughtException', (err, origin) => {
+    console.log(err);
+});
 
 export class TemplateGenerator {
     constructor() {
@@ -149,6 +158,16 @@ export class TemplateGenerator {
         args: string[],
         zipPath: string) {
 
+        /*
+            Catch issues like missing files and save the uncaught exception so we can
+            handle it gracefully rather than killing the node process.
+         */
+        let uncaughtException = null;
+        const handleException = (err:Error) => {
+            uncaughtException = err;
+        };
+        process.on('uncaughtException', handleException);
+
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         // sanity check the supplied arguments
@@ -175,12 +194,20 @@ export class TemplateGenerator {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             await env.run([generator, ...fixedArgs], {...fixedOptions, 'skip-install': true});
 
+            // If there were any exceptions, rethrow them so the caller receives the appropriate
+            // error code.
+            if (uncaughtException) {
+                throw uncaughtException;
+            }
+
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
             zip.writeZip(zipPath);
 
             return zipPath;
-        } finally {
+        }
+        finally {
+            process.removeListener('uncaughtException', handleException);
             process.chdir(cwd);
             try {
                 fs.rmSync(tempDir, {recursive: true});
