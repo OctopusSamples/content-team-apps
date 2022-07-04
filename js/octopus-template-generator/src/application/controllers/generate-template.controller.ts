@@ -89,7 +89,8 @@ export class GenerateTemplateController {
             parsedBody.data.generator,
             parsedBody.data.options,
             parsedBody.data.answers,
-            parsedBody.data.args);
+            parsedBody.data.args
+        );
         response.setHeader("Content-Type", "application/zip");
         response.download(templateZip, "template.zip", (err: Error) => {
             if (err) {

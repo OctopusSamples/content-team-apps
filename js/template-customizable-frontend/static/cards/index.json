@@ -18,10 +18,10 @@
     },
     {
       "type": "Action.Execute",
-      "title": "Angular FullStack",
+      "title": "TSX",
       "verb": "openCard",
       "data": {
-        "filename": "angular-fullstack.json"
+        "filename": "tsx.json"
       }
     }
   ]

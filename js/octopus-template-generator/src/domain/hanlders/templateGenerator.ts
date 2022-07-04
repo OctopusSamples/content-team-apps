@@ -164,12 +164,14 @@ export class TemplateGenerator {
             ? answers
             : {};
 
+        const cwd = process.cwd();
+
         try {
-            // Not all generators respect the cwd option passed into createEnv
-            process.chdir(tempDir);
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
             env.register(await this.resolveGenerator(generator), generator);
 
+            // Not all generators respect the cwd option passed into createEnv
+            process.chdir(tempDir);
             // eslint-disable-next-line @typescript-eslint/naming-convention
             await env.run([generator, ...fixedArgs], {...fixedOptions, 'skip-install': true});
 
@@ -179,6 +181,7 @@ export class TemplateGenerator {
 
             return zipPath;
         } finally {
+            process.chdir(cwd);
             try {
                 fs.rmSync(tempDir, {recursive: true});
             } catch (err) {
