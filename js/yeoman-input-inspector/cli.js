@@ -5,6 +5,8 @@ import * as fs from "fs";
 import path from "path";
 import os from "os";
 import LoggingAdapter from "./adapter.js";
+import buildAdaptiveCard from "./adaptiveCardBuilder.js";
+import Environment from "yeoman-environment";
 
 const args = process.argv.splice(2);
 
@@ -33,25 +35,59 @@ if (args.length === 0) {
     process.
  */
 
+const allQuestions = []
+
+function questionsCallBack(questions) {
+    const fixedQuestions = Array.isArray(questions) ? questions : [questions];
+    fixedQuestions.forEach(q => allQuestions.push(q));
+}
+
+function dumpInputs(options, args, questions) {
+    /*
+        Dump the options, arguments, and questions.
+     */
+    console.log("OPTIONS");
+    console.log(JSON.stringify(options, null, 2));
+    console.log("ARGUMENTS");
+    console.log(JSON.stringify(args, null, 2));
+    console.log("QUESTIONS");
+    console.log(JSON.stringify(questions, null, 2));
+    console.log("ADAPTIVE CARD EXAMPLE");
+    console.log(JSON.stringify(buildAdaptiveCard(allQuestions), null, 2));
+}
+
 const env = yeoman.createEnv(
     {cwd: fs.mkdtempSync(path.join(os.tmpdir(), "template"))},
     {},
-    new LoggingAdapter(args[0]));
+    new LoggingAdapter(questionsCallBack));
 env.lookup();
+
+Environment.queues = function() {
+    return [
+        'environment:run',
+        'initializing',
+        'prompting',
+        'configuring',
+        'default',
+        'transform',
+        'conflicts',
+        'environment:conflicts',
+        'end'
+    ];
+}
 
 /*
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
 const generator = env.create(args[0], args.splice(1), {skipInstall: true, initialGenerator: true});
-console.log("OPTIONS")
-console.log(JSON.stringify(generator._options, null, 2));
-console.log("ARGUMENTS")
-console.log(JSON.stringify(generator._arguments, null, 2));
 
 /*
     Getting access to the questions is a little trickier. We use the LoggingAdapter
-    to get access to the questions, and then exit the application before generating
-    any files.
+    to get access to the questions.
  */
-env.run(args[0], {skipInstall: true}).catch(() => {});
+env.run(args[0], {})
+    .finally(() => {
+        dumpInputs(generator._options, generator._arguments, allQuestions);
+    });
+

@@ -1,5 +1,4 @@
 import TerminalAdapter from "yeoman-environment/adapter";
-import buildAdaptiveCard from "./adaptiveCardBuilder.js";
 
 /**
  * An adapter that reads the questions and then exits. This allows developers to
@@ -7,21 +6,20 @@ import buildAdaptiveCard from "./adaptiveCardBuilder.js";
  * non-interactively, without having to actually generate any files.
  */
 export default class LoggingAdapter extends TerminalAdapter {
-    generator;
+    questionsCb;
 
-    constructor(generator) {
+    constructor(questionsCb) {
         super();
-        this.generator = generator;
+        this.questionsCb = questionsCb;
     }
 
     /**
      * Dump the questions to the console and exit.
      */
     prompt(questions, answers, cb) {
-        console.log("QUESTIONS")
-        console.log(JSON.stringify(questions, null, 2));
-        console.log("ADAPTIVE CARD EXAMPLE")
-        console.log(JSON.stringify(buildAdaptiveCard(questions, this.generator), null, 2));
-        process.exit(1);
+        // Capture the questions so we can inspect them later
+        this.questionsCb(questions);
+        // Defer back to the terminal adapter
+        return super.prompt(...arguments);
     }
 }
