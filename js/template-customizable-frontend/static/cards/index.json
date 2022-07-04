@@ -15,6 +15,14 @@
       "data": {
         "filename": "springboot.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Angular FullStack",
+      "verb": "openCard",
+      "data": {
+        "filename": "angular-fullstack.json"
+      }
     }
   ]
 }

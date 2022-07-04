@@ -1,0 +1,235 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "generator-angular-fullstack",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to write scripts with?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.transpiler",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Babel",
+          "value": "Babel"
+        },
+        {
+          "title": "TypeScript",
+          "value": "TypeScript"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you like to use Flow types with Babel?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.flow",
+      "value": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to write markup with?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.markup",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "HTML",
+          "value": "HTML"
+        },
+        {
+          "title": "Pug",
+          "value": "Pug"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to write stylesheets with?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.stylesheet",
+      "isMultiSelect": false,
+      "value": 1,
+      "choices": [
+        {
+          "title": "CSS",
+          "value": "CSS"
+        },
+        {
+          "title": "Sass",
+          "value": "Sass"
+        },
+        {
+          "title": "Stylus",
+          "value": "Stylus"
+        },
+        {
+          "title": "Less",
+          "value": "Less"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you like to include Bootstrap?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.bootstrap"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you like to include UI Bootstrap?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.uibootstrap"
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to use for data modeling?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.list.odms",
+      "isMultiSelect": true,
+      "choices": [
+        {
+          "title": "Mongoose (MongoDB)",
+          "value": "mongoose"
+        },
+        {
+          "title": "Sequelize (MySQL, SQLite, MariaDB, PostgreSQL)",
+          "value": "sequelize"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to use for the default models?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.models",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Mongoose",
+          "value": "Mongoose"
+        },
+        {
+          "title": "Sequelize",
+          "value": "Sequelize"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you scaffold out an authentication boilerplate?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.auth"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you like to include additional oAuth strategies?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.list.oauth",
+      "isMultiSelect": true,
+      "choices": [
+        {
+          "title": "Google",
+          "value": "googleAuth"
+        },
+        {
+          "title": "Facebook",
+          "value": "facebookAuth"
+        },
+        {
+          "title": "Twitter",
+          "value": "twitterAuth"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Would you like to use WebSockets?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.ws",
+      "value": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to write tests with?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.testing",
+      "isMultiSelect": false,
+      "value": 1,
+      "choices": [
+        {
+          "title": "Jasmine",
+          "value": "Jasmine"
+        },
+        {
+          "title": "Mocha + Chai + Sinon",
+          "value": "Mocha + Chai + Sinon"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "What would you like to write Chai assertions with?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.chai",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Expect",
+          "value": "Expect"
+        },
+        {
+          "title": "Should",
+          "value": "Should"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

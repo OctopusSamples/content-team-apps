@@ -15,6 +15,8 @@ if (args.length === 0) {
     process.exit(1);
 }
 
+const generatorName = args[0];
+
 /*
     Yeoman does not make it easy to inspect a generator to find the inputs it requires.
     Options and arguments are displayed by the "--help" command, but the questions,
@@ -52,7 +54,7 @@ function dumpInputs(options, args, questions) {
     console.log("QUESTIONS");
     console.log(JSON.stringify(questions, null, 2));
     console.log("ADAPTIVE CARD EXAMPLE");
-    console.log(JSON.stringify(buildAdaptiveCard(allQuestions), null, 2));
+    console.log(JSON.stringify(buildAdaptiveCard(allQuestions, generatorName), null, 2));
 }
 
 const env = yeoman.createEnv(
@@ -78,13 +80,13 @@ Object.keys(env.runLoop.__queues__).forEach(k => {
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
-const generator = env.create(args[0], args.splice(1), {skipInstall: true, initialGenerator: true});
+const generator = env.create(generatorName, args.splice(1), {});
 
 /*
     Getting access to the questions is a little trickier. We use the LoggingAdapter
     to get access to the questions.
  */
-env.run(args[0], {})
+env.run(generatorName, {})
     .finally(() => {
         dumpInputs(generator._options, generator._arguments, allQuestions);
     });

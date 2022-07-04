@@ -165,6 +165,8 @@ export class TemplateGenerator {
             : {};
 
         try {
+            // Not all generators respect the cwd option passed into createEnv
+            process.chdir(tempDir);
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
             env.register(await this.resolveGenerator(generator), generator);
 
