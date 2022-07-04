@@ -6,7 +6,6 @@ import path from "path";
 import os from "os";
 import LoggingAdapter from "./adapter.js";
 import buildAdaptiveCard from "./adaptiveCardBuilder.js";
-import Environment from "yeoman-environment";
 
 const args = process.argv.splice(2);
 
@@ -61,20 +60,7 @@ const env = yeoman.createEnv(
     {},
     new LoggingAdapter(questionsCallBack));
 env.lookup();
-
-Environment.queues = function() {
-    return [
-        'environment:run',
-        'initializing',
-        'prompting',
-        'configuring',
-        'default',
-        'transform',
-        'conflicts',
-        'environment:conflicts',
-        'end'
-    ];
-}
+env.runLoop["writing"].push = function() {}
 
 /*
     We can get access to the options and arguments by creating an instance of the
