@@ -244,7 +244,7 @@ export class TemplateGenerator {
              try downloading the module and return it.
              */
             if (e.code === "MODULE_NOT_FOUND" && enableNpmInstall() && attemptInstall) {
-                console.log("Attempting to run npm install " + generatorId.name + " in " + process.cwd());
+                console.log("Attempting to run npm install --no-save " + generatorId.name + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     exec("npm install --no-save " + generatorId.name, (error: never) => {
                         if (error) {
