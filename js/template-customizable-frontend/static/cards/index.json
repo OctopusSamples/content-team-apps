@@ -39,6 +39,14 @@
       "data": {
         "filename": "code.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Office",
+      "verb": "openCard",
+      "data": {
+        "filename": "office.json"
+      }
     }
   ]
 }

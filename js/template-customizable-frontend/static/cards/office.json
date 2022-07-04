@@ -1,0 +1,151 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "generator-office",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy notice at \u001b[34mhttps://aka.ms/OfficeAddInCLIPrivacy\u001b[39m. ​To disable data collection, choose Exit and run \u001b[32m“npx office-addin-usage-data off”\u001b[39m.\n\n"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.usageDataPromptAnswer",
+      "isMultiSelect": false,
+      "value": "Continue",
+      "choices": [
+        {
+          "title": "Continue",
+          "value": "Continue"
+        },
+        {
+          "title": "Exit",
+          "value": "Exit"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Choose a project type:"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.projectType",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Office Add-in Task Pane project",
+          "value": "taskpane"
+        },
+        {
+          "title": "Office Add-in Task Pane project using Angular framework",
+          "value": "angular"
+        },
+        {
+          "title": "Office Add-in Task Pane project using React framework",
+          "value": "react"
+        },
+        {
+          "title": "Office Add-in Task Pane project supporting single sign-on",
+          "value": "single-sign-on"
+        },
+        {
+          "title": "Office Add-in project containing the manifest only",
+          "value": "manifest"
+        },
+        {
+          "title": "Excel Custom Functions Add-in project",
+          "value": "excel-functions"
+        },
+        {
+          "title": "Outlook Add-in with Teams Manifest (Developer preview)",
+          "value": "teams-manifest"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Choose a script type:"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.scriptType",
+      "isMultiSelect": false,
+      "value": "JavaScript",
+      "choices": [
+        {
+          "title": "JavaScript",
+          "value": "JavaScript"
+        },
+        {
+          "title": "TypeScript",
+          "value": "TypeScript"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "What do you want to name your add-in?"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.name",
+      "value": "My Office Add-in"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Which Office client application would you like to support?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.host",
+      "isMultiSelect": false,
+      "value": "Excel",
+      "choices": [
+        {
+          "title": "Excel",
+          "value": "Excel"
+        },
+        {
+          "title": "Onenote",
+          "value": "Onenote"
+        },
+        {
+          "title": "Outlook",
+          "value": "Outlook"
+        },
+        {
+          "title": "Powerpoint",
+          "value": "Powerpoint"
+        },
+        {
+          "title": "Project",
+          "value": "Project"
+        },
+        {
+          "title": "Word",
+          "value": "Word"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

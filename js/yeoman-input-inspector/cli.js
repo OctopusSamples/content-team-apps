@@ -110,13 +110,20 @@ if (!allowFullInstall) {
 const generator = env.create(generatorName, args.splice(1), {'skip-install': true});
 
 /*
+    Some generators, like generator-office, call process.exit() for you. So we
+    dump the final debug output on exit.
+ */
+process.on('exit', function() {
+    dumpInputs(generator._options, generator._arguments, allQuestions);
+})
+
+/*
     Getting access to the questions is a little trickier. We use the LoggingAdapter
     to get access to the questions.
  */
 env.run(generatorName, {})
     .catch(err => console.log(err))
     .finally(() => {
-        dumpInputs(generator._options, generator._arguments, allQuestions);
         try {
             process.chdir(os.tmpdir());
             fs.rmSync(tempDir, {recursive: true});
