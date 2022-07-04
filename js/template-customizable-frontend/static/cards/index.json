@@ -42,10 +42,10 @@
     },
     {
       "type": "Action.Execute",
-      "title": "Office",
+      "title": "Feathers Plugin",
       "verb": "openCard",
       "data": {
-        "filename": "office.json"
+        "filename": "feathers-plugin.json"
       }
     }
   ]

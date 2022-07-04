@@ -1,0 +1,62 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "generator-feathers-plugin",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "Project name"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.name",
+      "value": "templateGvMUr3"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub repository URL (e.g. feathersjs/feathers-myplugin)"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.repository",
+      "value": "feathersjs/templateGvMUr3"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Description"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.description"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Does this plugin require a client side build?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.client",
+      "value": false
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}
