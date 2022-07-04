@@ -31,6 +31,14 @@
       "data": {
         "filename": "feathers.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Code",
+      "verb": "openCard",
+      "data": {
+        "filename": "code.json"
+      }
     }
   ]
 }
