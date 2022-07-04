@@ -33,6 +33,12 @@ class DummyPrompt {
             "\" was not provided. A blank response is provided instead, but note this is very unlikely to be a suitable response, and you should include an answer to question \""
             + this.question.name + "\" in the request.");
 
+        // checkboxes require an array of responses
+        if (this.question.type === "checkbox") {
+            return Promise.resolve([]);
+        }
+
+        // everything else is a string
         return Promise.resolve("");
     }
 }
