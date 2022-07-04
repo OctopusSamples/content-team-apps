@@ -2,6 +2,7 @@ import NonInteractiveAdapter from "../yeoman/adapter";
 import enableNpmInstall from "../features/enbaleNpmInstall";
 import splitGeneratorName from "../utils/generatorSplitter";
 import process from 'node:process';
+import GeneratorId from "../entities/generatorId";
 
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
@@ -20,6 +21,9 @@ const md5 = require("md5");
 process.on('uncaughtException', (err, origin) => {
     console.log(err);
 });
+
+// Note the current working directory
+const cwd = process.cwd();
 
 export class TemplateGenerator {
     constructor() {
@@ -184,7 +188,7 @@ export class TemplateGenerator {
             ? answers
             : {};
 
-        const cwd = process.cwd();
+
 
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
@@ -209,7 +213,11 @@ export class TemplateGenerator {
         }
         finally {
             process.removeListener('uncaughtException', handleException);
-            process.chdir(cwd);
+            try {
+                process.chdir(cwd);
+            } catch (err) {
+                console.log("TemplateGenerator-Template-WorkingDirRestoreFailed: Failed to restore the working directory: " + err);
+            }
             try {
                 fs.rmSync(tempDir, {recursive: true});
             } catch (err) {
@@ -229,14 +237,14 @@ export class TemplateGenerator {
         const generatorId = splitGeneratorName(generator);
 
         try {
-            return require.resolve(generatorId.name + "/generators/" + generatorId.subGenerator);
+            return this.getGenerator(generatorId);
         } catch (e) {
             /*
              If the module was not found, we allow module downloading, and this is the first attempt,
              try downloading the module and return it.
              */
             if (e.code === "MODULE_NOT_FOUND" && enableNpmInstall() && attemptInstall) {
-                console.log("Attempting to run npm install " + generatorId.name);
+                console.log("Attempting to run npm install " + generatorId.name + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     exec("npm install " + generatorId.name, (error: never) => {
                         if (error) {
@@ -249,6 +257,21 @@ export class TemplateGenerator {
             }
 
             throw e;
+        }
+    }
+
+    /**
+     * Yeoman allows two different directory structures.
+     * It’ll look in ./ and in generators/ to register available generators.
+     * https://yeoman.io/authoring/index.html
+     * @param generatorId The generator id
+     * @private
+     */
+    private getGenerator(generatorId: GeneratorId) {
+        try {
+            return require.resolve(generatorId.name + "/generators/" + generatorId.subGenerator);
+        } catch (e) {
+            return require.resolve(generatorId.name + "/" + generatorId.subGenerator);
         }
     }
 }

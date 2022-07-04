@@ -18,10 +18,10 @@
     },
     {
       "type": "Action.Execute",
-      "title": "TSX",
+      "title": "Loopback",
       "verb": "openCard",
       "data": {
-        "filename": "tsx.json"
+        "filename": "loopback.json"
       }
     }
   ]
