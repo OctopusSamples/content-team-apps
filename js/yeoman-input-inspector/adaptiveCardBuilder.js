@@ -69,7 +69,7 @@ export default function buildAdaptiveCard(questions, generator) {
                 id: "answer.list." + fixedQuestion["name"],
                 isMultiSelect: true,
                 value: fixedQuestion["default"],
-                choices: (fixedQuestion["choices"] || []).map(c => {
+                choices: (getChoices(fixedQuestion["choices"])).map(c => {
                     if (typeof c === 'string' || c instanceof String) {
                         return {
                             title: c,
@@ -91,7 +91,7 @@ export default function buildAdaptiveCard(questions, generator) {
                 id: "answer.string." + fixedQuestion["name"],
                 isMultiSelect: false,
                 value: fixedQuestion["default"],
-                choices: (fixedQuestion["choices"] || []).map(c => {
+                choices: (getChoices(fixedQuestion["choices"])).map(c => {
                     if (typeof c === 'string' || c instanceof String) {
                         return {
                             title: c,
@@ -119,4 +119,14 @@ export default function buildAdaptiveCard(questions, generator) {
     }
 
     return card;
+}
+
+function getChoices(choices) {
+    const fixedChoices = choices || [];
+
+    if (typeof choices === 'function' ) {
+        return choices();
+    }
+
+    return fixedChoices;
 }

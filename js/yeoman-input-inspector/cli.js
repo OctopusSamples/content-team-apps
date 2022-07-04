@@ -7,6 +7,15 @@ import os from "os";
 import LoggingAdapter from "./adapter.js";
 import buildAdaptiveCard from "./adaptiveCardBuilder.js";
 
+/*
+    Missing files and other errors will kill the node process by default. This is
+    undesirable for a long-running web server, so we catch the exception here.
+    https://nodejs.org/api/process.html#event-uncaughtexception
+ */
+process.on('uncaughtException', (err, origin) => {
+    console.log(err);
+});
+
 const args = process.argv.splice(2);
 
 if (args.length === 0) {
@@ -77,18 +86,27 @@ env.lookup();
     to effectively disable any runloop queues (which relate to method priorities described
     at https://yeoman.io/authoring/running-context.html#the-run-loop) that don't relate to the prompting
     stage.
+
+    Note some generators don't work without later priorities like "writing". As a fallback for these
+    use cases, the ALLOW_FULL_INSTALL environment variable can be set to true to allow the
+    generator to perform a full installation.
  */
-Object.keys(env.runLoop.__queues__).forEach(k => {
-    if (!(k === "environment:run" || k === "initializing" || k === "prompting" || k === "default")) {
-        env.runLoop.__queues__[k].push = function() {}
-    }
-});
+if ((process.env.ALLOW_FULL_INSTALL || "").trim().toLowerCase() !== "true") {
+    Object.keys(env.runLoop.__queues__).forEach(k => {
+        if (!(k === "environment:run"
+            || k === "initializing"
+            || k === "prompting"
+            || k === "default")) {
+                env.runLoop.__queues__[k].push = function () {}
+            }
+    });
+}
 
 /*
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
-const generator = env.create(generatorName, args.splice(1), {});
+const generator = env.create(generatorName, args.splice(1), {'skip-install': true});
 
 /*
     Getting access to the questions is a little trickier. We use the LoggingAdapter
@@ -97,5 +115,10 @@ const generator = env.create(generatorName, args.splice(1), {});
 env.run(generatorName, {})
     .finally(() => {
         dumpInputs(generator._options, generator._arguments, allQuestions);
+        try {
+            fs.rmSync(tempDir, {recursive: true});
+        } catch (err) {
+            console.error('The temporary directory was not removed because' + err)
+        }
     });
 

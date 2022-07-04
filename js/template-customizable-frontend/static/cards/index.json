@@ -23,6 +23,14 @@
       "data": {
         "filename": "loopback.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Feathers",
+      "verb": "openCard",
+      "data": {
+        "filename": "feathers.json"
+      }
     }
   ]
 }
