@@ -35,7 +35,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.name",
-      "value": "template5mogbo"
+      "value": "templateHJ7mxR"
     },
     {
       "type": "TextBlock",
@@ -62,7 +62,7 @@
       "type": "Input.ChoiceSet",
       "id": "answer.string.packager",
       "isMultiSelect": false,
-      "value": "npm",
+      "value": "npm@>= 3.0.0",
       "choices": [
         {
           "title": "npm",
@@ -82,6 +82,7 @@
       "type": "Input.ChoiceSet",
       "id": "answer.list.providers",
       "isMultiSelect": true,
+      "value": "rest,socketio",
       "choices": [
         {
           "title": "REST",
@@ -154,6 +155,7 @@
       "type": "Input.ChoiceSet",
       "id": "answer.list.strategies",
       "isMultiSelect": true,
+      "value": "local",
       "choices": [
         {
           "title": "Username + Password (Local)",

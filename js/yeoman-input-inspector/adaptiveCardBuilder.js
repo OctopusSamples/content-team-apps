@@ -68,7 +68,15 @@ export default function buildAdaptiveCard(questions, generator) {
                 type: "Input.ChoiceSet",
                 id: "answer.list." + fixedQuestion["name"],
                 isMultiSelect: true,
-                value: fixedQuestion["default"],
+                value: getChoices(fixedQuestion["choices"])
+                    .filter(c => c["checked"])
+                    .map(c => {
+                        if (typeof c === 'string' || c instanceof String) {
+                            return c;
+                        }
+                        return c["value"];
+                    })
+                    .join(","),
                 choices: (getChoices(fixedQuestion["choices"])).map(c => {
                     if (typeof c === 'string' || c instanceof String) {
                         return {
@@ -90,7 +98,28 @@ export default function buildAdaptiveCard(questions, generator) {
                 type: "Input.ChoiceSet",
                 id: "answer.string." + fixedQuestion["name"],
                 isMultiSelect: false,
-                value: fixedQuestion["default"],
+                /*
+                 The default value from yeoman is the choice name, whereas adaptive cards
+                 requires the default value. So we have to so a transformation between
+                 the two.
+                 */
+                value: getChoices(fixedQuestion["choices"])
+                    .map(c => {
+                        if (typeof c === 'string' || c instanceof String) {
+                            return {
+                                title: c,
+                                value: c
+                            }
+                        }
+
+                        return {
+                            title: c["name"],
+                            value: c["value"]
+                        }
+                    })
+                    .filter(c => c.title === fixedQuestion["default"] || c.value === fixedQuestion["default"])
+                    .map(c => c.value)
+                    .pop(),
                 choices: (getChoices(fixedQuestion["choices"])).map(c => {
                     if (typeof c === 'string' || c instanceof String) {
                         return {
