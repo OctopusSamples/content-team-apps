@@ -1,0 +1,108 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "generator-license",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "What's your name:"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.name",
+      "value": "Matthew Casperson"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your email (optional):"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.email",
+      "value": "matthewcasperson@gmail.com"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your website (optional):"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.website"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Which license do you want to use?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "answer.string.license",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Apache 2.0",
+          "value": "Apache-2.0"
+        },
+        {
+          "title": "MIT",
+          "value": "MIT"
+        },
+        {
+          "title": "Mozilla Public License 2.0",
+          "value": "MPL-2.0"
+        },
+        {
+          "title": "BSD 2-Clause (FreeBSD) License",
+          "value": "BSD-2-Clause-FreeBSD"
+        },
+        {
+          "title": "BSD 3-Clause (NewBSD) License",
+          "value": "BSD-3-Clause"
+        },
+        {
+          "title": "Internet Systems Consortium (ISC) License",
+          "value": "ISC"
+        },
+        {
+          "title": "GNU AGPL 3.0",
+          "value": "AGPL-3.0"
+        },
+        {
+          "title": "GNU GPL 3.0",
+          "value": "GPL-3.0"
+        },
+        {
+          "title": "GNU LGPL 3.0",
+          "value": "LGPL-3.0"
+        },
+        {
+          "title": "Unlicense",
+          "value": "unlicense"
+        },
+        {
+          "title": "No License (Copyrighted)",
+          "value": "UNLICENSED"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

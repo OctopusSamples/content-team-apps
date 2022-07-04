@@ -1,0 +1,79 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "generator-serverless-policy",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your Serverless service name"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.name",
+      "value": "templatesQuCC4"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your AWS account ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.account",
+      "value": "*"
+    },
+    {
+      "type": "TextBlock",
+      "text": "You can specify a specific stage, if you like:"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.stage",
+      "value": "*"
+    },
+    {
+      "type": "TextBlock",
+      "text": "You can specify a specific region, if you like:"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.region",
+      "value": "*"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Does your service rely on DynamoDB?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.dynamodb"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Is your service going to be using S3 buckets?"
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.s3"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

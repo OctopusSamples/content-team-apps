@@ -154,7 +154,12 @@ function getChoices(choices) {
     const fixedChoices = choices || [];
 
     if (typeof choices === 'function' ) {
-        return choices();
+        try {
+            return choices();
+        } catch {
+            // There is not much we can do here
+            return [];
+        }
     }
 
     return fixedChoices;

@@ -47,6 +47,22 @@
       "data": {
         "filename": "feathers-plugin.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "License",
+      "verb": "openCard",
+      "data": {
+        "filename": "license.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Serverless Policy",
+      "verb": "openCard",
+      "data": {
+        "filename": "serverless-policy.json"
+      }
     }
   ]
 }
