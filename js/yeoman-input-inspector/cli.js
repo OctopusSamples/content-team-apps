@@ -79,10 +79,10 @@ env.lookup();
     stage.
  */
 Object.keys(env.runLoop.__queues__).forEach(k => {
-    if (!(k === "environment:run" || k === "initializing" || k === "prompting")) {
+    if (!(k === "environment:run" || k === "initializing" || k === "prompting" || k === "default")) {
         env.runLoop.__queues__[k].push = function() {}
     }
-})
+});
 
 /*
     We can get access to the options and arguments by creating an instance of the
