@@ -92,14 +92,13 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "octopus_aws_development_account_id",
-                message: "The ID of the AWS account used to deploy the Cloudformation template",
+                message: "The ID of the development AWS account used to deploy the Cloudformation template",
                 default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
             },
-
             {
                 type: "input",
                 name: "octopus_aws_production_account_id",
-                message: "The ID of the AWS account used to deploy the Cloudformation template",
+                message: "The ID of the production AWS account used to deploy the Cloudformation template",
                 default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
             },
             {
@@ -146,8 +145,8 @@ module.exports = class extends Generator {
         );
 
         this.fs.copyTpl(
-            this.templatePath('github/ecr/action.yaml'),
-            this.destinationPath('github/ecr/action.yaml'),
+            this.templatePath('terraform/ecr/action.yaml'),
+            this.destinationPath('terraform/ecr/action.yaml'),
             options
         );
 
