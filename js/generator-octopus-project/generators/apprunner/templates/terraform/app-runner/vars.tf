@@ -58,6 +58,11 @@ variable "docker_image" {
   nullable = false
 }
 
+variable "docker_port" {
+  type = string
+  nullable = false
+}
+
 variable "aws_region" {
   type = string
   nullable = false
@@ -80,6 +85,11 @@ variable "octopus_lifecycle_id" {
 }
 
 variable "cloudformation_stack_name" {
+  type = string
+  nullable = false
+}
+
+variable "apprunner_service_name" {
   type = string
   nullable = false
 }

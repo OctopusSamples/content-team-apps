@@ -100,8 +100,8 @@ runs:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
-        input: terraform/ecr/backend.tf
-        output: terraform/ecr/backend.tf
+        input: terraform/content-team-template-generator-ecr/backend.tf
+        output: terraform/content-team-template-generator-ecr/backend.tf
 
     # There is a bug with the Terraform provider that means step package references are incorrectly
     # associated with new steps. The easiest fix is to delete the projects before recreating them.

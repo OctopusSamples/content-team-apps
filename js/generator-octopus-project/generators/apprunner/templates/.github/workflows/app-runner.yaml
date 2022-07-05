@@ -31,10 +31,12 @@ jobs:
           octopus_project_group_name: <%= octopus_project_group_name %>
           octopus_lifecycle_id: <%= octopus_lifecycle_id %>
           docker_image: <%= docker_image %>
+          docker_port: <%= docker_port %>
           octopus_aws_development_account_id: <%= octopus_aws_development_account_id %>
           octopus_aws_production_account_id: <%= octopus_aws_production_account_id %>
           aws_region: <%= aws_region %>
           terraform_bucket_suffix: <%= terraform_bucket_suffix %>
           octopus_ecr_feed_name: <%= octopus_ecr_feed_name %>
           cloudformation_stack_name: <%= cloudformation_stack_name %>
+          apprunner_service_name: <%= apprunner_service_name %>
 

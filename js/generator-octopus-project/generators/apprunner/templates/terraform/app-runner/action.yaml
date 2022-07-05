@@ -40,6 +40,9 @@ inputs:
   docker_image:
     description: 'The image to be deployed'
     required: true
+  docker_port:
+    description: 'The port to expose on the docker image'
+    required: true
   octopus_aws_development_account_id:
     description: 'The development AWS account id'
     required: true
@@ -57,6 +60,9 @@ inputs:
     required: true
   cloudformation_stack_name:
     description: 'The name of the cloudformation stack'
+    required: true
+  apprunner_service_name:
+    description: 'The name of the App Runner service'
     required: true
 runs:
   using: "composite"
@@ -163,12 +169,14 @@ runs:
           -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="docker_image=${{ inputs.docker_image }}"  \
+          -var="docker_port=${{ inputs.docker_port }}"  \
           -var="aws_region=${{ inputs.aws_region }}" \
           -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
           -var="octopus_ecr_feed_id=${{ steps.octopus_ecr_feed_id.outputs.octopus_ecr_feed_id }}" \
-          -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}"
+          -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}" \
+          -var="apprunner_service_name=${{ inputs.apprunner_service_name }}"
         
         if [[ $? -ne 0 ]]; then
           echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."

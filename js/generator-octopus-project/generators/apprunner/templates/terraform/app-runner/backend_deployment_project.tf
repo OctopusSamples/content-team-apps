@@ -188,12 +188,28 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           {
             ParameterKey: "ImageIdentifier"
             ParameterValue: var.docker_image
+          },
+          {
+            ParameterKey: "Port"
+            ParameterValue: var.docker_port
+          },
+          {
+            ParameterKey: "ServiceName"
+            ParameterValue: var.apprunner_service_name
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey: "ImageIdentifier"
             ParameterValue: var.docker_image
+          },
+          {
+            ParameterKey: "Port"
+            ParameterValue: var.docker_port
+          },
+          {
+            ParameterKey: "ServiceName"
+            ParameterValue: var.apprunner_service_name
           }
         ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
