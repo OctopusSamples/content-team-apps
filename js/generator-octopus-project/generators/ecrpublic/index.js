@@ -104,8 +104,8 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "aws_region",
-                message: "The AWS region to deploy the App Runner instance in",
-                default: "us-west-1"
+                message: "The AWS region to deploy the ECR repository in",
+                default: "us-east-1"
             },
             {
                 type: "input",
