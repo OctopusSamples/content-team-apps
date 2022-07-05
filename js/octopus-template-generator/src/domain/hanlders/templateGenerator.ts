@@ -1,8 +1,9 @@
 import NonInteractiveAdapter from "../yeoman/adapter";
-import enableNpmInstall from "../features/enbaleNpmInstall";
+import enableNpmInstall from "../features/enableNpmInstall";
 import splitGeneratorName from "../utils/generatorSplitter";
 import process from 'node:process';
 import GeneratorId from "../entities/generatorId";
+import safeListModules from "../features/safeListModules";
 
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
@@ -245,7 +246,10 @@ export class TemplateGenerator {
              If the module was not found, we allow module downloading, and this is the first attempt,
              try downloading the module and return it.
              */
-            if ((e.code === "MODULE_NOT_FOUND") && enableNpmInstall() && attemptInstall) {
+            const failedToFindModule = e.code === "MODULE_NOT_FOUND";
+            const canInstallPackage = enableNpmInstall() || safeListModules().includes(generatorId.name);
+
+            if (failedToFindModule && canInstallPackage && attemptInstall) {
                 console.log("Attempting to run npm install --prefix downloaded --no-save " + generatorId.name + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     /*
