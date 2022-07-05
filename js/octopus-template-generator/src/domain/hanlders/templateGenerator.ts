@@ -243,7 +243,7 @@ export class TemplateGenerator {
              If the module was not found, we allow module downloading, and this is the first attempt,
              try downloading the module and return it.
              */
-            if ((e.code === "MODULE_NOT_FOUND" || e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") && enableNpmInstall() && attemptInstall) {
+            if ((e.code === "MODULE_NOT_FOUND") && enableNpmInstall() && attemptInstall) {
                 console.log("Attempting to run npm install --no-save " + generatorId.name + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     exec("npm install --no-save " + generatorId.name, (error: never) => {
