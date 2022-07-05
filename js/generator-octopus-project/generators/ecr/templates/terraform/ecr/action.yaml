@@ -127,7 +127,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/ecr
+      working-directory: terraform/${{ inputs.cloudformation_stack_name }}
       shell: bash
 
     - name: Terraform Apply
@@ -157,5 +157,5 @@ runs:
           echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."
           exit 1
         fi
-      working-directory: terraform/ecr
+      working-directory: terraform/${{ inputs.cloudformation_stack_name }}
       shell: bash

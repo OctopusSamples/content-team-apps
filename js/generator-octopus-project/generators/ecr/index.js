@@ -7,7 +7,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "cloudformation_stack_name",
-                message: "The name of the CloudFormation stack to build the App Runner instance",
+                message: "The name of the CloudFormation stack to build the App Runner instance (also used to name the directory holding the terraform files)",
                 default: "ecr"
             },
             {
@@ -146,13 +146,13 @@ module.exports = class extends Generator {
 
         this.fs.copyTpl(
             this.templatePath('terraform/ecr/action.yaml'),
-            this.destinationPath('terraform/ecr/action.yaml'),
+            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"] + '/action.yaml'),
             options
         );
 
         this.fs.copyTpl(
             this.templatePath('terraform/ecr/*.tf'),
-            this.destinationPath('terraform/ecr'),
+            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"]),
             options,
             null,
             { globOptions: { dot: true } }

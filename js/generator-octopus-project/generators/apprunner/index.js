@@ -13,7 +13,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "docker_port",
-                message: "The port to expose on the DOcker container",
+                message: "The port to expose on the Docker container",
                 default: "5000"
             },
             {
@@ -25,7 +25,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "cloudformation_stack_name",
-                message: "The name of the CloudFormation stack to build the App Runner instance",
+                message: "The name of the CloudFormation stack to build the App Runner instance (also used to name the directory holding the terraform files)",
                 default: "app-runner"
             },
             {
@@ -167,13 +167,13 @@ module.exports = class extends Generator {
 
         this.fs.copyTpl(
             this.templatePath('terraform/app-runner/action.yaml'),
-            this.destinationPath('terraform/app-runner/action.yaml'),
+            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"] + '/action.yaml'),
             options
         );
 
         this.fs.copyTpl(
             this.templatePath('terraform/app-runner/*.tf'),
-            this.destinationPath('terraform/app-runner'),
+            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"]),
             options,
             null,
             { globOptions: { dot: true } }
