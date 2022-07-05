@@ -146,8 +146,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Properties:
                 RepositoryName: !Ref RepositoryName
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([])
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([])
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey: RepositoryName
+            ParameterValue: var.repository_name
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey: RepositoryName
+            ParameterValue: var.repository_name
+          }
+        ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([])
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"

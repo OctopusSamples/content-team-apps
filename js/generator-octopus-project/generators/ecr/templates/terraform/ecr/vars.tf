@@ -67,3 +67,8 @@ variable "cloudformation_stack_name" {
   type = string
   nullable = false
 }
+
+variable "repository_name" {
+  type = string
+  nullable = false
+}

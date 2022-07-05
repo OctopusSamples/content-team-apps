@@ -6,6 +6,30 @@ module.exports = class extends Generator {
         this.answers = await this.prompt([
             {
                 type: "input",
+                name: "cloudformation_stack_name",
+                message: "The name of the CloudFormation stack to build the App Runner instance",
+                default: "ecr"
+            },
+            {
+                type: "input",
+                name: "repository_name",
+                message: "The ECR repository name",
+                default: "myrepo"
+            },
+            {
+                type: "input",
+                name: "octopus_project_name",
+                message: "Your project name",
+                default: "ECR"
+            },
+            {
+                type: "input",
+                name: "octopus_project_group_name",
+                message: "Your project group name",
+                default: "App Runner"
+            },
+            {
+                type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
                 default: "${{ secrets.AWS_ACCESS_KEY_ID }}"
@@ -36,12 +60,6 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "octopus_project_name",
-                message: "Your project name",
-                default: "App Runner"
-            },
-            {
-                type: "input",
                 name: "octopus_development_environment_id",
                 message: "The development environment ID",
                 default: "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
@@ -64,12 +82,6 @@ module.exports = class extends Generator {
                 name: "octopus_production_security_environment_id",
                 message: "The production environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
-            },
-            {
-                type: "input",
-                name: "octopus_project_group_name",
-                message: "Your project group name",
-                default: "App Runner"
             },
             {
                 type: "input",
@@ -101,12 +113,6 @@ module.exports = class extends Generator {
                 name: "terraform_bucket_suffix",
                 message: "The Terraform state bucket suffix",
                 default: uuidv4()
-            },
-            {
-                type: "input",
-                name: "cloudformation_stack_name",
-                message: "The name of the CloudFormation stack to build the App Runner instance",
-                default: "ecr"
             }
         ]);
     }
@@ -129,7 +135,8 @@ module.exports = class extends Generator {
             octopus_aws_production_account_id: this.answers["octopus_aws_production_account_id"],
             aws_region: this.answers["aws_region"],
             terraform_bucket_suffix: this.answers["terraform_bucket_suffix"],
-            cloudformation_stack_name: this.answers["cloudformation_stack_name"]
+            cloudformation_stack_name: this.answers["cloudformation_stack_name"],
+            repository_name: this.answers["repository_name"]
         };
 
         this.fs.copyTpl(

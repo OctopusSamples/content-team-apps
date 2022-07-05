@@ -36,4 +36,5 @@ jobs:
           aws_region: <%= aws_region %>
           terraform_bucket_suffix: <%= terraform_bucket_suffix %>
           cloudformation_stack_name: <%= cloudformation_stack_name %>
+          repository_name: <%= repository_name %>
 

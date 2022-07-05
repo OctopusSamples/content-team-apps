@@ -6,6 +6,30 @@ module.exports = class extends Generator {
         this.answers = await this.prompt([
             {
                 type: "input",
+                name: "docker_image",
+                message: "The Docker image to deploy",
+                default: "968802670493.dkr.ecr.us-east-1.amazonaws.com/randomquotes:latest"
+            },
+            {
+                type: "input",
+                name: "cloudformation_stack_name",
+                message: "The name of the CloudFormation stack to build the App Runner instance",
+                default: "app-runner"
+            },
+            {
+                type: "input",
+                name: "octopus_project_group_name",
+                message: "Your project group name",
+                default: "App Runner"
+            },
+            {
+                type: "input",
+                name: "octopus_project_name",
+                message: "Your project name",
+                default: "App Runner"
+            },
+            {
+                type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
                 default: "${{ secrets.AWS_ACCESS_KEY_ID }}"
@@ -36,12 +60,6 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "octopus_project_name",
-                message: "Your project name",
-                default: "App Runner"
-            },
-            {
-                type: "input",
                 name: "octopus_development_environment_id",
                 message: "The development environment ID",
                 default: "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
@@ -52,7 +70,6 @@ module.exports = class extends Generator {
                 message: "The production environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
             },
-
             {
                 type: "input",
                 name: "octopus_development_security_environment_id",
@@ -67,21 +84,9 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "octopus_project_group_name",
-                message: "Your project group name",
-                default: "App Runner"
-            },
-            {
-                type: "input",
                 name: "octopus_lifecycle_id",
                 message: "The lifecycle to assign to the project",
                 default: "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}"
-            },
-            {
-                type: "input",
-                name: "docker_image",
-                message: "The Docker image to deploy",
-                default: "968802670493.dkr.ecr.us-east-1.amazonaws.com/randomquotes:latest"
             },
             {
                 type: "input",
@@ -113,12 +118,6 @@ module.exports = class extends Generator {
                 name: "octopus_ecr_feed_name",
                 message: "The name of the ECR feed",
                 default: "ECR"
-            },
-            {
-                type: "input",
-                name: "cloudformation_stack_name",
-                message: "The name of the CloudFormation stack to build the App Runner instance",
-                default: "app-runner"
             }
         ]);
     }

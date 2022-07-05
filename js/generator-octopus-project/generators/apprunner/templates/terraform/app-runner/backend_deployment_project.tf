@@ -140,7 +140,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           Parameters:
             ServiceName:
               Type: String
-            ImageIdentifier
+            ImageIdentifier:
               Type: String
             ImageRepositoryType:
               Type: String
@@ -184,8 +184,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     ImageIdentifier: !Ref ImageIdentifier
                     ImageRepositoryType: !Ref ImageRepositoryType
         EOT
-        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([])
-        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([])
+        "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
+          {
+            ParameterKey: ImageIdentifier
+            ParameterValue: var.docker_image
+          }
+        ])
+        "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
+          {
+            ParameterKey: ImageIdentifier
+            ParameterValue: var.docker_image
+          }
+        ])
         "Octopus.Action.Aws.IamCapabilities" : jsonencode([
           "CAPABILITY_AUTO_EXPAND", "CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"
         ])

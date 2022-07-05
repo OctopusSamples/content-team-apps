@@ -52,6 +52,9 @@ inputs:
   cloudformation_stack_name:
     description: 'The name of the cloudformation stack'
     required: true
+  repository_name:
+    description: 'The ECR repository name'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -100,18 +103,6 @@ runs:
         input: terraform/ecr/backend.tf
         output: terraform/ecr/backend.tf
 
-    # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
-    # we need to manually query the new space for the built-in feed ID.
-    - name: Find the Built-In Feed ID
-      id: octopus_builtin_feed_id
-      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl -G --data-urlencode \"name=Octopus Server (built-in)\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
-      shell: bash
-
-    - name: Find the ECR Feed ID
-      id: octopus_ecr_feed_id
-      run: "echo \"::set-output name=octopus_ecr_feed_id::$(curl -G --data-urlencode \"name=${{ inputs.octopus_ecr_feed_name }}\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
-      shell: bash
-
     # There is a bug with the Terraform provider that means step package references are incorrectly
     # associated with new steps. The easiest fix is to delete the projects before recreating them.
     # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
@@ -159,8 +150,8 @@ runs:
           -var="aws_region=${{ inputs.aws_region }}" \
           -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
-          -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
-          -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}"
+          -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}" \
+          -var="repository_name=${{ inputs.repository_name }}"
         
         if [[ $? -ne 0 ]]; then
           echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."
