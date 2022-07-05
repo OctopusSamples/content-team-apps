@@ -144,7 +144,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: String
             ImageRepositoryType:
               Type: String
-              Default: ECR
+              Default: ECR_PUBLIC
             Port:
               Type: String
             CPU:
