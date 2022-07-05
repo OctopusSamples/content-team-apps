@@ -14,6 +14,7 @@ repos to have a standard set of secrets defined, as shown below:
 * `AWS_SECRET_ACCESS_KEY` - The AWS secret key used to create S3 buckets for the Terraform state.
 * `OCTOPUS_APIKEY` - The API key used to connect to the Octopus instance.
 * `OCTOPUS_APPLICATION_LIFECYCLEID` - The lifecycle ID used when deploying application.
+* `OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID` - The lifecycle ID used when deploying production resources.
 * `OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID` - The ID of the AWS account used when deploying to development environments.
 * `OCTOPUS_AWS_PRODUCTION_ACCOUNTID` - The ID of the AWS account used when deploying to production environments.
 * `OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID` - The ID of the application development environment (i.e. the environment where applications are deployed).
