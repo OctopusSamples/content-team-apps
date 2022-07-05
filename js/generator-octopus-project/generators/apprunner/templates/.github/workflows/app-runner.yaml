@@ -3,8 +3,8 @@ name: app-runner
 on:
   push:
     paths:
-      - '.github/workflows/app-runner.yml'
-      - 'terraform/app-runner/**'
+      - '.github/workflows/<%= cloudformation_stack_name %>.yml'
+      - 'terraform/<%= cloudformation_stack_name %>/**'
   workflow_dispatch:
 
 jobs:

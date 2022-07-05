@@ -1,0 +1,161 @@
+name: Terraform Apply
+description: Create an ECS deployment project
+inputs:
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_key:
+    description: 'AWS Secret Key'
+    required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_project_name:
+    description: 'The name of the Octopus project'
+    required: true
+  octopus_development_environment_id:
+    description: 'The development environment id'
+    required: true
+  octopus_production_environment_id:
+    description: 'The production environment id'
+    required: true
+  octopus_development_security_environment_id:
+    description: 'The development security environment id'
+    required: true
+  octopus_production_security_environment_id:
+    description: 'The production security environment id'
+    required: true
+  octopus_project_group_name:
+    description: 'The name of the Octopus project group'
+    required: true
+  octopus_lifecycle_id:
+    description: 'The project lifecycle ID'
+    required: true
+  octopus_aws_development_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_aws_production_account_id:
+    description: 'The production AWS account id'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  terraform_bucket_suffix:
+    description: 'The unique suffix applied to the Terraform state S3 bucket'
+    required: true
+  cloudformation_stack_name:
+    description: 'The name of the cloudformation stack'
+    required: true
+  repository_name:
+    description: 'The ECR repository name'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.aws_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
+    # CLI tooling to create a unique bucket before Terraform is run.
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+      with:
+        input: terraform/${{ inputs.cloudformation_stack_name }}/backend.tf
+        output: terraform/${{ inputs.cloudformation_stack_name }}/backend.tf
+
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
+    # deletes project releases.
+    - name: Delete existing projects
+      run: |
+        declare -a arr=("${{ inputs.octopus_project_name }}")
+        
+        for i in "${arr[@]}"
+        do
+          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
+          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
+          if [[ -n "$ID" && "$ID" != "null" ]]; then
+            echo "Deleting project $i"
+            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          fi
+        done
+      shell: bash
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/${{ inputs.cloudformation_stack_name }}
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply \
+          -auto-approve \
+          -var="octopus_server=${{ inputs.octopus_server }}" \
+          -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+          -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
+          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
+          -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
+          -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}" \
+          -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}" \
+          -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
+          -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
+          -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+          -var="aws_region=${{ inputs.aws_region }}" \
+          -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
+          -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
+          -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}" \
+          -var="repository_name=${{ inputs.repository_name }}"
+        
+        if [[ $? -ne 0 ]]; then
+          echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."
+          exit 1
+        fi
+      working-directory: terraform/${{ inputs.cloudformation_stack_name }}
+      shell: bash

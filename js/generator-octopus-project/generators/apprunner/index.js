@@ -161,7 +161,7 @@ module.exports = class extends Generator {
 
         this.fs.copyTpl(
             this.templatePath('.github/workflows/app-runner.yaml'),
-            this.destinationPath('.github/workflows/app-runner.yaml'),
+            this.destinationPath('.github/workflows/' + this.answers["cloudformation_stack_name"] + '.yaml'),
             options
         );
 
