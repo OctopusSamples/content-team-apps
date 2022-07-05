@@ -2,7 +2,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the backend service to App Runner."
+  description                          = "Deploys a CloudFormation template to create an ECR repository."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
@@ -108,7 +108,7 @@ locals {
     },
     {
       key : "DeploymentProject"
-      value : "App_Runner_Service"
+      value : "ECR_Repository"
     }
   ])
 }
@@ -119,13 +119,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
 
   step {
     condition           = "Success"
-    name                = "Deploy App Runner Instance"
+    name                = "Deploy ECR Repository"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunCloudFormation"
-      name           = "Deploy App Runner Instance"
-      notes          = "Deploy the image to an App Runner instance with CloudFormation."
+      name           = "Deploy ECR Repository"
+      notes          = "Create an ECR repository with CloudFormation."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -138,57 +138,17 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationStackName" : var.cloudformation_stack_name
         "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
           Parameters:
-            ServiceName:
+            RepositoryName:
               Type: String
-            ImageIdentifier
-              Type: String
-            ImageRepositoryType:
-              Type: String
-              Default: ECR
-            Port:
-              Type: String
-            CPU:
-              Type: String
-              Default: 1024
-            Memory:
-              Type: String
-              Default: 2048
           Resources:
-            AccessRole:
-              Type: AWS::IAM::Role
+            Repository:
+              Type: AWS::ECR::Repository
               Properties:
-                AssumeRolePolicyDocument:
-                  Version: '2008-10-17'
-                  Statement:
-                    - Effect: Allow
-                      Principal:
-                        Service:
-                          - build.apprunner.amazonaws.com
-                      Action: sts:AssumeRole
-                ManagedPolicyArns:
-                  - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
-            AppRunner:
-              Type: 'AWS::AppRunner::Service'
-              Properties:
-                InstanceConfiguration:
-                  Cpu: !Ref CPU
-                  Memory: !Ref Memory
-                ServiceName: !Ref ServiceName
-                SourceConfiguration:
-                  AuthenticationConfiguration:
-                    AccessRoleArn: !Ref AccessRole
-                  AutoDeploymentsEnabled: true
-                  ImageRepository:
-                    ImageConfiguration:
-                      Port: !Ref Port
-                    ImageIdentifier: !Ref ImageIdentifier
-                    ImageRepositoryType: !Ref ImageRepositoryType
+                RepositoryName: !Ref RepositoryName
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([])
-        "Octopus.Action.Aws.IamCapabilities" : jsonencode([
-          "CAPABILITY_AUTO_EXPAND", "CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"
-        ])
+        "Octopus.Action.Aws.IamCapabilities" : jsonencode([])
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.Aws.TemplateSource" : "Inline"
         "Octopus.Action.Aws.WaitForCompletion" : "True"
