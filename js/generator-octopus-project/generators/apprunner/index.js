@@ -8,13 +8,13 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
-                default: "${{ secrets.AWS_ACCESS_KEY }}"
+                default: "${{ secrets.AWS_ACCESS_KEY_ID }}"
             },
             {
                 type: "password",
                 name: "aws_secret_key",
                 message: "The AWS secret key.",
-                default: "${{ secrets.AWS_SECRET_KEY }}"
+                default: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
             },
             {
                 type: "input",
