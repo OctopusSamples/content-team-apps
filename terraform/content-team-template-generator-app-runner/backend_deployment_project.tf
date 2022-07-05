@@ -176,7 +176,9 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 ServiceName: !Ref ServiceName
                 SourceConfiguration:
                   AuthenticationConfiguration:
-                    AccessRoleArn: !Ref AccessRole
+                    AccessRoleArn: !GetAtt
+                      - AccessRole
+                      - Arn
                   AutoDeploymentsEnabled: true
                   ImageRepository:
                     ImageConfiguration:
