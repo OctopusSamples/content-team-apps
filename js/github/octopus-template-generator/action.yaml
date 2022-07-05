@@ -75,7 +75,7 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws_access_key }}
         aws-secret-access-key: ${{ inputs.aws_secret_key }}
-        aws-region: us-west-1
+        aws-region: us-west-2
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -160,8 +160,8 @@ runs:
         docker push octopussamples/workflowbuildertemplategenerator
         
         # Push the image to a private ECR repo so we can use it internally on AWS services
-        docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
-        docker push 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
+        docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} 133577413914.dkr.ecr.us-west-2.amazonaws.com/template-generator
+        docker push 133577413914.dkr.ecr.us-west-2.amazonaws.com/template-generator
       shell: bash
 
     - name: Build
