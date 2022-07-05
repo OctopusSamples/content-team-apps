@@ -56,7 +56,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_aws_account_id",
                 message: "The ID of the AWS account used to deploy the Cloudformation template",
-                default: "${{ secrets.OCTOPUS_AWS_ACCOUNTID }}"
+                default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
             },
             {
                 type: "input",
