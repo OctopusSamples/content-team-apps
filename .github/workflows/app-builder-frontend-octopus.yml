@@ -20,7 +20,7 @@ jobs:
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
-          octopus_space_id: Spaces-882
+          octopus_space_id: ${{ secrets.OCTOPUS_SPACEID }}
           octopus_built_in_feed_id: Feeds-2301
           # WorkerPools-1282 is Hosted Ubuntu
           octopus_worker_pool_id: WorkerPools-1301 
