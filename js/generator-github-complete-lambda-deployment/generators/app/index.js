@@ -31,7 +31,7 @@ module.exports = class extends Generator {
         this.composeWith(require.resolve('@octopus-content-team/generator-octopus-reverse-proxy/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'), args);
-        this.composeWith(require.resolve('@octopus-content-team/generator-github-lambda-deployment/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-github-octopus-project/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-ecr-feed/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "products-service"});
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "octopus-frontend"});
@@ -52,8 +52,8 @@ module.exports = class extends Generator {
             this.destinationPath('images/diagram.png'));
 
         this.fs.copyTpl(
-            this.templatePath('.github/workflows/lambda-deployment.yaml'),
-            this.destinationPath('.github/workflows/lambda-deployment.yaml'),
+            this.templatePath('.github/workflows/octopus-project.yaml'),
+            this.destinationPath('.github/workflows/octopus-project.yaml'),
             {
                 octopus_space: spaceName,
                 s3_bucket_suffix: this.options["s3BucketSuffix"],

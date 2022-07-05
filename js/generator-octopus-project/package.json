@@ -1,0 +1,19 @@
+{
+  "name": "@octopus-content-team/generator-octopus-project",
+  "description": "A Yeoman generator to build common Octopus projects.",
+  "homepage": "https://github.com/OctopusSamples/content-team-apps",
+  "version": "0.1.0",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "uuid": "^8.3.2",
+    "yeoman-generator": "^5.6.1"
+  },
+  "scripts": {
+    "pub": "npm version patch --force && npm publish"
+  }
+}

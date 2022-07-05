@@ -1,0 +1,35 @@
+name: app-runner
+
+on:
+  push:
+    paths:
+      - 'github/app-runner/**'
+      - '.github/workflows/app-runner.yml'
+      - 'terraform/app-runner/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./github/app-runner
+        with:
+          aws_access_key: <%= aws_access_key %>
+          aws_secret_key: <%= aws_secret_key %>
+          octopus_server: <%= octopus_server %>
+          octopus_apikey: <%= octopus_apikey %>
+          octopus_space_id: <%= octopus_space_id %>
+          octopus_project_name: <%= octopus_project_name %>
+          octopus_lifecycle_id: <%= octopus_lifecycle_id %>
+          docker_image: <%= docker_image %>
+          octopus_aws_account_id: <%= octopus_aws_account_id %>
+          aws_region: <%= aws_region %>
+          terraform_bucket_suffix: <%= terraform_bucket_suffix %>
+          octopus_ecr_feed_name: <%= octopus_ecr_feed_name %>
+          cloudformation_stack_name: <%= cloudformation_stack_name %>
+

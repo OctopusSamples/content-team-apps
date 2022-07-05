@@ -28,7 +28,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
             }
 
             if (props.machine.state.context.targetPlatform === "LAM") {
-                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-lambda-deployment"
+                props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-octopus-project"
             }
         }
         props.machine.send(state);
