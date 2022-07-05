@@ -148,13 +148,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
-            ParameterKey: RepositoryName
+            ParameterKey: "RepositoryName"
             ParameterValue: var.repository_name
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
-            ParameterKey: RepositoryName
+            ParameterKey: "RepositoryName"
             ParameterValue: var.repository_name
           }
         ])

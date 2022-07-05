@@ -186,13 +186,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
-            ParameterKey: ImageIdentifier
+            ParameterKey: "ImageIdentifier"
             ParameterValue: var.docker_image
           }
         ])
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
-            ParameterKey: ImageIdentifier
+            ParameterKey: "ImageIdentifier"
             ParameterValue: var.docker_image
           }
         ])
