@@ -161,6 +161,7 @@ runs:
         
         # Push the image to a private ECR repo so we can use it internally on AWS services
         docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} public.ecr.aws/z6y3i0f8/template-generator
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
         docker push public.ecr.aws/z6y3i0f8/template-generator
       shell: bash
 
