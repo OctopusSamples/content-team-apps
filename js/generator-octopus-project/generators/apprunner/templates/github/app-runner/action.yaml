@@ -95,12 +95,12 @@ runs:
     # we need to manually query the new space for the built-in feed ID.
     - name: Find the Built-In Feed ID
       id: octopus_builtin_feed_id
-      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --data-urlencode \"name=Octopus Server (built-in)\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
+      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl -G --data-urlencode \"name=Octopus Server (built-in)\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
       shell: bash
 
     - name: Find the ECR Feed ID
       id: octopus_ecr_feed_id
-      run: "echo \"::set-output name=octopus_ecr_feed_id::$(curl --data-urlencode \"name=${{ inputs.octopus_ecr_feed_name }}\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
+      run: "echo \"::set-output name=octopus_ecr_feed_id::$(curl -G --data-urlencode \"name=${{ inputs.octopus_ecr_feed_name }}\" --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds' | jq -r '.Items[0].Id')\""
       shell: bash
 
     # There is a bug with the Terraform provider that means step package references are incorrectly
