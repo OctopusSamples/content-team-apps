@@ -46,11 +46,30 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "aws_account_deploy_backend_project" {
+resource "octopusdeploy_variable" "aws_development_account_deploy_backend_project" {
   name     = "AWS Account"
   type     = "AmazonWebServicesAccount"
-  value    = var.octopus_aws_account_id
+  value    = var.octopus_aws_development_account_id
   owner_id = octopusdeploy_project.deploy_backend_project.id
+  scope {
+    environments = [
+      var.octopus_development_environment_id,
+      var.octopus_development_security_environment_id,
+    ]
+  }
+}
+
+resource "octopusdeploy_variable" "aws_production_account_deploy_backend_project" {
+  name     = "AWS Account"
+  type     = "AmazonWebServicesAccount"
+  value    = var.octopus_aws_production_account_id
+  owner_id = octopusdeploy_project.deploy_backend_project.id
+  scope {
+    environments = [
+      var.octopus_production_environment_id,
+      var.octopus_production_security_environment_id,
+    ]
+  }
 }
 
 locals {
@@ -109,7 +128,10 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
       notes          = "Deploy the image to an App Runner instance with CloudFormation."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-
+      environments   = [
+        var.octopus_development_environment_id,
+        var.octopus_production_environment_id
+      ]
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.apprunner_cloudformation_tags

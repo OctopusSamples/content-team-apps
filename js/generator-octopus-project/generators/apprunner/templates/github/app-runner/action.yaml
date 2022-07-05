@@ -19,6 +19,18 @@ inputs:
   octopus_project_name:
     description: 'The name of the Octopus project'
     required: true
+  octopus_development_environment_id:
+    description: 'The development environment id'
+    required: true
+  octopus_production_environment_id:
+    description: 'The production environment id'
+    required: true
+  octopus_development_security_environment_id:
+    description: 'The development security environment id'
+    required: true
+  octopus_production_security_environment_id:
+    description: 'The production security environment id'
+    required: true
   octopus_project_group_name:
     description: 'The name of the Octopus project group'
     required: true
@@ -28,8 +40,11 @@ inputs:
   docker_image:
     description: 'The image to be deployed'
     required: true
-  octopus_aws_account_id:
-    description: 'The AWS account id'
+  octopus_aws_development_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_aws_production_account_id:
+    description: 'The production AWS account id'
     required: true
   aws_region:
     description: 'The AWS region'
@@ -142,10 +157,15 @@ runs:
           -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
           -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
           -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
+          -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}" \
+          -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}" \
+          -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
+          -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="docker_image=${{ inputs.docker_image }}"  \
           -var="aws_region=${{ inputs.aws_region }}" \
-          -var="octopus_aws_account_id=${{ inputs.octopus_aws_account_id }}" \
+          -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
+          -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
           -var="octopus_ecr_feed_id=${{ steps.octopus_ecr_feed_id.outputs.octopus_ecr_feed_id }}" \
           -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}"

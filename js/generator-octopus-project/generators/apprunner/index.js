@@ -42,6 +42,31 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "octopus_development_environment_id",
+                message: "The development environment ID",
+                default: "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "octopus_production_environment_id",
+                message: "The production environment ID",
+                default: "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+            },
+
+            {
+                type: "input",
+                name: "octopus_development_security_environment_id",
+                message: "The development environment ID",
+                default: "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "octopus_production_security_environment_id",
+                message: "The production environment ID",
+                default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
                 name: "octopus_project_group_name",
                 message: "Your project group name",
                 default: "App Runner"
@@ -60,9 +85,16 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "octopus_aws_account_id",
+                name: "octopus_aws_development_account_id",
                 message: "The ID of the AWS account used to deploy the Cloudformation template",
                 default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
+            },
+
+            {
+                type: "input",
+                name: "octopus_aws_production_account_id",
+                message: "The ID of the AWS account used to deploy the Cloudformation template",
+                default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
             },
             {
                 type: "input",
@@ -98,11 +130,16 @@ module.exports = class extends Generator {
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
+            octopus_development_environment_id: this.answers["octopus_development_environment_id"],
+            octopus_production_environment_id: this.answers["octopus_production_environment_id"],
+            octopus_development_security_environment_id: this.answers["octopus_development_security_environment_id"],
+            octopus_production_security_environment_id: this.answers["octopus_production_security_environment_id"],
             octopus_project_name: this.answers["octopus_project_name"],
             octopus_project_group_name: this.answers["octopus_project_group_name"],
             octopus_lifecycle_id: this.answers["octopus_lifecycle_id"],
             docker_image: this.answers["docker_image"],
-            octopus_aws_account_id: this.answers["octopus_aws_account_id"],
+            octopus_aws_development_account_id: this.answers["octopus_aws_development_account_id"],
+            octopus_aws_production_account_id: this.answers["octopus_aws_production_account_id"],
             aws_region: this.answers["aws_region"],
             terraform_bucket_suffix: this.answers["terraform_bucket_suffix"],
             octopus_ecr_feed_name: this.answers["octopus_ecr_feed_name"],
