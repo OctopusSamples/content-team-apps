@@ -210,6 +210,9 @@ export class TemplateGenerator {
             console.log("Zip file generated");
 
             return zipPath;
+        } catch (err) {
+            console.log(err);
+            throw err;
         } finally {
             process.removeListener('uncaughtException', handleException);
             try {
@@ -273,7 +276,7 @@ export class TemplateGenerator {
         try {
             return require.resolve(
                 generatorId.name + "/generators/" + generatorId.subGenerator,
-                {paths: ["downloaded"]});
+                {paths: ["downloaded", "."]});
         } catch (e) {
             /*
                 Some generators, like jhipster, don't list the app subgenerator in the
@@ -283,7 +286,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return "downloaded/" + generatorId.name + "/generators/" + generatorId.subGenerator;
+                return process.cwd() + "/downloaded/node_modules/" + generatorId.name + "/generators/" + generatorId.subGenerator;
             }
 
             console.log(e);
@@ -302,7 +305,7 @@ export class TemplateGenerator {
         try {
             return require.resolve(
                 generatorId.name + "/" + generatorId.subGenerator,
-                {paths: ["downloaded"]});
+                {paths: ["downloaded", "."]});
         } catch (e) {
             /*
                 Some generators, like jhipster, don't list the app subgenerator in the
@@ -312,7 +315,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return "downloaded/" + generatorId.name + "/" + generatorId.subGenerator;
+                return process.cwd() + "/downloaded/node_modules/" + generatorId.name + "/" + generatorId.subGenerator;
             }
 
             console.log(e);
