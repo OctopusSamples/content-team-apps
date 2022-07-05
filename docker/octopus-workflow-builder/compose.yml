@@ -18,7 +18,7 @@ services:
     expose:
       - "4000"
     environment:
-      - ENABLE_NPM_INSTALL=true
+      - UNSAFE_ENABLE_NPM_INSTALL=false
   auditdb:
     image: mysql:5.7
     restart: always
