@@ -42,6 +42,12 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "octopus_project_group_name",
+                message: "Your project group name",
+                default: "App Runner"
+            },
+            {
+                type: "input",
                 name: "octopus_lifecycle_id",
                 message: "The lifecycle to assign to the project",
                 default: "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}"
@@ -93,6 +99,7 @@ module.exports = class extends Generator {
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
             octopus_project_name: this.answers["octopus_project_name"],
+            octopus_project_group_name: this.answers["octopus_project_group_name"],
             octopus_lifecycle_id: this.answers["octopus_lifecycle_id"],
             docker_image: this.answers["docker_image"],
             octopus_aws_account_id: this.answers["octopus_aws_account_id"],

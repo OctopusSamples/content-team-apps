@@ -25,6 +25,7 @@ jobs:
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>
           octopus_project_name: <%= octopus_project_name %>
+          octopus_project_group_name: <%= octopus_project_group_name %>
           octopus_lifecycle_id: <%= octopus_lifecycle_id %>
           docker_image: <%= docker_image %>
           octopus_aws_account_id: <%= octopus_aws_account_id %>

@@ -19,6 +19,9 @@ inputs:
   octopus_project_name:
     description: 'The name of the Octopus project'
     required: true
+  octopus_project_group_name:
+    description: 'The name of the Octopus project group'
+    required: true
   octopus_lifecycle_id:
     description: 'The project lifecycle ID'
     required: true
@@ -136,6 +139,7 @@ runs:
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
           -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
+          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
           -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="docker_image=${{ inputs.docker_image }}"  \

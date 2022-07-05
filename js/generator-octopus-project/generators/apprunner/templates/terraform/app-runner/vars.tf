@@ -18,6 +18,11 @@ variable "octopus_project_name" {
   nullable = false
 }
 
+variable "octopus_project_group_name" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_built_in_feed_id" {
   type = string
   nullable = false
