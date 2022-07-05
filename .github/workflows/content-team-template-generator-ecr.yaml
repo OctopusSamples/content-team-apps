@@ -3,7 +3,7 @@ name: content-team-template-generator-ecr
 on:
   push:
     paths:
-      - '.github/workflows/ecr.yml'
+      - '.github/workflows/content-team-template-generator-ecr.yml'
       - 'terraform/content-team-template-generator-ecr/**'
   workflow_dispatch:
 
