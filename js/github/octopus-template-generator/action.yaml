@@ -70,6 +70,17 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: us-west-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
       with:
@@ -144,6 +155,9 @@ runs:
         docker push octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }}
         docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuildertemplategenerator
         docker push octopussamples/workflowbuildertemplategenerator
+        
+        docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
+        docker push 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
       shell: bash
 
     - name: Build
