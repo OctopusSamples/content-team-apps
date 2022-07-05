@@ -152,10 +152,14 @@ runs:
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
+        # Push the specific image tag to DockerHub
         docker push octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }}
+       
+        # Push the latest image to DockerHub       
         docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} octopussamples/workflowbuildertemplategenerator
         docker push octopussamples/workflowbuildertemplategenerator
         
+        # Push the image to a private ECR repo so we can use it internally on AWS services
         docker image tag octopussamples/workflowbuildertemplategenerator:${{ steps.determine_version.outputs.semVer }} 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
         docker push 133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator
       shell: bash
