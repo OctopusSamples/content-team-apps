@@ -32,7 +32,7 @@ jobs:
           octopus_lifecycle_id: ${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID }}
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
-          aws_region: us-west-1
+          aws_region: us-west-2
           terraform_bucket_suffix: d66bfa00-e6d4-48be-89a8-e978f1e5e771
           cloudformation_stack_name: content-team-template-generator-backend
           repository_name: template-generator
