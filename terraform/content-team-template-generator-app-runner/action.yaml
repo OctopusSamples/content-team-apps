@@ -109,8 +109,8 @@ runs:
         TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
-        input: terraform/app-runner/backend.tf
-        output: terraform/app-runner/backend.tf
+        input: terraform/content-team-template-generator-app-runner/backend.tf
+        output: terraform/content-team-template-generator-app-runner/backend.tf
 
     # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
     # we need to manually query the new space for the built-in feed ID.
