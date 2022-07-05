@@ -15,11 +15,11 @@ services:
     expose:
       - "4000"
     environment:
-      # UNSAFE_ENABLE_NPM_INSTALL is unsafe because it allows any random generator ro be downloaded and run.
+      # UNSAFE_ENABLE_NPM_INSTALL is unsafe because it allows any random generator to be downloaded and run.
       # Generators are just JavaScript code, which can do literally anything. UNSAFE_ENABLE_NPM_INSTALL should
-      # only be used for testing.
+      # only be enabled for testing.
       # The preferred solution to including new generators is to install them directly into the Docker image
       # using "npm -i --no-save generator-<generatorname>".
-      - UNSAFE_ENABLE_NPM_INSTALL=false
+      - UNSAFE_ENABLE_NPM_INSTALL=true
       
 
