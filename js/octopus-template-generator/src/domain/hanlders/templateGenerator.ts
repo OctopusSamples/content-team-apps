@@ -168,7 +168,7 @@ export class TemplateGenerator {
             handle it gracefully rather than killing the node process.
          */
         let uncaughtException = null;
-        const handleException = (err:Error) => {
+        const handleException = (err: Error) => {
             uncaughtException = err;
         };
         process.on('uncaughtException', handleException);
@@ -188,8 +188,6 @@ export class TemplateGenerator {
             ? answers
             : {};
 
-
-
         try {
             const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
             env.register(await this.resolveGenerator(generator), generator);
@@ -205,13 +203,14 @@ export class TemplateGenerator {
                 throw uncaughtException;
             }
 
+            console.log("Zipping up the template");
             const zip = new AdmZip();
             zip.addLocalFolder(tempDir);
             zip.writeZip(zipPath);
+            console.log("Zip file generated");
 
             return zipPath;
-        }
-        finally {
+        } finally {
             process.removeListener('uncaughtException', handleException);
             try {
                 process.chdir(cwd);
@@ -237,16 +236,19 @@ export class TemplateGenerator {
         const generatorId = splitGeneratorName(generator);
 
         try {
-            return this.getGenerator(generatorId);
+            return this.getSubGenerator(generatorId);
         } catch (e) {
             /*
              If the module was not found, we allow module downloading, and this is the first attempt,
              try downloading the module and return it.
              */
             if ((e.code === "MODULE_NOT_FOUND") && enableNpmInstall() && attemptInstall) {
-                console.log("Attempting to run npm install --no-save " + generatorId.name + " in " + process.cwd());
+                console.log("Attempting to run npm install --prefix downloaded --no-save " + generatorId.name + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
-                    exec("npm install --no-save " + generatorId.name, (error: never) => {
+                    /*
+                        Place any newly download generators into a new directory called downloaded.
+                     */
+                    exec("npm install --prefix downloaded --no-save " + generatorId.name, (error: never) => {
                         if (error) {
                             return reject(error);
                         }
@@ -267,11 +269,54 @@ export class TemplateGenerator {
      * @param generatorId The generator id
      * @private
      */
+    private getSubGenerator(generatorId: GeneratorId) {
+        try {
+            return require.resolve(
+                generatorId.name + "/generators/" + generatorId.subGenerator,
+                {paths: ["downloaded"]});
+        } catch (e) {
+            /*
+                Some generators, like jhipster, don't list the app subgenerator in the
+                package.json exports. This leads to ERR_PACKAGE_PATH_NOT_EXPORTED errors.
+                Yeoman itself doesn't care about the exports though, so we treat
+                ERR_PACKAGE_PATH_NOT_EXPORTED as evidence that the module exists
+                and return the path.
+             */
+            if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+                return "downloaded/" + generatorId.name + "/generators/" + generatorId.subGenerator;
+            }
+
+            console.log(e);
+            return this.getGenerator(generatorId);
+        }
+    }
+
+    /**
+     * Yeoman allows two different directory structures.
+     * It’ll look in ./ and in generators/ to register available generators.
+     * https://yeoman.io/authoring/index.html
+     * @param generatorId The generator id
+     * @private
+     */
     private getGenerator(generatorId: GeneratorId) {
         try {
-            return require.resolve(generatorId.name + "/generators/" + generatorId.subGenerator);
+            return require.resolve(
+                generatorId.name + "/" + generatorId.subGenerator,
+                {paths: ["downloaded"]});
         } catch (e) {
-            return require.resolve(generatorId.name + "/" + generatorId.subGenerator);
+            /*
+                Some generators, like jhipster, don't list the app subgenerator in the
+                package.json exports. This leads to ERR_PACKAGE_PATH_NOT_EXPORTED errors.
+                Yeoman itself doesn't care about the exports though, so we treat
+                ERR_PACKAGE_PATH_NOT_EXPORTED as evidence that the module exists
+                and return the path.
+             */
+            if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+                return "downloaded/" + generatorId.name + "/" + generatorId.subGenerator;
+            }
+
+            console.log(e);
+            throw e;
         }
     }
 }
