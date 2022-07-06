@@ -251,7 +251,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           # to re-download the image if the tag does not change. So the environment specific
           # image is tagged with the deployment ID.
           docker build -f Dockerfile.environment -t $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower} .
-          docker push $${PRIVATE_ECR}#{Octopus.Deployment.Id | ToLower}
+          docker push $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower}
 
           echo "##octopus[stdout-default]"
         EOT
