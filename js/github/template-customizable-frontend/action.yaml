@@ -150,6 +150,12 @@ runs:
       shell: bash
       working-directory: js/template-customizable-frontend
 
+    - name: Tag Release
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        custom_tag: ${{ steps.determine_version.outputs.semVer }}
+        github_token: ${{ inputs.github_token }}
+
     - name: Package
       run: |-
         SOURCEPATH=.
@@ -184,17 +190,39 @@ runs:
       shell: bash
       working-directory: js/template-customizable-frontend
 
-    - name: Tag Release
-      uses: mathieudutour/github-tag-action@v6.0
-      with:
-        custom_tag: ${{ steps.determine_version.outputs.semVer }}
-        github_token: ${{ inputs.github_token }}
-
     - name: Push to Octopus
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
         packages: js/template-customizable-frontend/customizable-workflow-builder-frontend.${{ steps.determine_version.outputs.semVer }}.zip
+        server: ${{ inputs.octopus_server }}
+        space: "Content Team"
+        overwrite_mode: OverwriteExisting
+
+    - name: Package Config Files
+      run: |-
+        SOURCEPATH=.
+        OUTPUTPATH=.
+        # If there is a build directory, assume that is what we want to package
+        if [[ -d "dist" ]]; then
+          SOURCEPATH=dist
+        fi
+        octo pack \
+         --basePath ${SOURCEPATH} \
+         --outFolder ${OUTPUTPATH} \
+         --id customizable-workflow-builder-frontend-config \
+         --version ${{ steps.determine_version.outputs.semVer }} \
+         --format zip \
+         --overwrite \
+         --include '**/config.json'
+      shell: bash
+      working-directory: js/template-customizable-frontend
+
+    - name: Push Config to Octopus
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        packages: js/template-customizable-frontend/customizable-workflow-builder-frontend-config.${{ steps.determine_version.outputs.semVer }}.zip
         server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting

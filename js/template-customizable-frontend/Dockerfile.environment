@@ -1,0 +1,6 @@
+# The purpose of this Dockerfile is to build an environment specific image
+# with a processed configuration file. Otherwise it retains all settings
+# and content from the base image.
+
+FROM public.ecr.aws/z6y3i0f8/customizable-frontend
+COPY customizable-workflow-builder-frontend-config/config.json /workspace/dist/config.json
