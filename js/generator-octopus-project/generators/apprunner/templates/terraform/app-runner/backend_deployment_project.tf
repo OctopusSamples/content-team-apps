@@ -199,6 +199,21 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Value: !GetAtt
                 - AppRunner
                 - ServiceUrl
+            ServiceArn:
+              Description: The App Runner Service Arn
+              Value: !GetAtt
+                - AppRunner
+                - ServiceArn
+            ServiceId:
+              Description: The App Runner Service Id
+              Value: !GetAtt
+                - AppRunner
+                - ServiceId
+            Status:
+              Description: The App Runner Status
+              Value: !GetAtt
+                - AppRunner
+                - Status
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
