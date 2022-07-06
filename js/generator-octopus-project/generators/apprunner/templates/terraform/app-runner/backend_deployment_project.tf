@@ -266,7 +266,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         extract_during_deployment = true
       }
       script_body = <<-EOT
-        echo ""
+        echo "App Runner URL: #{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceUrl]}"
       EOT
     }
   }
