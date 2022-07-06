@@ -216,6 +216,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         extract_during_deployment = true
       }
       properties = {
+        "Octopus.Action.Package.JsonConfigurationVariablesTargets": "**/config.json"
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
