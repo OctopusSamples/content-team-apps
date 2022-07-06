@@ -145,6 +145,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
               Type: AWS::ECR::Repository
               Properties:
                 RepositoryName: !Ref RepositoryName
+          Outputs:
+            RepositoryUri:
+              Description: The repository URI
+              Value: !GetAtt
+                - Repository
+                - RepositoryUri
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
