@@ -167,7 +167,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       Action: sts:AssumeRole
                 ManagedPolicyArns:
                   - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
-                  - arn:aws:iam::aws:policy/service-role/AmazonElasticContainerRegistryPublicReadOnly
+                  - arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly
             AppRunner:
               Type: 'AWS::AppRunner::Service'
               Properties:
