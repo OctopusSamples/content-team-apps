@@ -33,7 +33,7 @@ jobs:
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
           aws_region: us-east-1
-          terraform_bucket_suffix: d66bfa00-e6d4-48be-89a8-e978f1e5e771
+          terraform_bucket_suffix: 0795ad6a-50fb-400d-9505-e16fadad2150
           cloudformation_stack_name: content-team-template-generator-backend
           repository_name: template-generator
 
@@ -55,6 +55,6 @@ jobs:
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
           aws_region: us-east-1
-          terraform_bucket_suffix: 77a3f5e1-80dd-409f-b936-136291abe4aa
+          terraform_bucket_suffix: b4cdc146-6939-4ed1-9dab-0ccd3ec81a62
           cloudformation_stack_name: content-team-template-customizable-frontend
           repository_name: customizable-frontend
