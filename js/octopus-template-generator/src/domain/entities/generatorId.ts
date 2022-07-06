@@ -6,4 +6,5 @@ export default interface GeneratorId {
     namespace: string,
     name: string;
     subGenerator: string;
+    version: string;
 }

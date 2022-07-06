@@ -1,10 +1,9 @@
 import NonInteractiveAdapter from "../yeoman/adapter";
-import enableNpmInstall from "../features/enableNpmInstall";
 import splitGeneratorName from "../utils/generatorSplitter";
 import process from 'node:process';
 import GeneratorId from "../entities/generatorId";
-import safeListModules from "../features/safeListModules";
 import canInstallPackage from "../utils/packageInstaller";
+import getDownloadPath from "../utils/downloadPaths";
 
 const yeoman = require('yeoman-environment');
 const fs = require('fs');
@@ -166,7 +165,7 @@ export class TemplateGenerator {
         zipPath: string) {
 
         /*
-            Catch issues like missing files and save the uncaught exception so we can
+            Catch issues like missing files and save the uncaught exception, so we can
             handle it gracefully rather than killing the node process.
          */
         let uncaughtException = null;
@@ -250,12 +249,13 @@ export class TemplateGenerator {
             const failedToFindModule = e.code === "MODULE_NOT_FOUND";
 
             if (failedToFindModule && canInstallPackage(generatorId.namespaceAndName) && attemptInstall) {
-                console.log("Attempting to run npm install --prefix downloaded --no-save " + generatorId.namespaceAndName + " in " + process.cwd());
+                const downloadPath = getDownloadPath(generatorId);
+                console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceAndName + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     /*
                         Place any newly download generators into a new directory called downloaded.
                      */
-                    exec("npm install --prefix downloaded --no-save " + generatorId.namespaceAndName, (error: never) => {
+                    exec("npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceAndName, (error: never) => {
                         if (error) {
                             return reject(error);
                         }
@@ -280,7 +280,7 @@ export class TemplateGenerator {
         try {
             return require.resolve(
                 generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator,
-                {paths: ["downloaded", "."]});
+                {paths: [getDownloadPath(generatorId), "."]});
         } catch (e) {
             /*
                 Some generators, like jhipster, don't list the app subgenerator in the
@@ -290,7 +290,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/downloaded/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
+                return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
             }
 
             console.log(e);
@@ -309,7 +309,7 @@ export class TemplateGenerator {
         try {
             return require.resolve(
                 generatorId.namespaceAndName + "/" + generatorId.subGenerator,
-                {paths: ["downloaded", "."]});
+                {paths: [getDownloadPath(generatorId), "."]});
         } catch (e) {
             /*
                 Some generators, like jhipster, don't list the app subgenerator in the
@@ -319,7 +319,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/downloaded/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
+                return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
             }
 
             console.log(e);
