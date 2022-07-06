@@ -258,13 +258,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         var.octopus_development_environment_id,
         var.octopus_production_environment_id
       ]
-      package {
-        name                      = local.products_sbom_package
-        package_id                = local.products_sbom_package
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "Server"
-        extract_during_deployment = true
-      }
       script_body = <<-EOT
         echo "App Runner URL: #{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceUrl]}"
       EOT
