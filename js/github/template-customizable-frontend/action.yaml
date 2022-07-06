@@ -203,10 +203,6 @@ runs:
       run: |-
         SOURCEPATH=.
         OUTPUTPATH=.
-        # If there is a build directory, assume that is what we want to package
-        if [[ -d "dist" ]]; then
-          SOURCEPATH=dist
-        fi
         octo pack \
          --basePath ${SOURCEPATH} \
          --outFolder ${OUTPUTPATH} \
@@ -214,7 +210,7 @@ runs:
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
-         --include '**/config.json' \
+         --include 'static/config.json' \
          --include 'Dockerfile.environment' \
       shell: bash
       working-directory: js/template-customizable-frontend
