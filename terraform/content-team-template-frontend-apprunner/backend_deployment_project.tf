@@ -223,8 +223,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           # Build and push the environment specific image
           PRIVATE_ECR="#{Octopus.Action[Get Stack Outputs].Output.PrivateEcr}"
-          # Log into ECR
-          aws ecr get-login-password | docker login --username AWS --password-stdin echo $${PRIVATE_ECR%/*}
+          # Log into ECR using bash to strip the repo name from the private ecr RepositoryUri
+          aws ecr get-login-password | docker login --username AWS --password-stdin $${PRIVATE_ECR%/*}
           # Build and push the image
           cd customizable-workflow-builder-frontend-config
           docker build -f Dockerfile.environment -t $${PRIVATE_ECR} .
