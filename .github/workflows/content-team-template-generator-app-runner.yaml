@@ -3,7 +3,7 @@ name: content-team-template-generator-app-runner
 on:
   push:
     paths:
-      - '.github/workflows/content-team-template-generator-app-runner.yml'
+      - '.github/workflows/content-team-template-generator-app-runner.yaml'
       - 'terraform/content-team-template-generator-app-runner/**'
   workflow_dispatch:
 

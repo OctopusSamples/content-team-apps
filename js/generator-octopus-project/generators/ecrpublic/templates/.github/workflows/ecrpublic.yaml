@@ -3,7 +3,7 @@ name: ecr
 on:
   push:
     paths:
-      - '.github/workflows/<%= cloudformation_stack_name %>.yml'
+      - '.github/workflows/<%= cloudformation_stack_name %>.yaml'
       - 'terraform/<%= cloudformation_stack_name %>/**'
   workflow_dispatch:
 
