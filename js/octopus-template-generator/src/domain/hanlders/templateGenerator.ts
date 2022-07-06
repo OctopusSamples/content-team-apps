@@ -249,13 +249,13 @@ export class TemplateGenerator {
              */
             const failedToFindModule = e.code === "MODULE_NOT_FOUND";
 
-            if (failedToFindModule && canInstallPackage(generatorId.name) && attemptInstall) {
-                console.log("Attempting to run npm install --prefix downloaded --no-save " + generatorId.name + " in " + process.cwd());
+            if (failedToFindModule && canInstallPackage(generatorId.namespaceAndName) && attemptInstall) {
+                console.log("Attempting to run npm install --prefix downloaded --no-save " + generatorId.namespaceAndName + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     /*
                         Place any newly download generators into a new directory called downloaded.
                      */
-                    exec("npm install --prefix downloaded --no-save " + generatorId.name, (error: never) => {
+                    exec("npm install --prefix downloaded --no-save " + generatorId.namespaceAndName, (error: never) => {
                         if (error) {
                             return reject(error);
                         }
@@ -279,7 +279,7 @@ export class TemplateGenerator {
     private getSubGenerator(generatorId: GeneratorId) {
         try {
             return require.resolve(
-                generatorId.name + "/generators/" + generatorId.subGenerator,
+                generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator,
                 {paths: ["downloaded", "."]});
         } catch (e) {
             /*
@@ -290,7 +290,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/downloaded/node_modules/" + generatorId.name + "/generators/" + generatorId.subGenerator;
+                return process.cwd() + "/downloaded/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
             }
 
             console.log(e);
@@ -308,7 +308,7 @@ export class TemplateGenerator {
     private getGenerator(generatorId: GeneratorId) {
         try {
             return require.resolve(
-                generatorId.name + "/" + generatorId.subGenerator,
+                generatorId.namespaceAndName + "/" + generatorId.subGenerator,
                 {paths: ["downloaded", "."]});
         } catch (e) {
             /*
@@ -319,7 +319,7 @@ export class TemplateGenerator {
                 and return the path.
              */
             if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/downloaded/node_modules/" + generatorId.name + "/" + generatorId.subGenerator;
+                return process.cwd() + "/downloaded/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
             }
 
             console.log(e);
