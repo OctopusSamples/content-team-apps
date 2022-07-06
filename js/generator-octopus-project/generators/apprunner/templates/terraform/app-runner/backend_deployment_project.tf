@@ -256,6 +256,47 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   }
   step {
     condition           = "Success"
+    name                = "Redeploy the latest image"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Redeploy the latest image"
+      notes          = "This step redeploys the latest image on the App Runner instance."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        var.octopus_development_environment_id,
+        var.octopus_production_environment_id
+      ]
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          echo "Downloading Docker images"
+
+          echo "##octopus[stdout-verbose]"
+
+          docker pull amazon/aws-cli 2>&1
+
+          # Alias the docker run commands
+          shopt -s expand_aliases
+          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
+
+          echo "##octopus[stdout-default]"
+
+          aws apprunner start-deployment --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}"
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "Print App Runner Details"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
