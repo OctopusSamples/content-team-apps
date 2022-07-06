@@ -7,6 +7,7 @@ services:
       - "5000:5000"
     volumes:
       - ${PWD}/cards:/workspace/dist/cards
+      - ${PWD}/config.json:/workspace/dist/config.json
   templategenerator:
     image: "octopussamples/workflowbuildertemplategenerator"
     pull_policy: always
