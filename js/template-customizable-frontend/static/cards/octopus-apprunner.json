@@ -68,6 +68,11 @@
     },
     {
       "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-2"
+    },
+    {
+      "type": "Input.Text",
       "id": "answer.string.aws_access_key",
       "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
     },
@@ -173,11 +178,6 @@
     {
       "type": "TextBlock",
       "text": "The AWS region to deploy the App Runner instance in"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.aws_region",
-      "value": "us-west-1"
     },
     {
       "type": "TextBlock",
