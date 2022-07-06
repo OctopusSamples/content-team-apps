@@ -191,6 +191,11 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                   ImageRepository:
                     ImageConfiguration:
                       Port: !Ref Port
+                      RuntimeEnvironmentVariables:
+                        - Name: NPM_INSTALL_SAFELIST
+                          Value: @octopus-content-team/generator-octopus-project
+                        - Name: UNSAFE_ENABLE_NPM_INSTALL
+                          Value: false
                     ImageIdentifier: !Ref ImageIdentifier
                     ImageRepositoryType: !Ref ImageRepositoryType
           Outputs:
