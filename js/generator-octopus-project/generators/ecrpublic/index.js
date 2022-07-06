@@ -133,7 +133,7 @@ module.exports = class extends Generator {
             octopus_aws_development_account_id: this.answers["octopus_aws_development_account_id"],
             octopus_aws_production_account_id: this.answers["octopus_aws_production_account_id"],
             aws_region: this.answers["aws_region"],
-            terraform_bucket_suffix: this.answers["terraform_bucket_suffix"],
+            terraform_bucket_suffix: this.answers["terraform_bucket_suffix"] || uuidv4(),
             cloudformation_stack_name: this.answers["cloudformation_stack_name"],
             repository_name: this.answers["repository_name"]
         };

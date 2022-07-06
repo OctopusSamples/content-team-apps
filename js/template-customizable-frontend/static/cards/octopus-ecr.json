@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project:ecr",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.3:ecr",
       "isVisible": false
     },
     {
@@ -160,15 +160,6 @@
       "type": "Input.Text",
       "id": "answer.string.aws_region",
       "value": "us-west-1"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Terraform state bucket suffix"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.terraform_bucket_suffix",
-      "value": "3ba0df57-2c69-428b-a3e5-3e565f77fc43"
     }
   ],
   "actions": [
