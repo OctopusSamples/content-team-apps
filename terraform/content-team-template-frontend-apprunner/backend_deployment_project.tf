@@ -72,6 +72,13 @@ resource "octopusdeploy_variable" "aws_production_account_deploy_backend_project
   }
 }
 
+resource "octopusdeploy_variable" "development_backend_service" {
+  name     = "templateGeneratorHost"
+  type     = "String"
+  value    = "#{Octopus.Action[Get Stack Outputs].Output.BackendUrl}"
+  owner_id = octopusdeploy_project.deploy_backend_project.id
+}
+
 locals {
   cloudformation_tags = jsonencode([
     {
@@ -124,21 +131,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
     action {
       action_type    = "Octopus.AwsRunScript"
       name           = "Get Stack Outputs"
-      notes          = "This step builds an environment specific Docker image and pushes it to a private ECR repo."
+      notes          = "This step extracts values from previously deployed CloudFormation stacks."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
-        data.octopusdeploy_environments.development.environments[0].id,
-        data.octopusdeploy_environments.production.environments[0].id
+        var.octopus_development_environment_id,
+        var.octopus_production_environment_id
       ]
-      features = ["Octopus.Features.JsonConfigurationVariables"]
-      package {
-        name                      = "customizable-workflow-builder-frontend-config"
-        package_id                = "customizable-workflow-builder-frontend-config"
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "Server"
-        extract_during_deployment = true
-      }
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.Region" : var.aws_region
@@ -166,10 +165,59 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "PrivateEcr" $${PRIVATE_ECR}
 
           if [[ -z "$${PRIVATE_ECR}" ]]; then
-            echo "Content Team Template Customizable Frontend"
+            echo "Please run the Content Team Template Customizable Frontend project first"
             exit 1
           fi
 
+          BACKEND_URL=$(aws cloudformation \
+              describe-stacks \
+              --stack-name "content-team-template-generator-apprunner" \
+              --query "Stacks[0].Outputs[?OutputKey=='ServiceUrl'].OutputValue" \
+              --output text)
+
+          set_octopusvariable "BackendUrl" $${BACKEND_URL}
+
+          if [[ -z "$${BACKEND_URL}" ]]; then
+            echo "Please run the Template Frontend App Runner project first"
+            exit 1
+          fi
+        EOT
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "OctopusUseBundledTooling" : "False"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Get Stack Outputs"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    action {
+      action_type    = "Octopus.AwsRunScript"
+      name           = "Get Stack Outputs"
+      notes          = "This step extracts values from previously deployed CloudFormation stacks."
+      run_on_server  = true
+      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      environments   = [
+        var.octopus_development_environment_id,
+        var.octopus_production_environment_id
+      ]
+      features = ["Octopus.Features.JsonConfigurationVariables"]
+      package {
+        name                      = "customizable-workflow-builder-frontend-config"
+        package_id                = "customizable-workflow-builder-frontend-config"
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      properties = {
+        "Octopus.Action.Aws.AssumeRole" : "False"
+        "Octopus.Action.Aws.Region" : var.aws_region
+        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
+        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
+        "Octopus.Action.Script.ScriptBody" : <<-EOT
+          # Build and push the environment specific image
           cd customizable-workflow-builder-frontend-config
           docker build -f Dockerfile.environment -t $${PRIVATE_ECR} .
           docker push $${PRIVATE_ECR}

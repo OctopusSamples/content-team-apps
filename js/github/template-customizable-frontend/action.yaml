@@ -214,7 +214,8 @@ runs:
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
-         --include '**/config.json'
+         --include '**/config.json' \
+         --include 'Dockerfile.environment' \
       shell: bash
       working-directory: js/template-customizable-frontend
 
