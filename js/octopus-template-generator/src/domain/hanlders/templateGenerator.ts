@@ -250,12 +250,12 @@ export class TemplateGenerator {
 
             if (failedToFindModule && canInstallPackage(generatorId.namespaceAndName) && attemptInstall) {
                 const downloadPath = getDownloadPath(generatorId);
-                console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceAndName + " in " + process.cwd());
+                console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion + " in " + process.cwd());
                 return new Promise((resolve, reject) => {
                     /*
                         Place any newly download generators into a new directory called downloaded.
                      */
-                    exec("npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceAndName, (error: never) => {
+                    exec("npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion, (error: never) => {
                         if (error) {
                             return reject(error);
                         }

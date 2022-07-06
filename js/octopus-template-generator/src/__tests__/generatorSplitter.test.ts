@@ -23,10 +23,18 @@ it('parses npm packages correctly', async () => {
         splitGeneratorName("@octopus-content-team/generator-octopus-project@0.1.1").version);
 
     assert.equal(
+        "@octopus-content-team/generator-octopus-project",
+        splitGeneratorName("@octopus-content-team/generator-octopus-project@0.1.1").namespaceAndName);
+
+    assert.equal(
         "",
         splitGeneratorName("@octopus-content-team/generator-octopus-project").version);
 
     assert.equal(
         "test",
         splitGeneratorName("@octopus-content-team/generator-octopus-project@0.1.1:test").subGenerator);
+
+    assert.equal(
+        "@octopus-content-team/generator-octopus-project@0.1.1",
+        splitGeneratorName("@octopus-content-team/generator-octopus-project@0.1.1:test").namespaceNameAndVersion);
 });

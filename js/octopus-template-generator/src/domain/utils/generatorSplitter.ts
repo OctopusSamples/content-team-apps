@@ -11,7 +11,7 @@ export default function splitGeneratorName(generator: string): GeneratorId {
         throw new Error("generator can only have one colon");
     }
 
-    const namespaceAndName = splitGenerator[0];
+    const namespaceNameAndVersion = splitGenerator[0];
     const namespaceAndNameSplit = splitGenerator[0].split("/");
     const namespace = namespaceAndNameSplit.length === 1 ? "" : namespaceAndNameSplit[0];
     const nameAndVersion = namespaceAndNameSplit.length === 1 ? namespaceAndNameSplit[0] : namespaceAndNameSplit[1];
@@ -20,7 +20,8 @@ export default function splitGeneratorName(generator: string): GeneratorId {
     const version = nameAndVersionSplit.length === 1 ? "" : nameAndVersionSplit[1];
 
     return {
-        namespaceAndName: namespaceAndName,
+        namespaceAndName: (namespace ? namespace + "/" : "") + name,
+        namespaceNameAndVersion: namespaceNameAndVersion,
         namespace: namespace,
         name: name,
         subGenerator: splitGenerator[1] || "app",
