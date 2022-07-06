@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "app-builder-<%= terraform_bucket_suffix %>"
+    bucket = "app-builder-${TERRAFORM_BUCKET_SUFFIX}"
     key    = "appbuilder-apprunner-deployment"
-    region = "<%= aws_region %>"
+    region = "${TERRAFORM_BUCKET_REGION}"
   }
 }
