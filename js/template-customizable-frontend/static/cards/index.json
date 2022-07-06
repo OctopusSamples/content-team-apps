@@ -15,6 +15,22 @@
       "data": {
         "filename": "octopus-apprunner.json"
       }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Octopus ECR",
+      "verb": "openCard",
+      "data": {
+        "filename": "octopus-ecr.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Octopus ECR",
+      "verb": "openCard",
+      "data": {
+        "filename": "octopus-ecrpublic.json"
+      }
     }
   ]
 }
