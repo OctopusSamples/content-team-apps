@@ -136,8 +136,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         name                      = "DockerImage"
         package_id                = var.docker_image
         feed_id                   = var.octopus_ecr_feed_id
-        acquisition_location      = "Server"
+        acquisition_location      = "NotAcquired"
         extract_during_deployment = false
+        properties                = {
+          "SelectionMode" : "immediate",
+          "Purpose" : "DockerImageReference"
+        }
       }
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
