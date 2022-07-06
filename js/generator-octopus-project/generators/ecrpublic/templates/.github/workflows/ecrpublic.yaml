@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./terraform/ecr
+        uses: ./terraform/<%= cloudformation_stack_name %>
         with:
           aws_access_key: <%= aws_access_key %>
           aws_secret_key: <%= aws_secret_key %>

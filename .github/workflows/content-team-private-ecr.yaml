@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./terraform/ecr
+        uses: ./terraform/content-team-private-ecr
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
