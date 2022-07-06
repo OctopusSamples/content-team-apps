@@ -250,7 +250,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           # Note we need to build a new image tage each time, as App Runner does not appear
           # to re-download the image if the tag does not change. So the environment specific
           # image is tagged with the deployment ID.
-          docker build -f Dockerfile.environment -t $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower} .
+          docker build --pull -f Dockerfile.environment -t $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower} .
           docker push $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower}
 
           echo "##octopus[stdout-default]"
