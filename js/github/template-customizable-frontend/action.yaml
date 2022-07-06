@@ -264,3 +264,14 @@ runs:
         server: ${{ inputs.octopus_server }}
         space: "Content Team"
         overwrite_mode: OverwriteExisting
+
+    - name: Create Mainline Octopus Release for the Internal Tooling Instance
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        project: Content Team Template Customizable Frontend
+        server: ${{ inputs.octopus_server }}
+        deploy_to: Development
+        space: "Content Team"
+        release_number: ${{ steps.determine_version.outputs.semVer }}
