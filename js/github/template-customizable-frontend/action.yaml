@@ -266,7 +266,6 @@ runs:
         overwrite_mode: OverwriteExisting
 
     - name: Create Mainline Octopus Release for the Internal Tooling Instance
-      if: ${{ env.BRANCH_NAME == 'main' }}
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
