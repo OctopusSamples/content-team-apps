@@ -4,6 +4,34 @@ A Yeoman generator to build a number of common projects in Octopus.
 
 `npm install -g @octopus-content-team/generator-octopus-project`
 
+## Octopus Configuration
+
+These templates assume certain environments, accounts, feeds etc. These resources are captured
+in GitHub Actions secrets for convenience.
+
+### Environments
+
+* `Development` - The development environment where applications are deployed.
+* `Development (Security)` - This environment is used to run (and re-run) security scans on things like SBOM packages on development deployments.
+* `Production` - The production environment where applications are deployed.
+* `Production (Security)` - This environment is used to run (and re-run) security scans on things like SBOM packages om production deployments.
+
+### Lifecycles
+
+* `Application: Development -> Development (Security) -> Production -> Production (Security)` - The progression of an application deployment.
+* `Production Only -> Production` - Deployments only to the production environment.
+* `Infrastructure: Development -> Production` - Deployments of infrastructure that have no security scanning.
+
+### Feeds
+
+* `ECR` - An ECR Docker feed.
+* `DockerHub` - A Docker feed accessing Docker Hub.
+
+### Accounts
+
+* `AWS Development` - The account used to deploy development applications. Scoped to the `Development` and `Development (Security)` environments.
+* `AWS Production` - The account used to deploy production applications. Scoped to the `Production` and `Production (Security)` environments.
+
 ## Expected GitHub Actions Secrets
 
 Many of the variables used by these templates default to secret values held by a GitHub repo. This
