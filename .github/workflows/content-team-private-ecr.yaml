@@ -3,7 +3,7 @@ name: ecr
 on:
   push:
     paths:
-      - '.github/workflows/content-team-private-ecr.yml'
+      - '.github/workflows/content-team-private-ecr.yaml'
       - 'terraform/content-team-private-ecr/**'
   workflow_dispatch:
 
