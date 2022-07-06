@@ -190,13 +190,13 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   }
   step {
     condition           = "Success"
-    name                = "Get Stack Outputs"
+    name                = "Build Environment Image"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     action {
       action_type    = "Octopus.AwsRunScript"
-      name           = "Get Stack Outputs"
-      notes          = "This step extracts values from previously deployed CloudFormation stacks."
+      name           = "Build Environment Image"
+      notes          = "This step builds and pushes an environment specific image."
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
