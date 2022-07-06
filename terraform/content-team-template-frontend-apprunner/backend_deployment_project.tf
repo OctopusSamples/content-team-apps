@@ -169,6 +169,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             exit 1
           fi
 
+          echo "Private ECR Repo: $${PRIVATE_ECR}"
+
           BACKEND_URL=$(aws cloudformation \
               describe-stacks \
               --stack-name "content-team-template-generator-apprunner" \
@@ -181,6 +183,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             echo "Please run the Template Frontend App Runner project first"
             exit 1
           fi
+
+          echo "Backend Service URL: $${BACKEND_URL}"
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
@@ -219,8 +223,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Script.ScriptBody" : <<-EOT
           # Build and push the environment specific image
           cd customizable-workflow-builder-frontend-config
-          docker build -f Dockerfile.environment -t $${PRIVATE_ECR} .
-          docker push $${PRIVATE_ECR}
+          docker build -f Dockerfile.environment -t #{Octopus.Action[Get Stack Outputs].Output.PrivateEcr} .
+          docker push #{Octopus.Action[Get Stack Outputs].Output.PrivateEcr}
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
