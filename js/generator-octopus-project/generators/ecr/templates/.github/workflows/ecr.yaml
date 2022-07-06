@@ -29,6 +29,9 @@ jobs:
           octopus_production_security_environment_id: <%= octopus_production_security_environment_id %>
           octopus_project_name: <%= octopus_project_name %>
           octopus_project_group_name: <%= octopus_project_group_name %>
+          # You usually have two options here.
+          # "${{ secrets.OCTOPUS_INFRASTRUCTURE_LIFECYCLEID}}" creates a new repo in every environment.
+          # "${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID}}" creates a new repo only in the production environment.
           octopus_lifecycle_id: <%= octopus_lifecycle_id %>
           octopus_aws_development_account_id: <%= octopus_aws_development_account_id %>
           octopus_aws_production_account_id: <%= octopus_aws_production_account_id %>
