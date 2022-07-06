@@ -3,4 +3,4 @@
 # and content from the base image.
 
 FROM public.ecr.aws/z6y3i0f8/customizable-frontend
-COPY customizable-workflow-builder-frontend-config/config.json /workspace/dist/config.json
+COPY static/config.json /workspace/dist/config.json
