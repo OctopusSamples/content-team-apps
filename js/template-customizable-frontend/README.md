@@ -70,3 +70,7 @@ yeoman-inspector @octopus-content-team/octopus-project:apprunner
 ```
 
 The Adaptive Card sample is displayed under the `ADAPTIVE CARD EXAMPLE` heading in the output.
+
+# Live instances
+
+This frontend is available [here](https://oc.to/content-team-platform-engineering).
