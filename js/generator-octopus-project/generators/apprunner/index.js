@@ -42,6 +42,12 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "aws_region",
+                message: "The AWS region to deploy the App Runner instance in",
+                default: "us-west-2"
+            },
+            {
+                type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
                 default: "${{ secrets.AWS_ACCESS_KEY_ID }}"
@@ -112,12 +118,6 @@ module.exports = class extends Generator {
                 name: "octopus_aws_production_account_id",
                 message: "The ID of the production AWS account used to deploy the Cloudformation template",
                 default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
-            },
-            {
-                type: "input",
-                name: "aws_region",
-                message: "The AWS region to deploy the App Runner instance in",
-                default: "us-west-1"
             },
             {
                 type: "input",
