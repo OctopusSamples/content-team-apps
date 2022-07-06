@@ -30,7 +30,7 @@ jobs:
           octopus_project_name: Template Generator App Runner
           octopus_project_group_name: Content Team Template Generator
           octopus_lifecycle_id: ${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}
-          docker_image: public.ecr.aws/z6y3i0f8/template-generator
+          docker_image: public.ecr.aws/z6y3i0f8/template-generator:latest
           docker_port: 5000
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}

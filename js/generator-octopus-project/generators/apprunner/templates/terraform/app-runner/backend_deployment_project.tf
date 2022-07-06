@@ -153,9 +153,14 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
             Memory:
               Type: String
               Default: 2048
+          Conditions:
+            PrivateECR: !Equals
+              - !Ref ImageRepositoryType
+              - ECR
           Resources:
             AccessRole:
               Type: AWS::IAM::Role
+              Condition: PrivateECR
               Properties:
                 AssumeRolePolicyDocument:
                   Version: '2008-10-17'
@@ -176,9 +181,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                 ServiceName: !Ref ServiceName
                 SourceConfiguration:
                   AuthenticationConfiguration:
-                    AccessRoleArn: !GetAtt
-                      - AccessRole
-                      - Arn
+                    AccessRoleArn: !If
+                      - PrivateECR
+                      - !GetAtt
+                        - AccessRole
+                        - Arn
+                      - !Ref 'AWS::NoValue'
                   AutoDeploymentsEnabled: false
                   ImageRepository:
                     ImageConfiguration:

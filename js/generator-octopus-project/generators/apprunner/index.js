@@ -8,7 +8,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "docker_image",
                 message: "The Docker image to deploy",
-                default: "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator"
+                default: "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator:latest"
             },
             {
                 type: "input",
