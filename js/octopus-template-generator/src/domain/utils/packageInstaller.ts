@@ -8,5 +8,5 @@ import splitGeneratorName from "./generatorSplitter";
  */
 export default function canInstallPackage(generator: string) {
     const generatorId = splitGeneratorName(generator);
-    return enableNpmInstall() || safeListModules().includes(generatorId.name);
+    return enableNpmInstall() || safeListModules().includes(generatorId.namespaceAndName);
 }
