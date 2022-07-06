@@ -199,6 +199,11 @@ runs:
         space: "Content Team"
         overwrite_mode: OverwriteExisting
 
+    # The configuration file and environment specific Dockerfile are packaged up
+    # and uploaded to the server. This allows other projects to build environment
+    # specific images using the base image pushed by this workflow.
+    # See \terraform\content-team-template-frontend-apprunner\backend_deployment_project.tf
+    # for an example where this package is used.
     - name: Package Config Files
       run: |-
         SOURCEPATH=.
