@@ -34,8 +34,8 @@ jobs:
           docker_port: 4000
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
-          aws_region: us-west-1
-          terraform_bucket_suffix: 6408819d-5a73-42d7-9e74-18be9c3ea5c8
+          aws_region: us-west-2
+          terraform_bucket_suffix: 97577302-6898-46d3-adbf-41ffb21c93f2
           octopus_ecr_feed_name: ECR
           cloudformation_stack_name: content-team-template-frontend-apprunner
           apprunner_service_name: template-frontend
