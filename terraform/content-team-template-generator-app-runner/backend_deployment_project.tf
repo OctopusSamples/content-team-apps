@@ -132,17 +132,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         var.octopus_development_environment_id,
         var.octopus_production_environment_id
       ]
-      package {
-        name                      = "DockerImage"
-        package_id                = var.docker_image
-        feed_id                   = var.octopus_ecr_feed_id
-        acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
-        properties                = {
-          "SelectionMode" : "immediate",
-          "Purpose" : "DockerImageReference"
-        }
-      }
       properties = {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_tags
@@ -219,7 +208,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey: "ImageIdentifier"
-            ParameterValue: "#{Octopus.Action.Package[DockerImage].PackageId}"
+            ParameterValue: var.docker_image
           },
           {
             ParameterKey: "Port"
@@ -233,7 +222,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.CloudFormationTemplateParametersRaw" : jsonencode([
           {
             ParameterKey: "ImageIdentifier"
-            ParameterValue: "#{Octopus.Action.Package[DockerImage].PackageId}"
+            ParameterValue: var.docker_image
           },
           {
             ParameterKey: "Port"
