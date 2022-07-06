@@ -16,8 +16,8 @@ export default function splitGeneratorName(generator: string): GeneratorId {
     const namespace = namespaceAndNameSplit.length === 1 ? "" : namespaceAndNameSplit[0];
     const nameAndVersion = namespaceAndNameSplit.length === 1 ? namespaceAndNameSplit[0] : namespaceAndNameSplit[1];
     const nameAndVersionSplit = nameAndVersion.split("@");
-    const name = nameAndVersion[0];
-    const version = nameAndVersion.length === 1 ? "" : nameAndVersionSplit[1];
+    const name = nameAndVersionSplit[0];
+    const version = nameAndVersionSplit.length === 1 ? "" : nameAndVersionSplit[1];
 
     return {
         namespaceAndName: namespaceAndName,
