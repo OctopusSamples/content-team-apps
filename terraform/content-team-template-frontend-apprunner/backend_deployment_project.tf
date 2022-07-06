@@ -246,8 +246,8 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "##octopus[stdout-verbose]"
 
           cd customizable-workflow-builder-frontend-config
-          docker build -f Dockerfile.environment -t $${PRIVATE_ECR} .
-          docker push $${PRIVATE_ECR}
+          docker build -f Dockerfile.environment -t $${PRIVATE_ECR}:#{Octopus.Deployment.Id | ToLower} .
+          docker push $${PRIVATE_ECR}#{Octopus.Deployment.Id | ToLower}
 
           echo "##octopus[stdout-default]"
         EOT
