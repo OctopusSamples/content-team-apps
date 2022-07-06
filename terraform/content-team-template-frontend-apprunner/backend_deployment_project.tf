@@ -75,7 +75,7 @@ resource "octopusdeploy_variable" "aws_production_account_deploy_backend_project
 resource "octopusdeploy_variable" "development_backend_service" {
   name     = "templateGeneratorHost"
   type     = "String"
-  value    = "#{Octopus.Action[Get Stack Outputs].Output.BackendUrl}"
+  value    = "https://#{Octopus.Action[Get Stack Outputs].Output.BackendUrl}"
   owner_id = octopusdeploy_project.deploy_backend_project.id
 }
 
