@@ -35,7 +35,7 @@ jobs:
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
           aws_region: us-west-2
-          terraform_bucket_suffix: 8e52b6c5-de6d-4b9b-ba20-7c6cf96146e4
+          terraform_bucket_suffix: 0286bf4a-4e84-45e7-99cf-935c5e66952c
           octopus_ecr_feed_name: ECR
           cloudformation_stack_name: content-team-template-generator-apprunner
           apprunner_service_name: template-generator
