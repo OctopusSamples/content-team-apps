@@ -33,7 +33,7 @@ jobs:
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
           aws_region: us-west-2
-          terraform_bucket_suffix: 655d596b-6568-497b-81d7-5ecb65fdb83b
+          terraform_bucket_suffix: 5c9778f4-1157-4c65-967a-806ee223181e
           cloudformation_stack_name: content-team-customizable-frontend
           repository_name: content-team-customizable-frontend
 
