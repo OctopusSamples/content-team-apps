@@ -1,4 +1,4 @@
-name: ecr
+name: <%= cloudformation_stack_name %>
 
 on:
   push:

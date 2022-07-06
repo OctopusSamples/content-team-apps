@@ -1,4 +1,4 @@
-name: app-runner
+name: <%= cloudformation_stack_name %>
 
 on:
   push:

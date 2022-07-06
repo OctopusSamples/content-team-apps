@@ -1,4 +1,4 @@
-name: ecr
+name: content-team-private-ecr
 
 on:
   push:
