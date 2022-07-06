@@ -179,7 +179,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                     AccessRoleArn: !GetAtt
                       - AccessRole
                       - Arn
-                  AutoDeploymentsEnabled: true
+                  AutoDeploymentsEnabled: false
                   ImageRepository:
                     ImageConfiguration:
                       Port: !Ref Port
