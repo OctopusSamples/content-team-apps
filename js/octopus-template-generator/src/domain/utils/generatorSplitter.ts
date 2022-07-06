@@ -14,7 +14,7 @@ export default function splitGeneratorName(generator: string): GeneratorId {
     const splitName = splitGenerator[0].split("/");
 
     return {
-        namespaceAndName: (splitName.length === 1 ? splitName[0] : splitName[0] + "/" + splitName[1]),
+        namespaceAndName: splitGenerator[0],
         namespace: splitName.length === 1 ? "" : splitName[0],
         name: splitName.length === 1 ? splitName[0] : splitName[1],
         subGenerator: splitGenerator[1] || "app"
