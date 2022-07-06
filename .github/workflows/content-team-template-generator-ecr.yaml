@@ -49,7 +49,7 @@ jobs:
           octopus_production_environment_id: ${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}
           octopus_development_security_environment_id: ${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}
           octopus_production_security_environment_id: ${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}
-          octopus_project_name: Template Generator Customizable Frontend
+          octopus_project_name: Template Generator Customizable Frontend ECR
           octopus_project_group_name: Content Team Template Generator
           octopus_lifecycle_id: ${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID }}
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
