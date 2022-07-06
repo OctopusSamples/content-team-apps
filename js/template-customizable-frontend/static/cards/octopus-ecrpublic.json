@@ -52,114 +52,6 @@
       "type": "Input.Text",
       "id": "answer.string.aws_region",
       "value": "us-east-1"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The AWS access key."
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.aws_access_key",
-      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The AWS secret key."
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.aws_secret_key",
-      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The hostname of your Octopus instance."
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_server",
-      "value": "${{ secrets.OCTOPUS_SERVER }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus API key."
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_apikey",
-      "value": "${{ secrets.OCTOPUS_APIKEY }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus Space ID"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_space_id",
-      "value": "${{ secrets.OCTOPUS_SPACEID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The development environment ID"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_development_environment_id",
-      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The production environment ID"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_environment_id",
-      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The development environment ID"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_development_security_environment_id",
-      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The production environment ID"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_security_environment_id",
-      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The lifecycle to assign to the project"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_lifecycle_id",
-      "value": "${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The ID of the development AWS account used to deploy the Cloudformation template"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_aws_development_account_id",
-      "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The ID of the production AWS account used to deploy the Cloudformation template"
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_aws_production_account_id",
-      "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
     }
   ],
   "actions": [
@@ -169,6 +61,123 @@
       "verb": "openCard",
       "data": {
         "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.ShowCard",
+      "title": "Advanced Options",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [
+          {
+            "type": "TextBlock",
+            "text": "The AWS access key."
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.aws_access_key",
+            "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The AWS secret key."
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.aws_secret_key",
+            "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The hostname of your Octopus instance."
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_server",
+            "value": "${{ secrets.OCTOPUS_SERVER }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The Octopus API key."
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_apikey",
+            "value": "${{ secrets.OCTOPUS_APIKEY }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The Octopus Space ID"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_space_id",
+            "value": "${{ secrets.OCTOPUS_SPACEID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The development environment ID"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_development_environment_id",
+            "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The production environment ID"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_production_environment_id",
+            "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The development environment ID"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_development_security_environment_id",
+            "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The production environment ID"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_production_security_environment_id",
+            "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The lifecycle to assign to the project"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_lifecycle_id",
+            "value": "${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The ID of the development AWS account used to deploy the Cloudformation template"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_aws_development_account_id",
+            "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
+          },
+          {
+            "type": "TextBlock",
+            "text": "The ID of the production AWS account used to deploy the Cloudformation template"
+          },
+          {
+            "type": "Input.Text",
+            "id": "answer.string.octopus_aws_production_account_id",
+            "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
+          }
+        ]
       }
     },
     {

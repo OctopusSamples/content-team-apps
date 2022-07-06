@@ -26,7 +26,7 @@
     },
     {
       "type": "Action.Execute",
-      "title": "Octopus ECR",
+      "title": "Octopus ECR Public",
       "verb": "openCard",
       "data": {
         "filename": "octopus-ecrpublic.json"
