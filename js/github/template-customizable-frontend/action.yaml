@@ -270,7 +270,7 @@ runs:
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ inputs.octopus_apikey }}
-        project: Content Team Template Customizable Frontend
+        project: Template Frontend App Runner
         server: ${{ inputs.octopus_server }}
         deploy_to: Development
         space: "Content Team"
