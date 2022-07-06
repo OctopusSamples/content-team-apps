@@ -1,0 +1,42 @@
+name: content-team-template-frontend-apprunner
+
+on:
+  push:
+    paths:
+      - '.github/workflows/content-team-template-frontend-apprunner.yaml'
+      - 'terraform/content-team-template-frontend-apprunner/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./terraform/content-team-template-frontend-apprunner
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          octopus_server: ${{ secrets.OCTOPUS_SERVER }}
+          octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
+          octopus_space_id: ${{ secrets.OCTOPUS_SPACEID }}
+          octopus_development_environment_id: ${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}
+          octopus_production_environment_id: ${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}
+          octopus_development_security_environment_id: ${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}
+          octopus_production_security_environment_id: ${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}
+          octopus_project_name: Template Frontend App Runner
+          octopus_project_group_name: Content Team Template Generator
+          octopus_lifecycle_id: ${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}
+          docker_image: "#{Octopus.Action[Get Stack Outputs].Output.PrivateEcr}:latest"
+          docker_port: 4000
+          octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
+          octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
+          aws_region: us-west-1
+          terraform_bucket_suffix: 6408819d-5a73-42d7-9e74-18be9c3ea5c8
+          octopus_ecr_feed_name: ECR
+          cloudformation_stack_name: content-team-template-frontend-apprunner
+          apprunner_service_name: template-frontend
+
