@@ -193,6 +193,12 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
                       Port: !Ref Port
                     ImageIdentifier: !Ref ImageIdentifier
                     ImageRepositoryType: !Ref ImageRepositoryType
+          Outputs:
+            ServiceUrl:
+              Description: The App Runner URL
+              Value: !GetAtt
+                - AppRunner
+                - ServiceUrl
         EOT
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
