@@ -261,10 +261,19 @@ runs:
           octopus-template-generator-lambda:${{ steps.determine_version.outputs.semVer }}
           octopus-template-generator-lambda-sbom:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
-        wait_for_deployment: true
-        deployment_timeout: 00:30:00
         release_number: ${{ steps.determine_version.outputs.semVer }}
         channel: Mainline
+
+    - name: Create Mainline Octopus Release for the Internal Tooling Instance
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: ${{ inputs.octopus_apikey }}
+        project: Template Generator App Runner
+        server: ${{ inputs.octopus_server }}
+        deploy_to: Development
+        space: "Content Team"
+        release_number: ${{ steps.determine_version.outputs.semVer }}
 
     - name: Create Feature Branch Octopus Release
       if: ${{ env.BRANCH_NAME != 'main' }}
@@ -278,7 +287,5 @@ runs:
           octopus-template-generator-lambda:${{ steps.determine_version.outputs.semVer }}
           octopus-template-generator-lambda-sbom:${{ steps.determine_version.outputs.semVer }}
         space: "Content Team"
-        wait_for_deployment: true
-        deployment_timeout: 00:30:00
         release_number: ${{ steps.determine_version.outputs.semVer }}
         channel: Feature Branches
