@@ -5,32 +5,45 @@
     {
       "type": "TextBlock",
       "text": "Select your generator"
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.Execute",
-      "title": "Octopus App Runner",
-      "verb": "openCard",
-      "data": {
-        "filename": "octopus-apprunner.json"
-      }
     },
     {
-      "type": "Action.Execute",
-      "title": "Octopus ECR",
-      "verb": "openCard",
-      "data": {
-        "filename": "octopus-ecr.json"
-      }
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus App Runner",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-apprunner.json"
+          }
+        }
+      ]
     },
     {
-      "type": "Action.Execute",
-      "title": "Octopus ECR Public",
-      "verb": "openCard",
-      "data": {
-        "filename": "octopus-ecrpublic.json"
-      }
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecr.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR Public",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecrpublic.json"
+          }
+        }
+      ]
     }
   ]
 }
