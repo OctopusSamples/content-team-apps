@@ -10,58 +10,10 @@
   "actions": [
     {
       "type": "Action.Execute",
-      "title": "Spring Boot",
+      "title": "Octopus App Runner",
       "verb": "openCard",
       "data": {
-        "filename": "springboot.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "Loopback",
-      "verb": "openCard",
-      "data": {
-        "filename": "loopback.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "Feathers",
-      "verb": "openCard",
-      "data": {
-        "filename": "feathers.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "Code",
-      "verb": "openCard",
-      "data": {
-        "filename": "code.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "Feathers Plugin",
-      "verb": "openCard",
-      "data": {
-        "filename": "feathers-plugin.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "License",
-      "verb": "openCard",
-      "data": {
-        "filename": "license.json"
-      }
-    },
-    {
-      "type": "Action.Execute",
-      "title": "Serverless Policy",
-      "verb": "openCard",
-      "data": {
-        "filename": "serverless-policy.json"
+        "filename": "octopus-apprunner.json"
       }
     }
   ]

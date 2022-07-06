@@ -1,0 +1,216 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project:apprunner",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Docker image to deploy"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.docker_image",
+      "value": "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator:latest"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The port to expose on the Docker container"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.docker_port",
+      "value": "5000"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The name of the App Runner service"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.apprunner_service_name",
+      "value": "app-runner"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The name of the CloudFormation stack to build the App Runner instance (also used to name the directory holding the terraform files)"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.cloudformation_stack_name",
+      "value": "app-runner"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project group name"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_project_group_name",
+      "value": "App Runner"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project name"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_project_name",
+      "value": "App Runner"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACEID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The lifecycle to assign to the project"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the development AWS account used to deploy the Cloudformation template"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_development_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the production AWS account used to deploy the Cloudformation template"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_production_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS region to deploy the App Runner instance in"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-1"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Terraform state bucket suffix"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.terraform_bucket_suffix",
+      "value": "3ab295fb-abbd-4194-9459-ab77cfa218ba"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The name of the ECR feed"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_ecr_feed_name",
+      "value": "ECR"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

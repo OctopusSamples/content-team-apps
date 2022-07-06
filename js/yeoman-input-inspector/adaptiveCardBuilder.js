@@ -5,6 +5,16 @@ import stripAnsi from 'strip-ansi';
  * @param questions The Yeoman generator questions.
  */
 export default function buildAdaptiveCard(questions, answers, generator) {
+    /*
+     The template generator service uses the full npm package name, so we need
+     to append the "generator" prefix to the package name, taking into account
+     any namespaces.
+     */
+    const splitGenerator = generator.split("/");
+    const fixedGenerator = splitGenerator.length === 1
+        ? "generator-" + splitGenerator[0]
+        : splitGenerator[0] + "/generator-" + splitGenerator[1];
+
     const card = {
         "type": "AdaptiveCard",
         "version": "1.0",
@@ -12,7 +22,7 @@ export default function buildAdaptiveCard(questions, answers, generator) {
             {
                 "type": "Input.Text",
                 "id": "generator",
-                "value": "generator-" + generator,
+                "value": fixedGenerator,
                 "isVisible": false
             }
         ],
@@ -165,7 +175,7 @@ export default function buildAdaptiveCard(questions, answers, generator) {
 function getChoices(choices, answers) {
     const fixedChoices = choices || [];
 
-    if (typeof choices === 'function' ) {
+    if (typeof choices === 'function') {
         try {
             return choices(answers);
         } catch {
