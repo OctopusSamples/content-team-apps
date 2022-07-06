@@ -70,6 +70,17 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
       with:
@@ -127,6 +138,11 @@ runs:
         docker push octopussamples/customizableworkflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }}
         docker image tag octopussamples/customizableworkflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} octopussamples/customizableworkflowbuilderfrontend
         docker push octopussamples/customizableworkflowbuilderfrontend
+        
+        # Push the image to a private ECR repo so we can use it internally on AWS services
+        docker image tag octopussamples/customizableworkflowbuilderfrontend:${{ steps.determine_version.outputs.semVer }} public.ecr.aws/z6y3i0f8/customizable-frontend
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+        docker push public.ecr.aws/z6y3i0f8/customizable-frontend
       shell: bash
 
     - name: Build
