@@ -3,8 +3,8 @@ name: ecr
 on:
   push:
     paths:
-      - '.github/workflows/content-team-customizable-frontend.yml'
-      - 'terraform/content-team-customizable-frontend/**'
+      - '.github/workflows/content-team-private-ecr.yml'
+      - 'terraform/content-team-private-ecr/**'
   workflow_dispatch:
 
 jobs:
@@ -32,8 +32,8 @@ jobs:
           octopus_lifecycle_id: ${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID }}
           octopus_aws_development_account_id: ${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}
           octopus_aws_production_account_id: ${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}
-          aws_region: us-west-1
-          terraform_bucket_suffix: 63d7a656-ca63-4fc5-8364-f6e977aa2bd9
+          aws_region: us-west-2
+          terraform_bucket_suffix: 655d596b-6568-497b-81d7-5ecb65fdb83b
           cloudformation_stack_name: content-team-customizable-frontend
           repository_name: content-team-customizable-frontend
 
