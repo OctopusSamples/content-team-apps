@@ -1,11 +1,12 @@
 import executeGenerator from "../utils/generatorExecutor";
 import createZipFile from "../utils/zipFileCreator";
 import handleExceptions from "../utils/globalExceptionHandler";
+import lockFileAndContinue from "../utils/fileLockProcess";
+import fileExists from "../utils/fileExists";
 
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const lockFile = require('lockfile');
 const md5 = require("md5");
 
 handleExceptions();
@@ -45,7 +46,7 @@ export class TemplateGenerator {
         const zipPath = path.join(os.tmpdir(), id + '.zip');
 
         // If the template does nopt exist, build it
-        if (fs.existsSync(zipPath)) {
+        if (fileExists(zipPath)) {
             return zipPath;
         }
 
@@ -60,7 +61,8 @@ export class TemplateGenerator {
      * @param args The generator arguments.
      */
     async generateTemplateSync(
-        generator: string, options: { [key: string]: string; },
+        generator: string,
+        options: { [key: string]: string; },
         answers: { [key: string]: string; },
         args: string[]): Promise<string> {
 
@@ -114,22 +116,12 @@ export class TemplateGenerator {
         args: string[],
         zipPath: string) {
         const lockFilePath = zipPath + ".lock";
-        return new Promise((resolve, reject) => {
-            lockFile.lock(lockFilePath, (err: never) => {
-                if (err) return reject(err);
-
-                if (!fs.existsSync(zipPath)) {
-                    return resolve(this.writeTemplate(generator, options, answers, args, zipPath));
-                }
-
-                resolve(zipPath);
-            })
-        })
-            .finally(() => lockFile.unlock(lockFilePath, (err: never) => {
-                if (err) {
-                    console.error('TemplateGenerator-GenerateTemplate-UnlockFail: Failed to unlock the file: ' + err)
-                }
-            }));
+        return lockFileAndContinue(lockFilePath, () => {
+            if (!fileExists(zipPath)) {
+                return this.writeTemplate(generator, options, answers, args, zipPath);
+            }
+            return zipPath;
+        });
     }
 
     /**
