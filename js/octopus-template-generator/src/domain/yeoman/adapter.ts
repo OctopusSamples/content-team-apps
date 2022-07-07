@@ -30,16 +30,16 @@ class DummyPrompt {
         }
 
         console.log("TemplateGenerator-GenerateTemplate-MissingAnswer: Answer to \"" + this.question.name +
-            "\" was not provided. A blank response is provided instead, but note this is very unlikely to be a suitable response, and you should include an answer to question \""
+            "\" was not provided. A default response is provided instead, but note this is very unlikely to be a suitable response, and you should include an answer to question \""
             + this.question.name + "\" in the request.");
 
         // checkboxes require an array of responses
         if (this.question.type === "checkbox") {
-            return Promise.resolve([]);
+            return Promise.resolve(this.question.default ?? []);
         }
 
         // everything else is a string
-        return Promise.resolve("");
+        return Promise.resolve(this.question.default ?? "");
     }
 }
 
