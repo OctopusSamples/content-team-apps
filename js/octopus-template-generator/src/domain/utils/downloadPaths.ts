@@ -1,5 +1,5 @@
 import GeneratorId from "../entities/generatorId";
-import getDefaultWorkingDir from "../features/defaultWorkingDir";
+import {getDefaultWorkingDir} from "../features/defaultWorkingDir";
 import path from "path";
 
 /**

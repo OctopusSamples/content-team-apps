@@ -2,10 +2,9 @@ import executeGenerator from "../utils/generatorExecutor";
 import createZipFile from "../utils/zipFileCreator";
 import handleExceptions from "../utils/globalExceptionHandler";
 import lockFileAndContinue from "../utils/fileLockProcess";
-import fileExists from "../utils/fileExists";
+import {fileExists, createTempDir} from "../utils/fileUtils";
+import {getTempDir} from "../features/defaultWorkingDir";
 
-const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const md5 = require("md5");
 
@@ -43,7 +42,7 @@ export class TemplateGenerator {
      */
     async getTemplate(id: string): Promise<string> {
         // This is where the template is created
-        const zipPath = path.join(os.tmpdir(), id + '.zip');
+        const zipPath = path.join(getTempDir(), id + '.zip');
 
         // If the template does nopt exist, build it
         if (fileExists(zipPath)) {
@@ -69,7 +68,7 @@ export class TemplateGenerator {
         // Create a hash based on the generator and the options
         const hash = await this.getTemplateId(generator, options, answers, args);
         // This is where the template is created
-        const zipPath = path.join(os.tmpdir(), hash + '.zip');
+        const zipPath = path.join(getTempDir(), hash + '.zip');
 
         await this.buildNewTemplate(generator, options, answers, args, zipPath);
 
@@ -92,7 +91,7 @@ export class TemplateGenerator {
         // Create a hash based on the generator and the options
         const hash = await this.getTemplateId(generator, options, answers, args);
         // This is where the template is created
-        const zipPath = path.join(os.tmpdir(), hash + '.zip');
+        const zipPath = path.join(getTempDir(), hash + '.zip');
 
         // trigger the build, but don't wait for it
         this.buildNewTemplate(generator, options, answers, args, zipPath)
@@ -133,14 +132,12 @@ export class TemplateGenerator {
      * @param zipPath The path to save the generator ZIP file to.
      * @private
      */
-    private async writeTemplate(
+    private writeTemplate(
         generator: string,
         options: { [key: string]: string; },
         answers: { [key: string]: string; },
         args: string[],
         zipPath: string) {
-
-        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         // sanity check the supplied arguments
         const fixedArgs = !!args && Array.isArray(args)
@@ -155,20 +152,13 @@ export class TemplateGenerator {
             ? answers
             : {};
 
-        try {
-            await executeGenerator(generator, tempDir, fixedArgs, fixedOptions, fixedAnswers);
-            createZipFile(tempDir, zipPath);
-
-            return zipPath;
-        } catch (err) {
-            console.log(err);
-            throw err;
-        } finally {
-            try {
-                fs.rmSync(tempDir, {recursive: true});
-            } catch (err) {
-                console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed because' + err)
-            }
-        }
+        return createTempDir("template", (tempDir: string) => {
+            return executeGenerator(generator, tempDir, fixedArgs, fixedOptions, fixedAnswers)
+                .then(() => createZipFile(tempDir, zipPath))
+                .catch((err) => {
+                    console.log(err);
+                    throw err;
+                });
+        });
     }
 }

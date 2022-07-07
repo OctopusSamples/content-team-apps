@@ -1,7 +1,7 @@
 import getDownloadPath from "../domain/utils/downloadPaths";
 import assert from "assert";
 import path from "path";
-import getDefaultWorkingDir from "../domain/features/defaultWorkingDir";
+import {getDefaultWorkingDir} from "../domain/features/defaultWorkingDir";
 
 it('parses npm packages correctly', async () => {
     assert.equal(

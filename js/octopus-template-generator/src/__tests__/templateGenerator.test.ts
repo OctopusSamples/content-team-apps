@@ -1,7 +1,7 @@
 import assert from "assert";
 import {TemplateGenerator} from "../domain/hanlders/templateGenerator";
 import * as fileLockProcess from "../domain/utils/fileLockProcess";
-import * as fileExists from "../domain/utils/fileExists";
+import * as fileUtils from "../domain/utils/fileUtils";
 import * as generatorExecutor from "../domain/utils/generatorExecutor";
 import * as generatorResolver from "../domain/utils/generatorResolver";
 import * as npmInstaller from "../domain/utils/npmInstaller";
@@ -14,7 +14,7 @@ it('can generate a template with mocked services', async () => {
         while performing the test.
      */
     sinon.stub(fileLockProcess, 'default').callsFake((...props) => new Promise(resolve => {resolve(props[1]())}));
-    sinon.stub(fileExists, 'default').callsFake((...props) => true);
+    sinon.stub(fileUtils, 'fileExists').callsFake((...props) => true);
     sinon.stub(generatorExecutor, 'default').callsFake((...props) => new Promise(resolve => resolve()));
     sinon.stub(generatorResolver, 'default').callsFake((...props) => new Promise(resolve => resolve("fake package")));
     sinon.stub(npmInstaller, 'default').callsFake((...props) => new Promise(resolve => resolve("fake path")));
