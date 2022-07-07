@@ -1,5 +1,3 @@
-# octopus-template-generator
-
 This project is Yeoman as a service. It provides the ability to installed versioned NPM generator packages,
 run them with predefined values for options, arguments, and questions, and returns the result as a 
 zip file.
