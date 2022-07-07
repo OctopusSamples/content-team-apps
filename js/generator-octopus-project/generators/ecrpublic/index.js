@@ -139,7 +139,7 @@ module.exports = class extends Generator {
         };
 
         this.fs.copyTpl(
-            this.templatePath('.github/workflows/ecr.yaml'),
+            this.templatePath('.github/workflows/ecrpublic.yaml'),
             this.destinationPath('.github/workflows/' + this.answers["cloudformation_stack_name"] + '.yaml'),
             options
         );
