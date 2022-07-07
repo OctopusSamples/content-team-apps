@@ -10,7 +10,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The name of the CloudFormation stack to build the App Runner instance (also used to name the directory holding the terraform files)",
+      "text": "The name of the CloudFormation stack to build the ECR repo (also used to name the directory holding the terraform files)",
       "wrap": true
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS region to deploy the App Runner instance in"
+      "text": "The AWS region to deploy the ECR repo in"
     },
     {
       "type": "Input.Text",
