@@ -45,5 +45,7 @@ export default async function executeGenerator(
     } catch (err) {
         console.log(err);
         throw err;
+    } finally {
+        process.removeListener('uncaughtException', handleException);
     }
 }
