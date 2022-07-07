@@ -7,7 +7,7 @@ import * as generatorResolver from "../domain/utils/generatorResolver";
 import * as npmInstaller from "../domain/utils/npmInstaller";
 import {sinon} from "@loopback/testlab";
 
-it('detects if package can be installed', async () => {
+it('can generate a template with mocked services', async () => {
     /*
         These are all the "services" that interact with external resources like files,
         processes, or the network. They are all faked to remove any external access
