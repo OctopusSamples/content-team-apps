@@ -6,7 +6,10 @@ import splitGeneratorName from "./generatorSplitter";
  * Determines if a package can be installed if it isn't found.
  * @param generator The name of the generator
  */
-export default function canInstallPackage(generator: string) {
+export default function canInstallPackage(
+    generator: string,
+    myEnableNpmInstall = enableNpmInstall,
+    mySafeListModules = safeListModules) {
     const generatorId = splitGeneratorName(generator);
-    return enableNpmInstall() || safeListModules().includes(generatorId.namespaceAndName);
+    return myEnableNpmInstall() || mySafeListModules().includes(generatorId.namespaceAndName);
 }
