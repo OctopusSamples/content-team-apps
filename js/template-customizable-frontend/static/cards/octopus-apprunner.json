@@ -65,7 +65,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS access key."
+      "text": "The AWS region to deploy the App Runner instance in"
     },
     {
       "type": "Input.Text",
@@ -88,6 +88,10 @@
       "card": {
         "type": "AdaptiveCard",
         "body": [
+          {
+            "type": "TextBlock",
+            "text": "The AWS access key."
+          },
           {
             "type": "Input.Text",
             "id": "answer.string.aws_access_key",
@@ -191,10 +195,6 @@
             "type": "Input.Text",
             "id": "answer.string.octopus_aws_production_account_id",
             "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The AWS region to deploy the App Runner instance in"
           },
           {
             "type": "TextBlock",
