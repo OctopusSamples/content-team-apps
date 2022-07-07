@@ -1,30 +1,14 @@
-import NonInteractiveAdapter from "../yeoman/adapter";
-import splitGeneratorName from "../utils/generatorSplitter";
-import process from 'node:process';
-import GeneratorId from "../entities/generatorId";
-import canInstallPackage from "../utils/packageInstaller";
-import getDownloadPath from "../utils/downloadPaths";
+import executeGenerator from "../utils/generatorExecutor";
+import createZipFile from "../utils/zipFileCreator";
+import handleExceptions from "../utils/globalExceptionHandler";
 
-const yeoman = require('yeoman-environment');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const AdmZip = require("adm-zip");
 const lockFile = require('lockfile');
-const {exec} = require('child_process');
 const md5 = require("md5");
 
-/*
-    Missing files and other errors will kill the node process by default. This is
-    undesirable for a long-running web server, so we catch the exception here.
-    https://nodejs.org/api/process.html#event-uncaughtexception
- */
-process.on('uncaughtException', (err, origin) => {
-    console.log(err);
-});
-
-// Note the current working directory
-const cwd = process.cwd();
+handleExceptions();
 
 export class TemplateGenerator {
     constructor() {
@@ -164,16 +148,6 @@ export class TemplateGenerator {
         args: string[],
         zipPath: string) {
 
-        /*
-            Catch issues like missing files and save the uncaught exception, so we can
-            handle it gracefully rather than killing the node process.
-         */
-        let uncaughtException = null;
-        const handleException = (err: Error) => {
-            uncaughtException = err;
-        };
-        process.on('uncaughtException', handleException);
-
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "template"));
 
         // sanity check the supplied arguments
@@ -190,144 +164,19 @@ export class TemplateGenerator {
             : {};
 
         try {
-            const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
-            env.register(await this.resolveGenerator(generator), generator);
-
-            // Not all generators respect the cwd option passed into createEnv
-            process.chdir(tempDir);
-            /*
-             The docs at https://yeoman.io/authoring/integrating-yeoman.html indicate we should set the
-             "skip-install" option. This is incorrect, and should be "skipInstall". The loadSharedOptions()
-             method on the environment shows the actual options to be passed in.
-             */
-            await env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true});
-
-            // If there were any exceptions, rethrow them so the caller receives the appropriate
-            // error code.
-            if (uncaughtException) {
-                throw uncaughtException;
-            }
-
-            console.log("Zipping up the template");
-            const zip = new AdmZip();
-            zip.addLocalFolder(tempDir);
-            zip.writeZip(zipPath);
-            console.log("Zip file generated");
+            await executeGenerator(generator, tempDir, fixedArgs, fixedOptions, fixedAnswers);
+            createZipFile(tempDir, zipPath);
 
             return zipPath;
         } catch (err) {
             console.log(err);
             throw err;
         } finally {
-            process.removeListener('uncaughtException', handleException);
-            try {
-                process.chdir(cwd);
-            } catch (err) {
-                console.log("TemplateGenerator-Template-WorkingDirRestoreFailed: Failed to restore the working directory: " + err);
-            }
             try {
                 fs.rmSync(tempDir, {recursive: true});
             } catch (err) {
                 console.error('TemplateGenerator-Template-TempDirCleanupFailed: The temporary directory was not removed because' + err)
             }
-        }
-    }
-
-    /**
-     * Resolve the Yeoman generator, and optionally try to install it if it doesn't exist.
-     * @param generator The name of the generator.
-     * @param attemptInstall true if we should attempt to install the generator if it doesn't exist. Note the downloading
-     * of additional generators is also defined by the enableNpmInstall() feature.
-     * @private
-     */
-    private async resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
-        const generatorId = splitGeneratorName(generator);
-
-        try {
-            return this.getSubGenerator(generatorId);
-        } catch (e) {
-            /*
-             If the module was not found, we allow module downloading, and this is the first attempt,
-             try downloading the module and return it.
-             */
-            const failedToFindModule = e.code === "MODULE_NOT_FOUND";
-
-            if (failedToFindModule && canInstallPackage(generatorId.namespaceAndName) && attemptInstall) {
-                const downloadPath = getDownloadPath(generatorId);
-                console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion + " in " + process.cwd());
-                return new Promise((resolve, reject) => {
-                    /*
-                        Place any newly download generators into a new directory called downloaded.
-                     */
-                    exec("npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion, (error: never) => {
-                        if (error) {
-                            return reject(error);
-                        }
-
-                        return resolve(this.resolveGenerator(generator, false));
-                    });
-                });
-            }
-
-            throw e;
-        }
-    }
-
-    /**
-     * Yeoman allows two different directory structures.
-     * It’ll look in ./ and in generators/ to register available generators.
-     * https://yeoman.io/authoring/index.html
-     * @param generatorId The generator id
-     * @private
-     */
-    private getSubGenerator(generatorId: GeneratorId) {
-        try {
-            return require.resolve(
-                generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator,
-                {paths: [getDownloadPath(generatorId), "."]});
-        } catch (e) {
-            /*
-                Some generators, like jhipster, don't list the app subgenerator in the
-                package.json exports. This leads to ERR_PACKAGE_PATH_NOT_EXPORTED errors.
-                Yeoman itself doesn't care about the exports though, so we treat
-                ERR_PACKAGE_PATH_NOT_EXPORTED as evidence that the module exists
-                and return the path.
-             */
-            if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
-            }
-
-            console.log(e);
-            return this.getGenerator(generatorId);
-        }
-    }
-
-    /**
-     * Yeoman allows two different directory structures.
-     * It’ll look in ./ and in generators/ to register available generators.
-     * https://yeoman.io/authoring/index.html
-     * @param generatorId The generator id
-     * @private
-     */
-    private getGenerator(generatorId: GeneratorId) {
-        try {
-            return require.resolve(
-                generatorId.namespaceAndName + "/" + generatorId.subGenerator,
-                {paths: [getDownloadPath(generatorId), "."]});
-        } catch (e) {
-            /*
-                Some generators, like jhipster, don't list the app subgenerator in the
-                package.json exports. This leads to ERR_PACKAGE_PATH_NOT_EXPORTED errors.
-                Yeoman itself doesn't care about the exports though, so we treat
-                ERR_PACKAGE_PATH_NOT_EXPORTED as evidence that the module exists
-                and return the path.
-             */
-            if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-                return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
-            }
-
-            console.log(e);
-            throw e;
         }
     }
 }
