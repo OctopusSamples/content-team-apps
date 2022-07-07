@@ -10,7 +10,6 @@ import canInstallPackage from "./packageInstaller";
 import installNpmPackage from "./npmInstaller";
 import GeneratorId from "../entities/generatorId";
 import getDownloadPath from "./downloadPaths";
-import process from "node:process";
 import getDefaultWorkingDir from "../features/defaultWorkingDir";
 
 export default async function resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
