@@ -97,7 +97,7 @@ async function downloadTemplate(action: ExecuteAction) {
             is available for download.
          */
         .then((data: any) => {
-            const retryClient = new RetryClient({maximumRetryCount: 20, fixedBackOff: 3000});
+            const retryClient = new RetryClient({maximumRetryCount: 40, fixedBackOff: 3000});
             return retryClient.retry(async () => {
                 const response = await fetch(config.templateGeneratorHost + '/download/template/' + data.data.id);
 
