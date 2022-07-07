@@ -48,7 +48,8 @@ export default function buildAdaptiveCard(questions, answers, generator) {
     for (const fixedQuestion of fixedQuestions) {
         card.body.push({
             "type": "TextBlock",
-            "text": stripAnsi(fixedQuestion["message"])
+            "text": stripAnsi(fixedQuestion["message"]),
+            "wrap": true
         });
 
         if (fixedQuestion["type"] === "number") {
