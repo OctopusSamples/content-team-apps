@@ -1,0 +1,13 @@
+---
+layout: null
+---
+{% assign pages = site.pages | where:"search","true" %}
+[
+  {% for page in pages %}{
+      "title"    : "{{ page.title | escape }}",
+      "category" : "{{ page.category }}",
+      "tags"     : "{{ page.tags | join: ', ' }}",
+      "url"      : "{{ site.baseurl }}{{ page.url }}",
+      "date"     : "{{ page.date }}"
+    } {% unless forloop.last %},{% endunless %} {% endfor %}
+]

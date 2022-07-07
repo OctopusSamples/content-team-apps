@@ -1,0 +1,4 @@
+node_modules
+_site
+.jekyll-cache
+package-lock.json

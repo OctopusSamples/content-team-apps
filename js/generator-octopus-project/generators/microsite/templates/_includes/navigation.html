@@ -1,0 +1,22 @@
+<nav class="main-nav">
+  <span class="menu-icon-close"><i class="fa fa-times" aria-hidden="true"></i></span>
+  <ul>
+    <li><a href="{{ site.url }}">DevOps</a></li>
+    {% assign pages = site.pages | sort: "order" %}
+    {% for page in pages %}
+      {% if page.category == "DevOps" %}
+        <li>
+          <a href="{{ page.url | prepend: site.baseurl }} ">{{page.title}}</a>
+        </li>
+        {% for subpage in site.pages %}
+          {% if subpage.category == page.title %}
+          <li>
+            <a href="{{ subpage.url | prepend: site.baseurl }} ">{{subpage.title}}</a>
+          </li>
+          {% endif %}
+        {% endfor %}
+
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

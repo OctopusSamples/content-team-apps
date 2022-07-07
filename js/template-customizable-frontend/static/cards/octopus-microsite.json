@@ -1,0 +1,63 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.6:microsite",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Microsite Name"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.microsite_name",
+      "value": "MyMicrosite"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key."
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space"
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space",
+      "value": "${{ secrets.OCTOPUS_SPACE }}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

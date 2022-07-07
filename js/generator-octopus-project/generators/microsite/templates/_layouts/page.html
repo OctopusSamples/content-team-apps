@@ -1,0 +1,66 @@
+---
+layout: default
+---
+<div class="flex-container">
+  {% include header.html %}
+  <div class="content wrapper">
+
+{% assign breadcrumb = page.url %}
+{% assign title = page.title | replace: " ", "-" | downcase %}
+{% assign breadcrumb-topic = breadcrumb | remove: title | remove: "/" %}
+{% assign title-size = page.title | size %}
+{% assign bc-position = 1 %}
+
+	<nav aria-label="Breadcrumb" class="breadcrumbs">
+		<ol itemscope itemtype="http://schema.org/BreadcrumbList">
+			<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+				<a itemscope itemtype="https://schema.org/WebPage" itemprop="item" itemid="/" href="{{ site.url }}">
+					<span itemprop="name">DevOps</span>
+				</a>
+				<meta itemprop="position" content="{{bc-position}}" />
+			</li>
+      {% if page.title != 'DevOps' %}
+  			{% if breadcrumb-topic.size > 1 %}
+  			{% assign bc-position = bc-position | plus:1 %}
+  			<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+  				<a itemscope itemtype="https://schema.org/WebPage" itemprop="item" itemid="/{{breadcrumb-topic}}" href="{{ site.url }}/{{breadcrumb-topic}}">
+  					<span itemprop="name">{{ breadcrumb-topic | replace: "-", " " | capitalize }}</span>
+  				</a>
+  				<meta itemprop="position" content="{{bc-position}}" />
+  			</li>
+  			{% endif %}
+  			{% if title-size > 0 %}
+  			{% assign bc-position = bc-position | plus:1 %}
+  			<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+  				<a itemscope itemtype="https://schema.org/WebPage" itemprop="item" itemid="{{ page.url | prepend: site.baseurl }}" href="{{ page.url | prepend: site.baseurl }}">
+  					<span itemprop="name">{{page.title}}{{title_size}}</span>
+  				</a>
+  				<meta itemprop="position" content="{{bc-position}}" />
+  			</li>
+        {% endif %}
+			{% endif %}
+		</ol>
+	</nav>
+
+	<h1>{{page.title}}</h1>
+    {{ content }}
+    {% include search.html %}
+
+<!--
+<h2>Related pages:</h2>
+<ul>
+	<li><a href="{{ site.baseurl }}/">Style guide home</li>
+{% for pages in site.pages %}
+	{% if pages.family == page.family %}
+		{% if pages.title != page.title %}
+			<li><a href="{{ pages.url | prepend: site.baseurl }}">{{ pages.title }}</a></li>
+		{% endif %}
+	{% endif %}
+{% endfor %}
+</ul>
+-->
+
+  </div> <!-- End Wrapper -->
+  {% include footer.html %}
+</div>
+

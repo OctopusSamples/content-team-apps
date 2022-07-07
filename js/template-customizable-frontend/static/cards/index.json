@@ -11,6 +11,19 @@
       "actions": [
         {
           "type": "Action.Execute",
+          "title": "Octopus Microsite",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-microsite.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
           "title": "Octopus App Runner",
           "verb": "openCard",
           "data": {

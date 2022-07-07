@@ -1,0 +1,44 @@
+name: Jekyll Build
+
+on:
+  push
+
+jobs:
+  jekyll:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build
+      uses: jerryjvl/jekyll-build-action@v1
+
+    - name: Set Version
+      run: echo "PACKAGE_VERSION=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.6
+      with:
+        version: latest
+
+    - name: Package Microsite
+      run: |
+        octo pack --id="<%= microsite_name %>" --format="Zip" --version="$PACKAGE_VERSION" --basePath="$GITHUB_WORKSPACE/_site" --outFolder="$GITHUB_WORKSPACE/artifacts"
+
+    - name: Push DevOps Microsite
+      uses: OctopusDeploy/push-package-action@v1.1.1
+      with:
+        api_key: <%= octopus_apikey %>
+        server: <%= octopus_server %>
+        space: <%= octopus_space %>
+        packages: "artifacts/<%= microsite_name %>.${{ env.PACKAGE_VERSION }}.zip"
+
+    - name: Create and deploy release
+      uses: OctopusDeploy/create-release-action@v1.1.1
+      with:
+        api_key: <%= octopus_apikey %>
+        server: <%= octopus_server %>
+        space: <%= octopus_space %>
+        project: "<%= microsite_name %>"
+        deploy_to: "Test"
+        progress: true
