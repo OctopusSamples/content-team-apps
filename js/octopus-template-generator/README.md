@@ -1,7 +1,14 @@
 # octopus-template-generator
 
-This application is generated using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) with the
-[initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
+This project is Yeoman as a service. It provides the ability to installed versioned NPM generator packages,
+run them with predefined values for options, arguments, and questions, and returns the result as a 
+zip file.
+
+This project is paired with a no-code [customizable frontend](/js/template-customizable-frontend) that allows
+exposes a simple UI defined in JSON to provide a completely web based workflow for generating and consuming
+Yeoman generators.
+
+The frontend and backend can be run locally with [Docker compose](/docker/customizable-workflow-builder).
 
 ## Install dependencies
 
