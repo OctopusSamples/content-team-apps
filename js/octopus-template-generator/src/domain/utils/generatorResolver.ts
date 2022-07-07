@@ -11,6 +11,7 @@ import installNpmPackage from "./npmInstaller";
 import GeneratorId from "../entities/generatorId";
 import getDownloadPath from "./downloadPaths";
 import process from "node:process";
+import getDefaultWorkingDir from "../features/defaultWorkingDir";
 
 export default async function resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
     const generatorId = splitGeneratorName(generator);
@@ -44,7 +45,7 @@ function getSubGenerator(generatorId: GeneratorId) {
     try {
         return require.resolve(
             generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator,
-            {paths: [getDownloadPath(generatorId), "."]});
+            {paths: [getDownloadPath(generatorId), getDefaultWorkingDir()]});
     } catch (e) {
         /*
             Some generators, like jhipster, don't list the app subgenerator in the
@@ -54,7 +55,7 @@ function getSubGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
+            return getDefaultWorkingDir() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
         }
 
         console.log(e);
@@ -73,7 +74,7 @@ function getGenerator(generatorId: GeneratorId) {
     try {
         return require.resolve(
             generatorId.namespaceAndName + "/" + generatorId.subGenerator,
-            {paths: [getDownloadPath(generatorId), "."]});
+            {paths: [getDownloadPath(generatorId), getDefaultWorkingDir()]});
     } catch (e) {
         /*
             Some generators, like jhipster, don't list the app subgenerator in the
@@ -83,7 +84,7 @@ function getGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            return process.cwd() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
+            return getDefaultWorkingDir() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
         }
 
         console.log(e);

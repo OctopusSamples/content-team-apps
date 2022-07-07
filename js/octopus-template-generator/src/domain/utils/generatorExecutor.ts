@@ -10,9 +10,6 @@ export default async function executeGenerator(
     fixedOptions: { [key: string]: string },
     fixedAnswers: { [key: string]: string }) {
 
-    // Note the current working directory
-    const cwd = process.cwd();
-
     /*
         Catch issues like missing files and save the uncaught exception, so we can
         handle it gracefully rather than killing the node process.
@@ -27,8 +24,12 @@ export default async function executeGenerator(
         const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
         env.register(await resolveGenerator(generator), generator);
 
-        // Not all generators respect the cwd option passed into createEnv
+        /*
+            Not all generators respect the cwd option passed into createEnv. Setting the
+            working directory means we keep our application directory clean.
+         */
         process.chdir(tempDir);
+
         /*
          The docs at https://yeoman.io/authoring/integrating-yeoman.html indicate we should set the
          "skip-install" option. This is incorrect, and should be "skipInstall". The loadSharedOptions()
@@ -44,12 +45,5 @@ export default async function executeGenerator(
     } catch (err) {
         console.log(err);
         throw err;
-    } finally {
-        process.removeListener('uncaughtException', handleException);
-        try {
-            process.chdir(cwd);
-        } catch (err) {
-            console.log("TemplateGenerator-Template-WorkingDirRestoreFailed: Failed to restore the working directory: " + err);
-        }
     }
 }
