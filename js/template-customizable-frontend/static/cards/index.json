@@ -4,7 +4,13 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Select your generator"
+      "text": "Select your generator",
+      "weight": "bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Microsites are stand alone web sites targeting a specific concept or technology.",
+      "wrap": true
     },
     {
       "type": "ActionSet",
@@ -20,6 +26,11 @@
       ]
     },
     {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to deploy a Docker image to App Runner.",
+      "wrap": true
+    },
+    {
       "type": "ActionSet",
       "actions": [
         {
@@ -33,6 +44,11 @@
       ]
     },
     {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a private ECR repo.",
+      "wrap": true
+    },
+    {
       "type": "ActionSet",
       "actions": [
         {
@@ -44,6 +60,11 @@
           }
         }
       ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a public ECR repo.",
+      "wrap": true
     },
     {
       "type": "ActionSet",
