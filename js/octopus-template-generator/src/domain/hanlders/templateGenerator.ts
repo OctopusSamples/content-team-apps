@@ -196,9 +196,9 @@ export class TemplateGenerator {
             // Not all generators respect the cwd option passed into createEnv
             process.chdir(tempDir);
             /*
-             The docs at https://yeoman.io/authoring/dependencies.html indicate we should set the
-             "skip-install" option. This is incorrect. The loadSharedOptions() method on the environment
-             shows the actual options to be passed in.
+             The docs at https://yeoman.io/authoring/integrating-yeoman.html indicate we should set the
+             "skip-install" option. This is incorrect, and should be "skipInstall". The loadSharedOptions()
+             method on the environment shows the actual options to be passed in.
              */
             await env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true});
 
