@@ -15,7 +15,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.docker_image",
-      "value": "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator:latest"
+      "value": "public.ecr.aws/nginx/nginx:mainline"
     },
     {
       "type": "TextBlock",
@@ -24,7 +24,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.docker_port",
-      "value": "5000"
+      "value": "80"
     },
     {
       "type": "TextBlock",
