@@ -195,8 +195,12 @@ export class TemplateGenerator {
 
             // Not all generators respect the cwd option passed into createEnv
             process.chdir(tempDir);
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            await env.run([generator, ...fixedArgs], {...fixedOptions, 'skip-install': true});
+            /*
+             The docs at https://yeoman.io/authoring/dependencies.html indicate we should set the
+             "skip-install" option. This is incorrect. The loadSharedOptions() method on the environment
+             shows the actual options to be passed in.
+             */
+            await env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true});
 
             // If there were any exceptions, rethrow them so the caller receives the appropriate
             // error code.
