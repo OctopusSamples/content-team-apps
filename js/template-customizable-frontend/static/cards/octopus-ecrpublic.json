@@ -16,7 +16,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.cloudformation_stack_name",
-      "value": "ecr"
+      "value": "ecrpublic"
     },
     {
       "type": "TextBlock",
