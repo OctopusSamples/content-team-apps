@@ -38,7 +38,7 @@ export default function executeGenerator(
                 "skip-install" option. This is incorrect, and should be "skipInstall". The loadSharedOptions()
                 method on the environment shows the actual options to be passed in.
              */
-            env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true})
+            return env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true})
         })
         .then(() => {
             /*

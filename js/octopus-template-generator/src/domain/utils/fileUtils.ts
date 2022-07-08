@@ -11,7 +11,7 @@ export function fileExists(file: string) {
 }
 
 /**
- * Create a temporary directory.
+ * Create a temporary directory, pass it to the callback, and then clean the directory up.
  * @param dirname The name of the new temp dir
  * @param cb The function to call with the temp dir
  */
