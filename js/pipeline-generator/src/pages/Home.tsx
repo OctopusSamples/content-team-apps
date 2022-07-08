@@ -1,7 +1,8 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Helmet} from "react-helmet";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Button, FormLabel, Grid, Link, TextField, Theme} from "@material-ui/core";
+import {Theme} from "@mui/material";
+import {createStyles, makeStyles} from "@mui/styles";
+import {Button, FormLabel, Grid, Link, TextField} from "@mui/material";
 import maven from './logos/maven.png';
 import gradle from './logos/gradle.png';
 import nodejs from './logos/nodejs.png';

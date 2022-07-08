@@ -1,25 +1,20 @@
 import React, {useEffect, useReducer, useState} from "react";
-import {createTheme, responsiveFontSizes, Theme, ThemeProvider,} from "@material-ui/core/styles";
+import {ThemeProvider} from "@mui/styles";
+import {createTheme, responsiveFontSizes, Theme} from "@mui/material";
 import {HashRouter, Route, Switch} from "react-router-dom";
 import {Helmet} from "react-helmet";
-// app routes
-import {routes} from "./config";
-import jwt_decode from 'jwt-decode';
-
-// components
-import Layout from "./components/Layout";
-
-// theme
-import {darkTheme, lightTheme} from "./theme/appTheme";
-
-// interfaces
-import RouteItem from "./model/RouteItem.model";
 import {DynamicConfig} from "./config/dynamicConfig";
 import {DEFAULT_BRANCH, getBranch} from "./utils/path";
 import {getAccessToken, getIdToken} from "./utils/security";
 import Login from "./pages/Login";
 import * as H from "history";
 import {appendUtms, getBranchingRules} from "./utils/network";
+import {routes} from "./config";
+import jwt_decode from 'jwt-decode';
+import Layout from "./components/Layout";
+import {darkTheme, lightTheme} from "./theme/appTheme";
+import RouteItem from "./model/RouteItem.model";
+
 
 // define app context
 export const AppContext = React.createContext<DynamicConfig>({

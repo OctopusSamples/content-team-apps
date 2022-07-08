@@ -1,7 +1,6 @@
-import {createStyles, IconButton, Link, makeStyles, Theme} from "@material-ui/core";
+import {IconButton, Link, Theme} from "@mui/material";
+import {createStyles, makeStyles} from "@mui/styles";
 import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
-
-// constants
 import {FOOTER_HEIGHT, FOOTER_TEXT} from "../utils/constants";
 import {useContext} from "react";
 import {AppContext} from "../App";

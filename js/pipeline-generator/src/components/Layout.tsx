@@ -1,11 +1,11 @@
 import {FC, ReactNode, useContext} from "react";
 import clsx from "clsx";
-import {createStyles, CssBaseline, makeStyles, Theme,} from "@material-ui/core";
-
-// components
+import {CssBaseline, Theme} from "@mui/material";
+import {createStyles, makeStyles} from "@mui/styles";
 import Header from "./Header";
 import Footer from "./Footer";
 import {AppContext} from "../App";
+
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>

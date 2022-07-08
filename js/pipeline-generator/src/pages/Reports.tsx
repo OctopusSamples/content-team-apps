@@ -5,6 +5,9 @@ import {AuditsCollection} from "./Audits";
 import {JSEncrypt} from "jsencrypt";
 import {Chart, ChartConfiguration, registerables} from "chart.js";
 import {chartColors} from "../utils/charts";
+import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {TextField} from "@mui/material";
 
 Chart.register(...registerables);
 
@@ -16,6 +19,8 @@ const Reports: FC<{}> = (): ReactElement => {
     const [templateAuditsOneWeek, setTemplateAuditsOneWeek] = useState<AuditsCollection | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [privateKey, setPrivateKey] = useState<string | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000)));
+    const [endDate, setEndDate] = useState<Date | null>(new Date());
 
     useEffect(() => {
         const decrypt = (email: string): string => {
@@ -174,6 +179,16 @@ const Reports: FC<{}> = (): ReactElement => {
                 reader.readAsText(f);
             }}/>
         </form>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={(newValue: Date | null) => {
+                    setStartDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+            />
+        </LocalizationProvider>
         <table>
             <tr>
                 <td style={{padding: "32px"}}>

@@ -1,8 +1,9 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
-import {Button, Grid, Theme} from "@material-ui/core";
+import {Button, Grid} from "@mui/material";
 import {AppContext} from "../App";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import {Theme} from "@mui/material";
+import {createStyles, makeStyles} from "@mui/styles";
 import {logIntoGitHub} from "../utils/githublogin";
 
 const useStyles = makeStyles((theme: Theme) =>

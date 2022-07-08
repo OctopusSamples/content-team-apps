@@ -1,23 +1,39 @@
 import clsx from "clsx";
-import {
-    AppBar,
-    createStyles,
-    IconButton,
-    Link,
-    makeStyles,
-    Theme,
-    Toolbar,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
-import Brightness3Icon from "@material-ui/icons/Brightness3";
-import ContentCopy from '@material-ui/icons/ContentCopy';
 import {FC, useContext, useState} from "react";
 import {AppContext} from "../App";
-import {History, LocalHospital, Person, PieChart, SettingsApplications, Share} from "@material-ui/icons";
+import {
+    Brightness3,
+    Brightness7,
+    ContentCopy,
+    History,
+    LocalHospital,
+    Person,
+    PieChart,
+    SettingsApplications,
+    Share
+} from "@mui/icons-material";
 import {useHistory} from "react-router-dom";
 import {getAccessToken} from "../utils/security";
+import {AppBar, createStyles, IconButton, Link, Theme, Toolbar, Tooltip, Typography} from "@mui/material";
+import {makeStyles} from "@mui/styles";
+
+const titleSx = {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
+}
+
+const toolbarSx = {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+}
+
+const headingSx = {
+    color: "white"
+}
 
 // define css-in-js
 const useStyles = makeStyles((theme: Theme) =>
@@ -76,9 +92,9 @@ const Header: FC<HeaderProps> = ({
             elevation={0}
             className={clsx(classes.appBar)}
         >
-            <Toolbar className={classes.toolbar}>
-                <div className={classes.title}>
-                    <Link href={`${process.env.PUBLIC_URL}/index.html`} className={classes.heading}>
+            <Toolbar sx={toolbarSx}>
+                <div sx={titleSx}>
+                    <Link href={`${process.env.PUBLIC_URL}/index.html`} sx={headingSx}>
                         <Typography variant="h6">
                             {context.settings.title}
                         </Typography>
@@ -126,11 +142,11 @@ const Header: FC<HeaderProps> = ({
                 <IconButton onClick={toggleTheme}>
                     {useDefaultTheme ? (
                         <Tooltip title="Switch to dark mode" placement="bottom">
-                            <Brightness3Icon/>
+                            <Brightness3/>
                         </Tooltip>
                     ) : (
                         <Tooltip title="Switch to light mode" placement="bottom">
-                            <Brightness7Icon/>
+                            <Brightness7/>
                         </Tooltip>
                     )}
                 </IconButton>

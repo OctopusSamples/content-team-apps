@@ -1,7 +1,7 @@
 import {FC, ReactElement, useContext} from "react";
 import {Helmet} from "react-helmet";
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Grid} from "@material-ui/core";
+import {createStyles, makeStyles} from "@mui/styles";
+import {Grid} from "@mui/material";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/neo.css';
 import 'codemirror/theme/rubyblue.css';

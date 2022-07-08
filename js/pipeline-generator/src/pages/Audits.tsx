@@ -1,9 +1,9 @@
 import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
-import {DataGrid} from "@material-ui/data-grid";
+import {DataGrid} from "@mui/x-data-grid";
 import {getJsonApi, isBranchingEnabled} from "../utils/network";
-import {Button, Grid} from "@material-ui/core";
+import {Button, Grid} from "@mui/material";
 import {styles} from "../utils/styles";
 
 interface JsonAPILink {

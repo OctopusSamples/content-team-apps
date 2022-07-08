@@ -1,5 +1,5 @@
 // icons
-import HomeIcon from '@material-ui/icons/Home';
+import HomeIcon from '@mui/icons-material/Home';
 
 // components
 import Home from '../pages/Home';

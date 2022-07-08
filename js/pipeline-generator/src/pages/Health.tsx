@@ -2,7 +2,7 @@ import {FC, ReactElement, useContext, useEffect, useMemo, useState} from "react"
 import {Helmet} from "react-helmet";
 import {AppContext} from "../App";
 import {getJson} from "../utils/network";
-import {Clear, Done} from "@material-ui/icons";
+import {Clear, Done} from "@mui/icons-material";
 import {Grid} from "@mui/material";
 import {styles} from "../utils/styles";
 
