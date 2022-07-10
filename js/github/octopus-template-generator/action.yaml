@@ -115,9 +115,38 @@ runs:
     - name: Install Dependencies
       run: |
         npm cache clean --force
-        npm install --production
+        npm install
       shell: bash
       working-directory: js/octopus-template-generator
+
+    - name: Clean up node modules
+      run: |
+        go get github.com/tj/node-prune
+        node-prune
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: List Dependencies
+      run: npm list --all > dependencies.txt
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: js/octopus-template-generator/dependencies.txt
+
+    - name: List Dependency Updates
+      run: npm outdated > dependencyUpdates.txt || true
+      shell: bash
+      working-directory: js/octopus-template-generator
+
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: js/octopus-template-generator/dependencyUpdates.txt
 
     - name: Build image
       uses: mamezou-tech/buildpacks-action@master
@@ -163,33 +192,6 @@ runs:
         zip -9 -r ../octopus-template-generator-lambda.${{ steps.determine_version.outputs.semVer }}.zip *
       shell: bash
       working-directory: js/octopus-template-generator
-
-    - name: Install All Dependencies
-      run: npm install
-      shell: bash
-      working-directory: js/octopus-template-generator
-
-    - name: List Dependencies
-      run: npm list --all > dependencies.txt
-      shell: bash
-      working-directory: js/octopus-template-generator
-
-    - name: Collect Dependencies
-      uses: actions/upload-artifact@v2
-      with:
-        name: Dependencies
-        path: js/octopus-template-generator/dependencies.txt
-
-    - name: List Dependency Updates
-      run: npm outdated > dependencyUpdates.txt || true
-      shell: bash
-      working-directory: js/octopus-template-generator
-
-    - name: Collect Dependency Updates
-      uses: actions/upload-artifact@v2
-      with:
-        name: Dependencies Updates
-        path: js/octopus-template-generator/dependencyUpdates.txt
 
     - name: Tag Release
       uses: mathieudutour/github-tag-action@v6.0
