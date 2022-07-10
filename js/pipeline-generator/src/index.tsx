@@ -11,6 +11,11 @@ import {removeHash} from "./utils/path";
 import {saveUtms} from "./utils/tracking";
 
 /*
+    This is the entry point to the application. It needs to deal with redirection from multiple login sources, like
+    GitHub and Cognito. It also sets up analytics, and captures tracking codes like UTMs.
+ */
+
+/*
     Save any UTMs that were passed in to local storage. This allows us to retrieve the values even after we redirect
     from external logins.
  */

@@ -11,14 +11,26 @@ import {
 import jwt from 'jsonwebtoken';
 import jwkToPem, {JWK} from 'jwk-to-pem';
 
+/**
+ * Store the Cognito access token.
+ * @param accessToken The access token.
+ */
 export function setAccessToken(accessToken: string) {
     window.localStorage.setItem(getLoginBranch() + "-accesstoken", accessToken);
 }
 
+/**
+ * Store the Cognito ID token.
+ * @param accessToken The ID token.
+ */
 export function setIdToken(idToken: string) {
     window.localStorage.setItem(getLoginBranch() + "-idtoken", idToken);
 }
 
+/**
+ * Store the token expiry time.
+ * @param expiry The token expiry time.
+ */
 export function setTokenExpiry(expiry: string) {
     const expiryInt = parseInt(expiry);
     if (isNaN(expiryInt)) {
@@ -31,7 +43,7 @@ export function setTokenExpiry(expiry: string) {
 }
 
 /**
- * Gets the saved access token.
+ * Gets the saved access token, if it is not expired.
  * @param jwk sourced from https://cognito-idp.<region>.amazonaws.com/<pool id>/.well-known/jwks.json
  */
 export function getIdToken(jwk: JWK[]) {
@@ -73,21 +85,34 @@ export function getAccessToken() {
     return window.localStorage.getItem(getBranch() + "-accesstoken") || "";
 }
 
+/**
+ * Clear all tokens (effectively performing a logout).
+ */
 export function clearTokens() {
     window.localStorage.setItem(getBranch() + "-accesstoken", "");
     window.localStorage.setItem(getBranch() + "-idtoken", "");
     window.localStorage.setItem(getBranch() + "-tokenexpiry", "");
 }
 
+/**
+ * Initiate a Cognito login.
+ * @param cognitoLogin The URL to open to perform the Cognito login.
+ */
 export function login(cognitoLogin: string) {
     setLoginBranch();
     window.location.href = cognitoLogin;
 }
 
+/**
+ * Logout of Cognito.
+ */
 export function logout() {
     clearTokens();
 }
 
+/**
+ * Return the remaining lifetime of the Cognito tokens.
+ */
 export function getTokenTimeLeft() {
     const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");
     if (!isNaN(expiry)) {
@@ -97,6 +122,9 @@ export function getTokenTimeLeft() {
     return 0;
 }
 
+/**
+ * Determine if the Cognito tokens have expired.
+ */
 function isTokenExpired() {
     // Check the token expiry
     const expiry = parseInt(window.localStorage.getItem(getBranch() + "-tokenexpiry") || "");

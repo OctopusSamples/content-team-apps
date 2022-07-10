@@ -71,6 +71,9 @@ export function getBranchPath(branch: string) {
     return "/" + branch + "/";
 }
 
+/**
+ * Save the branch that initiated the login.
+ */
 export function setLoginBranch() {
     return window.localStorage.setItem("loginbranch", getBranch());
 }
@@ -94,18 +97,30 @@ export function clearLoginBranch() {
     return window.localStorage.setItem("loginbranch", "");
 }
 
+/**
+ * Record the branch that was used to initiate the GitHub login.
+ */
 export function setGitHubLoginBranch() {
     window.localStorage.setItem("githubloginbranch", getBranch());
 }
 
+/**
+ * Retrieve the branch that was used to initiate the GitHub login.
+ */
 export function getGitHubLoginBranch() {
     return window.localStorage.getItem("githubloginbranch");
 }
 
+/**
+ * Clear the branch that was used to initiate the GitHub login.
+ */
 export function clearGitHubLoginBranch() {
     return window.localStorage.setItem("githubloginbranch", "");
 }
 
+/**
+ * Remove the hash value from the URL.
+ */
 export function removeHash () {
     window.history.pushState(
         "",
