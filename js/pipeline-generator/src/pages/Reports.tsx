@@ -63,7 +63,7 @@ const Reports: FC<{}> = (): ReactElement => {
                     + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : ""));
                 console.log(err);
             })
-    }, [setEmailAuditsFourWeeks, context.settings.auditEndpoint, privateKey]);
+    }, [setEmailAuditsFourWeeks, startDate, endDate, context.settings.auditEndpoint, privateKey]);
 
     useEffect(() => {
         if (!(startDate && endDate)) {
@@ -176,7 +176,7 @@ const Reports: FC<{}> = (): ReactElement => {
                     + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : ""));
                 console.log(err);
             })
-    }, [setEmailAuditsFourWeeks, context.settings.auditEndpoint, privateKey]);
+    }, [setEmailAuditsFourWeeks, startDate, endDate, context.settings.auditEndpoint, privateKey]);
 
     return <div>
         {error && <span>{error}</span>}
