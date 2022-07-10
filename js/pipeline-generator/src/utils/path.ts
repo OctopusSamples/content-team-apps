@@ -1,5 +1,9 @@
 export const DEFAULT_BRANCH = "main";
 
+/**
+ * Get the hash value from the URL.
+ * @param field The name of the hash code.
+ */
 export function getHashField(field: string) {
     // The returned hash from Cognito splits id and access tokens with ampersand
     return window.location.hash

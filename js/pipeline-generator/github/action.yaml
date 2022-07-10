@@ -124,7 +124,7 @@ runs:
       if: ${{ env.BRANCH_NAME != 'main' }}
       run: >
         octo create-release
-        --project "Jenkins Pipelines Generator Feature Branch"
+        --project "Jenkins Pipelines Generator Frontend"
         --deployTo "Development"
         --waitForDeployment
         --server ${{ inputs.octopus_server_url }}
