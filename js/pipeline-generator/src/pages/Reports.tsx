@@ -20,6 +20,18 @@ const Reports: FC<{}> = (): ReactElement => {
     const [startDate, setStartDate] = useState<Date | null>(new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000)));
     const [endDate, setEndDate] = useState<Date | null>(new Date());
 
+    /*
+     Delete and recreate the canvas before recreating the chart.
+     See https://stackoverflow.com/a/25064035
+     */
+    const deleteAndRecreateCanvas = (parentId: string, childId: string) => {
+        document.getElementById(childId)?.remove();
+        const parentElement = document.getElementById(parentId);
+        if (parentElement) {
+            parentElement.innerHTML = '<canvas id="' + childId + '"></canvas>';
+        }
+    }
+
     useEffect(() => {
         if (!(startDate && endDate)) {
             return;
@@ -107,18 +119,10 @@ const Reports: FC<{}> = (): ReactElement => {
                 },
             };
 
-            /*
-             Delete and recreate the canvas before recreating the chart.
-             See https://stackoverflow.com/a/25064035
-             */
-            document.getElementById('languageReport')?.remove();
-            const parentElement = document.getElementById('languageReportParent');
-            if (parentElement) {
-                parentElement.innerHTML = '<canvas id="languageReport"></canvas>';
-                const languageReport = document.getElementById('languageReport') as HTMLCanvasElement;
-                if (languageReport) {
-                    new Chart(languageReport, config);
-                }
+            deleteAndRecreateCanvas('languageReportParent', 'languageReport');
+            const canvas = document.getElementById('languageReport') as HTMLCanvasElement;
+            if (canvas) {
+                new Chart(canvas, config);
             }
         }
         const buildPlatformReport = (audits: AuditsCollection) => {
@@ -152,18 +156,10 @@ const Reports: FC<{}> = (): ReactElement => {
                 },
             };
 
-            /*
-             Delete and recreate the canvas before recreating the chart.
-             See https://stackoverflow.com/a/25064035
-             */
-            document.getElementById('platformReport')?.remove();
-            const parentElement = document.getElementById('platformReportParent');
-            if (parentElement) {
-                parentElement.innerHTML = '<canvas id="platformReport"></canvas>';
-                const languageReport = document.getElementById('platformReport') as HTMLCanvasElement;
-                if (languageReport) {
-                    new Chart(languageReport, config);
-                }
+            deleteAndRecreateCanvas('platformReportParent', 'platformReport');
+            const canvas = document.getElementById('platformReport') as HTMLCanvasElement;
+            if (canvas) {
+                new Chart(canvas, config);
             }
         }
 
