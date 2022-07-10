@@ -176,9 +176,8 @@ runs:
 
     - name: Clean up node modules
       run: |
-        go env
-        go install github.com/tj/node-prune@latest
-        /home/runner/go/bin/node-prune --exclude 'node_modules/@octopus-content-team/**'
+        npm install -g clean-modules
+        clean-modules --exclude '**//@octopus-content-team/**'
       shell: bash
       working-directory: js/octopus-template-generator
 
