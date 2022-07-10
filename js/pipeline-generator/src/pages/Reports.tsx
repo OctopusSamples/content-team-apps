@@ -237,7 +237,7 @@ const Reports: FC<{}> = (): ReactElement => {
         <h2>Report</h2>
         <table>
             <tr>
-                <td style={{padding: "32px"}}>
+                <td>
                     <p>Emails collected: {emailAuditsFourWeeks?.data?.length}</p>
                     <p>Jenkins
                         templates: {templateAuditsFourWeeks?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length}</p>
@@ -262,10 +262,10 @@ const Reports: FC<{}> = (): ReactElement => {
                     <p>Ruby
                         templates: {templateAuditsFourWeeks?.data?.filter(a => a.attributes.object === "Ruby").length}</p>
                 </td>
-                <td style={{padding: "32px"}} id="languageReportParent">
+                <td style={{paddingLeft: "32px"}} id="languageReportParent">
 
                 </td>
-                <td style={{padding: "32px"}} id="platformReportParent">
+                <td style={{paddingLeft: "32px"}} id="platformReportParent">
 
                 </td>
             </tr>
