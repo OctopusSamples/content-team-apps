@@ -7,7 +7,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "book_title",
                 message: "The book title",
-                default: "A dube and his pants"
+                default: "A dude and his pants"
             },
             {
                 type: "input",
