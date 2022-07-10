@@ -177,7 +177,9 @@ runs:
     - name: Clean up node modules
       run: |
         npm install -g clean-modules
-        clean-modules --exclude '**/@octopus-content-team/**' --exclude '**/*.test.js' -y
+        # Need to fix the issue:
+        # Cannot find module './src/test'
+        clean-modules --exclude '**/@octopus-content-team/**' --exclude '*.test.*' -y
       shell: bash
       working-directory: js/octopus-template-generator
 
