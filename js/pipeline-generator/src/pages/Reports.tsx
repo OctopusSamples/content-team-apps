@@ -5,6 +5,9 @@ import {AuditsCollection} from "./Audits";
 import {JSEncrypt} from "jsencrypt";
 import {Chart, ChartConfiguration, registerables} from "chart.js";
 import {chartColors} from "../utils/charts";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {Grid} from "@material-ui/core";
+import MomentUtils from '@date-io/moment';
 
 Chart.register(...registerables);
 
@@ -174,6 +177,23 @@ const Reports: FC<{}> = (): ReactElement => {
                 reader.readAsText(f);
             }}/>
         </form>
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+            <Grid container justifyContent="space-around">
+                <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="dd/MM/yyyy"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="Date picker inline"
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                    onChange={() => {}}
+                    value={null}
+                />
+            </Grid>
+        </MuiPickersUtilsProvider>
         <table>
             <tr>
                 <td style={{padding: "32px"}}>
