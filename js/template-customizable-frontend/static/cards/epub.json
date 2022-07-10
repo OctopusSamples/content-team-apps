@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.10:epub",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.11:epub",
       "isVisible": false
     },
     {
