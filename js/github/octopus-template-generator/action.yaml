@@ -115,7 +115,7 @@ runs:
     - name: Install Dependencies
       run: |
         npm cache clean --force
-        npm install
+        npm install --production
       shell: bash
       working-directory: js/octopus-template-generator
 
