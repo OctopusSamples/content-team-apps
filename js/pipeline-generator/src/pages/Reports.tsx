@@ -180,6 +180,7 @@ const Reports: FC<{}> = (): ReactElement => {
 
     return <div>
         {error && <span>{error}</span>}
+        <h2>Decryption</h2>
         <p>Note some of these email addresses are unusable "no-reply" addresses. Upload the private key using the button
             below to allow the report to filter
             no-reply email addresses.</p>
@@ -197,12 +198,13 @@ const Reports: FC<{}> = (): ReactElement => {
                 reader.readAsText(f);
             }}/>
         </form>
+        <h2>Date Range</h2>
         <MuiPickersUtilsProvider utils={MomentUtils}>
             <Grid container justifyContent="flex-start">
                 <KeyboardDatePicker
                     disableToolbar
                     variant="inline"
-                    format="dd/MM/yyyy"
+                    format="DD/MM/yyyy"
                     margin="normal"
                     id="start-date"
                     label="Start Date"
@@ -215,7 +217,7 @@ const Reports: FC<{}> = (): ReactElement => {
                 <KeyboardDatePicker
                     disableToolbar
                     variant="inline"
-                    format="dd/MM/yyyy"
+                    format="DD/MM/yyyy"
                     margin="normal"
                     id="end-date"
                     label="End Date"
@@ -227,6 +229,7 @@ const Reports: FC<{}> = (): ReactElement => {
                 />
             </Grid>
         </MuiPickersUtilsProvider>
+        <h2>Report</h2>
         <table>
             <tr>
                 <td style={{padding: "32px"}}>
