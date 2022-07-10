@@ -3,10 +3,16 @@ import {RedirectRule} from "../pages/Branching";
 import {getAccessToken} from "./security";
 import {UtmParams} from "./tracking";
 
+/**
+ * Determines if the dumb reverse proxy rules will be used when making requests.
+ */
 export function isBranchingEnabled() {
     return (localStorage.getItem("branchingEnabled") || "").toLowerCase() === "true";
 }
 
+/**
+ * Return the routing rules as a string to be included in the "Routing" header.
+ */
 export function getBranchingRules() {
     if (isBranchingEnabled()) {
         const rules: RedirectRule[] = JSON.parse(localStorage.getItem("branching") || "[]")
@@ -18,14 +24,28 @@ export function getBranchingRules() {
     return "";
 }
 
+/**
+ * Determines if the response code indicates an error of some kind.
+ * @param status The HTTP status code.
+ */
 function responseIsError(status: number) {
     return responseIsServerError(status) || responseIsClientError(status);
 }
 
+/**
+ * Determines if the status code represents a server side error. This is useful when trying to determine if
+ * a request should be retried, as server side errors may be resolved over time by the server.
+ * @param status The HTTP status code.
+ */
 function responseIsServerError(status: number) {
     return status >= 500 && status <= 599;
 }
 
+/**
+ * Determines if the status code represents a client side error. This is useful when trying to determine if
+ * a request should be retried, as client side errors usually mean we've sent the wrong data, and a retry won't fix that.
+ * @param status The HTTP status code.
+ */
 function responseIsClientError(status: number) {
     return status >= 400 && status <= 499;
 }
@@ -54,6 +74,11 @@ export function appendUtms(url: string, utms?: UtmParams): string {
     }
 }
 
+/**
+ * Make an API call that returns plain JSON.
+ * @param url The API url.
+ * @param retryCount How many times to retry the request.
+ */
 export function getJson<T>(url: string, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
@@ -82,6 +107,12 @@ export function getJson<T>(url: string, retryCount?: number): Promise<T> {
         });
 }
 
+/**
+ * Make an API call that returns JSON API formatted data.
+ * @param url The API url.
+ * @param partition The data partition to make the call in.
+ * @param retryCount How many times to retry the request.
+ */
 export function getJsonApi<T>(url: string, partition: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
@@ -111,6 +142,13 @@ export function getJsonApi<T>(url: string, partition: string | null, retryCount?
         });
 }
 
+/**
+ * Make an API call that expects and returns JSON API formatted data.
+ * @param resource he request body.
+ * @param url The API url.
+ * @param partition The data partition to make the call in.
+ * @param retryCount How many times to retry the request.
+ */
 export function patchJsonApi<T>(resource: string, url: string, partition: string | null, retryCount?: number): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
@@ -142,6 +180,13 @@ export function patchJsonApi<T>(resource: string, url: string, partition: string
         });
 }
 
+/**
+ * Make an API call that expects and returns JSON API formatted data.
+ * @param resource he request body.
+ * @param url The API url.
+ * @param partition The data partition to make the call in.
+ * @param retryCount How many times to retry the request.
+ */
 export function postJsonApi<T>(resource: string, url: string, partition: string | null): Promise<T> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();
@@ -166,6 +211,12 @@ export function postJsonApi<T>(resource: string, url: string, partition: string 
         });
 }
 
+/**
+ * Make an API call that returns JSON API formatted data.
+ * @param url The API url.
+ * @param partition The data partition to make the call in.
+ * @param retryCount How many times to retry the request.
+ */
 export function deleteJsonApi(url: string, partition: string | null, retryCount?: number): Promise<Response> {
     const accessToken = getAccessToken();
     const requestHeaders: HeadersInit = new Headers();

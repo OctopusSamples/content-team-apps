@@ -105,6 +105,7 @@ runs:
       working-directory: js/pipeline-generator
 
     - name: Trigger deployment Jenkins Pipelines
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
         --project "Jenkins Pipelines Generator Frontend"
@@ -116,10 +117,27 @@ runs:
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --ignoreExisting
-        --channel "${{ env.CHANNEL }}"
+        --channel "Default"
+      shell: bash
+
+    - name: Trigger deployment Jenkins Pipelines Feature Branch
+      if: ${{ env.BRANCH_NAME != 'main' }}
+      run: >
+        octo create-release
+        --project "Jenkins Pipelines Generator Frontend"
+        --deployTo "Development"
+        --waitForDeployment
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
+        --ignoreExisting
+        --channel "Feature Branches"
       shell: bash
 
     - name: Trigger deployment Jenkins Pipelines Security env
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
         --project "Jenkins Pipelines Generator Frontend"
@@ -132,6 +150,7 @@ runs:
       shell: bash
 
     - name: Trigger deployment Github Actions
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo create-release
         --project "GitHub Action Workflow Generator Frontend"
@@ -143,10 +162,11 @@ runs:
         --defaultPackageVersion 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --version 0.1.${{ inputs.run_number }}${{ env.PRERELEASE  }}
         --ignoreExisting
-        --channel "${{ env.CHANNEL }}"
+        --channel "default"
       shell: bash
 
     - name: Trigger deployment Github Actions Security env
+      if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
         octo promote-release
         --project "GitHub Action Workflow Generator Frontend"

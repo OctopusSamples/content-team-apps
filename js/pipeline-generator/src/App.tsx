@@ -21,7 +21,11 @@ import Login from "./pages/Login";
 import * as H from "history";
 import {appendUtms, getBranchingRules} from "./utils/network";
 
-// define app context
+/**
+ * The common application context that is shared with all elements displayed by the app. This captures all the
+ * dynamic settings loaded from the config.json file, debugging settings like data partitions, some theming information,
+ * and the generated template text.
+ */
 export const AppContext = React.createContext<DynamicConfig>({
     settings: {
         basename: "",

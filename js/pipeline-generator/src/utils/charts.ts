@@ -1,3 +1,6 @@
+/**
+ * A common set of colors used when building charts.
+ */
 export const chartColors = [
     '#4dc9f6',
     '#f67019',
