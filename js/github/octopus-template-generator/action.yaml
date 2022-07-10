@@ -177,7 +177,7 @@ runs:
     - name: Clean up node modules
       run: |
         npm install -g clean-modules
-        clean-modules --exclude '**//@octopus-content-team/**'
+        clean-modules --exclude '**/@octopus-content-team/**' -y
       shell: bash
       working-directory: js/octopus-template-generator
 
