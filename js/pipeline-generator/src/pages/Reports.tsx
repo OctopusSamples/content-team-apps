@@ -112,10 +112,13 @@ const Reports: FC<{}> = (): ReactElement => {
              See https://stackoverflow.com/a/25064035
              */
             document.getElementById('languageReport')?.remove();
-            document.getElementById('languageReportParent')?.append('<canvas id="languageReport"></canvas>');
-            const languageReport = document.getElementById('languageReport') as HTMLCanvasElement;
-            if (languageReport) {
-                new Chart(languageReport, config);
+            const parentElement = document.getElementById('languageReportParent');
+            if (parentElement) {
+                parentElement.innerHTML = '<canvas id="languageReport"></canvas>';
+                const languageReport = document.getElementById('languageReport') as HTMLCanvasElement;
+                if (languageReport) {
+                    new Chart(languageReport, config);
+                }
             }
         }
         const buildPlatformReport = (audits: AuditsCollection) => {
@@ -154,10 +157,13 @@ const Reports: FC<{}> = (): ReactElement => {
              See https://stackoverflow.com/a/25064035
              */
             document.getElementById('platformReport')?.remove();
-            document.getElementById('platformReportParent')?.append('<canvas id="platformReport"></canvas>');
-            const languageReport = document.getElementById('platformReport') as HTMLCanvasElement;
-            if (languageReport) {
-                new Chart(languageReport, config);
+            const parentElement = document.getElementById('platformReportParent');
+            if (parentElement) {
+                parentElement.innerHTML = '<canvas id="platformReport"></canvas>';
+                const languageReport = document.getElementById('platformReport') as HTMLCanvasElement;
+                if (languageReport) {
+                    new Chart(languageReport, config);
+                }
             }
         }
 
