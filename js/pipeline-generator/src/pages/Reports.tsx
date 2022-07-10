@@ -52,9 +52,9 @@ const Reports: FC<{}> = (): ReactElement => {
         }
 
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateFor"
-                + "%3Btime>=" + startDate.toISOString()
-                + "%3Btime<=" + endDate.toISOString(),
-                "main")
+            + "%3Btime>=" + startDate.toISOString()
+            + "%3Btime<=" + endDate.toISOString(),
+            "main")
             .then(data => {
                 setEmailAuditsFourWeeks(processAudits(data));
             })
@@ -107,6 +107,10 @@ const Reports: FC<{}> = (): ReactElement => {
                 },
             };
 
+            /*
+             Delete and recreate the canvas before recreating the chart.
+             See https://stackoverflow.com/a/25064035
+             */
             document.getElementById('languageReport')?.remove();
             document.getElementById('languageReportParent')?.append('<canvas id="languageReport"></canvas>');
             const languageReport = document.getElementById('languageReport') as HTMLCanvasElement;
@@ -145,6 +149,10 @@ const Reports: FC<{}> = (): ReactElement => {
                 },
             };
 
+            /*
+             Delete and recreate the canvas before recreating the chart.
+             See https://stackoverflow.com/a/25064035
+             */
             document.getElementById('platformReport')?.remove();
             document.getElementById('platformReportParent')?.append('<canvas id="platformReport"></canvas>');
             const languageReport = document.getElementById('platformReport') as HTMLCanvasElement;
@@ -154,10 +162,10 @@ const Reports: FC<{}> = (): ReactElement => {
         }
 
         getJsonApi<AuditsCollection>(context.settings.auditEndpoint
-                + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing"
-                + "%3Btime>=" + startDate.toISOString()
-                + "%3Btime<=" + endDate.toISOString(),
-                "main")
+            + "?page[limit]=10000&page[offset]=0&filter=action==CreateTemplateUsing"
+            + "%3Btime>=" + startDate.toISOString()
+            + "%3Btime<=" + endDate.toISOString(),
+            "main")
             .then(data => {
                 setTemplateAuditsFourWeeks(data);
                 buildLanguageReport(data);
