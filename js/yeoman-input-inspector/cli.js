@@ -109,7 +109,7 @@ if (!allowFullInstall) {
     We can get access to the options and arguments by creating an instance of the
     generator and dumping the private properties "_options" and "_prompts".
  */
-const generator = env.create(generatorName, args.splice(1), {'skip-install': true});
+const generator = env.create(generatorName, args.splice(1), {'skipInstall': true});
 
 /*
     Some generators, like generator-office, call process.exit() for you. So we
