@@ -107,7 +107,7 @@ export default function buildAdaptiveCard(questions, answers, generator) {
                             value: c["value"]
                         }
                     })
-                    .filter(c => c.name && c.value)
+                    .filter(c => c.title && c.value)
             };
 
             card.body.push(choiceSet);
@@ -136,7 +136,7 @@ export default function buildAdaptiveCard(questions, answers, generator) {
                             value: c["value"]
                         }
                     })
-                    .filter(c => c.name && c.value)
+                    .filter(c => c.title && c.value)
                     .filter(c => c.title === fixedQuestion["default"] || c.value === fixedQuestion["default"])
                     .map(c => c.value)
                     .pop(),
@@ -179,8 +179,8 @@ function getChoices(choices, answers) {
     if (typeof choices === 'function') {
         try {
             return choices(answers);
-        } catch {
-            // There is not much we can do here
+        } catch (err) {
+            console.log(err);
             return [];
         }
     }
