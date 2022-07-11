@@ -26,8 +26,10 @@ export default function executeGenerator(
     process.on('uncaughtException', handleException);
 
     /*
-        Not all generators respect the cwd option passed into createEnv. Setting the
-        working directory means we keep our application directory clean.
+        Not all generators respect the cwd option passed into createEnv. For example,
+        jhipster tries to execute git in the working directory, which can cause issues.
+        Setting the working directory means we keep our application directory clean, and
+        external commands work in the temporary template directory.
      */
     process.chdir(tempDir);
 
