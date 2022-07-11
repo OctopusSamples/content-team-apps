@@ -1,8 +1,5 @@
 name: Node.js Build
 description: Build the customizable frontend web app
-'on':
-  workflow_dispatch: {}
-  push: {}
 inputs:
   octopus_server:
     description: "The Octopus server"

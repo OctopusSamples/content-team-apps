@@ -1,5 +1,8 @@
 import {createStyles, makeStyles} from "@material-ui/core";
 
+/**
+ * Common styles used between pages.
+ */
 export const styles = makeStyles((theme) =>
     createStyles({
         container: {

@@ -57,3 +57,4 @@ repos to have a standard set of secrets defined, as shown below:
 
 * `yo @octopus-content-team/octopus-project:apprunner` - creates a project to deploy an image as an App Runner instance.
 * `yo @octopus-content-team/octopus-project:ecr` - creates a project to deploy an ECR repository.
+* `yo @octopus-content-team/octopus-project:epub` - creates a project to build epub and pdf books from HTML.

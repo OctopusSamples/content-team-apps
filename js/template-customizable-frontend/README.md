@@ -54,7 +54,7 @@ defined by a generator, as well as generating a sample Adaptive Card template.
 Install the tool with:
 
 ```
-npm update -g @octopus-content-team/yeoman-input-inspector
+npm install -g @octopus-content-team/yeoman-input-inspector
 ```
 
 Install the generator to inspect with the command:

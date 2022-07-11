@@ -27,6 +27,24 @@
     },
     {
       "type": "TextBlock",
+      "text": "A Jekyll site that creates EPUB and PDF documents from HTML.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus Epub",
+          "verb": "openCard",
+          "data": {
+            "filename": "epub.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
       "text": "This generator produces Terraform files that create an Octopus project to deploy a Docker image to App Runner.",
       "wrap": true
     },

@@ -1,0 +1,57 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.15:epub",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The book title",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.book_title",
+      "value": "A dude and his pants"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The book description",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.book_description",
+      "value": "A story about a dude who loves pants"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The book author",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.book_author",
+      "value": "Dude McPants"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}
