@@ -43,10 +43,10 @@ export default async function resolveGenerator(generator: string, attemptInstall
  * @private
  */
 function getSubGenerator(generatorId: GeneratorId) {
+    const paths = getPaths(generatorId);
+
     try {
-        return require.resolve(
-            generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator,
-            {paths: [getDownloadPath(generatorId), getDefaultWorkingDir()]});
+        return require.resolve(generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator, {paths});
     } catch (e) {
         /*
             Some generators, like jhipster, don't list the app subgenerator in the
@@ -56,9 +56,12 @@ function getSubGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            const modulePath = path.join(getDownloadPath(generatorId), "node_modules", generatorId.namespaceAndName, "generators", generatorId.subGenerator);
-            if (fileExists(modulePath)) {
-                return modulePath;
+            const validPath = paths
+                .map(p => path.join(p, "node_modules", generatorId.namespaceAndName, "generators", generatorId.subGenerator))
+                .find(p => fileExists(p))
+
+            if (validPath) {
+                return validPath;
             }
         }
 
@@ -75,10 +78,10 @@ function getSubGenerator(generatorId: GeneratorId) {
  * @private
  */
 function getGenerator(generatorId: GeneratorId) {
+    const paths = getPaths(generatorId);
+
     try {
-        return require.resolve(
-            generatorId.namespaceAndName + "/" + generatorId.subGenerator,
-            {paths: [getDownloadPath(generatorId), getDefaultWorkingDir()]});
+        return require.resolve(generatorId.namespaceAndName + "/" + generatorId.subGenerator, {paths});
     } catch (e) {
         /*
             Some generators, like jhipster, don't list the app subgenerator in the
@@ -88,13 +91,36 @@ function getGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            const modulePath = path.join(getDownloadPath(generatorId), "node_modules", generatorId.namespaceAndName, generatorId.subGenerator);
-            if (fileExists(modulePath)) {
-                return modulePath;
+            const validPath = paths
+                .map(p => path.join(p, "node_modules", generatorId.namespaceAndName, generatorId.subGenerator))
+                .find(p => fileExists(p))
+
+            if (validPath) {
+                return validPath;
             }
         }
 
         console.log(e);
         throw e;
     }
+}
+
+/**
+ * Return the list of paths where a module can be found.
+ * @param generatorId
+ */
+function getPaths(generatorId: GeneratorId) {
+    // We can always look in the download path, as this path is version specific.
+    const paths = [getDownloadPath(generatorId)];
+
+    /*
+     If no version has been specified by the client, we treat this as a "server provided version". This means
+     any packages bundled with the server, usually because they were included in the package.json
+     file, can be used to satisfy the request. The client is agnostic about the version, which
+     leaves the server in charge.
+     */
+    if (!generatorId.version) {
+        paths.push(getDefaultWorkingDir());
+    }
+    return paths;
 }
