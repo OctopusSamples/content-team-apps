@@ -11,6 +11,8 @@ import installNpmPackage from "./npmInstaller";
 import GeneratorId from "../entities/generatorId";
 import getDownloadPath from "./downloadPaths";
 import {getDefaultWorkingDir} from "../features/defaultWorkingDir";
+import {fileExists} from "./fileUtils";
+import path from "path";
 
 export default async function resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
     const generatorId = splitGeneratorName(generator);
@@ -54,7 +56,10 @@ function getSubGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            return getDefaultWorkingDir() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/generators/" + generatorId.subGenerator;
+            const modulePath = path.join(getDownloadPath(generatorId), "node_modules", generatorId.namespaceAndName, "generators", generatorId.subGenerator);
+            if (fileExists(modulePath)) {
+                return modulePath;
+            }
         }
 
         console.log(e);
@@ -83,7 +88,10 @@ function getGenerator(generatorId: GeneratorId) {
             and return the path.
          */
         if (e.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
-            return getDefaultWorkingDir() + "/" + getDownloadPath(generatorId) + "/node_modules/" + generatorId.namespaceAndName + "/" + generatorId.subGenerator;
+            const modulePath = path.join(getDownloadPath(generatorId), "node_modules", generatorId.namespaceAndName, generatorId.subGenerator);
+            if (fileExists(modulePath)) {
+                return modulePath;
+            }
         }
 
         console.log(e);

@@ -1,12 +1,11 @@
 import getDownloadPath from "./downloadPaths";
-import process from "node:process";
 import {exec, ExecException} from "child_process";
 import splitGeneratorName from "./generatorSplitter";
 
 export default function installNpmPackage(generator: string) {
     const generatorId = splitGeneratorName(generator);
     const downloadPath = getDownloadPath(generatorId);
-    console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion + " in " + process.cwd());
+    console.log("Attempting to run npm install --prefix " + downloadPath + " --no-save " + generatorId.namespaceNameAndVersion);
     return new Promise((resolve, reject) => {
         /*
             Place any newly download generators into a new directory called downloaded.
