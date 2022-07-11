@@ -2,6 +2,7 @@ import process from "node:process";
 import NonInteractiveAdapter from "../yeoman/adapter";
 import resolveGenerator from "./generatorResolver";
 import {getTempDir} from "../features/defaultWorkingDir";
+import splitGeneratorName from "./generatorSplitter";
 
 const yeoman = require('yeoman-environment');
 
@@ -11,6 +12,8 @@ export default function executeGenerator(
     fixedArgs: string[],
     fixedOptions: { [key: string]: string },
     fixedAnswers: { [key: string]: string }) {
+
+    const generatorId = splitGeneratorName(generator);
 
     /*
         Catch issues like missing files and save the uncaught exception, so we can
@@ -31,14 +34,14 @@ export default function executeGenerator(
     const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
 
     return resolveGenerator(generator)
-        .then(resolvedGenerator => env.register(resolvedGenerator, generator))
+        .then(resolvedGenerator => env.register(resolvedGenerator, generatorId.namespaceAndName))
         .then(() => {
             /*
                 The docs at https://yeoman.io/authoring/integrating-yeoman.html indicate we should set the
                 "skip-install" option. This is incorrect, and should be "skipInstall". The loadSharedOptions()
                 method on the environment shows the actual options to be passed in.
              */
-            return env.run([generator, ...fixedArgs], {...fixedOptions, skipInstall: true})
+            return env.run([generatorId.namespaceAndName, ...fixedArgs], {...fixedOptions, skipInstall: true})
         })
         .then(() => {
             /*

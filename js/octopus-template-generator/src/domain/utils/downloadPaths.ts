@@ -7,9 +7,9 @@ import path from "path";
  * @param generatorId The npm package to download.
  */
 export default function getDownloadPath(generatorId: GeneratorId) {
-    const subPaths = (generatorId?.version
+    const subPaths = generatorId?.version
         ? ["downloaded", generatorId.version]
-        : ["downloaded"]);
+        : ["downloaded", "latest"];
 
     return path.join(getDefaultWorkingDir(), ...subPaths);
 }
