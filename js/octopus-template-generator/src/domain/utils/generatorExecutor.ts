@@ -29,7 +29,7 @@ export default function executeGenerator(
         Not all generators respect the cwd option passed into createEnv. Setting the
         working directory means we keep our application directory clean.
      */
-    process.chdir(getTempDir());
+    process.chdir(tempDir);
 
     const env = yeoman.createEnv({cwd: tempDir}, {}, new NonInteractiveAdapter(fixedAnswers));
 
