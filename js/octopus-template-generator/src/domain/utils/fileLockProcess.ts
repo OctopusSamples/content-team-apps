@@ -13,13 +13,27 @@ const POLL_PERIOD = 1000;
  * Assume locks are stale after some multiple of the WAIT_TIME.
  */
 const STALE_PERIOD = WAIT_TIME * 3;
+/**
+ * The options always used when acquiring a lock file.
+ */
+const COMMON_OPTIONS = {stale: STALE_PERIOD};
+/**
+ * The options used when waiting for a lock file.
+ */
+const WAIT_OPTIONS = {wait: WAIT_TIME, pollPeriod: POLL_PERIOD, ...COMMON_OPTIONS};
 
+/**
+ * Attempt to acquire a lock file, after optional waiting for other processes, and then call the callback.
+ * @param lockFilePath The lock file path.
+ * @param wait true if we should wait for an existing lock file to be cleared.
+ * @param cb The callback to call upon success.
+ */
 export default function lockFileAndContinue(lockFilePath: string, wait: boolean, cb: () => unknown) {
     /*
      If we are waiting for the lock, define the wait and pollPeriod options.
      We always set the stale option to deal with old locks.
      */
-    const options = {...(wait ? {wait: WAIT_TIME, pollPeriod: POLL_PERIOD} : {}), stale: STALE_PERIOD};
+    const options = wait ? WAIT_OPTIONS : COMMON_OPTIONS;
 
     return new Promise((resolve, reject) => {
         lockFile.lock(lockFilePath, options, (err: never) => {

@@ -13,7 +13,7 @@ it('can generate a template with mocked services', async () => {
         processes, or the network. They are all faked to remove any external access
         while performing the test.
      */
-    sinon.stub(fileLockProcess, 'default').callsFake((...props) => new Promise(resolve => {resolve(props[1]())}));
+    sinon.stub(fileLockProcess, 'default').callsFake((...props) => new Promise(resolve => {resolve(props[2]())}));
     sinon.stub(fileUtils, 'fileExists').callsFake((...props) => true);
     sinon.stub(generatorExecutor, 'default').callsFake((...props) => new Promise(resolve => resolve()));
     sinon.stub(generatorResolver, 'default').callsFake((...props) => new Promise(resolve => resolve("fake package")));
