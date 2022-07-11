@@ -155,7 +155,7 @@ export default function buildAdaptiveCard(questions, answers, generator) {
                             value: c["value"]
                         }
                     })
-                    .filter(c => c.name && c.value)
+                    .filter(c => c.title && c.value)
             };
 
             card.body.push(choiceSet);
