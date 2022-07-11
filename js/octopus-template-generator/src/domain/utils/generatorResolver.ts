@@ -1,10 +1,3 @@
-/**
- * Resolve the Yeoman generator, and optionally try to install it if it doesn't exist.
- * @param generator The name of the generator.
- * @param attemptInstall true if we should attempt to install the generator if it doesn't exist. Note the downloading
- * of additional generators is also defined by the enableNpmInstall() feature.
- * @private
- */
 import splitGeneratorName from "./generatorSplitter";
 import canInstallPackage from "./packageInstaller";
 import installNpmPackage from "./npmInstaller";
@@ -14,6 +7,15 @@ import {getDefaultWorkingDir} from "../features/defaultWorkingDir";
 import {fileExists} from "./fileUtils";
 import path from "path";
 
+/**
+ * Resolve the Yeoman generator, and optionally try to install it if it doesn't exist.
+ * Where no version is specified (e.g. generator-mytemplate), the local node_module and downloaded/latest directories will be scanned.
+ * Where a version is specified (e.g. generator-mytemplate@1.0.0), the downloaded/<version> directory will be scanned.
+ * @param generator The name of the generator.
+ * @param attemptInstall true if we should attempt to install the generator if it doesn't exist. Note the downloading
+ * of additional generators is also defined by the enableNpmInstall() feature.
+ * @private
+ */
 export default async function resolveGenerator(generator: string, attemptInstall = true): Promise<string> {
     const generatorId = splitGeneratorName(generator);
 
