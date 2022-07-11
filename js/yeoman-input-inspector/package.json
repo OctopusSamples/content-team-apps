@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/yeoman-input-inspector",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A tool for inspecting the options and questions defined in an Yeoman generator",
   "main": "cli.js",
   "preferGlobal": true,
