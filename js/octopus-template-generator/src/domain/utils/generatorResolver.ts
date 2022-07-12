@@ -67,7 +67,7 @@ function getSubGenerator(generatorId: GeneratorId) {
             }
         }
 
-        console.log(e);
+        console.log("Did not find " + generatorId.namespaceNameAndVersion + " with a generator called " + generatorId.subGenerator + " in the generators path under: " + paths.join(", "));
         return getGenerator(generatorId);
     }
 }
@@ -102,7 +102,7 @@ function getGenerator(generatorId: GeneratorId) {
             }
         }
 
-        console.log(e);
+        console.log("Did not find " + generatorId.namespaceNameAndVersion + " with a generator called " + generatorId.subGenerator + " in under: " + paths.join(", "));
         throw e;
     }
 }
