@@ -5,16 +5,19 @@
     {
       "type": "TextBlock",
       "text": "Select your generator"
-    }
-  ],
-  "actions": [
+    },
     {
-      "type": "Action.Execute",
-      "title": "Spring Boot",
-      "verb": "openCard",
-      "data": {
-        "filename": "springboot.json"
-      }
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Spring Boot",
+          "verb": "openCard",
+          "data": {
+            "filename": "springboot.json"
+          }
+        }
+      ]
     }
   ]
 }
