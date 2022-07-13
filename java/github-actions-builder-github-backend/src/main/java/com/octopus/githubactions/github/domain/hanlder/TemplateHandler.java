@@ -167,9 +167,11 @@ public class TemplateHandler {
   }
 
   /**
-   * Write the audit event as JSON to the console, which allows tools like CloudWatch to pick up
-   * the records. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#metric-filters-extract-json
+   * Write the audit event as JSON to the console, which allows tools like CloudWatch to pick up the
+   * records. See
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#metric-filters-extract-json
    * for details on how to parse JSON logs in CloudWatch.
+   *
    * @param emails The email addresses associated with the logged-in user
    */
   private void logEmailToConsole(final GitHubEmail[] emails) {

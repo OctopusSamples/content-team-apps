@@ -199,12 +199,12 @@ public class TemplateHandler {
       // Make a best effort to get the users details. We don't break for any errors here though.
       final GitHubEmail[] emails = StringUtils.isNotBlank(token)
           ? Try.of(() -> gitHubApi.publicEmails("token " + token))
-              .getOrElse(() -> new GitHubEmail[]{})
+          .getOrElse(() -> new GitHubEmail[]{})
           : new GitHubEmail[]{};
 
       final GitHubUser user = StringUtils.isNotBlank(token)
           ? Try.of(() -> gitHubApi.user("token " + token))
-            .getOrElse(GitHubUser::new)
+          .getOrElse(GitHubUser::new)
           : new GitHubUser();
 
       recordEmailInOctofront(
@@ -228,9 +228,11 @@ public class TemplateHandler {
   }
 
   /**
-   * Write the audit event as JSON to the console, which allows tools like CloudWatch to pick up
-   * the records. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#metric-filters-extract-json
+   * Write the audit event as JSON to the console, which allows tools like CloudWatch to pick up the
+   * records. See
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#metric-filters-extract-json
    * for details on how to parse JSON logs in CloudWatch.
+   *
    * @param emails The email addresses associated with the logged-in user
    */
   private void logEmailToConsole(final GitHubEmail[] emails) {
