@@ -19,6 +19,7 @@ import com.octopus.jenkins.github.domain.entities.GithubUserLoggedInForFreeTools
 import com.octopus.jenkins.github.domain.entities.Utms;
 import com.octopus.jenkins.github.domain.servicebus.ServiceBusMessageGenerator;
 import com.octopus.jenkins.github.infrastructure.client.GitHubApi;
+import com.octopus.json.JsonSerializer;
 import com.octopus.repoclients.RepoClient;
 import com.octopus.repoclients.RepoClientFactory;
 import io.quarkus.logging.Log;
@@ -85,6 +86,9 @@ public class TemplateHandler {
   @Inject
   @Named("always")
   LoginLogic loginLogic;
+
+  @Inject
+  JsonSerializer jsonSerializer;
 
   /**
    * Generate a github repo.
@@ -214,11 +218,33 @@ public class TemplateHandler {
           user);
 
       auditEmail(token, xray, emails, routingHeaders, dataPartitionHeaders, authHeaders);
+
+      logEmailToConsole(emails);
     } catch (final Exception ex) {
       Log.error(
           microserviceNameFeature.getMicroserviceName() + "-Login-RecordEmailFailed",
           ex);
     }
+  }
+
+  /**
+   * Write the audit event as JSON to the console, which allows tools like CloudWatch to pick up
+   * the records. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#metric-filters-extract-json
+   * for details on how to parse JSON logs in CloudWatch.
+   * @param emails The email addresses associated with the logged-in user
+   */
+  private void logEmailToConsole(final GitHubEmail[] emails) {
+    Try.of(() -> Base64.getEncoder()
+            .encodeToString(Resources.toByteArray(Resources.getResource("public_key.der"))))
+        .onSuccess(key -> Arrays.stream(emails)
+            .map(e -> asymmetricEncryptor.encrypt(e.getEmail(), key))
+            .map(e -> new Audit(
+                microserviceNameFeature.getMicroserviceName(),
+                GlobalConstants.CREATED_TEMPLATE_FOR_ACTION,
+                e,
+                true,
+                false))
+            .forEach(a -> LOG.info(jsonSerializer.toJson(a))));
   }
 
   /**
