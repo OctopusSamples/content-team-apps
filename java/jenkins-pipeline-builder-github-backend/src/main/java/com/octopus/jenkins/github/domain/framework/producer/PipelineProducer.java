@@ -29,6 +29,8 @@ import com.octopus.http.ReadOnlyHttpClient;
 import com.octopus.http.impl.ReadOnlyHttpClientImpl;
 import com.octopus.jenkins.github.domain.features.ServiceBusCognitoConfig;
 import com.octopus.jenkins.github.infrastructure.client.CognitoClient;
+import com.octopus.json.JsonSerializer;
+import com.octopus.json.impl.JacksonJsonSerializerImpl;
 import com.octopus.jwt.JwtInspector;
 import com.octopus.jwt.JwtValidator;
 import com.octopus.jwt.impl.JoseJwtInspector;
@@ -354,5 +356,16 @@ public class PipelineProducer {
   @Named("always")
   public LoginLogic getAlwaysLoginLogic() {
     return new AlwaysLoginLogic();
+  }
+
+  /**
+   * Produces the JSON serializer.
+   *
+   * @return An implementation of JsonSerializer.
+   */
+  @ApplicationScoped
+  @Produces
+  public JsonSerializer getJsonSerializer() {
+    return new JacksonJsonSerializerImpl();
   }
 }

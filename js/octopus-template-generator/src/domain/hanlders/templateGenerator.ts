@@ -70,7 +70,7 @@ export class TemplateGenerator {
         // This is where the template is created
         const zipPath = path.join(getTempDir(), hash + '.zip');
 
-        await this.buildNewTemplate(generator, options, answers, args, zipPath);
+        await this.buildNewTemplate(generator, true, options, answers, args, zipPath);
 
         return zipPath;
     }
@@ -94,7 +94,7 @@ export class TemplateGenerator {
         const zipPath = path.join(getTempDir(), hash + '.zip');
 
         // trigger the build, but don't wait for it
-        this.buildNewTemplate(generator, options, answers, args, zipPath)
+        this.buildNewTemplate(generator, false, options, answers, args, zipPath)
             .catch(e => console.log(e));
 
         return hash;
@@ -103,6 +103,7 @@ export class TemplateGenerator {
     /**
      * Build the template and save it in a temporary directory.
      * @param generator The name of the generator.
+     * @param wait true if we wait for the lock, and false if we just exit in the presence of a lock.
      * @param options The generator options.
      * @param answers The generator answers.
      * @param args The generator argumnets.
@@ -110,12 +111,13 @@ export class TemplateGenerator {
      */
     buildNewTemplate(
         generator: string,
+        wait: boolean,
         options: { [key: string]: string; },
         answers: { [key: string]: string; },
         args: string[],
         zipPath: string) {
         const lockFilePath = zipPath + ".lock";
-        return lockFileAndContinue(lockFilePath, () => {
+        return lockFileAndContinue(lockFilePath, wait, () => {
             if (!fileExists(zipPath)) {
                 return this.writeTemplate(generator, options, answers, args, zipPath);
             }

@@ -1,7 +1,6 @@
 import process from "node:process";
 import NonInteractiveAdapter from "../yeoman/adapter";
 import resolveGenerator from "./generatorResolver";
-import {getTempDir} from "../features/defaultWorkingDir";
 import splitGeneratorName from "./generatorSplitter";
 
 const yeoman = require('yeoman-environment');
