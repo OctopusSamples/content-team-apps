@@ -336,7 +336,7 @@ resource "octopusdeploy_deployment_process" "backend_project" {
               Type: 'AWS::Logs::LogGroup'
               Properties:
                 LogGroupName: !Sub '/aws/lambda/$${EnvironmentName}-$${LambdaName}'
-                RetentionInDays: 356
+                RetentionInDays: 365
             IamRoleLambdaExecution:
               Type: 'AWS::IAM::Role'
               Properties:
