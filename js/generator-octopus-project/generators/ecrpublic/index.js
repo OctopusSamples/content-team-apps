@@ -29,6 +29,12 @@ module.exports = class extends Generator {
                 default: "App Runner"
             },
             {
+                type: "confirm",
+                name: "existing_project_group",
+                message: "Use an existing project group",
+                default: false
+            },
+            {
                 type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
@@ -135,7 +141,8 @@ module.exports = class extends Generator {
             aws_region: this.answers["aws_region"],
             terraform_bucket_suffix: this.answers["terraform_bucket_suffix"] || uuidv4(),
             cloudformation_stack_name: this.answers["cloudformation_stack_name"],
-            repository_name: this.answers["repository_name"]
+            repository_name: this.answers["repository_name"],
+            existing_project_group: this.answers["existing_project_group"],
         };
 
         this.fs.copyTpl(

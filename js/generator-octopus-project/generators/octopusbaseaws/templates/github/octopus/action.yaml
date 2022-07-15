@@ -172,7 +172,6 @@ runs:
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
           -var="existing_project_group=${{ inputs.existing_project_group }}" \
-          -var="existing_project_group=${{ inputs.existing_project_group }}" \
           -var="aws_region=${{ inputs.aws_region }}" \
           -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}"

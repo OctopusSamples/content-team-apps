@@ -55,6 +55,9 @@ inputs:
   repository_name:
     description: 'The ECR repository name'
     required: true
+  existing_project_group:
+    description: 'Whether to create a new project group, or use an existing one'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -151,7 +154,8 @@ runs:
           -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="cloudformation_stack_name=${{ inputs.cloudformation_stack_name }}" \
-          -var="repository_name=${{ inputs.repository_name }}"
+          -var="repository_name=${{ inputs.repository_name }}" \
+          -var="existing_project_group=${{ inputs.existing_project_group }}"
         
         if [[ $? -ne 0 ]]; then
           echo "AppBuilder-Infrastructure-OctopusProjectFailed The build script failed to populate the Octopus instance. See https://github.com/OctopusSamples/content-team-apps/wiki/Error-Codes#appbuilder-infrastructure-octopusprojectfailed for more information."

@@ -72,3 +72,8 @@ variable "repository_name" {
   type = string
   nullable = false
 }
+
+variable "existing_project_group" {
+  type = bool
+  nullable = false
+}

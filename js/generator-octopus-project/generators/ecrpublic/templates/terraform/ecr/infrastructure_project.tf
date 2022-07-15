@@ -9,7 +9,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   is_version_controlled                = false
   name                                 = var.octopus_project_name
   lifecycle_id                         = var.octopus_lifecycle_id
-  project_group_id                     = data.octopusdeploy_project_groups.apprunner_project_group.project_groups[0].id
+  project_group_id                     = var.existing_project_group ? data.octopusdeploy_project_groups.project_group.project_groups[0].id : octopusdeploy_project_group.project_group[0].id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
