@@ -59,6 +59,16 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
     # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
     # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
     # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
@@ -69,24 +79,14 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket workflow-builder-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
+        aws s3api head-bucket --bucket workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://workflow-builder-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }}
+          aws s3 mb s3://workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
-
-    - id: repository_owner_lower
-      uses: ASzc/change-string-case-action@v2
-      with:
-        string: ${{ github.repository_owner }}
-
-    - id: repository_name_lower
-      uses: ASzc/change-string-case-action@v2
-      with:
-        string: ${{ github.event.repository.name }}
 
     # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
     - uses: danielr1996/envsubst-action@1.1.0
