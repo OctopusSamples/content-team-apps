@@ -81,6 +81,8 @@ runs:
     # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
     - uses: danielr1996/envsubst-action@1.1.0
       env:
+        GITHUB_OWNER: ${{ github.repository_owner }}
+        GITHUB_REPO: ${{ github.event.repository.name }}
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
