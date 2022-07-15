@@ -79,10 +79,14 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
+        aws s3api head-bucket \
+            --bucket workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }}
+          aws s3 mb \
+            s3://workflow-builder-${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
         fi
