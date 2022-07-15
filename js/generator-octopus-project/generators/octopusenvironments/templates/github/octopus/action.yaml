@@ -78,11 +78,21 @@ runs:
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
     # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
     - uses: danielr1996/envsubst-action@1.1.0
       env:
-        GITHUB_OWNER: ${{ github.repository_owner }}
-        GITHUB_REPO: ${{ github.event.repository.name }}
+        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
+        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
