@@ -110,6 +110,8 @@ runs:
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
     # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    # This is because backend config con not have variables.
+    # See https://github.com/hashicorp/terraform/issues/13022
     - uses: danielr1996/envsubst-action@1.1.0
       env:
         GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
