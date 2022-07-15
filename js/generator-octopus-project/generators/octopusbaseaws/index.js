@@ -17,7 +17,7 @@ module.exports = class extends Generator {
                 default: "My Project"
             },
             {
-                type: "checkbox",
+                type: "confirm",
                 name: "existing_project_group",
                 message: "Use an existing project group",
                 default: false

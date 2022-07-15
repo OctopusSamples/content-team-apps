@@ -19,6 +19,9 @@ jobs:
       - name: Build
         uses: ./github/<%= project_name %>
         with:
+          github_app_id: <%= github_app_id %>
+          github_installation_id: <%= github_installation_id %>
+          github_pem_file: <%= github_pem_file %>
           project_name: <%= project_name %>
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>

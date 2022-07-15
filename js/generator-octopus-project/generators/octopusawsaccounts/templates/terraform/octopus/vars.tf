@@ -61,3 +61,13 @@ variable "production_security_environment" {
   type = string
   nullable = false
 }
+
+variable "github_repo" {
+  type = string
+  nullable = false
+}
+
+variable "github_owner" {
+  type = string
+  nullable = false
+}

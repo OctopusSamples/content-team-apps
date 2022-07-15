@@ -6,6 +6,15 @@ inputs:
       The name used to identify this project. It is used for the directory holding project terraform files, and
       the filename of the GitHub Actions workflow file.
     required: true
+  github_app_id:
+    required: true
+    description: The GitHub App ID used by the Github Terraform provider
+  github_installation_id:
+    required: true
+    description: The GitHub Installation ID used by the Github Terraform provider
+  github_pem_file:
+    required: true
+    description: The GitHub PEM file used by the Github Terraform provider
   octopus_server:
     description: 'Octopus cloud URL'
     required: true
@@ -132,6 +141,11 @@ runs:
 
     - name: Terraform Apply
       env:
+        # https://github.com/integrations/terraform-provider-github/issues/578
+        GITHUB_OWNER: ${{ github.repository_owner }}
+        GITHUB_APP_ID: ${{ inputs.github_app_id }}
+        GITHUB_APP_INSTALLATION_ID: ${{ inputs.github_installation_id }}
+        GITHUB_APP_PEM_FILE: ${{ inputs.github_pem_file }}
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
@@ -147,6 +161,8 @@ runs:
           -var="development_environment_id=${{ inputs.development_environment_id }}" \
           -var="development_security_environment=${{ inputs.development_security_environment }}" \
           -var="production_environment_id=${{ inputs.production_environment_id }}" \
-          -var="production_security_environment=${{ inputs.production_security_environment }}"
+          -var="production_security_environment=${{ inputs.production_security_environment }}" \
+          -var="github_repo=${{ github.event.repository.name }}" \
+          -var="github_owner=${{ github.repository_owner }}"
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash

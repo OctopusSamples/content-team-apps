@@ -4,6 +4,10 @@ terraform {
       source  = "OctopusDeployLabs/octopusdeploy"
       version = "0.7.70"
     }
+    github = {
+      source = "integrations/github"
+      version = "4.26.1"
+    }
   }
 }
 
@@ -12,4 +16,9 @@ provider "octopusdeploy" {
   api_key  = var.octopus_apikey
   space_id = var.octopus_space_id
 }
+
+provider "github" {
+  app_auth {}
+}
+
 

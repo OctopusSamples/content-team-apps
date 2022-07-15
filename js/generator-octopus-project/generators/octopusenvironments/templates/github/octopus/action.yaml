@@ -119,7 +119,6 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
-        # GITHUB_TOKEN: ${{ inputs.github_token }}
         # https://github.com/integrations/terraform-provider-github/issues/578
         GITHUB_OWNER: ${{ github.repository_owner }}
         GITHUB_APP_ID: ${{ inputs.github_app_id }}

@@ -92,6 +92,24 @@ module.exports = class extends Generator {
                 name: "production_security_environment",
                 message: "The production security environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "github_app_id",
+                message: "The GitHub App ID used by the Github Terraform provider",
+                default: "${{ secrets.GH_APP_ID }}"
+            },
+            {
+                type: "input",
+                name: "github_installation_id",
+                message: "The GitHub Installation ID used by the Github Terraform provider",
+                default: "${{ secrets.GH_INSTALLATION_ID }}"
+            },
+            {
+                type: "input",
+                name: "github_pem_file",
+                message: "The base 64 encoded pem file used by Github Terraform provider",
+                default: "${{ secrets.GH_PEM_FILE }}"
             }
         ]);
     }
@@ -113,6 +131,9 @@ module.exports = class extends Generator {
             development_security_environment: this.answers["development_security_environment"],
             production_environment_id: this.answers["production_environment_id"],
             production_security_environment: this.answers["production_security_environment"],
+            github_app_id: this.answers["github_app_id"],
+            github_installation_id: this.answers["github_installation_id"],
+            github_pem_file: this.answers["github_pem_file"],
         };
 
         this.fs.copyTpl(
