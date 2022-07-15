@@ -106,7 +106,7 @@ runs:
         output: terraform/${{ inputs.project_name }}/backend_aws.tf
 
     - name: Show Backend
-      run: cat terraform/${{ inputs.project_name }}/backend_aws.tf
+      run: cat backend_aws.tf
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash
 
