@@ -7,7 +7,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "project_name",
                 message: "The Project Name",
-                default: "octopusenvironments"
+                default: "octopusawsaccounts"
             },
             {
                 type: "input",
@@ -42,26 +42,8 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "aws_region",
-                message: "The AWS region to deploy the ECR repository in",
+                message: "The AWS region to create the state bucket in",
                 default: "us-west-1"
-            },
-            {
-                type: "input",
-                name: "github_app_id",
-                message: "The GitHub App ID used by the Github Terraform provider",
-                default: "${{ secrets.GH_APP_ID }}"
-            },
-            {
-                type: "input",
-                name: "github_installation_id",
-                message: "The GitHub Installation ID used by the Github Terraform provider",
-                default: "${{ secrets.GH_INSTALLATION_ID }}"
-            },
-            {
-                type: "input",
-                name: "github_pem_file",
-                message: "The base 64 encoded pem file used by Github Terraform provider",
-                default: "${{ secrets.GH_PEM_FILE }}"
             }
         ]);
     }
@@ -74,10 +56,7 @@ module.exports = class extends Generator {
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
-            aws_region: this.answers["aws_region"],
-            github_app_id: this.answers["github_app_id"],
-            github_installation_id: this.answers["github_installation_id"],
-            github_pem_file: this.answers["github_pem_file"],
+            aws_region: this.answers["aws_region"]
         };
 
         this.fs.copyTpl(

@@ -1,0 +1,97 @@
+name: Terraform Apply
+description: Create the Octopus environments and lifecycles
+inputs:
+  project_name:
+    description: |
+      The name used to identify this project. It is used for the directory holding project terraform files, and
+      the filename of the GitHub Actions workflow file.
+    required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the Octopus space'
+    required: true
+
+# AWS inputs
+
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_key:
+    description: 'AWS Secret Key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket --bucket workflow-builder-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb s3://workflow-builder-${{ inputs.project_name }} --region ${{ inputs.aws_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        PROJECT_NAME: ${{ inputs.project_name }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+      with:
+        input: terraform/${{ inputs.project_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_name }}/backend_aws.tf
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/${{ inputs.project_name }}
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply \
+          -auto-approve \
+          -var="octopus_server=${{ inputs.octopus_server }}" \
+          -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+          -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+      working-directory: terraform/${{ inputs.project_name }}
+      shell: bash
