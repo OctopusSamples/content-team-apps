@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/<%= project_name %>.yaml'
+      - 'github/<%= project_name %>/**'
       - 'terraform/<%= project_name %>/**'
   workflow_dispatch:
 
@@ -16,7 +17,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./terraform/<%= project_name %>
+        uses: ./github/<%= project_name %>
         with:
           project_name: <%= project_name %>
           octopus_server: <%= octopus_server %>
@@ -38,5 +39,3 @@ jobs:
           octopus_aws_development_account_id: <%= octopus_aws_development_account_id %>
           octopus_aws_production_account_id: <%= octopus_aws_production_account_id %>
           aws_region: <%= aws_region %>
-
-

@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "${GITHUB_OWNER}-${GITHUB_REPO}-${PROJECT_NAME}"
-    key    = "appbuilder-ecr-deployment"
+    key    = "helloworldproject"
     region = "${TERRAFORM_BUCKET_REGION}"
   }
 }

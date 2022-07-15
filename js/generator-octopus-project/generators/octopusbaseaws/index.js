@@ -17,6 +17,12 @@ module.exports = class extends Generator {
                 default: "My Project"
             },
             {
+                type: "input",
+                name: "octopus_project_description",
+                message: "Your project description",
+                default: "A description of my project"
+            },
+            {
                 type: "confirm",
                 name: "existing_project_group",
                 message: "Use an existing project group",
@@ -123,6 +129,7 @@ module.exports = class extends Generator {
             octopus_development_security_environment_id: this.answers["octopus_development_security_environment_id"],
             octopus_production_security_environment_id: this.answers["octopus_production_security_environment_id"],
             octopus_project_name: this.answers["octopus_project_name"],
+            octopus_project_description: this.answers["octopus_project_description"],
             octopus_project_group_name: this.answers["octopus_project_group_name"],
             octopus_lifecycle_id: this.answers["octopus_lifecycle_id"],
             octopus_aws_development_account_id: this.answers["octopus_aws_development_account_id"],
@@ -137,8 +144,8 @@ module.exports = class extends Generator {
         );
 
         this.fs.copyTpl(
-            this.templatePath('terraform/octopus/action.yaml'),
-            this.destinationPath('terraform/' + this.answers["project_name"] + '/action.yaml'),
+            this.templatePath('github/octopus/action.yaml'),
+            this.destinationPath('github/' + this.answers["project_name"] + '/action.yaml'),
             options
         );
 

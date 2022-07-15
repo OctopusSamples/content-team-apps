@@ -163,15 +163,15 @@ runs:
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
           -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
-          -var="octopus_project_description=${{ inputs.octopus_project_description }}" \          
+          -var="octopus_project_description=${{ inputs.octopus_project_description }}" \
           -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
           -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}" \
           -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}" \
           -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
           -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
-          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \ 
-          -var="existing_project_group=${{ inputs.existing_project_group }}" \ 
+          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
+          -var="existing_project_group=${{ inputs.existing_project_group }}" \
           -var="existing_project_group=${{ inputs.existing_project_group }}" \
           -var="aws_region=${{ inputs.aws_region }}" \
           -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \

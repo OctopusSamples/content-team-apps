@@ -6,5 +6,5 @@ data "octopusdeploy_project_groups" "project_group" {
 
 resource "octopusdeploy_project_group" "project_group" {
   name  = var.octopus_project_group_name
-  count = var.existing_project_group ? 1 : 0
+  count = var.existing_project_group ? 0 : 1
 }
