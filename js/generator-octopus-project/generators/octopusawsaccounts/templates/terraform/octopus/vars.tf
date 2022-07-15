@@ -41,3 +41,23 @@ variable "production_aws_secret_access_key" {
   sensitive = true
   description = "The AWS secret access key used to create the account for the production environment"
 }
+
+variable "development_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "development_security_environment" {
+  type = string
+  nullable = false
+}
+
+variable "production_environment_id" {
+  type = string
+  nullable = false
+}
+
+variable "production_security_environment" {
+  type = string
+  nullable = false
+}

@@ -23,6 +23,10 @@ jobs:
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>
+          development_environment_id: <%= development_environment_id %>
+          development_security_environment: <%= development_security_environment %>
+          production_environment_id: <%= production_environment_id %>
+          production_security_environment: <%= production_security_environment %>
 
           # AWS vars
           aws_access_key: <%= aws_access_key %>

@@ -68,6 +68,30 @@ module.exports = class extends Generator {
                 name: "production_aws_secret_access_key",
                 message: "The AWS secret access key used for the production account",
                 default: "${{ secrets.AWS_PRODUCTION_SECRET_ACCESS_KEY_ID }}"
+            },
+            {
+                type: "input",
+                name: "development_environment_id",
+                message: "The development environment ID",
+                default: "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "development_security_environment",
+                message: "The development security environment ID",
+                default: "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "production_environment_id",
+                message: "The production environment ID",
+                default: "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+            },
+            {
+                type: "input",
+                name: "production_security_environment",
+                message: "The production security environment ID",
+                default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
             }
         ]);
     }
@@ -85,6 +109,10 @@ module.exports = class extends Generator {
             development_aws_secret_access_key: this.answers["development_aws_secret_access_key"],
             production_aws_access_key: this.answers["production_aws_access_key"],
             production_aws_secret_access_key: this.answers["production_aws_secret_access_key"],
+            development_environment_id: this.answers["development_environment_id"],
+            development_security_environment: this.answers["development_security_environment"],
+            production_environment_id: this.answers["production_environment_id"],
+            production_security_environment: this.answers["production_security_environment"],
         };
 
         this.fs.copyTpl(

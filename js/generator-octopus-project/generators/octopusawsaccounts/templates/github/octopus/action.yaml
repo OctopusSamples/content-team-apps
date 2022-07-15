@@ -15,6 +15,18 @@ inputs:
   octopus_space_id:
     description: 'The ID of the Octopus space'
     required: true
+  development_environment_id:
+    description: 'The development environment ID'
+    required: true
+  development_security_environment:
+    description: 'The development security environment ID'
+    required: true
+  production_environment_id:
+    description: 'The production environment ID'
+    required: true
+  production_security_environment:
+    description: 'The production security environment ID'
+    required: true
 
 # AWS inputs
 
@@ -131,6 +143,10 @@ runs:
           -var="development_aws_access_key=${{ inputs.development_aws_access_key }}" \
           -var="development_aws_secret_access_key=${{ inputs.development_aws_secret_access_key }}" \
           -var="production_aws_access_key=${{ inputs.production_aws_access_key }}" \
-          -var="production_aws_secret_access_key=${{ inputs.production_aws_secret_access_key }}"
+          -var="production_aws_secret_access_key=${{ inputs.production_aws_secret_access_key }}" \
+          -var="development_environment_id=${{ inputs.development_environment_id }}" \
+          -var="development_security_environment=${{ inputs.development_security_environment }}" \
+          -var="production_environment_id=${{ inputs.production_environment_id }}" \
+          -var="production_security_environment=${{ inputs.production_security_environment }}"
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash
