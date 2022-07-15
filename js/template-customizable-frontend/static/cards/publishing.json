@@ -4,12 +4,12 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Select the category of generators you wish to build.",
+      "text": "Select your generator",
       "weight": "bolder"
     },
     {
       "type": "TextBlock",
-      "text": "Octopus projects and resources.",
+      "text": "Microsites are stand alone web sites targeting a specific concept or technology.",
       "wrap": true
     },
     {
@@ -17,17 +17,17 @@
       "actions": [
         {
           "type": "Action.Execute",
-          "title": "Octopus",
+          "title": "Octopus Microsite",
           "verb": "openCard",
           "data": {
-            "filename": "octopus.json"
+            "filename": "octopus-microsite.json"
           }
         }
       ]
     },
     {
       "type": "TextBlock",
-      "text": "Publishing projects, including Jekyll microsites and EPUB projects.",
+      "text": "A Jekyll site that creates EPUB and PDF documents from HTML.",
       "wrap": true
     },
     {
@@ -35,10 +35,10 @@
       "actions": [
         {
           "type": "Action.Execute",
-          "title": "Publishing",
+          "title": "Octopus Epub",
           "verb": "openCard",
           "data": {
-            "filename": "publishing.json"
+            "filename": "epub.json"
           }
         }
       ]

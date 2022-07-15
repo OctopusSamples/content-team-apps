@@ -1,0 +1,156 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "The following generators are used to initialize an Octopus space and deploy new apps",
+      "weight": "bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator creates a standard set of environments and lifecycles.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus Environments & Lifecycles",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopusenvironments.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator creates AWS accounts scoped to the appropriate environments.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus AWS Accounts",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopusawsaccounts.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator creates an example AWS deployment project.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Example AWS Project",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopusawsexample.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a private ECR repo.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecr.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a public ECR repo.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR Public",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecrpublic.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to deploy a Docker image to App Runner.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus App Runner",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-apprunner.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a private ECR repo.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecr.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create an Octopus project to create a public ECR repo.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus ECR Public",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopus-ecrpublic.json"
+          }
+        }
+      ]
+    }
+  ]
+}

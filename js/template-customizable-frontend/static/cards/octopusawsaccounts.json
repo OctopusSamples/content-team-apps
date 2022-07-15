@@ -1,0 +1,207 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.6:octopusawsaccounts",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Project Name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.project_name",
+      "value": "octopusawsaccounts"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS region to create the state bucket in",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-1"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key used for the development account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.development_aws_access_key",
+      "value": "${{ secrets.AWS_DEVELOPMENT_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret access key used for the development account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.development_aws_secret_access_key",
+      "value": "${{ secrets.AWS_DEVELOPMENT_SECRET_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key used for the production account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_aws_access_key",
+      "value": "${{ secrets.AWS_PRODUCTION_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret access key used for the production account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_aws_secret_access_key",
+      "value": "${{ secrets.AWS_PRODUCTION_SECRET_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.development_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development security environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.development_security_environment",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production security environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_security_environment",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub App ID used by the Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_app_id",
+      "value": "${{ secrets.GH_APP_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub Installation ID used by the Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_installation_id",
+      "value": "${{ secrets.GH_INSTALLATION_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The base 64 encoded pem file used by Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_pem_file",
+      "value": "${{ secrets.GH_PEM_FILE }}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}
