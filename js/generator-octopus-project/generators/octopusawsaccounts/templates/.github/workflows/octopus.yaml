@@ -19,10 +19,6 @@ jobs:
       - name: Build
         uses: ./github/<%= project_name %>
         with:
-          github_app_id: <%= github_app_id %>
-          github_installation_id: <%= github_installation_id %>
-          github_pem_file: <%= github_pem_file %>
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           project_name: <%= project_name %>
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
@@ -32,3 +28,7 @@ jobs:
           aws_access_key: <%= aws_access_key %>
           aws_secret_key: <%= aws_secret_key %>
           aws_region: <%= aws_region %>
+          development_aws_access_key: <%= development_aws_access_key %>
+          development_aws_secret_access_key: <%= development_aws_secret_access_key %>
+          production_aws_access_key: <%= production_aws_access_key %>
+          production_aws_secret_access_key: <%= production_aws_secret_access_key %>

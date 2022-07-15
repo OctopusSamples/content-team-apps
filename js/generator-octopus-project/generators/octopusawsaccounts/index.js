@@ -44,6 +44,30 @@ module.exports = class extends Generator {
                 name: "aws_region",
                 message: "The AWS region to create the state bucket in",
                 default: "us-west-1"
+            },
+            {
+                type: "input",
+                name: "development_aws_access_key",
+                message: "The AWS access key used for the development account",
+                default: "${{ secrets.AWS_DEVELOPMENT_ACCESS_KEY_ID }}"
+            },
+            {
+                type: "password",
+                name: "development_aws_secret_access_key",
+                message: "The AWS secret access key used for the development account",
+                default: "${{ secrets.AWS_DEVELOPMENT_SECRET_ACCESS_KEY_ID }}"
+            },
+            {
+                type: "input",
+                name: "production_aws_access_key",
+                message: "The AWS access key used for the production account",
+                default: "${{ secrets.AWS_PRODUCTION_ACCESS_KEY_ID }}"
+            },
+            {
+                type: "password",
+                name: "production_aws_secret_access_key",
+                message: "The AWS secret access key used for the production account",
+                default: "${{ secrets.AWS_PRODUCTION_SECRET_ACCESS_KEY_ID }}"
             }
         ]);
     }
@@ -56,7 +80,11 @@ module.exports = class extends Generator {
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
-            aws_region: this.answers["aws_region"]
+            aws_region: this.answers["aws_region"],
+            development_aws_access_key: this.answers["development_aws_access_key"],
+            development_aws_secret_access_key: this.answers["development_aws_secret_access_key"],
+            production_aws_access_key: this.answers["production_aws_access_key"],
+            production_aws_secret_access_key: this.answers["production_aws_secret_access_key"],
         };
 
         this.fs.copyTpl(

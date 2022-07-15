@@ -27,6 +27,18 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
+  development_aws_access_key:
+    description: 'The AWS access key used for the development account'
+    required: true
+  development_aws_secret_access_key:
+    description: 'The AWS secret access key used for the development account'
+    required: true
+  production_aws_access_key:
+    description: 'The AWS access key used for the production account'
+    required: true
+  production_aws_secret_access_key:
+    description: 'The AWS secret access key used for the production account'
+    required: true
 
 runs:
   using: "composite"
@@ -57,7 +69,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket workflow-builder-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
+        aws s3api head-bucket --bucket workflow-builder-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ inputs.project_name }} --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
           aws s3 mb s3://workflow-builder-${{ inputs.project_name }} --region ${{ inputs.aws_region }}
@@ -69,6 +81,8 @@ runs:
     # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
     - uses: danielr1996/envsubst-action@1.1.0
       env:
+        GITHUB_OWNER: ${{ github.repository_owner }}
+        GITHUB_REPO: ${{ github.event.repository.name }}
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
@@ -92,6 +106,10 @@ runs:
           -auto-approve \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
-          -var="octopus_space_id=${{ inputs.octopus_space_id }}"
+          -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+          -var="development_aws_access_key=${{ inputs.development_aws_access_key }}" \
+          -var="development_aws_secret_access_key=${{ inputs.development_aws_secret_access_key }}" \
+          -var="production_aws_access_key=${{ inputs.production_aws_access_key }}" \
+          -var="production_aws_secret_access_key=${{ inputs.production_aws_secret_access_key }}"
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash

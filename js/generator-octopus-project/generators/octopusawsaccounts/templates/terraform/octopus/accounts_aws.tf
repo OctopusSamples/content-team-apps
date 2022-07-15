@@ -1,5 +1,11 @@
-resource "octopusdeploy_aws_account" "example" {
-  access_key   = "access-key"
-  name         = "AWS Account (OK to Delete)"
-  secret_key   = "###########" # required; get from secure environment/store
+resource "octopusdeploy_aws_account" "development_aws_access_key" {
+  name         = "AWS Development"
+  access_key   = var.development_aws_access_key
+  secret_key   = var.development_aws_secret_access_key
+}
+
+resource "octopusdeploy_aws_account" "production_aws_access_key" {
+  name         = "AWS Production"
+  access_key   = var.production_aws_access_key
+  secret_key   = var.production_aws_secret_access_key
 }
