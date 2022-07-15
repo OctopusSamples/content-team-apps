@@ -45,3 +45,27 @@ resource "github_actions_secret" "github_pem_file" {
   secret_name      = "GH_PEM_FILE"
   plaintext_value  = file(var.github_pem_file)
 }
+
+resource "github_actions_secret" "development_aws_access_key" {
+  repository       = var.github_repo
+  secret_name      = "AWS_DEVELOPMENT_ACCESS_KEY_ID"
+  plaintext_value  = var.development_aws_access_key
+}
+
+resource "github_actions_secret" "development_aws_secret_access_key" {
+  repository       = var.github_repo
+  secret_name      = "AWS_DEVELOPMENT_SECRET_ACCESS_KEY_ID"
+  plaintext_value  = var.development_aws_secret_access_key
+}
+
+resource "github_actions_secret" "production_aws_access_key" {
+  repository       = var.github_repo
+  secret_name      = "AWS_PRODUCTION_ACCESS_KEY_ID"
+  plaintext_value  = var.production_aws_access_key
+}
+
+resource "github_actions_secret" "production_aws_secret_access_key" {
+  repository       = var.github_repo
+  secret_name      = "AWS_PRODUCTION_SECRET_ACCESS_KEY_ID"
+  plaintext_value  = var.production_aws_secret_access_key
+}
