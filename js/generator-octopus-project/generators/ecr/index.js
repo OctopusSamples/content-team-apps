@@ -56,7 +56,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_space_id",
                 message: "The Octopus Space ID",
-                default: "${{ secrets.OCTOPUS_SPACEID }}"
+                default: "${{ secrets.OCTOPUS_SPACE_ID }}"
             },
             {
                 type: "input",
@@ -87,19 +87,19 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_lifecycle_id",
                 message: "The lifecycle to assign to the project",
-                default: "${{ secrets.OCTOPUS_INFRASTRUCTURE_LIFECYCLEID }}"
+                default: "${{ secrets.OCTOPUS_INFRASTRUCTURE_LIFECYCLE_ID }}"
             },
             {
                 type: "input",
                 name: "octopus_aws_development_account_id",
                 message: "The ID of the development AWS account used to deploy the Cloudformation template",
-                default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
+                default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNT_ID }}"
             },
             {
                 type: "input",
                 name: "octopus_aws_production_account_id",
                 message: "The ID of the production AWS account used to deploy the Cloudformation template",
-                default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
+                default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNT_ID }}"
             },
             {
                 type: "input",

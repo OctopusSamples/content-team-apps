@@ -40,18 +40,34 @@ repos to have a standard set of secrets defined, as shown below:
 
 * `AWS_ACCESS_KEY_ID` - The AWS secret key used to create S3 buckets for the Terraform state.
 * `AWS_SECRET_ACCESS_KEY` - The AWS secret key used to create S3 buckets for the Terraform state.
+* `OCTOPUS_SERVER` - The Octopus server URL.
 * `OCTOPUS_APIKEY` - The API key used to connect to the Octopus instance.
-* `OCTOPUS_APPLICATION_LIFECYCLEID` - The lifecycle ID used when deploying application.
-* `OCTOPUS_INFRASTRUCTURE_LIFECYCLEID` - The lifecycle ID used when deploying infrastructure.
-* `OCTOPUS_PRODUCTION_ONLY_LIFECYCLEID` - The lifecycle ID used when deploying production resources.
-* `OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID` - The ID of the AWS account used when deploying to development environments.
-* `OCTOPUS_AWS_PRODUCTION_ACCOUNTID` - The ID of the AWS account used when deploying to production environments.
+* `OCTOPUS_SPACE_ID` - The Octopus space ID.
+* `OCTOPUS_APPLICATION_LIFECYCLE_ID` - The lifecycle ID used when deploying application.
+* `OCTOPUS_INFRASTRUCTURE_LIFECYCLE_ID` - The lifecycle ID used when deploying infrastructure.
+* `OCTOPUS_PRODUCTION_ONLY_LIFECYCLE_ID` - The lifecycle ID used when deploying production resources.
+* `OCTOPUS_ADMINISTRATION_LIFECYCLE_ID` - The lifecycle ID used when performing global administration tasks.
+* `OCTOPUS_AWS_DEVELOPMENT_ACCOUNT_ID` - The ID of the AWS account used when deploying to development environments.
+* `OCTOPUS_AWS_PRODUCTION_ACCOUNT_ID` - The ID of the AWS account used when deploying to production environments.
 * `OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID` - The ID of the application development environment (i.e. the environment where applications are deployed).
 * `OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID` - The ID of the security development environment (i.e. the environment where security scans are run).
 * `OCTOPUS_PRODUCTION_ENVIRONMENT_ID` - The ID of the application production environment (i.e. the environment where applications are deployed).
 * `OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID` - The ID of the security production environment (i.e. the environment where security scans are run).
-* `OCTOPUS_SERVER` - The Octopus server URL.
-* `OCTOPUS_SPACEID` - The Octopus space ID.
+
+## Github app required to create secrets
+
+The following environment vars define a Github app that allows generators to create secrets when run as an action (for
+example, the `octopusenvironments` generator). This is required because the GITHUB_TOKEN exposed by Github Actions does 
+not (and can not) have the required permissions to create secrets.
+
+The Github app requires the repository secrets read/write permission.
+
+The app is then installed in an account. The URL for the installed app will be something like
+https://github.com/settings/installations/27397631. The digits at the end of the URL are the installation ID.
+
+* `GH_APP_ID` - The Github app ID
+* `GH_INSTALLATION_ID` - The Github app installation ID (see not above about where to find this)
+* `GH_PEM_FILE` - The Github app private key 
 
 ## SubGenerators
 

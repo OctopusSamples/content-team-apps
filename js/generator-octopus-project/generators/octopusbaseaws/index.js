@@ -6,27 +6,27 @@ module.exports = class extends Generator {
         this.answers = await this.prompt([
             {
                 type: "input",
-                name: "cloudformation_stack_name",
-                message: "The name of the CloudFormation stack to build the App Runner instance (also used to name the directory holding the terraform files)",
-                default: "ecr"
-            },
-            {
-                type: "input",
-                name: "repository_name",
-                message: "The ECR repository name",
-                default: "myrepo"
+                name: "project_name",
+                message: "The Project Name",
+                default: "myproject"
             },
             {
                 type: "input",
                 name: "octopus_project_name",
                 message: "Your project name",
-                default: "ECR"
+                default: "My Project"
+            },
+            {
+                type: "checkbox",
+                name: "existing_project_group",
+                message: "Use an existing project group",
+                default: false
             },
             {
                 type: "input",
                 name: "octopus_project_group_name",
                 message: "Your project group name",
-                default: "App Runner"
+                default: "My Project"
             },
             {
                 type: "input",
@@ -55,8 +55,8 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "octopus_space_id",
-                message: "The Octopus Space ID",
-                default: "${{ secrets.OCTOPUS_SPACE_ID }}"
+                message: "The Octopus Space",
+                default: "${{ secrets.OCTOPUS_SPACE }}"
             },
             {
                 type: "input",
@@ -70,7 +70,6 @@ module.exports = class extends Generator {
                 message: "The production environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
             },
-
             {
                 type: "input",
                 name: "octopus_development_security_environment_id",
@@ -87,37 +86,33 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_lifecycle_id",
                 message: "The lifecycle to assign to the project",
-                default: "${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLE_ID }}"
+                default: "${{ secrets.OCTOPUS_INFRASTRUCTURE_LIFECYCLEID }}"
             },
             {
                 type: "input",
                 name: "octopus_aws_development_account_id",
                 message: "The ID of the development AWS account used to deploy the Cloudformation template",
-                default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNT_ID }}"
+                default: "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
             },
             {
                 type: "input",
                 name: "octopus_aws_production_account_id",
                 message: "The ID of the production AWS account used to deploy the Cloudformation template",
-                default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNT_ID }}"
+                default: "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
             },
             {
                 type: "input",
                 name: "aws_region",
                 message: "The AWS region to deploy the ECR repository in",
-                default: "us-east-1"
-            },
-            {
-                type: "input",
-                name: "terraform_bucket_suffix",
-                message: "The Terraform state bucket suffix",
-                default: uuidv4()
+                default: "us-west-1"
             }
         ]);
     }
 
     writing() {
         const options = {
+            project_name: this.answers["project_name"],
+            existing_project_group: this.answers["existing_project_group"],
             aws_access_key: this.answers["aws_access_key"],
             aws_secret_key: this.answers["aws_secret_key"],
             octopus_server: this.answers["octopus_server"],
@@ -132,30 +127,31 @@ module.exports = class extends Generator {
             octopus_lifecycle_id: this.answers["octopus_lifecycle_id"],
             octopus_aws_development_account_id: this.answers["octopus_aws_development_account_id"],
             octopus_aws_production_account_id: this.answers["octopus_aws_production_account_id"],
-            aws_region: this.answers["aws_region"],
-            terraform_bucket_suffix: this.answers["terraform_bucket_suffix"] || uuidv4(),
-            cloudformation_stack_name: this.answers["cloudformation_stack_name"],
-            repository_name: this.answers["repository_name"]
+            aws_region: this.answers["aws_region"]
         };
 
         this.fs.copyTpl(
-            this.templatePath('.github/workflows/ecrpublic.yaml'),
-            this.destinationPath('.github/workflows/' + this.answers["cloudformation_stack_name"] + '.yaml'),
+            this.templatePath('.github/workflows/octopus.yaml'),
+            this.destinationPath('.github/workflows/' + this.answers["project_name"] + '.yaml'),
             options
         );
 
         this.fs.copyTpl(
-            this.templatePath('terraform/ecr/action.yaml'),
-            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"] + '/action.yaml'),
+            this.templatePath('terraform/octopus/action.yaml'),
+            this.destinationPath('terraform/' + this.answers["project_name"] + '/action.yaml'),
             options
         );
 
         this.fs.copyTpl(
-            this.templatePath('terraform/ecr/*.tf'),
-            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"]),
+            this.templatePath('terraform/octopus/*.tf'),
+            this.destinationPath('terraform/' + this.answers["project_name"]),
             options,
             null,
             { globOptions: { dot: true } }
         );
+    }
+
+    install() {
+
     }
 };
