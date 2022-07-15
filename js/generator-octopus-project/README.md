@@ -82,3 +82,5 @@ space.
 * `yo @octopus-content-team/octopus-project:apprunner` - creates a project to deploy an image as an App Runner instance.
 * `yo @octopus-content-team/octopus-project:ecr` - creates a project to deploy an ECR repository.
 * `yo @octopus-content-team/octopus-project:epub` - creates a project to build epub and pdf books from HTML.
+* `yo @octopus-content-team/octopus-project:octopusenvironments` - creates a standardized set of environments and lifecycles.
+* `yo @octopus-content-team/octopus-project:octopusawsaccounts` - creates a standardized set of AWS and lifecycles.
