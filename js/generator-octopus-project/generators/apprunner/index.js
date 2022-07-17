@@ -8,13 +8,13 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "docker_image",
                 message: "The Docker image to deploy",
-                default: "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator:latest"
+                default: "public.ecr.aws/nginx/nginx:stable"
             },
             {
                 type: "input",
                 name: "docker_port",
                 message: "The port to expose on the Docker container",
-                default: "5000"
+                default: "80"
             },
             {
                 type: "input",
