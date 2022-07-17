@@ -15,8 +15,8 @@ aws apprunner start-deployment --service-arn "#{Octopus.Action[Deploy App Runner
 for i in {1..60}
 do
   STATUS=$(aws apprunner describe-service --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}" | jq -r '.Service.Status')
-  echo "App Runner status is $${STATUS}"
-  if [[ $${STATUS} == "RUNNING" ]]; then
+  echo "App Runner status is ${STATUS}"
+  if [[ ${STATUS} == "RUNNING" ]]; then
     break
   fi
 
