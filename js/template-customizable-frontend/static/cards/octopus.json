@@ -10,7 +10,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "This generator creates a Terraform project to populate a GitHub repo with a standard set of secrets.",
+      "text": "This generator creates a Terraform project to populate a GitHub repo with a standard set of secrets. Run this project before any others below in a new GitHub repo.",
       "wrap": true
     },
     {
