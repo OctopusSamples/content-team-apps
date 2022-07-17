@@ -263,60 +263,6 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
   }
   step {
     condition           = "Success"
-    name                = "Wait for previous operations"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    action {
-      action_type    = "Octopus.AwsRunScript"
-      name           = "Wait for previous operations"
-      notes          = "The App Runner instance can not be updated while an operation is in progress."
-      run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        var.octopus_development_environment_id,
-        var.octopus_production_environment_id
-      ]
-      properties = {
-        "Octopus.Action.Aws.AssumeRole" : "False"
-        "Octopus.Action.Aws.Region" : var.aws_region
-        "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
-        "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          echo "Downloading Docker images"
-
-          echo "##octopus[stdout-verbose]"
-
-          docker pull amazon/aws-cli 2>&1
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-
-          echo "##octopus[stdout-default]"
-
-          for i in {1..60}
-          do
-            STATUS=$(aws apprunner describe-service --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}" | jq -r '.Service.Status')
-            echo "App Runner status is $${STATUS}"
-            if [[ $${STATUS} == "RUNNING" ]]; then
-              break
-            fi
-
-            echo "Sleeping for 10 seconds"
-            sleep 10
-          done
-
-          while
-
-        EOT
-        "Octopus.Action.Script.ScriptSource" : "Inline"
-        "Octopus.Action.Script.Syntax" : "Bash"
-        "OctopusUseBundledTooling" : "False"
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Deploy App Runner Instance"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -476,6 +422,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "##octopus[stdout-default]"
 
           aws apprunner start-deployment --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}"
+
+          for i in {1..60}
+          do
+            STATUS=$(aws apprunner describe-service --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}" | jq -r '.Service.Status')
+            echo "App Runner status is $${STATUS}"
+            if [[ $${STATUS} == "RUNNING" ]]; then
+              break
+            fi
+
+            echo "Sleeping for 10 seconds"
+            sleep 10
+          done
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
