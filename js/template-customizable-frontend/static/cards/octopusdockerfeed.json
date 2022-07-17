@@ -1,0 +1,127 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.32:octopusdockerfeed",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Project Name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.project_name",
+      "value": "octopusdockerfeed"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS region to create the state bucket in",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-1"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub App ID used by the Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_app_id",
+      "value": "${{ secrets.GH_APP_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub Installation ID used by the Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_installation_id",
+      "value": "${{ secrets.GH_INSTALLATION_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The base 64 encoded pem file used by Github Terraform provider",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_pem_file",
+      "value": "${{ secrets.GH_PEM_FILE }}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

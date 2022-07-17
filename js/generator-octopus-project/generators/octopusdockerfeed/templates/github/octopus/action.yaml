@@ -1,0 +1,168 @@
+name: Terraform Apply
+description: Create the Octopus environments and lifecycles
+inputs:
+  project_name:
+    description: |
+      The name used to identify this project. It is used for the directory holding project terraform files, and
+      the filename of the GitHub Actions workflow file.
+    required: true
+  github_app_id:
+    required: true
+    description: The GitHub App ID used by the Github Terraform provider
+  github_installation_id:
+    required: true
+    description: The GitHub Installation ID used by the Github Terraform provider
+  github_pem_file:
+    required: true
+    description: The GitHub PEM file used by the Github Terraform provider
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the Octopus space'
+    required: true
+  development_environment_id:
+    description: 'The development environment ID'
+    required: true
+  development_security_environment:
+    description: 'The development security environment ID'
+    required: true
+  production_environment_id:
+    description: 'The production environment ID'
+    required: true
+  production_security_environment:
+    description: 'The production security environment ID'
+    required: true
+
+# AWS inputs
+
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_key:
+    description: 'AWS Secret Key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+  development_aws_access_key:
+    description: 'The AWS access key used for the development account'
+    required: true
+  development_aws_secret_access_key:
+    description: 'The AWS secret access key used for the development account'
+    required: true
+  production_aws_access_key:
+    description: 'The AWS access key used for the production account'
+    required: true
+  production_aws_secret_access_key:
+    description: 'The AWS secret access key used for the production account'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v2
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket \
+            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb \
+            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    # This is because backend config con not have variables.
+    # See https://github.com/hashicorp/terraform/issues/13022
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
+        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
+        PROJECT_NAME: ${{ inputs.project_name }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+      with:
+        input: terraform/${{ inputs.project_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_name }}/backend_aws.tf
+
+    - name: Show Backend
+      run: cat backend_aws.tf
+      working-directory: terraform/${{ inputs.project_name }}
+      shell: bash
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/${{ inputs.project_name }}
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        # https://github.com/integrations/terraform-provider-github/issues/578
+        GITHUB_OWNER: ${{ github.repository_owner }}
+        GITHUB_APP_ID: ${{ inputs.github_app_id }}
+        GITHUB_APP_INSTALLATION_ID: ${{ inputs.github_installation_id }}
+        GITHUB_APP_PEM_FILE: ${{ inputs.github_pem_file }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply \
+          -auto-approve \
+          -var="octopus_server=${{ inputs.octopus_server }}" \
+          -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+          -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+          -var="development_aws_access_key=${{ inputs.development_aws_access_key }}" \
+          -var="development_aws_secret_access_key=${{ inputs.development_aws_secret_access_key }}" \
+          -var="production_aws_access_key=${{ inputs.production_aws_access_key }}" \
+          -var="production_aws_secret_access_key=${{ inputs.production_aws_secret_access_key }}" \
+          -var="development_environment_id=${{ inputs.development_environment_id }}" \
+          -var="development_security_environment=${{ inputs.development_security_environment }}" \
+          -var="production_environment_id=${{ inputs.production_environment_id }}" \
+          -var="production_security_environment=${{ inputs.production_security_environment }}" \
+          -var="github_repo=${{ github.event.repository.name }}" \
+          -var="github_owner=${{ github.repository_owner }}"
+      working-directory: terraform/${{ inputs.project_name }}
+      shell: bash

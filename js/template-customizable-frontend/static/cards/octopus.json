@@ -64,6 +64,24 @@
     },
     {
       "type": "TextBlock",
+      "text": "This generator creates the DockerHub feed.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus DockerHub Feed",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopusdockerfeed.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
       "text": "This generator creates an example AWS deployment project. This is expected to be used as the basis of new generators rather than being deployed.",
       "wrap": true
     },

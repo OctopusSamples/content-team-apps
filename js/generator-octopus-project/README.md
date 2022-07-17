@@ -84,3 +84,4 @@ space.
 * `yo @octopus-content-team/octopus-project:epub` - creates a project to build epub and pdf books from HTML.
 * `yo @octopus-content-team/octopus-project:octopusenvironments` - creates a standardized set of environments and lifecycles.
 * `yo @octopus-content-team/octopus-project:octopusawsaccounts` - creates a standardized set of AWS and lifecycles.
+* `yo @octopus-content-team/octopus-project:octopusdockerfeed` - creates a DockerHub feed.
