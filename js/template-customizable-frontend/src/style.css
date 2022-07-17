@@ -83,6 +83,7 @@ a.ac-anchor:visited:active {
     border: 1px solid #DDDDDD;
     background-color: #FFFFFF;
     color: #0063B1;
+    width: 100%;
 }
 
 .ac-pushButton:hover,
