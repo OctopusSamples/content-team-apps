@@ -133,42 +133,6 @@
           }
         }
       ]
-    },
-    {
-      "type": "TextBlock",
-      "text": "This generator produces Terraform files that create an Octopus project to create a private ECR repo.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
-        {
-          "type": "Action.Execute",
-          "title": "Octopus ECR",
-          "verb": "openCard",
-          "data": {
-            "filename": "octopus-ecr.json"
-          }
-        }
-      ]
-    },
-    {
-      "type": "TextBlock",
-      "text": "This generator produces Terraform files that create an Octopus project to create a public ECR repo.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
-        {
-          "type": "Action.Execute",
-          "title": "Octopus ECR Public",
-          "verb": "openCard",
-          "data": {
-            "filename": "octopus-ecrpublic.json"
-          }
-        }
-      ]
     }
   ],
   "actions": [
