@@ -178,5 +178,21 @@ module.exports = class extends Generator {
             null,
             { globOptions: { dot: true } }
         );
+
+        this.fs.copyTpl(
+            this.templatePath('bash/app-runner/*.sh'),
+            this.destinationPath('bash/' + this.answers["cloudformation_stack_name"]),
+            options,
+            null,
+            { globOptions: { dot: true } }
+        );
+
+        this.fs.copyTpl(
+            this.templatePath('cloudformation/app-runner/*.yml'),
+            this.destinationPath('cloudformation/' + this.answers["cloudformation_stack_name"]),
+            options,
+            null,
+            { globOptions: { dot: true } }
+        );
     }
 };

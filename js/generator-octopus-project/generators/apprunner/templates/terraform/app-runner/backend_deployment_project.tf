@@ -136,85 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_tags
         "Octopus.Action.Aws.CloudFormationStackName" : var.cloudformation_stack_name
-        "Octopus.Action.Aws.CloudFormationTemplate" : <<-EOT
-          Parameters:
-            ServiceName:
-              Type: String
-            ImageIdentifier:
-              Type: String
-            ImageRepositoryType:
-              Type: String
-              Default: ECR
-            Port:
-              Type: String
-            CPU:
-              Type: String
-              Default: 1024
-            Memory:
-              Type: String
-              Default: 2048
-          Conditions:
-            PrivateECR: !Equals
-              - !Ref ImageRepositoryType
-              - ECR
-          Resources:
-            AccessRole:
-              Type: AWS::IAM::Role
-              Condition: PrivateECR
-              Properties:
-                AssumeRolePolicyDocument:
-                  Version: '2008-10-17'
-                  Statement:
-                    - Effect: Allow
-                      Principal:
-                        Service:
-                          - build.apprunner.amazonaws.com
-                      Action: sts:AssumeRole
-                ManagedPolicyArns:
-                  - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
-            AppRunner:
-              Type: 'AWS::AppRunner::Service'
-              Properties:
-                InstanceConfiguration:
-                  Cpu: !Ref CPU
-                  Memory: !Ref Memory
-                ServiceName: !Ref ServiceName
-                SourceConfiguration:
-                  AuthenticationConfiguration:
-                    AccessRoleArn: !If
-                      - PrivateECR
-                      - !GetAtt
-                        - AccessRole
-                        - Arn
-                      - !Ref 'AWS::NoValue'
-                  AutoDeploymentsEnabled: false
-                  ImageRepository:
-                    ImageConfiguration:
-                      Port: !Ref Port
-                    ImageIdentifier: !Ref ImageIdentifier
-                    ImageRepositoryType: !Ref ImageRepositoryType
-          Outputs:
-            ServiceUrl:
-              Description: The App Runner URL
-              Value: !GetAtt
-                - AppRunner
-                - ServiceUrl
-            ServiceArn:
-              Description: The App Runner Service Arn
-              Value: !GetAtt
-                - AppRunner
-                - ServiceArn
-            ServiceId:
-              Description: The App Runner Service Id
-              Value: !GetAtt
-                - AppRunner
-                - ServiceId
-            Status:
-              Description: The App Runner Status
-              Value: !GetAtt
-                - AppRunner
-                - Status
-        EOT
+        "Octopus.Action.Aws.CloudFormationTemplate" : file("../cloudformation/apprunner.yml")
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey: "ImageIdentifier"
@@ -274,21 +196,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-        "Octopus.Action.Script.ScriptBody" : <<-EOT
-          echo "Downloading Docker images"
-
-          echo "##octopus[stdout-verbose]"
-
-          docker pull amazon/aws-cli 2>&1
-
-          # Alias the docker run commands
-          shopt -s expand_aliases
-          alias aws="docker run --rm -i -v $(pwd):/build -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY amazon/aws-cli"
-
-          echo "##octopus[stdout-default]"
-
-          aws apprunner start-deployment --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}"
-        EOT
+        "Octopus.Action.Script.ScriptBody" : file("../bash/app-runner-start-deployment.sh")
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
@@ -314,9 +222,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         var.octopus_development_environment_id,
         var.octopus_production_environment_id
       ]
-      script_body = <<-EOT
-        echo "App Runner URL: #{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceUrl]}"
-      EOT
+      script_body = file("../bash/app-runner-service-url.sh")
     }
   }
 }

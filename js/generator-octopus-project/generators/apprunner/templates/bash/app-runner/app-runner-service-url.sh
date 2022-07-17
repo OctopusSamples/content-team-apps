@@ -1,0 +1,1 @@
+echo "App Runner URL: #{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceUrl]}"
