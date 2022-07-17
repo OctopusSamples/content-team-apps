@@ -72,6 +72,7 @@ space.
 * `OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID` - The ID of the security development environment (i.e. the environment where security scans are run).
 * `OCTOPUS_PRODUCTION_ENVIRONMENT_ID` - The ID of the application production environment (i.e. the environment where applications are deployed).
 * `OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID` - The ID of the security production environment (i.e. the environment where security scans are run).
+* `OCTOPUS_DOCKERHUB_FEED_ID` - The ID of the dockerhub feed.
 * `AWS_DEVELOPMENT_ACCESS_KEY_ID` - The AWS access key used for the development account.
 * `AWS_DEVELOPMENT_SECRET_ACCESS_KEY_ID` - The AWS secret access key used for the development account.
 * `AWS_PRODUCTION_ACCESS_KEY_ID` - The AWS access key used for the production account.

@@ -62,6 +62,11 @@ variable "production_security_environment" {
   nullable = false
 }
 
+variable "octopus_dockerhub_feed_id" {
+  type = string
+  nullable = false
+}
+
 variable "github_repo" {
   type = string
   nullable = false

@@ -151,6 +151,24 @@
           }
         }
       ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create Octopus projects deploying an EKS cluster and targets.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Octopus EKS Cluster",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopusekscluster.json"
+          }
+        }
+      ]
     }
   ],
   "actions": [

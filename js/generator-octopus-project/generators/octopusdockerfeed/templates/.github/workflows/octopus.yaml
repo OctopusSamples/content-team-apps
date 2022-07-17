@@ -26,6 +26,7 @@ jobs:
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>
+          octopus_dockerhub_feed_id: <%= octopus_dockerhub_feed_id %>
 
           # AWS vars
           aws_access_key: <%= aws_access_key %>

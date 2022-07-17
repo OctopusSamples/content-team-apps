@@ -150,6 +150,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         terraform apply \
+          -input=false \
           -auto-approve \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \

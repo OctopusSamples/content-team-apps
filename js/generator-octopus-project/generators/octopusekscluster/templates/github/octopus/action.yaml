@@ -1,20 +1,11 @@
 name: Terraform Apply
-description: Create the Octopus environments and lifecycles
+description: Create the Octopus resources
 inputs:
   project_name:
     description: |
       The name used to identify this project. It is used for the directory holding project terraform files, and
       the filename of the GitHub Actions workflow file.
     required: true
-  github_app_id:
-    required: true
-    description: The GitHub App ID used by the Github Terraform provider
-  github_installation_id:
-    required: true
-    description: The GitHub Installation ID used by the Github Terraform provider
-  github_pem_file:
-    required: true
-    description: The GitHub PEM file used by the Github Terraform provider
   octopus_server:
     description: 'Octopus cloud URL'
     required: true
@@ -24,17 +15,35 @@ inputs:
   octopus_space_id:
     description: 'The ID of the Octopus space'
     required: true
-  development_environment_id:
-    description: 'The development environment ID'
+  octopus_project_name:
+    description: 'The name of the Octopus project'
     required: true
-  development_security_environment:
-    description: 'The development security environment ID'
+  octopus_project_description:
+    description: 'The description of the Octopus project'
     required: true
-  production_environment_id:
-    description: 'The production environment ID'
+  octopus_development_environment_id:
+    description: 'The development environment id'
     required: true
-  production_security_environment:
-    description: 'The production security environment ID'
+  octopus_production_environment_id:
+    description: 'The production environment id'
+    required: true
+  octopus_development_security_environment_id:
+    description: 'The development security environment id'
+    required: true
+  octopus_production_security_environment_id:
+    description: 'The production security environment id'
+    required: true
+  octopus_lifecycle_id:
+    description: 'The project lifecycle ID'
+    required: true
+  octopus_project_group_name:
+    description: 'The name of the Octopus project group'
+    required: true
+  existing_project_group:
+    description: 'Whether to create a new project group, or use an existing one'
+    required: true
+  octopus_dockerhub_feed_id:
+    description: 'The dockerhub feed ID'
     required: true
 
 # AWS inputs
@@ -45,20 +54,14 @@ inputs:
   aws_secret_key:
     description: 'AWS Secret Key'
     required: true
+  octopus_aws_development_account_id:
+    description: 'The development AWS account id'
+    required: true
+  octopus_aws_production_account_id:
+    description: 'The production AWS account id'
+    required: true
   aws_region:
     description: 'The AWS region'
-    required: true
-  development_aws_access_key:
-    description: 'The AWS access key used for the development account'
-    required: true
-  development_aws_secret_access_key:
-    description: 'The AWS secret access key used for the development account'
-    required: true
-  production_aws_access_key:
-    description: 'The AWS access key used for the production account'
-    required: true
-  production_aws_secret_access_key:
-    description: 'The AWS secret access key used for the production account'
     required: true
 
 runs:
@@ -126,9 +129,23 @@ runs:
         input: terraform/${{ inputs.project_name }}/backend_aws.tf
         output: terraform/${{ inputs.project_name }}/backend_aws.tf
 
-    - name: Show Backend
-      run: cat backend_aws.tf
-      working-directory: terraform/${{ inputs.project_name }}
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
+    # deletes project releases.
+    - name: Delete existing projects
+      run: |
+        declare -a arr=("${{ inputs.octopus_project_name }}")
+        
+        for i in "${arr[@]}"
+        do
+          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
+          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
+          if [[ -n "$ID" && "$ID" != "null" ]]; then
+            echo "Deleting project $i"
+            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          fi
+        done
       shell: bash
 
     - name: Terraform Init
@@ -141,30 +158,31 @@ runs:
 
     - name: Terraform Apply
       env:
-        # https://github.com/integrations/terraform-provider-github/issues/578
-        GITHUB_OWNER: ${{ github.repository_owner }}
-        GITHUB_APP_ID: ${{ inputs.github_app_id }}
-        GITHUB_APP_INSTALLATION_ID: ${{ inputs.github_installation_id }}
-        GITHUB_APP_PEM_FILE: ${{ inputs.github_pem_file }}
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         terraform apply \
           -input=false \
           -auto-approve \
+          -var="project_name=${{ inputs.project_name }}" \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+          -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
+          -var="octopus_project_description=${{ inputs.octopus_project_description }}" \
+          -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
+          -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}" \
+          -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}" \
+          -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
+          -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
-          -var="development_aws_access_key=${{ inputs.development_aws_access_key }}" \
-          -var="development_aws_secret_access_key=${{ inputs.development_aws_secret_access_key }}" \
-          -var="production_aws_access_key=${{ inputs.production_aws_access_key }}" \
-          -var="production_aws_secret_access_key=${{ inputs.production_aws_secret_access_key }}" \
-          -var="development_environment_id=${{ inputs.development_environment_id }}" \
-          -var="development_security_environment=${{ inputs.development_security_environment }}" \
-          -var="production_environment_id=${{ inputs.production_environment_id }}" \
-          -var="production_security_environment=${{ inputs.production_security_environment }}" \
+          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
+          -var="existing_project_group=${{ inputs.existing_project_group }}" \
+          -var="aws_region=${{ inputs.aws_region }}" \
+          -var="octopus_aws_development_account_id=${{ inputs.octopus_aws_development_account_id }}" \
+          -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}" \
           -var="octopus_dockerhub_feed_id=${{ github.octopus_dockerhub_feed_id }}"
+
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash

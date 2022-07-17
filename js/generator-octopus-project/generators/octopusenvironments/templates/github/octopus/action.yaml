@@ -126,6 +126,7 @@ runs:
         GITHUB_APP_PEM_FILE: ${{ inputs.github_pem_file }}
       run: |
         terraform apply \
+          -input=false \
           -auto-approve \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
