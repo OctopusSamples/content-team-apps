@@ -64,7 +64,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "This generator creates an example AWS deployment project.",
+      "text": "This generator creates an example AWS deployment project. This is expected to be used as the basis of new generators rather than being deployed.",
       "wrap": true
     },
     {
