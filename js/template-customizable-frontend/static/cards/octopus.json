@@ -10,6 +10,24 @@
     },
     {
       "type": "TextBlock",
+      "text": "This generator creates a Terraform project to populate a GitHub repo with a standard set of secrets.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "GitHub Repo Secrets",
+          "verb": "openCard",
+          "data": {
+            "filename": "githubsecretinitialize.json"
+          }
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
       "text": "This generator creates a standard set of environments and lifecycles.",
       "wrap": true
     },
