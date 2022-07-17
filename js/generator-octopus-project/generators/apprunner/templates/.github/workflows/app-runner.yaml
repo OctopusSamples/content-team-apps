@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/<%= cloudformation_stack_name %>.yaml'
       - 'terraform/<%= cloudformation_stack_name %>/**'
+      - 'github/<%= cloudformation_stack_name %>/**'
   workflow_dispatch:
 
 jobs:
@@ -16,8 +17,9 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Build
-        uses: ./terraform/<%= cloudformation_stack_name %>
+        uses: ./github/<%= cloudformation_stack_name %>
         with:
+          project_name: <%= cloudformation_stack_name %>
           aws_access_key: <%= aws_access_key %>
           aws_secret_key: <%= aws_secret_key %>
           octopus_server: <%= octopus_server %>
@@ -39,4 +41,5 @@ jobs:
           octopus_ecr_feed_name: <%= octopus_ecr_feed_name %>
           cloudformation_stack_name: <%= cloudformation_stack_name %>
           apprunner_service_name: <%= apprunner_service_name %>
+          existing_project_group: <%= existing_project_group %>
 

@@ -160,6 +160,7 @@ runs:
       run: |
         terraform apply \
           -auto-approve \
+          -var="project_name=${{ inputs.project_name }}" \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
           -var="octopus_project_name=${{ inputs.octopus_project_name }}" \

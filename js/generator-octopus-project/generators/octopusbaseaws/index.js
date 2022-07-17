@@ -156,6 +156,14 @@ module.exports = class extends Generator {
             null,
             { globOptions: { dot: true } }
         );
+
+        this.fs.copyTpl(
+            this.templatePath('bash/octopus/*.sh'),
+            this.destinationPath('bash/' + this.answers["project_name"]),
+            options,
+            null,
+            { globOptions: { dot: true } }
+        );
     }
 
     install() {

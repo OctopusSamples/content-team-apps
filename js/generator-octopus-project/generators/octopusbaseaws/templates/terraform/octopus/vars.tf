@@ -1,3 +1,8 @@
+variable "project_name" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_server" {
   type = string
   nullable = false

@@ -59,11 +59,7 @@ resource "octopusdeploy_deployment_process" "deployment_process" {
       is_disabled                        = false
       is_required                        = true
       name                               = "Hello world (using Bash)"
-      script_body                        = <<-EOT
-          echo 'Hello world, using Bash'
-          #TODO: Experiment with steps of your own :)
-          echo '[Learn more about the types of steps available in Octopus](https://g.octopushq.com/OnboardingAddStepsLearnMore)'
-        EOT
+      script_body                        = file("../../bash/${var.project_name}/hello-world.sh")
       run_on_server                      = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
     }

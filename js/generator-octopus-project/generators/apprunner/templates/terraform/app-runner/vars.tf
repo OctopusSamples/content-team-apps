@@ -38,6 +38,11 @@ variable "octopus_project_name" {
   nullable = false
 }
 
+variable "existing_project_group" {
+  type = bool
+  nullable = false
+}
+
 variable "octopus_project_group_name" {
   type = string
   nullable = false

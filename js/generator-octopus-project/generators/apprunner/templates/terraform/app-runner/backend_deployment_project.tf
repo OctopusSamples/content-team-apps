@@ -9,7 +9,7 @@ resource "octopusdeploy_project" "deploy_backend_project" {
   is_version_controlled                = false
   name                                 = var.octopus_project_name
   lifecycle_id                         = var.octopus_lifecycle_id
-  project_group_id                     = data.octopusdeploy_project_groups.apprunner_project_group.project_groups[0].id
+  project_group_id                     = var.existing_project_group ? data.octopusdeploy_project_groups.project_group.project_groups[0].id : octopusdeploy_project_group.project_group[0].id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
@@ -136,7 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.AssumeRole" : "False"
         "Octopus.Action.Aws.CloudFormation.Tags" : local.cloudformation_tags
         "Octopus.Action.Aws.CloudFormationStackName" : var.cloudformation_stack_name
-        "Octopus.Action.Aws.CloudFormationTemplate" : file("../cloudformation/apprunner.yml")
+        "Octopus.Action.Aws.CloudFormationTemplate" : file("../../cloudformation/${var.cloudformation_stack_name}/apprunner.yml")
         "Octopus.Action.Aws.CloudFormationTemplateParameters" : jsonencode([
           {
             ParameterKey: "ImageIdentifier"
@@ -196,7 +196,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         "Octopus.Action.Aws.Region" : var.aws_region
         "Octopus.Action.AwsAccount.UseInstanceRole" : "False"
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
-        "Octopus.Action.Script.ScriptBody" : file("../bash/app-runner-start-deployment.sh")
+        "Octopus.Action.Script.ScriptBody" : file("../../bash/${var.cloudformation_stack_name}/app-runner-start-deployment.sh")
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
         "OctopusUseBundledTooling" : "False"
@@ -222,7 +222,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
         var.octopus_development_environment_id,
         var.octopus_production_environment_id
       ]
-      script_body = file("../bash/app-runner-service-url.sh")
+      script_body = file("../../bash/${var.cloudformation_stack_name}/app-runner-service-url.sh")
     }
   }
 }

@@ -29,6 +29,12 @@ module.exports = class extends Generator {
                 default: "app-runner"
             },
             {
+                type: "confirm",
+                name: "existing_project_group",
+                message: "Use an existing project group",
+                default: false
+            },
+            {
                 type: "input",
                 name: "octopus_project_group_name",
                 message: "Your project group name",
@@ -156,7 +162,8 @@ module.exports = class extends Generator {
             terraform_bucket_suffix: this.answers["terraform_bucket_suffix"] || uuidv4(),
             octopus_ecr_feed_name: this.answers["octopus_ecr_feed_name"],
             cloudformation_stack_name: this.answers["cloudformation_stack_name"],
-            apprunner_service_name: this.answers["apprunner_service_name"]
+            apprunner_service_name: this.answers["apprunner_service_name"],
+            existing_project_group: this.answers["existing_project_group"],
         };
 
         this.fs.copyTpl(
@@ -166,8 +173,8 @@ module.exports = class extends Generator {
         );
 
         this.fs.copyTpl(
-            this.templatePath('terraform/app-runner/action.yaml'),
-            this.destinationPath('terraform/' + this.answers["cloudformation_stack_name"] + '/action.yaml'),
+            this.templatePath('github/app-runner/action.yaml'),
+            this.destinationPath('github/' + this.answers["cloudformation_stack_name"] + '/action.yaml'),
             options
         );
 
