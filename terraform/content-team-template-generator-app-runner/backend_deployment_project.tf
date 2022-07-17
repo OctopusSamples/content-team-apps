@@ -283,6 +283,18 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           echo "##octopus[stdout-default]"
 
           aws apprunner start-deployment --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}"
+
+          for i in {1..60}
+          do
+            STATUS=$(aws apprunner describe-service --service-arn "#{Octopus.Action[Deploy App Runner Instance].Output.AwsOutputs[ServiceArn]}" | jq -r '.Service.Status')
+            echo "App Runner status is $${STATUS}"
+            if [[ $${STATUS} == "RUNNING" ]]; then
+              break
+            fi
+
+            echo "Sleeping for 10 seconds"
+            sleep 10
+          done
         EOT
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
