@@ -3,11 +3,6 @@
   "version": "1.0",
   "body": [
     {
-      "type": "TextBlock",
-      "text": "App Runner Octopus Deployment Project Generator",
-      "weight": "bolder"
-    },
-    {
       "type": "Input.Text",
       "id": "generator",
       "value": "@octopus-content-team/generator-octopus-project@0.1.30:apprunner",
@@ -15,25 +10,28 @@
     },
     {
       "type": "TextBlock",
-      "text": "The Docker image to deploy"
+      "text": "The Docker image to deploy",
+      "wrap": true
     },
     {
       "type": "Input.Text",
       "id": "answer.string.docker_image",
-      "value": "public.ecr.aws/nginx/nginx:mainline"
+      "value": "133577413914.dkr.ecr.us-west-1.amazonaws.com/template-generator:latest"
     },
     {
       "type": "TextBlock",
-      "text": "The port to expose on the Docker container"
+      "text": "The port to expose on the Docker container",
+      "wrap": true
     },
     {
       "type": "Input.Text",
       "id": "answer.string.docker_port",
-      "value": "80"
+      "value": "5000"
     },
     {
       "type": "TextBlock",
-      "text": "The name of the App Runner service"
+      "text": "The name of the App Runner service",
+      "wrap": true
     },
     {
       "type": "Input.Text",
@@ -52,7 +50,18 @@
     },
     {
       "type": "TextBlock",
-      "text": "Your project group name"
+      "text": "Use an existing project group",
+      "wrap": true
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.existing_project_group",
+      "value": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project group name",
+      "wrap": true
     },
     {
       "type": "Input.Text",
@@ -61,7 +70,8 @@
     },
     {
       "type": "TextBlock",
-      "text": "Your project name"
+      "text": "Your project name",
+      "wrap": true
     },
     {
       "type": "Input.Text",
@@ -70,12 +80,153 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS region to deploy the App Runner instance in"
+      "text": "The AWS region to deploy the App Runner instance in",
+      "wrap": true
     },
     {
       "type": "Input.Text",
       "id": "answer.string.aws_region",
       "value": "us-west-2"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The lifecycle to assign to the project",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the development AWS account used to deploy the Cloudformation template",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_development_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the production AWS account used to deploy the Cloudformation template",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_production_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Terraform state bucket suffix",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.terraform_bucket_suffix",
+      "value": "4b9036b2-a667-4175-8d01-a08aebae36cc"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The name of the ECR feed",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_ecr_feed_name",
+      "value": "ECR"
     }
   ],
   "actions": [
@@ -85,132 +236,6 @@
       "verb": "openCard",
       "data": {
         "filename": "index.json"
-      }
-    },
-    {
-      "type": "Action.ShowCard",
-      "title": "Advanced Options",
-      "card": {
-        "type": "AdaptiveCard",
-        "body": [
-          {
-            "type": "TextBlock",
-            "text": "The AWS access key."
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.aws_access_key",
-            "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The AWS secret key."
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.aws_secret_key",
-            "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The hostname of your Octopus instance."
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_server",
-            "value": "${{ secrets.OCTOPUS_SERVER }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The Octopus API key."
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_apikey",
-            "value": "${{ secrets.OCTOPUS_APIKEY }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The Octopus Space ID"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_space_id",
-            "value": "${{ secrets.OCTOPUS_SPACEID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The development environment ID"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_development_environment_id",
-            "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The production environment ID"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_production_environment_id",
-            "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The development environment ID"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_development_security_environment_id",
-            "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The production environment ID"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_production_security_environment_id",
-            "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The lifecycle to assign to the project"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_lifecycle_id",
-            "value": "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLEID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The ID of the development AWS account used to deploy the Cloudformation template"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_aws_development_account_id",
-            "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNTID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The ID of the production AWS account used to deploy the Cloudformation template"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_aws_production_account_id",
-            "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNTID }}"
-          },
-          {
-            "type": "TextBlock",
-            "text": "The name of the ECR feed"
-          },
-          {
-            "type": "Input.Text",
-            "id": "answer.string.octopus_ecr_feed_name",
-            "value": "ECR"
-          }
-        ]
       }
     },
     {
