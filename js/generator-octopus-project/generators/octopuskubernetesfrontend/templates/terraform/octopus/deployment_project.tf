@@ -52,12 +52,12 @@ resource "octopusdeploy_variable" "dockerhub_username" {
 }
 
 resource "octopusdeploy_variable" "dockerhub_password" {
-  name         = "DockerHub.Password"
-  type         = "Sensitive"
-  description  = "The DockerHub password."
-  is_sensitive = true
-  owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = var.dockerhub_password
+  name            = "DockerHub.Password"
+  type            = "Sensitive"
+  description     = "The DockerHub password."
+  is_sensitive    = true
+  owner_id        = octopusdeploy_project.deploy_frontend_project.id
+  sensitive_value = var.dockerhub_password
 }
 
 locals {
