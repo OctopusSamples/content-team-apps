@@ -28,6 +28,6 @@ then
   exit 0
 fi
 
-echo "#{DockerHub.Password}" | docker login --username "#{DockerHub.Username}" --password-stdin
+echo "#{DockerHub.Password}" | docker login --username "#{DockerHub.Username}" --password-stdin 2>&1
 
 docker scan --accept-license ${image}:#{Octopus.Action[Frontend WebApp].Package[${frontend}].PackageVersion}
