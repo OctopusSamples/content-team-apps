@@ -1,5 +1,4 @@
 const Generator = require('yeoman-generator');
-const {v4: uuidv4} = require('uuid');
 
 module.exports = class extends Generator {
     async prompting() {
@@ -112,12 +111,6 @@ module.exports = class extends Generator {
                 name: "aws_region",
                 message: "The AWS region to deploy the ECR repository in",
                 default: "us-east-1"
-            },
-            {
-                type: "input",
-                name: "terraform_bucket_suffix",
-                message: "The Terraform state bucket suffix",
-                default: uuidv4()
             }
         ]);
     }
@@ -139,7 +132,6 @@ module.exports = class extends Generator {
             octopus_aws_development_account_id: this.answers["octopus_aws_development_account_id"],
             octopus_aws_production_account_id: this.answers["octopus_aws_production_account_id"],
             aws_region: this.answers["aws_region"],
-            terraform_bucket_suffix: this.answers["terraform_bucket_suffix"] || uuidv4(),
             cloudformation_stack_name: this.answers["cloudformation_stack_name"],
             repository_name: this.answers["repository_name"],
             existing_project_group: this.answers["existing_project_group"],
