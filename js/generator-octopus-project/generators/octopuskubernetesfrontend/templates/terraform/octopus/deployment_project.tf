@@ -45,19 +45,19 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
 resource "octopusdeploy_variable" "dockerhub_username" {
   name         = "DockerHub.Username"
   type         = "String"
-  description  = "The DOckerHub username"
+  description  = "The DockerHub username"
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
   value        = var.dockerhub_username
 }
 
 resource "octopusdeploy_variable" "dockerhub_password" {
-  name = "DockerHub.Password"
-  type = "Sensitive"
-  description = "The DockerHub password."
+  name         = "DockerHub.Password"
+  type         = "Sensitive"
+  description  = "The DockerHub password."
   is_sensitive = true
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value = var.dockerhub_password
+  value        = var.dockerhub_password
 }
 
 locals {
@@ -96,7 +96,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
       }
       properties = {
-        "Octopus.Action.KubernetesContainers.CombinedVolumes": "[]",
+        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.Containers" : jsonencode([
           {
             Name : local.frontend_package_name
@@ -106,21 +106,21 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 value : 80
               }
             ],
-            Resources: {
-              requests: {
-                memory: "256Mi"
-                cpu: ""
+            Resources : {
+              requests : {
+                memory : "256Mi"
+                cpu : ""
               }
-              limits: {
-                memory: "1Gi",
-                cpu: ""
+              limits : {
+                memory : "1Gi",
+                cpu : ""
               }
             },
-            InitContainer: false,
+            InitContainer : false,
           }
         ])
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : jsonencode({app: "frontend"}),
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : jsonencode({ app : "frontend" }),
         "Octopus.Action.KubernetesContainers.DeploymentName" : "frontend",
         "Octopus.Action.KubernetesContainers.DeploymentResourceType" : "Deployment",
         "Octopus.Action.KubernetesContainers.DeploymentStyle" : "RollingUpdate",
@@ -128,24 +128,24 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.IngressAnnotations" : jsonencode([
           {
-            key: "alb.ingress.kubernetes.io/group.order"
-            value: "500"
+            key : "alb.ingress.kubernetes.io/group.order"
+            value : "500"
           },
           {
-            key: "alb.ingress.kubernetes.io/scheme"
-            value: "internet-facing"
+            key : "alb.ingress.kubernetes.io/scheme"
+            value : "internet-facing"
           },
           {
-            key: "alb.ingress.kubernetes.io/healthcheck-path"
-            value: "/"
+            key : "alb.ingress.kubernetes.io/healthcheck-path"
+            value : "/"
           },
           {
-            key: "alb.ingress.kubernetes.io/target-type"
-            value: "ip"
+            key : "alb.ingress.kubernetes.io/target-type"
+            value : "ip"
           },
           {
-            key: "kubernetes.io/ingress.class",
-            value: "alb"
+            key : "kubernetes.io/ingress.class",
+            value : "alb"
           }
         ]),
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
@@ -164,13 +164,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.IngressName" : local.frontend_ingress_name,
         "Octopus.Action.KubernetesContainers.IngressRules" : jsonencode([
           {
-            host: ""
-            http: {
-              paths: [
+            host : ""
+            http : {
+              paths : [
                 {
-                  key: "/*"
-                  value: "web",
-                  option2: "ImplementationSpecific"
+                  key : "/*"
+                  value : "web",
+                  option2 : "ImplementationSpecific"
                 }
               ]
             }
@@ -179,15 +179,15 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_service_name,
         "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode([
           {
-            name: "web"
-            port: "80"
-            targetPort: var.docker_image_port
-            nodePort: ""
-            protocol: "TCP"
+            name : "web"
+            port : "80"
+            targetPort : var.docker_image_port
+            nodePort : ""
+            protocol : "TCP"
           }
         ]),
-        "Octopus.Action.KubernetesContainers.ConfigMapName": "",
-        "Octopus.Action.KubernetesContainers.ConfigMapValues": ""
+        "Octopus.Action.KubernetesContainers.ConfigMapName" : "",
+        "Octopus.Action.KubernetesContainers.ConfigMapValues" : ""
       }
     }
   }
@@ -263,8 +263,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         var.octopus_production_security_environment_id
       ]
       script_body = templatefile("../../bash/${var.project_name}/docker-scan.sh", {
-        image: var.docker_image
-        frontend: local.frontend_package_name
+        image : var.docker_image
+        frontend : local.frontend_package_name
       })
     }
   }
