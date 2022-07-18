@@ -182,7 +182,7 @@ runs:
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}" \
-          -var="octopus_dockerhub_feed_id=${{ github.octopus_dockerhub_feed_id }}"
+          -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}"
 
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash
