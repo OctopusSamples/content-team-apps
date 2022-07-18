@@ -1,1 +1,1 @@
-docker scan ${image}
+docker scan ${image}:#{Octopus.Action[Frontend WebApp].Package[${frontend}].PackageVersion}

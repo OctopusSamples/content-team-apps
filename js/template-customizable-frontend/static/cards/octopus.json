@@ -169,6 +169,24 @@
           }
         }
       ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "This generator produces Terraform files that create Octopus projects deploying a web app to Kubernetes.",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "Kubernetes Web App",
+          "verb": "openCard",
+          "data": {
+            "filename": "octopuskubernetesfrontend.json"
+          }
+        }
+      ]
     }
   ],
   "actions": [

@@ -195,7 +195,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       properties = {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
-        "Octopus.Action.Script.ScriptBody" : templatefile("../../bash/${var.project_name}/display-ingress.sh", {frontend_ingress_name = local.frontend_ingress_name})
+        "Octopus.Action.Script.ScriptBody" : templatefile("../../bash/${var.project_name}/display-ingress.sh", {
+          frontend_ingress_name = local.frontend_ingress_name
+        })
         "OctopusUseBundledTooling" : "False"
       }
     }
@@ -242,7 +244,10 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
-      script_body = templatefile("../../bash/${var.project_name}/docker-scan.sh", {image = var.docker_image})
+      script_body = templatefile("../../bash/${var.project_name}/docker-scan.sh", {
+        image: var.docker_image
+        frontend: local.frontend_package_name
+      })
     }
   }
 }

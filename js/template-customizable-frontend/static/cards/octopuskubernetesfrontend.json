@@ -1,0 +1,237 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.36:octopuskubernetesfrontend",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Project Name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.project_name",
+      "value": "k8sfrontend"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Docker image to deploy",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.docker_image",
+      "value": "octopussamples/underwater-app"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The web port to expose in the pod",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.docker_image_port",
+      "value": "80"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_project_name",
+      "value": "Kubernetes Frontend WebApp"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project description",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_project_description",
+      "value": "A description of my project"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Use an existing project group",
+      "wrap": true
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "answer.boolean.existing_project_group",
+      "value": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project group name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_project_group_name",
+      "value": "Kubernetes Frontend"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The development environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_development_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The lifecycle to assign to the project",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the development AWS account used to deploy the Cloudformation template",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_development_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_DEVELOPMENT_ACCOUNT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the production AWS account used to deploy the Cloudformation template",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_aws_production_account_id",
+      "value": "${{ secrets.OCTOPUS_AWS_PRODUCTION_ACCOUNT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS region to deploy the ECR repository in",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-1"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the DockerHub feed",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_dockerhub_feed_id",
+      "value": "${{ secrets.OCTOPUS_DOCKERHUB_FEED_ID }}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}
