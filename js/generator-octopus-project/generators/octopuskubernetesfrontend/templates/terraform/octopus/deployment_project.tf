@@ -42,6 +42,24 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   value        = "False"
 }
 
+resource "octopusdeploy_variable" "dockerhub_username" {
+  name         = "DockerHub.Username"
+  type         = "String"
+  description  = "The DOckerHub username"
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value        = var.dockerhub_username
+}
+
+resource "octopusdeploy_variable" "dockerhub_password" {
+  name = "DockerHub.Password"
+  type = "Sensitive"
+  description = "The DockerHub password."
+  is_sensitive = true
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value = var.dockerhub_password
+}
+
 locals {
   frontend_package_name = "frontend"
   frontend_service_name = "frontend-service"

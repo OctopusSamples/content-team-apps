@@ -77,6 +77,8 @@ space.
 * `AWS_DEVELOPMENT_SECRET_ACCESS_KEY_ID` - The AWS secret access key used for the development account.
 * `AWS_PRODUCTION_ACCESS_KEY_ID` - The AWS access key used for the production account.
 * `AWS_PRODUCTION_SECRET_ACCESS_KEY_ID` - The AWS secret access key used for the production account.
+* `DOCKERHUB_USERNAME` - The DockerHub username. used for image scanning.
+* `DOCKERHUB_PASSWORD` - The DockerHub password. used for image scanning.
 
 ## SubGenerators
 

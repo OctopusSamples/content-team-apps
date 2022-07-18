@@ -78,3 +78,14 @@ variable "docker_image_port" {
   type = string
   nullable = false
 }
+
+variable "dockerhub_password" {
+  type = string
+  nullable = false
+  sensitive = true
+}
+
+variable "dockerhub_username" {
+  type = string
+  nullable = false
+}

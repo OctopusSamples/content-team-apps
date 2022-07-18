@@ -6,6 +6,7 @@ on:
       - '.github/workflows/<%= project_name %>.yaml'
       - 'github/<%= project_name %>/**'
       - 'terraform/<%= project_name %>/**'
+      - 'bash/<%= project_name %>/**'
   workflow_dispatch:
 
 jobs:

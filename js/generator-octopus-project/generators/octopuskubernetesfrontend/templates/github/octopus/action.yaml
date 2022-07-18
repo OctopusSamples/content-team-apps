@@ -51,6 +51,12 @@ inputs:
   docker_image_port:
     description: 'The port to expose in the pod'
     required: true
+  dockerhub_username:
+    description: 'The DockerHub username'
+    required: true
+  dockerhub_password:
+    description: 'The DockerHub password'
+    required: true
 
 # AWS inputs
 
@@ -188,7 +194,9 @@ runs:
           -var="octopus_aws_production_account_id=${{ inputs.octopus_aws_production_account_id }}" \
           -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" \
           -var="docker_image=${{ inputs.docker_image }}" \
-          -var="docker_image_port=${{ inputs.docker_image_port }}"
+          -var="docker_image_port=${{ inputs.docker_image_port }}" \
+          -var="dockerhub_username=${{ inputs.dockerhub_username }}" \
+          -var="dockerhub_password=${{ inputs.dockerhub_password }}"
 
       working-directory: terraform/${{ inputs.project_name }}
       shell: bash

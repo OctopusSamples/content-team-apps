@@ -130,6 +130,18 @@ module.exports = class extends Generator {
                 message: "The ID of the DockerHub feed",
                 default: "${{ secrets.OCTOPUS_DOCKERHUB_FEED_ID }}"
             },
+            {
+                type: "input",
+                name: "dockerhub_username",
+                message: "The Dockerhub username",
+                default: "${{ secrets.DOCKERHUB_USERNAME }}"
+            },
+            {
+                type: "input",
+                name: "dockerhub_password",
+                message: "The DockerHub password",
+                default: "${{ secrets.DOCKERHUB_PASSWORD }}"
+            },
         ]);
     }
 
@@ -156,6 +168,8 @@ module.exports = class extends Generator {
             octopus_dockerhub_feed_id: this.answers["octopus_dockerhub_feed_id"],
             docker_image_port: this.answers["docker_image_port"],
             docker_image: this.answers["docker_image"],
+            dockerhub_username: this.answers["dockerhub_username"],
+            dockerhub_password: this.answers["dockerhub_password"],
         };
 
         this.fs.copyTpl(

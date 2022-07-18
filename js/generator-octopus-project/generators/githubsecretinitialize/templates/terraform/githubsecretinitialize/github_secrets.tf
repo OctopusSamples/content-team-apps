@@ -69,3 +69,15 @@ resource "github_actions_secret" "production_aws_secret_access_key" {
   secret_name      = "AWS_PRODUCTION_SECRET_ACCESS_KEY_ID"
   plaintext_value  = var.production_aws_secret_access_key
 }
+
+resource "github_actions_secret" "dockerhub_username" {
+  repository       = var.github_repo
+  secret_name      = "DOCKERHUB_USERNAME"
+  plaintext_value  = var.dockerhub_username
+}
+
+resource "github_actions_secret" "dockerhub_password" {
+  repository       = var.github_repo
+  secret_name      = "DOCKERHUB_PASSWORD"
+  plaintext_value  = var.dockerhub_password
+}

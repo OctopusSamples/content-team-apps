@@ -98,3 +98,18 @@ variable "github_pem_file" {
   sensitive = false
   description = "The path to the GitHub private key used when terraform saves secrets as part of a GitHub action"
 }
+
+
+variable "dockerhub_username" {
+  type = string
+  nullable = false
+  sensitive = false
+  description = "The DockerHub username"
+}
+
+variable "dockerhub_password" {
+  type = string
+  nullable = false
+  sensitive = true
+  description = "The DockerHub password"
+}

@@ -6,6 +6,7 @@ on:
       - '.github/workflows/<%= project_name %>.yaml'
       - 'github/<%= project_name %>/**'
       - 'terraform/<%= project_name %>/**'
+      - 'bash/<%= project_name %>/**'
   workflow_dispatch:
 
 jobs:
@@ -35,6 +36,8 @@ jobs:
           docker_image: <%= docker_image %>
           docker_image_port: <%= docker_image_port %>
           octopus_dockerhub_feed_id: <%= octopus_dockerhub_feed_id %>
+          dockerhub_password: <%= dockerhub_password %>
+          dockerhub_username: <%= dockerhub_username %>
 
           # AWS vars
           aws_access_key: <%= aws_access_key %>
