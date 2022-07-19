@@ -49,7 +49,7 @@ resource "octopusdeploy_variable" "google_tag" {
   description = "The Google analytics tag - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "G-3R1GCNVJPX"
+  value = "GTM-M6BF84M"
 }
 
 resource "octopusdeploy_variable" "github_login_development" {
