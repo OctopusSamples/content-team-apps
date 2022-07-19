@@ -7,7 +7,7 @@
     "auditEndpoint": "https://b3u42cdd6h.execute-api.us-west-1.amazonaws.com/Development/api/audits",
     "editorFormat": "yaml",
     "google": {
-      "tag": ""
+      "tag": "GTM-M6BF84M"
     },
     "github": {
       "enableLogin": true,
