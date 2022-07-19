@@ -14,7 +14,7 @@
   "healthEndpoint": "https://octopusworkflowbuilder-test.octopus.com/health",
   "auditEndpoint": "http://localhost:10000/api/audits",
   "google": {
-    "tag": ""
+    "tag": "GTM-M6BF84M"
   },
   "aws": {
     "cognitoDeveloperGroup": "Developers",
