@@ -23,6 +23,7 @@ jobs:
           github_installation_id: <%= github_installation_id %>
           github_pem_file: <%= github_pem_file %>
           project_name: <%= project_name %>
+          project_directory_name: <%= project_name %>
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>

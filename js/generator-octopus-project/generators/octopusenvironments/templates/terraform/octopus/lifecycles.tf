@@ -35,6 +35,7 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
   phase {
     automatic_deployment_targets = [octopusdeploy_environment.development_security_environment.id]
     name                         = octopusdeploy_environment.development_security_environment.name
+    is_optional_phase            = true
 
     release_retention_policy {
       quantity_to_keep    = 1
@@ -70,6 +71,7 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
   phase {
     automatic_deployment_targets = [octopusdeploy_environment.production_security_environment.id]
     name                         = octopusdeploy_environment.production_security_environment.name
+    is_optional_phase            = true
 
     release_retention_policy {
       quantity_to_keep    = 30

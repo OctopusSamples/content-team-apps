@@ -8,38 +8,52 @@
       "weight": "bolder"
     },
     {
-      "type": "TextBlock",
-      "text": "Microsites are stand alone web sites targeting a specific concept or technology.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
         {
-          "type": "Action.Execute",
-          "title": "Octopus Microsite",
-          "verb": "openCard",
-          "data": {
-            "filename": "octopus-microsite.json"
-          }
+          "type": "TextBlock",
+          "text": "Microsites are stand alone web sites targeting a specific concept or technology.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Octopus Microsite",
+              "verb": "openCard",
+              "data": {
+                "filename": "octopus-microsite.json"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "type": "TextBlock",
-      "text": "A Jekyll site that creates EPUB and PDF documents from HTML.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
         {
-          "type": "Action.Execute",
-          "title": "Octopus Epub",
-          "verb": "openCard",
-          "data": {
-            "filename": "epub.json"
-          }
+          "type": "TextBlock",
+          "text": "A Jekyll site that creates EPUB and PDF documents from HTML.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Octopus Epub",
+              "verb": "openCard",
+              "data": {
+                "filename": "epub.json"
+              }
+            }
+          ]
         }
       ]
     }

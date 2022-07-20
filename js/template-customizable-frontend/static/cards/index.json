@@ -8,38 +8,52 @@
       "weight": "bolder"
     },
     {
-      "type": "TextBlock",
-      "text": "Octopus projects and resources.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
         {
-          "type": "Action.Execute",
-          "title": "Octopus",
-          "verb": "openCard",
-          "data": {
-            "filename": "octopus.json"
-          }
+          "type": "TextBlock",
+          "text": "Octopus projects and resources.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Octopus",
+              "verb": "openCard",
+              "data": {
+                "filename": "octopus.json"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "type": "TextBlock",
-      "text": "Publishing projects, including Jekyll microsites and EPUB projects.",
-      "wrap": true
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
         {
-          "type": "Action.Execute",
-          "title": "Publishing",
-          "verb": "openCard",
-          "data": {
-            "filename": "publishing.json"
-          }
+          "type": "TextBlock",
+          "text": "Publishing projects, including Jekyll microsites and EPUB projects.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Publishing",
+              "verb": "openCard",
+              "data": {
+                "filename": "publishing.json"
+              }
+            }
+          ]
         }
       ]
     }

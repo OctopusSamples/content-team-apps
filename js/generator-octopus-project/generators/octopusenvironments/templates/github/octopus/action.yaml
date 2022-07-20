@@ -1,6 +1,19 @@
 name: Terraform Apply
 description: Create the Octopus environments and lifecycles
 inputs:
+  project_name:
+    description: |
+      The name of the project. This is used when building the Terraform state files, and typically matches the
+      directory name where the template project files are stored.
+    required: true
+  project_directory_name:
+    description: |
+      The directory holding the template project files. This is typically the same as the project_name. But, for
+      resources that can be deployed multiple times (for instance multiple Docker registries, VMs etc), you can
+      call this action file multiple times with different values for project_name, while leaving project_directory_name
+      to point to the shared template project files. The end result is the workflow file has two steps, both calling this
+      same action file, where project_directory_name is the same, but project_name is different.
+    required: true
   github_token:
     required: true
     description: The GitHub token
@@ -13,11 +26,6 @@ inputs:
   github_pem_file:
     required: true
     description: The GitHub PEM file used by the Github Terraform provider
-  project_name:
-    description: |
-      The name used to identify this project. It is used for the directory holding project terraform files, and
-      the filename of the GitHub Actions workflow file.
-    required: true
   octopus_server:
     description: 'Octopus cloud URL'
     required: true
@@ -103,15 +111,15 @@ runs:
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
-        input: terraform/${{ inputs.project_name }}/backend_aws.tf
-        output: terraform/${{ inputs.project_name }}/backend_aws.tf
+        input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
 
     - name: Terraform Init
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: terraform init
-      working-directory: terraform/${{ inputs.project_name }}
+      working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash
 
     # See https://docs.github.com/en/actions/learn-github-actions/contexts#github-context for details on the github context
@@ -133,5 +141,5 @@ runs:
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}"
-      working-directory: terraform/${{ inputs.project_name }}
+      working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash

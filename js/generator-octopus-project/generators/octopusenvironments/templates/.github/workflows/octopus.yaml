@@ -24,6 +24,7 @@ jobs:
           github_pem_file: <%= github_pem_file %>
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_name: <%= project_name %>
+          project_directory_name: <%= project_name %>
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>

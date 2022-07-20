@@ -34,14 +34,13 @@ resource "octopusdeploy_variable" "generate_api_path" {
   value = "/api/pipeline/github/generate"
 }
 
-
 resource "octopusdeploy_variable" "google_tag" {
   name = "settings:google:tag"
   type = "String"
   description = "The Google analytics tag - update the Terraform files in [GitHub](https://github.com/OctopusSamples/content-team-apps/terraform) instead."
   is_sensitive = false
   owner_id = octopusdeploy_library_variable_set.frontend_library_variable_set.id
-  value = "G-W98Y6CSSQ4"
+  value = "GTM-M6BF84M"
 }
 
 resource "octopusdeploy_variable" "github_login_development" {

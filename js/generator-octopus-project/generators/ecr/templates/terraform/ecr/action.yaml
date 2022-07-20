@@ -46,9 +46,6 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
-  terraform_bucket_suffix:
-    description: 'The unique suffix applied to the Terraform state S3 bucket'
-    required: true
   cloudformation_stack_name:
     description: 'The name of the cloudformation stack'
     required: true
@@ -74,6 +71,16 @@ runs:
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
 
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
     # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
     # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
     # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
@@ -84,24 +91,31 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Check to see if the bucket exists
-        aws s3api head-bucket --bucket app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.aws_region }} 2>/dev/null
+        aws s3api head-bucket \
+            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
-          aws s3 mb s3://app-builder-${{ inputs.terraform_bucket_suffix }} --region ${{ inputs.aws_region }}
+          aws s3 mb \
+            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
         fi
       shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
 
-    # The Terraform state is stored in a S3 bucket. This bucket can't be created by Terraform, so we rely on the AWS
-    # CLI tooling to create a unique bucket before Terraform is run.
+    # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    # This is because backend config con not have variables.
+    # See https://github.com/hashicorp/terraform/issues/13022
     - uses: danielr1996/envsubst-action@1.1.0
       env:
-        TERRAFORM_BUCKET_SUFFIX: ${{ inputs.terraform_bucket_suffix }}
+        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
+        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
+        PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
-        input: terraform/${{ inputs.cloudformation_stack_name }}/backend.tf
-        output: terraform/${{ inputs.cloudformation_stack_name }}/backend.tf
+        input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
 
     # There is a bug with the Terraform provider that means step package references are incorrectly
     # associated with new steps. The easiest fix is to delete the projects before recreating them.
