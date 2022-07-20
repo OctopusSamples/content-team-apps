@@ -48,6 +48,10 @@ const Welcome: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             You then simply click the "Deploy" button in Octopus to complete the process!
                         </p>
+                        {loginIsRequired && <>
+                            <p>YOU HAVE ENABLED THE "REQUIRE TESTING PARTITION" OPTION.</p>
+                            <p>LOGIN FROM THE SETTINGS PAGE, AND DEFINE A PARTITION OTHER THAN MAIN.</p>
+                        </>}
                         <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={() => {
                             setButtonDisabled(true);
                             props.machine.send("NEXT");
