@@ -25,6 +25,7 @@ import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentia
 import {RuntimeSettings} from "../config/runtimeConfig";
 import {auditPageVisit} from "../utils/audit";
 import {loginRequired} from "../utils/security";
+import Welcome from "../components/journey/Welcome";
 
 /**
  * Return the state context from local storage.
@@ -70,6 +71,7 @@ function getInitialStateContext() {
 }
 
 const validStates = [
+    "welcome",
     "selectTarget",
     "selectedTargetNotAvailable",
     "doYouHaveCloudOctopus",
@@ -95,7 +97,7 @@ function getInitialState() {
         return initialState;
     }
 
-    return "selectTarget";
+    return "welcome";
 }
 
 /**
@@ -230,6 +232,16 @@ export const appBuilderMachine = (settings: RuntimeSettings, partition: string) 
             context: getInitialStateContext(),
             initial: getInitialState(),
             states: {
+                welcome: {
+                    on: {
+                        NEXT: {target: 'selectTarget'}
+                    },
+                    entry: [
+                        auditState("welcome", settings, partition),
+                        saveCurrentState("welcome"),
+                        assignForm(Welcome)
+                    ]
+                },
                 selectTarget: {
                     on: {
                         ECS: {target: 'doYouHaveCloudOctopus'},
