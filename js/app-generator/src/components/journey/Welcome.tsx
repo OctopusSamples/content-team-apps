@@ -1,8 +1,7 @@
 import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid} from "@mui/material";
-import {buttonStyle, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
+import {journeyContainer, nextButtonStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import LinearProgress from '@mui/material/LinearProgress';
 import {AppContext} from "../../App";
 import {loginRequired} from "../../utils/security";
 
@@ -12,11 +11,6 @@ const Welcome: FC<JourneyProps> = (props): ReactElement => {
     const loginIsRequired = loginRequired(context.settings, context.partition);
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(loginIsRequired);
-
-    const next = () => {
-        setButtonDisabled(true);
-        props.machine.send("NEXT");
-    }
 
     return (
         <>
