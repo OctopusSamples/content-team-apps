@@ -56,7 +56,23 @@ The JSON passed to the `/api/template` endpoint is strucuted as a [JSON API](htt
 | answers  | An object holding the answers to pass to the generator. See the [Yeoman docs](https://yeoman.io/authoring/user-interactions.html) for more info on options, arguments, and questions.  | 
 | args  | An object holding the arguments to pass to the generator. See the [Yeoman docs](https://yeoman.io/authoring/user-interactions.html) for more info on options, arguments, and questions.  | 
 
+## Inspecting generators
 
+Unlike arguments and options, generators do not list the questions they ask with `yo generator-name --help` command.
+
+The `yeoman-inspector` tool can be used to inspect the questions defined by a generator. Install it with the command:
+
+```
+npm install -g @octopus-content-team/yeoman-input-inspector
+```
+
+Then run the tool with the command:
+
+```
+yeoman-inspector springboot
+```
+
+Answer the questions, and then the tool will dump the generator details to the console.
 
 # Building and debugging
 
