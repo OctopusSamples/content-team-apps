@@ -43,7 +43,7 @@ curl 'http://localhost:4000/download/template/ZWNlNWE2YmZkZGFhMTVjOTQ4ZDE2NTQ0YT
 The JSON passed to the `/api/template` endpoint is strucuted as a [JSON API](https://jsonapi.org/) object. It has the following attributes:
 
 | Attribute  | Description  |
-|---|---|---|---|---|
+|---|---|
 | generator  | The full name of the NPM package holding the Yeoman generator. Note this must include the `generator` prefix. It can optionally include a package version (e.g. `generator-springboot@0.0.10`), the subgenerator name (e.g. generator-springboot:app), or a combination of the two (e.g. generator-springboot@0.0.10:app).  |
 | options  | An object holding the options to pass to the generator. See the [Yeoman docs](https://yeoman.io/authoring/user-interactions.html) for more info on options, arguments, and questions.  |
 | answers  | An object holding the answers to pass to the generator. See the [Yeoman docs](https://yeoman.io/authoring/user-interactions.html) for more info on options, arguments, and questions.  | 
