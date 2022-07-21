@@ -28,6 +28,8 @@ export interface Audit {
     attributes: {
         subject: string,
         object: string,
+        encryptedSubject: boolean,
+        encryptedObject: boolean,
         action: string,
         dataPartition: string,
         time: number
