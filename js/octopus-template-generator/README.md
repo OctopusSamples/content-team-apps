@@ -42,7 +42,7 @@ It returns an ID that is used to download the generated template with a second r
 The ID is passed to the `/download/template` endpoint. This endpoint returns 404 while the template is being generated, and returns the template zip file when it is availbale:
 
 ```
-curl 'http://localhost:4000/download/template/ZWNlNWE2YmZkZGFhMTVjOTQ4ZDE2NTQ0YTY5ZjdlMzI='
+curl 'http://localhost:4000/download/template/ZWNlNWE2YmZkZGFhMTVjOTQ4ZDE2NTQ0YTY5ZjdlMzI=' --output template.zip
 ```
 
 ## Request JSON structure
