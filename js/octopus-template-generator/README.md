@@ -18,6 +18,13 @@ Run the service Docker image with the command:
 docker run -p 4000:4000 -e UNSAFE_ENABLE_NPM_INSTALL=true octopussamples/workflowbuildertemplategenerator
 ```
 
+## Environment variables
+
+| Variable  | Description  |
+|---|---|
+| UNSAFE_ENABLE_NPM_INSTALL  | Set to true to have the service download the referenced generator. This is considered unsafe as it allows any code in any generator to be executed. Only use this for testing.  |
+| NPM_INSTALL_SAFELIST   | A comma seperated list of NPM package names that are considered safe to download. This is the prefered option over `UNSAFE_ENABLE_NPM_INSTALL` in production environments.  |
+
 ## Generating templates
 
 The following request initiates the generation of a template: 
