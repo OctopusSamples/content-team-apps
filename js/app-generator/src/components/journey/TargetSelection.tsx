@@ -53,10 +53,6 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                             Select the platform that you wish to deploy the sample microservice application to using
                             Octopus.
                         </p>
-                        {loginIsRequired && <>
-                            <p>YOU HAVE ENABLED THE "REQUIRE TESTING PARTITION" OPTION.</p>
-                            <p>LOGIN FROM THE SETTINGS PAGE, AND DEFINE A PARTITION OTHER THAN MAIN.</p>
-                        </>}
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("EKS", "EKS")}>
                             {"AWS Elastic Kubernetes Engine (EKS)"}
