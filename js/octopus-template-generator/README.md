@@ -8,6 +8,38 @@ Yeoman generators.
 
 The frontend and backend can be run locally with [Docker compose](/docker/customizable-workflow-builder).
 
+# Running the service
+
+## Run with Docker
+
+Run the service Docker image with the command:
+
+```
+docker run -p 4000:4000 -e UNSAFE_ENABLE_NPM_INSTALL=true octopussamples/workflowbuildertemplategenerator
+```
+
+## Generating templates
+
+The following request initiates the generation of a template: 
+
+```
+curl 'http://localhost:4000/api/template' -X POST -H 'Content-Type: application/vnd.api+json' --data-raw '{"data":{"type":"generatetemplate","attributes":{"generator":"generator-springboot","options":{},"answers":{"appName":"myservice","packageName":"com.mycompany.myservice","databaseType":"postgresql","dbMigrationTool":"flywaydb","buildTool":"maven"},"args":[]}}}'
+```
+
+It returns an ID that is used to download the generated template with a second request:
+
+```
+{"data":{"type":"template","id":"ZWNlNWE2YmZkZGFhMTVjOTQ4ZDE2NTQ0YTY5ZjdlMzI="}}
+```
+
+The ID is passed to the `/download/template` endpoint. This endpoint returns 404 while the template is being generated, and returns the template zip file when it is availbale:
+
+```
+curl 'http://localhost:4000/download/template/ZWNlNWE2YmZkZGFhMTVjOTQ4ZDE2NTQ0YTY5ZjdlMzI='
+```
+
+# Building and debugging
+
 ## Install dependencies
 
 By default, dependencies were installed when this application was generated.
@@ -31,7 +63,7 @@ npm start
 
 You can also run `node .` to skip the build step.
 
-Open http://127.0.0.1:3000 in your browser.
+Open http://127.0.0.1:4000 in your browser.
 
 ## Rebuild the project
 
