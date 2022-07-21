@@ -241,7 +241,7 @@ const Reports: FC<{}> = (): ReactElement => {
                 <td>
                     <p>Emails collected: {emailAuditsFourWeeks?.data?.length}
                         {!privateKey && <span> (estimated {Math.round(emailAuditsFourWeeks?.data?.length ? emailAuditsFourWeeks.data.length / 2 : 0)} public emails)</span>}
-                        {privateKey && <span>({new Set(emailAuditsFourWeeks?.data.map(a => a.attributes?.object)).size} unique emails)</span>}
+                        {privateKey && <span> ({new Set(emailAuditsFourWeeks?.data.map(a => a.attributes?.object)).size} unique emails)</span>}
                     </p>
                     <p>Jenkins
                         templates: {templateAuditsFourWeeks?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length}</p>
