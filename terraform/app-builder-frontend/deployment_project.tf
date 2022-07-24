@@ -351,9 +351,10 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
-                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
-                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com;
+                          script-src 'self' 'unsafe-inline' *.google-analytics.com
+                          *.googletagmanager.com *.cloudflareinsights.com; style-src *
+                          'unsafe-inline'; img-src *; font-src *'
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
                 MethodResponses:
                   - ResponseModels:
@@ -428,9 +429,10 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.youtube.com oc.to; script-src 'self'
-                          'unsafe-inline' *.google-analytics.com *.googletagmanager.com;
-                          style-src * 'unsafe-inline'; img-src *; font-src *'
+                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com;
+                          script-src 'self' 'unsafe-inline' *.google-analytics.com
+                          *.googletagmanager.com *.cloudflareinsights.com; style-src *
+                          'unsafe-inline'; img-src *; font-src *'
                         method.response.header.Strict-Transport-Security: '''max-age=15768000'''
                     - StatusCode: '307'
                       SelectionPattern: '307'
