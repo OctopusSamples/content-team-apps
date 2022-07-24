@@ -56,7 +56,11 @@ const Reports: FC<{}> = (): ReactElement => {
             return {
                 ...audits, data: audits.data
                     ?.map(a => {
-                        a.attributes.object = decrypt(a.attributes.object);
+                        if (privateKey) {
+                            a.attributes.object = decrypt(a.attributes.object);
+                            a.attributes.encryptedSubject = false;
+                            a.attributes.encryptedObject = false;
+                        }
                         return a;
                     })
                     ?.filter(a => !a.attributes.object.endsWith("users.noreply.github.com"))
@@ -68,7 +72,8 @@ const Reports: FC<{}> = (): ReactElement => {
             + "%3Btime<=" + endDate.toISOString(),
             "main")
             .then(data => {
-                setEmailAuditsFourWeeks(processAudits(data));
+                const processedData = processAudits(data);
+                setEmailAuditsFourWeeks(processedData);
             })
             .catch(err => {
                 setError("Failed to retrieve audit resources. Make sure you are logged in. "
@@ -235,7 +240,9 @@ const Reports: FC<{}> = (): ReactElement => {
             <tr>
                 <td>
                     <p>Emails collected: {emailAuditsFourWeeks?.data?.length}
-                        {!privateKey && <span> (estimated {Math.round(emailAuditsFourWeeks?.data?.length ? emailAuditsFourWeeks.data.length / 2 : 0)} public emails)</span>}</p>
+                        {!privateKey && <span> (estimated {Math.round(emailAuditsFourWeeks?.data?.length ? emailAuditsFourWeeks.data.length / 2 : 0)} public emails)</span>}
+                        {privateKey && <span> ({new Set(emailAuditsFourWeeks?.data.map(a => a.attributes?.object)).size} unique emails)</span>}
+                    </p>
                     <p>Jenkins
                         templates: {templateAuditsFourWeeks?.data?.filter(a => a.attributes.subject === "JenkinsPipelineBuilder").length}</p>
                     <p>GitHub Actions
