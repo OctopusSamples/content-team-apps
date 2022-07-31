@@ -59,7 +59,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         </Button>
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("ECS", "ECS")}>
-                            {"AWS Elastic Compute Service (ECS)"}
+                            {"AWS Elastic Container Service (ECS)"}
                         </Button>
                         <Button sx={buttonStyle} variant="outlined" disabled={buttonDisabled}
                                 onClick={() => next("LAMBDA", "LAM")}>
