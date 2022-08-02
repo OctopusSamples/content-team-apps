@@ -24,7 +24,7 @@ import Error from "../components/journey/Error";
 import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentials";
 import {RuntimeSettings} from "../config/runtimeConfig";
 import {auditPageVisit} from "../utils/audit";
-import {encryptAndSaveInCookie, loginRequired} from "../utils/security";
+import {loginRequired} from "../utils/security";
 import Welcome from "../components/journey/Welcome";
 import Cookies from "js-cookie";
 
