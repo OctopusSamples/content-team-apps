@@ -24,8 +24,9 @@ import Error from "../components/journey/Error";
 import EnterOctopusCredentials from "../components/journey/EnterOctopusCredentials";
 import {RuntimeSettings} from "../config/runtimeConfig";
 import {auditPageVisit} from "../utils/audit";
-import {loginRequired} from "../utils/security";
+import {encryptAndSaveInCookie, loginRequired} from "../utils/security";
 import Welcome from "../components/journey/Welcome";
+import Cookies from "js-cookie";
 
 /**
  * Return the state context from local storage.
@@ -70,7 +71,7 @@ function getInitialStateContext() {
     }
 }
 
-const validStates = [
+const VALID_STATES = [
     "welcome",
     "selectTarget",
     "selectedTargetNotAvailable",
@@ -87,17 +88,40 @@ const validStates = [
     "error"];
 
 /**
+ * The name of the cookie containing the encrypted GitHub session token.
+ */
+const GITHUB_SESSION_TOKEN = "GitHubUserSession";
+
+/**
  * Return the name of the state that we should start the form at.
  */
 function getInitialState() {
 
     const initialState = localStorage.getItem("appBuilderState") || "";
 
-    if (validStates.indexOf(initialState) !== -1) {
-        return initialState;
+    if (VALID_STATES.indexOf(initialState) !== -1) {
+        const fixedState = checkForValidGitHubLogin(initialState);
+        return fixedState;
     }
 
     return "welcome";
+}
+
+/**
+ * The app sets the state machine state to return to "loggedIntoGithub" after leaving the
+ * "logIntoGitHub" state. But it is only valid to enter the "loggedIntoGithub" state if
+ * the user actually completed the GitHub login.
+ *
+ * So here we check to see if we are trying to enter the "loggedIntoGithub" state, and
+ * only allow it if we have a valid session token.
+ */
+function checkForValidGitHubLogin(state: string): string {
+    if (state === "loggedIntoGithub" && !Cookies.get(GITHUB_SESSION_TOKEN)) {
+        // We don't have a valid token, so return to the login state
+        return "logIntoGitHub"
+    }
+
+    return state;
 }
 
 /**
