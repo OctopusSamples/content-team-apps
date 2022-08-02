@@ -221,6 +221,20 @@ runs:
         --deploymentTimeout 00:30:00
       shell: bash
 
+    - name: Trigger deployment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo create-release
+        --project "App Builder GitHub OAuth Proxy"
+        --version 1.0.${{ inputs.run_number }}
+        --deployTo "Development"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --waitForDeployment
+        --deploymentTimeout 00:30:00
+      shell: bash
+
     - name: Trigger deployment to security environment
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
@@ -239,6 +253,19 @@ runs:
       run: >
         octo promote-release
         --project "Jenkins Pipelines GitHub OAuth Proxy"
+        --from "Development"
+        --deployTo "Development (Security)"
+        --server ${{ inputs.octopus_server_url }}
+        --apiKey ${{ inputs.octopus_api_token }}
+        --space "Content Team"
+        --latestSuccessful
+      shell: bash
+
+    - name: Trigger App Builder deployment to security environment
+      if: ${{ env.BRANCH_NAME == 'main' }}
+      run: >
+        octo promote-release
+        --project "App Builder GitHub OAuth Proxy"
         --from "Development"
         --deployTo "Development (Security)"
         --server ${{ inputs.octopus_server_url }}
