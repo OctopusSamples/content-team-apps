@@ -88,8 +88,7 @@ public class GitHubOauthRedirect {
                       githubEncryption,
                       githubSalt)
                       + ";expires=" + cookieDateUtils.getRelativeExpiryDate(6, ChronoUnit.HOURS)
-                      + ";path=/"
-                      + ";HttpOnly")
+                      + ";path=/")
                   .add(OauthBackendConstants.STATE_COOKIE
                       + "=deleted;expires=Thu, 01 Jan 1970 00:00:00 GMT;HttpOnly;path=/")
                   .build())
