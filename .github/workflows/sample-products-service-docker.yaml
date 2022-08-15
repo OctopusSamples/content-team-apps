@@ -1,7 +1,7 @@
+# Builds the sample product Java app embedded in the Yeoman template as a Docker image and
+# publishes it to DockerHub.
+
 name: Sample product service Docker build
-description: >
-  Builds the sample product Java app embedded in the Yeoman template as a Docker image and
-  publishes it to DockerHub.
 on:
   push:
     branches: main
