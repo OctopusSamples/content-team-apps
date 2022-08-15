@@ -26,7 +26,7 @@ jobs:
           path: 'js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend'
           builder: 'heroku/buildpacks:20'
           buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
-        env: NODE_OPTIONS=--openssl-legacy-provider
+          env: NODE_OPTIONS=--openssl-legacy-provider
       - name: Push to DockerHub
         run: docker push octopussamples/frontend-webapp
         shell: bash    
