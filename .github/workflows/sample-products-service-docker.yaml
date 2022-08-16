@@ -27,4 +27,14 @@ jobs:
           docker build -f src/main/docker/Dockerfile.legacy-jar -t octopussamples/product-service .
           docker push octopussamples/product-service
         shell: bash
-        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice      
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice   
+      - name: Build with MySQL support with Maven
+        run: ./mvnw --batch-mode package --file pom.xml -Dquarkus.profile=mysql
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java
+      - name: Push to DockerHub
+        run: |
+          docker build -f src/main/docker/Dockerfile.legacy-jar -t octopussamples/product-service-mysql .
+          docker push octopussamples/product-service-mysql
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice    
