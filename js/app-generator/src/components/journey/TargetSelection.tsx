@@ -5,6 +5,7 @@ import {JourneyProps} from "../../statemachine/appBuilder";
 import LinearProgress from '@mui/material/LinearProgress';
 import {AppContext} from "../../App";
 import {loginRequired} from "../../utils/security";
+import {auditPageVisit} from "../../utils/audit";
 
 const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -16,18 +17,22 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
     const next = (state: string, platform: string) => {
         setButtonDisabled(true);
         if (props.machine.state) {
+
             props.machine.state.context.targetPlatform = platform;
 
             // Match the platform to the Yeoman generator
             if (props.machine.state.context.targetPlatform === "EKS") {
+                auditPageVisit("eksTargetSelected", context.settings, context.partition);
                 props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-eks-deployment"
             }
 
             if (props.machine.state.context.targetPlatform === "ECS") {
+                auditPageVisit("ecsTargetSelected", context.settings, context.partition);
                 props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-ecs-deployment"
             }
 
             if (props.machine.state.context.targetPlatform === "LAM") {
+                auditPageVisit("lamTargetSelected", context.settings, context.partition);
                 props.machine.state.context.generator = "@octopus-content-team/generator-github-complete-lambda-deployment"
             }
         }
