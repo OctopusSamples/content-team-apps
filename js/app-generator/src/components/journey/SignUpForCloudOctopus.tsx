@@ -14,7 +14,7 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
 
     const openSignUp = () => {
         auditPageVisit("externalOctopusSignup", context.settings, context.partition);
-        window.open("https://octopus.com/start/cloud");
+        window.open("https://octopus.com/start/cloud", '_blank');
     }
 
     return (

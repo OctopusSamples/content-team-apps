@@ -1,10 +1,11 @@
-import {FC, ReactElement, useContext, useState} from "react";
+import {FC, ReactElement, useContext, useEffect, useRef, useState} from "react";
 import {Button, FormControl, FormHelperText, Grid, Link, TextField} from "@mui/material";
-import {formElements, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
+import {buttonStyle, formElements, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps, saveCurrentState} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
 import {AppContext} from "../../App";
 import LinearProgress from "@mui/material/LinearProgress";
+import {auditPageVisit} from "../../utils/audit";
 
 // define the randomUUID function
 declare global {
@@ -19,8 +20,28 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
         const context = useContext(AppContext);
 
         const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+        const [signupButtonVisible, setSignupButtonVisible] = useState<boolean>(false);
         const [octopusServer, setOctopusServer] = useState<string>((props.machine.state && props.machine.state.context.octopusServer) || "");
         const [octopusServerError, setOctopusServerError] = useState<string | null>(null);
+
+        const octopusServerRef = useRef(octopusServer);
+        octopusServerRef.current = octopusServer;
+
+        useEffect(() => {
+            /*
+                Assume that after 10 seconds the user does not have a cloud instance and
+                present the button to sign up for a trial.
+             */
+            const timer = setTimeout(() => {
+                setSignupButtonVisible(octopusServerRef.current === "");
+            }, 10000);
+            return () => clearTimeout(timer);
+        }, []);
+
+        const openSignUp = () => {
+            auditPageVisit("externalOctopusSignup", context.settings, context.partition);
+            window.open("https://octopus.com/start/cloud", '_blank');
+        }
 
         /**
          * Extract the hostname from a fully formed URL if that was pasted in.
@@ -102,8 +123,8 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Log into you cloud Octopus instance.</h2>
                             <p>
-                                You must log into your cloud Octopus instance to allow the Octopus Workflow Builder to configure your
-                                application deployment process.
+                                You must log into your cloud Octopus instance to allow the Octopus Workflow Builder to
+                                configure your application deployment process.
                             </p>
                             <p>
                                 Please enter the hostname of the Octopus Cloud instance that you which to populate with the
@@ -123,6 +144,16 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <Button sx={nextButtonStyle} variant="outlined" disabled={buttonDisabled} onClick={login}>
                                 {context.settings.disableOctofrontLogin ? "Next >" : "Login >"}
                             </Button>
+
+                            {signupButtonVisible && <>
+                                <p>
+                                    If you do not have a cloud Octopus instance, click the Signup button below to create
+                                    a free trial account.
+                                </p>
+                                <Button sx={buttonStyle} variant="outlined" onClick={openSignUp}>
+                                    {"Signup"}
+                                </Button>
+                            </>}
                         </Grid>
                     </Grid>
                     <Grid item md={3} xs={0}/>
