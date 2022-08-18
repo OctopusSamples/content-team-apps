@@ -18,6 +18,9 @@ const Reports: FC = (): ReactElement => {
             const data = {
                 labels: [
                     'selectTarget',
+                    'eksTargetSelected',
+                    'ecsTargetSelected',
+                    'lamTargetSelected',
                     'selectedTargetNotAvailable',
                     'doYouHaveCloudOctopus',
                     'signUpForCloudOctopus',
@@ -40,6 +43,9 @@ const Reports: FC = (): ReactElement => {
                         data: [
                             // Ignore gradle as it is the default template returned, which skews the results
                             audits?.data?.filter(a => a.attributes.object === "selectTarget").length,
+                            audits?.data?.filter(a => a.attributes.object === "eksTargetSelected").length,
+                            audits?.data?.filter(a => a.attributes.object === "ecsTargetSelected").length,
+                            audits?.data?.filter(a => a.attributes.object === "lamTargetSelected").length,
                             audits?.data?.filter(a => a.attributes.object === "selectedTargetNotAvailable").length,
                             audits?.data?.filter(a => a.attributes.object === "doYouHaveCloudOctopus").length,
                             audits?.data?.filter(a => a.attributes.object === "signUpForCloudOctopus").length,
