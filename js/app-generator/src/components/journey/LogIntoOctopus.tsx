@@ -126,6 +126,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                                 You must log into your cloud Octopus instance to allow the Octopus Workflow Builder to
                                 configure your application deployment process.
                             </p>
+                            <img src={"hostname.png"} style={{width: "100%"}}/>
                             <p>
                                 Please enter the hostname of the Octopus Cloud instance that you which to populate with the
                                 sample deployment project and click the next button to be taken to the Octopus login page.
