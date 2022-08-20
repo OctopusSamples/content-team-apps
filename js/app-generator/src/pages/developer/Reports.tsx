@@ -4,15 +4,34 @@ import {AppContext} from "../../App";
 import {AuditsCollection} from "./Audits";
 import {Chart, ChartConfiguration, registerables} from "chart.js";
 import {chartColors} from "../../utils/charts";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {Grid} from "@material-ui/core";
+import MomentUtils from '@date-io/moment';
 
 Chart.register(...registerables);
 
 const Reports: FC = (): ReactElement => {
     const context = useContext(AppContext);
     const [error, setError] = useState<string | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000)));
+    const [endDate, setEndDate] = useState<Date | null>(new Date());
+
+    /*
+        Delete and recreate the canvas before recreating the chart.
+        See https://stackoverflow.com/a/25064035
+    */
+    const deleteAndRecreateCanvas = (parentId: string, childId: string) => {
+        document.getElementById(childId)?.remove();
+        const parentElement = document.getElementById(parentId);
+        if (parentElement) {
+            parentElement.innerHTML = '<canvas id="' + childId + '"></canvas>';
+        }
+    }
 
     useEffect(() => {
-        const fourWeeksAgo = new Date(new Date().getTime() - (28 * 24 * 60 * 60 * 1000));
+        if (!(startDate && endDate)) {
+            return;
+        }
 
         const buildProgressionReport = (audits: AuditsCollection) => {
             const data = {
@@ -80,20 +99,23 @@ const Reports: FC = (): ReactElement => {
                         },
                         title: {
                             display: true,
-                            text: 'Progression Report (28 days)'
+                            text: 'Progression Report'
                         }
                     }
                 },
             };
 
-            const languageReport = document.getElementById('progressionReport') as HTMLCanvasElement;
-            if (languageReport) {
-                new Chart(languageReport, config);
+            deleteAndRecreateCanvas('progressionReportParent', 'progressionReport');
+            const progressionReport = document.getElementById('progressionReport') as HTMLCanvasElement;
+            if (progressionReport) {
+                new Chart(progressionReport, config);
             }
         }
 
         getJsonApi<AuditsCollection>(
-            context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==VisitedPage%3Btime>=" + fourWeeksAgo.toISOString(),
+            context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==VisitedPage"
+            + "%3Btime>=" + startDate.toISOString()
+            + "%3Btime<=" + endDate.toISOString(),
             context.settings,
             "main")
             .then(data => {
@@ -104,11 +126,44 @@ const Reports: FC = (): ReactElement => {
                     + (isBranchingEnabled() ? "Branching rules are enabled - double check they are valid, or disable them." : ""));
                 console.log(err);
             })
-    }, [context.settings.auditEndpoint, context.settings]);
+    }, [context.settings.auditEndpoint, context.settings, startDate, endDate]);
 
     return <div>
         {error && <span>{error}</span>}
-        <canvas id="progressionReport" style={{width: "1024px"}}></canvas>
+        <h2>Date Range</h2>
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+            <Grid container justifyContent="flex-start">
+                <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="DD/MM/yyyy"
+                    margin="normal"
+                    id="start-date"
+                    label="Start Date"
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                    onChange={date => setStartDate(date?.toDate() || null)}
+                    value={startDate}
+                />
+                <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="DD/MM/yyyy"
+                    margin="normal"
+                    id="end-date"
+                    label="End Date"
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                    onChange={date => setEndDate(date?.toDate() || null)}
+                    value={endDate}
+                />
+            </Grid>
+        </MuiPickersUtilsProvider>
+        <div id="progressionReportParent">
+            <canvas id="progressionReport" style={{width: "1024px"}}></canvas>
+        </div>
     </div>
 }
 
