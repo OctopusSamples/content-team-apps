@@ -161,8 +161,8 @@ const Reports: FC = (): ReactElement => {
                 />
             </Grid>
         </MuiPickersUtilsProvider>
-        <div id="progressionReportParent">
-            <canvas id="progressionReport" style={{width: "1024px"}}></canvas>
+        <div id="progressionReportParent" style={{width: "1024px"}}>
+            <canvas id="progressionReport"></canvas>
         </div>
     </div>
 }
