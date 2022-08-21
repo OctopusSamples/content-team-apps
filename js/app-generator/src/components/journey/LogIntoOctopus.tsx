@@ -124,7 +124,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             <h2>Log into you cloud Octopus instance.</h2>
                             <img src={"hostname.png"} style={{width: "100%"}} alt={"Browser address bar"}/>
                             <p>
-                                Please enter the hostname of the Octopus Cloud instance that you which to populate with the
+                                Please enter the hostname of the Octopus Cloud instance that you wish to populate with the
                                 sample deployment project.
                             </p>
                             <FormControl error variant="standard" sx={formElements}>
