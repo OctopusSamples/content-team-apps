@@ -35,7 +35,8 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         <h2>Complete the cloud Octopus trail sign up.</h2>
                         <p>
                             Click the signup button to open a new tab where you can sign up for a free Octopus cloud
-                            trial.
+                            trial. We understand developers and DevOps practitioners, so the trial does not require
+                            any credit card information.
                         </p>
                         <p>
                             Once you have completed the signup for the cloud trial, return to this page, and click the
