@@ -89,7 +89,7 @@ const Reports: FC<{}> = (): ReactElement => {
 
         const buildLanguageReport = (audits: AuditsCollection) => {
             const data = {
-                labels: ['Java', '.NET Core', 'Node.js', 'Go', 'Python', 'PHP', 'Ruby'],
+                labels: ['Java', '.NET Core', 'Node.js', 'Go', 'Python', 'PHP', 'Ruby', 'Generic'],
                 datasets: [
                     {
                         data: [
@@ -100,7 +100,8 @@ const Reports: FC<{}> = (): ReactElement => {
                             audits?.data?.filter(a => a.attributes.object === "Go").length,
                             audits?.data?.filter(a => a.attributes.object === "Python").length,
                             audits?.data?.filter(a => a.attributes.object === "PHP").length,
-                            audits?.data?.filter(a => a.attributes.object === "Ruby").length
+                            audits?.data?.filter(a => a.attributes.object === "Ruby").length,
+                            audits?.data?.filter(a => a.attributes.object === "Generic").length
                         ],
                         backgroundColor: chartColors
                     }
