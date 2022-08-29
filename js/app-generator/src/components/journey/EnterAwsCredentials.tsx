@@ -119,7 +119,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                 </p>
                                 <iframe src="https://fast.wistia.net/embed/iframe/lsd6ziscrt" title="ECSKeys Video"
                                         allow="autoplay; fullscreen" allowTransparency={true} frameBorder="0"
-                                        scrolling="no" className="wistia_embed" name="wistia_embed" msallowfullscreen
+                                        scrolling="no" className="wistia_embed" name="wistia_embed"
                                         width="640" height="360"></iframe>
                                 <script src="https://fast.wistia.net/assets/external/E-v1.js" async></script>
                             </>
