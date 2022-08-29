@@ -94,25 +94,25 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
                             resources that host your sample application. You can find more information about creating
-                            access keys in the <a href={"https://oc.to/HK4CQc"}>AWS documentation</a>.
+                            access keys in the <a href={"https://oc.to/HK4CQc"} target={"_blank"}>AWS documentation</a>.
                         </p>
                         <h3>Required Permissions</h3>
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&
                             <p>
                                 A sample IAM policy for working with EKS can be found <a
-                                href={"https://oc.to/VSW4tL"}>here</a>.
+                                href={"https://oc.to/VSW4tL"} target={"_blank"}>here</a>.
                             </p>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "ECS" &&
                             <p>
                                 A sample IAM policy for working with ECS can be found <a
-                                href={"https://oc.to/KmRF6D"}>here</a>.
+                                href={"https://oc.to/KmRF6D"} target={"_blank"}>here</a>.
                             </p>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "LAM" &&
                             <p>
                                 A sample IAM policy for working with LAM can be found <a
-                                href={"https://oc.to/WTPojc"}>here</a>.
+                                href={"https://oc.to/WTPojc"} target={"_blank"}>here</a>.
                             </p>
                         }
                         <h3>AWS Credentials</h3>
