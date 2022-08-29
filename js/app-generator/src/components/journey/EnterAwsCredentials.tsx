@@ -6,7 +6,7 @@ import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
 import {LinearProgressWithLabel} from "../widgets";
 
-const mask =  "**************";
+const mask = "**************";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
     const classes = journeyContainer();
@@ -94,14 +94,22 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
                             resources that host your sample application. You can find more information about creating
-                            access keys in the <a href={"https://oc.to/HK4CQc"} target={"_blank"} rel="noreferrer">AWS documentation</a>.
+                            access keys in the <a href={"https://oc.to/HK4CQc"} target={"_blank"} rel="noreferrer">AWS
+                            documentation</a>.
                         </p>
                         <h3>Required Permissions</h3>
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&
-                            <p>
-                                A sample IAM policy for working with EKS can be found <a
-                                href={"https://oc.to/VSW4tL"} target={"_blank"} rel="noreferrer">here</a>.
-                            </p>
+                            <>
+                                <p>
+                                    A sample IAM policy for working with EKS can be found <a
+                                    href={"https://oc.to/VSW4tL"} target={"_blank"} rel="noreferrer">here</a>.
+                                </p>
+                                <iframe src="https://fast.wistia.net/embed/iframe/kcz7zmz8jr" title="AWSKeys Video"
+                                        allow="autoplay; fullscreen" allowTransparency={true} frameBorder="0"
+                                        scrolling="no" className="wistia_embed" name="wistia_embed"
+                                        width="640" height="360"></iframe>
+                                <script src="https://fast.wistia.net/assets/external/E-v1.js" async></script>
+                            </>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "ECS" &&
                             <p>
@@ -126,7 +134,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                         value={accessKey}
                                         onChange={(event) => setAccessKey(event.target.value)}
                                         aria-describedby="access-key-error-text"/>
-                                    {accessKeyError && <FormHelperText id="access-key-error-text">{accessKeyError}</FormHelperText>}
+                                    {accessKeyError &&
+                                        <FormHelperText id="access-key-error-text">{accessKeyError}</FormHelperText>}
                                 </FormControl>
                             </Grid>
                             <Grid md={3} xs={12} container={true}>
@@ -135,12 +144,13 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                             <Grid md={9} xs={12} container={true}>
                                 <FormControl error variant="standard" sx={formElements}>
                                     <TextField
-                                           value={secretKey}
-                                           type="password"
-                                           autoComplete="new-password"
-                                           onChange={(event) => setSecretKey(event.target.value)}
-                                           aria-describedby="secret-key-error-text"/>
-                                    {secretKeyError && <FormHelperText id="secret-key-error-text">{secretKeyError}</FormHelperText>}
+                                        value={secretKey}
+                                        type="password"
+                                        autoComplete="new-password"
+                                        onChange={(event) => setSecretKey(event.target.value)}
+                                        aria-describedby="secret-key-error-text"/>
+                                    {secretKeyError &&
+                                        <FormHelperText id="secret-key-error-text">{secretKeyError}</FormHelperText>}
                                 </FormControl>
                             </Grid>
                             <Grid md={3} xs={12} container={true}>
@@ -152,7 +162,8 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                                         value={region}
                                         onChange={(event) => setRegion(event.target.value)}
                                         aria-describedby="region-error-text"/>
-                                    {regionError && <FormHelperText id="region-error-text">{regionError}</FormHelperText>}
+                                    {regionError &&
+                                        <FormHelperText id="region-error-text">{regionError}</FormHelperText>}
                                 </FormControl>
                             </Grid>
                         </Grid>
