@@ -4,7 +4,7 @@ import {formElements, journeyContainer, nextButtonStyle, progressStyle} from "..
 import {JourneyProps} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
 import {encryptAndSaveInCookie} from "../../utils/security";
-import LinearProgress from "@mui/material/LinearProgress";
+import {LinearProgressWithLabel} from "../widgets";
 
 const mask =  "**************";
 
@@ -65,7 +65,7 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
                             container={true}
                             className={classes.column}
                         >
-                            <LinearProgress variant="determinate" value={50} sx={progressStyle}/>
+                            <LinearProgressWithLabel variant="determinate" value={50} sx={progressStyle}/>
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Enter an API key for your Octopus instance.</h2>
                             <p>

@@ -4,7 +4,7 @@ import {formContainer, formElements, journeyContainer, nextButtonStyle, progress
 import {JourneyProps} from "../../statemachine/appBuilder";
 import {encryptAndSaveInCookie} from "../../utils/security";
 import Cookies from 'js-cookie'
-import LinearProgress from "@mui/material/LinearProgress";
+import {LinearProgressWithLabel} from "../widgets";
 
 const mask =  "**************";
 
@@ -88,31 +88,31 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
-                        <LinearProgress variant="determinate" value={80} sx={progressStyle}/>
+                        <LinearProgressWithLabel variant="determinate" value={80} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Enter your AWS credentials.</h2>
                         <p>
                             Enter your AWS access and secret keys. These credentials are used to create the AWS
                             resources that host your sample application. You can find more information about creating
-                            access keys in the <a href={"https://oc.to/HK4CQc"} target={"_blank"}>AWS documentation</a>.
+                            access keys in the <a href={"https://oc.to/HK4CQc"} target={"_blank"} rel="noreferrer">AWS documentation</a>.
                         </p>
                         <h3>Required Permissions</h3>
                         {props.machine.state && props.machine.state.context.targetPlatform === "EKS" &&
                             <p>
                                 A sample IAM policy for working with EKS can be found <a
-                                href={"https://oc.to/VSW4tL"} target={"_blank"}>here</a>.
+                                href={"https://oc.to/VSW4tL"} target={"_blank"} rel="noreferrer">here</a>.
                             </p>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "ECS" &&
                             <p>
                                 A sample IAM policy for working with ECS can be found <a
-                                href={"https://oc.to/KmRF6D"} target={"_blank"}>here</a>.
+                                href={"https://oc.to/KmRF6D"} target={"_blank"} rel="noreferrer">here</a>.
                             </p>
                         }
                         {props.machine.state && props.machine.state.context.targetPlatform === "LAM" &&
                             <p>
                                 A sample IAM policy for working with LAM can be found <a
-                                href={"https://oc.to/WTPojc"} target={"_blank"}>here</a>.
+                                href={"https://oc.to/WTPojc"} target={"_blank"} rel="noreferrer">here</a>.
                             </p>
                         }
                         <h3>AWS Credentials</h3>

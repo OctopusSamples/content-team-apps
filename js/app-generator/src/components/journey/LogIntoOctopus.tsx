@@ -4,7 +4,7 @@ import {buttonStyle, formElements, journeyContainer, nextButtonStyle, progressSt
 import {JourneyProps, saveCurrentState} from "../../statemachine/appBuilder";
 import Cookies from "js-cookie";
 import {AppContext} from "../../App";
-import LinearProgress from "@mui/material/LinearProgress";
+import {LinearProgressWithLabel} from "../widgets";
 import {auditPageVisit} from "../../utils/audit";
 
 // define the randomUUID function
@@ -119,7 +119,7 @@ const LogIntoOctopus: FC<JourneyProps> = (props): ReactElement => {
                             container={true}
                             className={classes.column}
                         >
-                            <LinearProgress variant="determinate" value={40} sx={progressStyle}/>
+                            <LinearProgressWithLabel variant="determinate" value={40} sx={progressStyle}/>
                             <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                             <h2>Log into you cloud Octopus instance.</h2>
                             <img src={"hostname.png"} style={{width: "100%"}} alt={"Browser address bar"}/>

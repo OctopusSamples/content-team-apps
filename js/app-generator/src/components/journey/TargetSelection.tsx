@@ -2,7 +2,7 @@ import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid} from "@mui/material";
 import {buttonStyle, journeyContainer, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import LinearProgress from '@mui/material/LinearProgress';
+import {LinearProgressWithLabel} from "../widgets";
 import {AppContext} from "../../App";
 import {loginRequired} from "../../utils/security";
 import {auditPageVisit} from "../../utils/audit";
@@ -52,7 +52,7 @@ const TargetSelection: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
-                        <LinearProgress variant="determinate" value={10} sx={progressStyle}/>
+                        <LinearProgressWithLabel variant="determinate" value={10} sx={progressStyle}/>
                         <h2>Where are you deploying the microservice?</h2>
                         <p>
                             Select the platform that you wish to deploy the sample microservice application to using

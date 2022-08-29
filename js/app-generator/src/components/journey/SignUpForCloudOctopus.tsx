@@ -2,7 +2,7 @@ import {FC, ReactElement, useContext, useState} from "react";
 import {Button, Grid, Link} from "@mui/material";
 import {buttonStyle, journeyContainer, nextButtonStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import LinearProgress from "@mui/material/LinearProgress";
+import {LinearProgressWithLabel} from "../widgets";
 import {auditPageVisit} from "../../utils/audit";
 import {AppContext} from "../../App";
 
@@ -30,7 +30,7 @@ const SignUpForCloudOctopus: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
-                        <LinearProgress variant="determinate" value={30} sx={progressStyle}/>
+                        <LinearProgressWithLabel variant="determinate" value={30} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Complete the cloud Octopus trail sign up.</h2>
                         <p>

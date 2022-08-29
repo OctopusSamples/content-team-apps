@@ -6,7 +6,7 @@ import {postJsonApi} from "../../utils/network";
 import lightDark from '../../images/spinnerDark.gif'
 import Cookies from "js-cookie";
 import {AppContext} from "../../App";
-import LinearProgress from "@mui/material/LinearProgress";
+import {LinearProgressWithLabel} from "../widgets";
 import {getOctopusServer} from "../../utils/naming";
 
 const PushPackage: FC<JourneyProps> = (props): ReactElement => {
@@ -132,7 +132,7 @@ const PushPackage: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
-                        <LinearProgress variant="determinate" value={90} sx={progressStyle}/>
+                        <LinearProgressWithLabel variant="determinate" value={90} sx={progressStyle}/>
                         <Link onClick={() => props.machine.send("BACK")}>&lt; Back</Link>
                         <h2>Push the sample application and deployment configuration to GitHub.</h2>
                         <p>

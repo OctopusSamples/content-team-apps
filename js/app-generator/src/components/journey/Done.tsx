@@ -2,7 +2,6 @@ import {FC, ReactElement, useContext, useEffect, useState} from "react";
 import {Button, CircularProgress, Grid} from "@mui/material";
 import {iconStyle, journeyContainer, openResourceStyle, progressStyle} from "../../utils/styles";
 import {JourneyProps} from "../../statemachine/appBuilder";
-import LinearProgress from "@mui/material/LinearProgress";
 import {getJsonApi} from "../../utils/network";
 import {AppContext} from "../../App";
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
@@ -11,6 +10,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import {generateSpaceName, getOctopusServer} from "../../utils/naming";
 import Cookies from "js-cookie";
 import {auditPageVisit} from "../../utils/audit";
+import {LinearProgressWithLabel} from "../widgets";
 
 /**
  * Allow up to 5 errors accessing the space proxy. Anything more than that, and we just assume
@@ -181,7 +181,7 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                         container={true}
                         className={classes.column}
                     >
-                        <LinearProgress variant="determinate" value={100} sx={progressStyle}/>
+                        <LinearProgressWithLabel variant="determinate" value={100} sx={progressStyle}/>
                         <h2>Your CI/CD pipeline is now being configured.</h2>
                         <p>
                             The progress of the various resources created by the Octopus Workflow Builder are shown below:
