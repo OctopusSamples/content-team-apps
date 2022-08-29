@@ -351,7 +351,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com oc.to *.youtube.com;
+                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com oc.to
+                          *.youtube.com *.wistia.net;
                           script-src 'self' 'unsafe-inline' *.google-analytics.com
                           *.googletagmanager.com *.cloudflareinsights.com; style-src *
                           'unsafe-inline'; img-src *; font-src *'
@@ -429,7 +430,8 @@ resource "octopusdeploy_deployment_process" "deploy_project" {
                         method.response.header.Content-Security-Policy: >-
                           'frame-ancestors 'none'; form-action 'none'; base-uri 'none';
                           object-src 'none'; default-src 'self' 'unsafe-inline'
-                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com oc.to *.youtube.com;
+                          *.google-analytics.com *.amazonaws.com *.googletagmanager.com oc.to
+                          *.youtube.com *.wistia.net;
                           script-src 'self' 'unsafe-inline' *.google-analytics.com
                           *.googletagmanager.com *.cloudflareinsights.com; style-src *
                           'unsafe-inline'; img-src *; font-src *'
