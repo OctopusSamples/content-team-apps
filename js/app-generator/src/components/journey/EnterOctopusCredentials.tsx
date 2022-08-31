@@ -73,9 +73,13 @@ const EnterOctopusCredentials: FC<JourneyProps> = (props): ReactElement => {
                             </p>
                             <p>
                                 You can learn more about creating an API
-                                key <a href={"https://oc.to/Fj6a3a"}>here</a>,
-                                and learn more about users and teams <a href={"https://oc.to/b1yjtf"}>here</a>.
+                                key <a href={"https://oc.to/Fj6a3a"} target={"_blank"} rel="noreferrer">here</a>,
+                                and learn more about users and teams <a href={"https://oc.to/b1yjtf"} target={"_blank"} rel="noreferrer">here</a>.
                             </p>
+                            <iframe width="100%" height="522" src="https://www.youtube.com/embed/f3-vRjpB0cE"
+                                    title="Getting Started - API Keys" frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen></iframe>
                             <h3>Required Permissions</h3>
                             <p>
                                 The account associated with the API key must be part of the <strong>Octopus Managers</strong> team.

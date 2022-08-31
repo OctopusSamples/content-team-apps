@@ -43,8 +43,6 @@ const LogIntoGitHub: FC<JourneyProps> = (props): ReactElement => {
                             You must log into GitHub to grant the Octopus Workflow Builder the permissions required to populate
                             a new git repository with the sample application and GitHub Actions workflow.
                         </p>
-                        <p>By logging in, you agree to your GitHub email address being collected for marketing or advertising purposes.</p>
-                        <p>View the <a target={"_blank"} rel={"noreferrer"} href={"https://oc.to/aNRn3b"}>Octopus privacy policy</a> for more information.</p>
                         <p>
                             Click the login button to be taken to the GitHub login page. You will be returned to this
                             page once you have successfully logged in.
