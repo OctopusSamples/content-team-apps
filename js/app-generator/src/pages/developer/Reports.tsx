@@ -124,8 +124,9 @@ const Reports: FC = (): ReactElement => {
             // The filtered list of events
             const doneEvents = audits?.data?.filter(a => a.attributes.object === "done");
             // The frequency of wizard completions
-            const frequencyData = Array(numDays).fill(0).map((_, i) =>
-                doneEvents?.filter(a => new Date(a.attributes.time).getDay() === dates[i].getDay()).length);
+            const frequencyData = Array(numDays).fill(0)
+                .map((_, i) => doneEvents
+                    ?.filter(a => new Date(a.attributes.time).toDateString() === dates[i].toDateString()).length);
 
             const data = {
                 labels,
