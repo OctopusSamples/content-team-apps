@@ -95,10 +95,19 @@ const GITHUB_SESSION_TOKEN = "GitHubUserSession";
 /**
  * Return the name of the state that we should start the form at.
  */
-function getInitialState() {
+function getInitialState(settings: RuntimeSettings, partition: string) {
+
+    /*
+        If the user has selected the requirement to be logged in (usually because they
+        are testing the app), and they are not logged in, drop back to the initial
+        state. This prevents the stats from being skewed by tester opening the wizard
+        at their last location.
+     */
+    if (loginRequired(settings, partition)) {
+        return "welcome";
+    }
 
     const initialState = localStorage.getItem("appBuilderState") || "";
-
     if (VALID_STATES.indexOf(initialState) !== -1) {
         const fixedState = checkForValidGitHubLogin(initialState);
         return fixedState;
@@ -254,7 +263,7 @@ const isNotStandalone = (context: StateContext, event: AnyEventObject) => {
 export const appBuilderMachine = (settings: RuntimeSettings, partition: string) => createMachine<StateContext>({
             id: 'appBuilder',
             context: getInitialStateContext(),
-            initial: getInitialState(),
+            initial: getInitialState(settings, partition),
             states: {
                 welcome: {
                     on: {

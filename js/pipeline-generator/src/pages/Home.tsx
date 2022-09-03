@@ -173,6 +173,11 @@ const Home: FC<{}> = (): ReactElement => {
                         <Grid item xs={12} container={true} justifyContent="center">
                             <FormLabel className={classes.error}>{error}</FormLabel>
                         </Grid>}
+                        <Grid item xs={12} container={true} justifyContent="center">
+                            <Button style={{marginTop: "2em"}} variant="outlined" onClick={() => window.open("https://oc.to/GKncYS", '_blank')}>
+                                {"Start a free Octopus trial"}
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid

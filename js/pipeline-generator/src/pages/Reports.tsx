@@ -186,7 +186,7 @@ const Reports: FC<{}> = (): ReactElement => {
             })
     }, [setEmailAuditsFourWeeks, startDate, endDate, context.settings.auditEndpoint, privateKey]);
 
-    return <div>
+    return <div style={{backgroundColor: "white"}}>
         {error && <span>{error}</span>}
         <h2>Decryption</h2>
         <p>Note some of these email addresses (usually around 50%) are unusable "no-reply" addresses.</p>
