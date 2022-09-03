@@ -112,6 +112,55 @@ const Reports: FC = (): ReactElement => {
             }
         }
 
+        const buildFrequencyReport = (audits: AuditsCollection) => {
+            // The number of days between the start and the end dates
+            const numDays = Math.trunc((endDate.getTime() - startDate.getTime()) / 1000 / 60 / 60 / 24);
+            // An array of days from the start to the end
+            const dates = Array(numDays).fill(0).map((_, i) =>
+                new Date(endDate.getTime() - i * 24 * 60 * 60 * 1000));
+            // Text labels associated with the dates
+            const labels = dates.map(i => i.toDateString());
+            // The filtered list of events
+            const doneEvents = audits?.data?.filter(a => a.attributes.object === "done");
+            // The frequency of wizard completions
+            const frequencyData = Array(numDays).fill(0).map((_, i) =>
+                doneEvents?.filter(a => new Date(a.attributes.time).getDay() === dates[i].getDay()).length);
+
+            const data = {
+                labels,
+                datasets: [
+                    {
+                        data: frequencyData,
+                        backgroundColor: chartColors
+                    }
+                ]
+            };
+
+            const config: ChartConfiguration = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Frequency Report'
+                        }
+                    }
+                },
+            };
+
+            deleteAndRecreateCanvas('frequencyReportParent', 'frequencyReport');
+            const progressionReport = document.getElementById('frequencyReport') as HTMLCanvasElement;
+            if (progressionReport) {
+                new Chart(progressionReport, config);
+            }
+        }
+
         getJsonApi<AuditsCollection>(
             context.settings.auditEndpoint + "?page[limit]=10000&page[offset]=0&filter=action==VisitedPage"
             + "%3Btime>=" + startDate.toISOString()
@@ -120,6 +169,7 @@ const Reports: FC = (): ReactElement => {
             "main")
             .then(data => {
                 buildProgressionReport(data);
+                buildFrequencyReport(data)
             })
             .catch(err => {
                 setError("Failed to retrieve audit resources. Make sure you are logged in. "
@@ -163,6 +213,9 @@ const Reports: FC = (): ReactElement => {
         </MuiPickersUtilsProvider>
         <div id="progressionReportParent" style={{width: "1024px"}}>
             <canvas id="progressionReport"></canvas>
+        </div>
+        <div id="frequencyReportParent" style={{width: "1024px"}}>
+            <canvas id="frequencyReport"></canvas>
         </div>
     </div>
 }
