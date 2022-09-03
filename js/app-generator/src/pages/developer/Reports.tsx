@@ -114,10 +114,11 @@ const Reports: FC = (): ReactElement => {
 
         const buildFrequencyReport = (audits: AuditsCollection) => {
             // The number of days between the start and the end dates
-            const numDays = Math.trunc((endDate.getTime() - startDate.getTime()) / 1000 / 60 / 60 / 24);
+            const numDays = Math.trunc((endDate.getTime() - startDate.getTime()) / 1000 / 60 / 60 / 24) + 1;
             // An array of days from the start to the end
-            const dates = Array(numDays).fill(0).map((_, i) =>
-                new Date(endDate.getTime() - i * 24 * 60 * 60 * 1000));
+            const dates = Array(numDays).fill(0)
+                .map((_, i) => new Date(endDate.getTime() - i * 24 * 60 * 60 * 1000))
+                .reverse();
             // Text labels associated with the dates
             const labels = dates.map(i => i.toDateString());
             // The filtered list of events
