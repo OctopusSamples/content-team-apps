@@ -33,6 +33,49 @@ const Reports: FC = (): ReactElement => {
             return;
         }
 
+        const buildSuccessReport = (audits: AuditsCollection) => {
+            const totalEnter = audits?.data?.filter(a => a.attributes.object === "selectTarget").length;
+            const totalSignup = audits?.data?.filter(a => a.attributes.object === "signUpForCloudOctopus").length;
+            const totalDone = audits?.data?.filter(a => a.attributes.object === "done").length;
+
+            const data = {
+                labels: ['Drop Off', 'Signup', 'Done'],
+                datasets: [
+                    {
+                        data: [
+                            totalEnter - totalSignup - totalDone,
+                            totalSignup,
+                            totalDone
+                        ],
+                        backgroundColor: chartColors
+                    }
+                ]
+            };
+
+            const config: ChartConfiguration = {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Success Report'
+                        }
+                    }
+                },
+            };
+
+            deleteAndRecreateCanvas('successReportParent', 'successReport');
+            const canvas = document.getElementById('successReport') as HTMLCanvasElement;
+            if (canvas) {
+                new Chart(canvas, config);
+            }
+        }
+
         const buildProgressionReport = (audits: AuditsCollection) => {
             const data = {
                 labels: [
@@ -133,7 +176,7 @@ const Reports: FC = (): ReactElement => {
                 datasets: [
                     {
                         data: frequencyData,
-                        backgroundColor: chartColors
+                        backgroundColor: ['#00a950']
                     }
                 ]
             };
@@ -150,7 +193,7 @@ const Reports: FC = (): ReactElement => {
                         },
                         title: {
                             display: true,
-                            text: 'Frequency Report'
+                            text: 'Done Frequency Report'
                         }
                     }
                 },
@@ -171,7 +214,8 @@ const Reports: FC = (): ReactElement => {
             "main")
             .then(data => {
                 buildProgressionReport(data);
-                buildFrequencyReport(data)
+                buildFrequencyReport(data);
+                buildSuccessReport(data);
             })
             .catch(err => {
                 setError("Failed to retrieve audit resources. Make sure you are logged in. "
@@ -213,11 +257,17 @@ const Reports: FC = (): ReactElement => {
                 />
             </Grid>
         </MuiPickersUtilsProvider>
+        <div>
+
+        </div>
         <div id="progressionReportParent" style={{width: "1024px"}}>
             <canvas id="progressionReport"></canvas>
         </div>
         <div id="frequencyReportParent" style={{width: "1024px"}}>
             <canvas id="frequencyReport"></canvas>
+        </div>
+        <div id="successReportParent" style={{width: "1024px"}}>
+            <canvas id="successReport"></canvas>
         </div>
     </div>
 }
