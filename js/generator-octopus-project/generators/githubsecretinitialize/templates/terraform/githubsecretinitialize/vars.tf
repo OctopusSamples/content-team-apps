@@ -8,6 +8,7 @@ variable "github_owner" {
   type = string
   nullable = false
   description = "The GitHub repo owner that is to be populated"
+  default = "OctopusDeploy"
 }
 
 variable "github_token" {
