@@ -28,6 +28,10 @@ resource "github_actions_secret" "octopus_space_id" {
   plaintext_value  = var.octopus_space_id
 }
 
+# Subsequent projects will create secrets to capture dynamic variables like account
+# IDs, feed IDs etc. The GitHub Actions token provided to workflows does not, and
+# can not, have the permissions required to create secrets. A GitHub app is required
+# to allow workflows to create secrets.
 resource "github_actions_secret" "github_app_id" {
   repository       = var.github_repo
   secret_name      = "GH_APP_ID"
