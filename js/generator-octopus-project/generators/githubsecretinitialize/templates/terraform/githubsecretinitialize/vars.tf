@@ -53,28 +53,28 @@ variable "terraform_aws_secret_access_key" {
 
 variable "development_aws_access_key" {
   type = string
-  nullable = false
+  nullable = true
   sensitive = true
   description = "The AWS access key used to create the account for the development environment"
 }
 
 variable "development_aws_secret_access_key" {
   type = string
-  nullable = false
+  nullable = true
   sensitive = true
   description = "The AWS secret access key used to create the account for the development environment"
 }
 
 variable "production_aws_access_key" {
   type = string
-  nullable = false
+  nullable = true
   sensitive = true
   description = "The AWS access key used to create the account for the production environment"
 }
 
 variable "production_aws_secret_access_key" {
   type = string
-  nullable = false
+  nullable = true
   sensitive = true
   description = "The AWS secret access key used to create the account for the production environment"
 }
@@ -99,7 +99,6 @@ variable "github_pem_file" {
   sensitive = false
   description = "The path to the GitHub private key used when terraform saves secrets as part of a GitHub action"
 }
-
 
 variable "dockerhub_username" {
   type = string
