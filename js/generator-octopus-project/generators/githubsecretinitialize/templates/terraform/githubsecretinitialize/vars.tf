@@ -1,13 +1,13 @@
 variable "github_repo" {
   type = string
   nullable = false
-  description = "The GitHub repo name that is to be populated"
+  description = "The GitHub repo name that is to be populated. This is just the repo name i.e. myrepo in the url https://github.com/owner/myrepo."
 }
 
 variable "github_owner" {
   type = string
   nullable = false
-  description = "The GitHub repo owner that is to be populated"
+  description = "The GitHub repo owner that is to be populated. This is just the repo owner i.e. owner in the url https://github.com/owner/myrepo."
   default = "OctopusDeploy"
 }
 
