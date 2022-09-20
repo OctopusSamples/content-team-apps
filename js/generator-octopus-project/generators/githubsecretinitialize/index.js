@@ -17,6 +17,12 @@ module.exports = class extends Generator {
             null,
             { globOptions: { dot: true } }
         );
+
+        this.fs.copyTpl(
+            this.templatePath('terraform/githubsecretinitialize/.gitignorefile'),
+            this.destinationPath(`terraform/githubsecretinitialize/.gitignore`),
+            null
+        );
     }
 
     install() {
