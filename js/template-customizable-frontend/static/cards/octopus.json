@@ -90,6 +90,31 @@
       "items": [
         {
           "type": "TextBlock",
+          "text": "This generator creates Azure accounts scoped to the appropriate environments.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Octopus Azure Accounts",
+              "verb": "openCard",
+              "data": {
+                "filename": "octopusazureaccounts.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
+        {
+          "type": "TextBlock",
           "text": "This generator creates the DockerHub feed.",
           "wrap": true
         },
