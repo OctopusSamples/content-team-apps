@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.48:octopusazureaccounts",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.49:octopusazureaccounts",
       "isVisible": false
     },
     {
@@ -100,7 +100,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The Azure subscription ID used for the production account",
+      "text": "The Azure subscription ID used for the development account",
       "wrap": true
     },
     {
@@ -110,12 +110,52 @@
     },
     {
       "type": "TextBlock",
-      "text": "The Azure tenant ID used for the production account",
+      "text": "The Azure tenant ID used for the development account",
       "wrap": true
     },
     {
       "type": "Input.Text",
       "id": "answer.string.development_azure_tenant_id",
+      "value": "${{ secrets.AZURE_DEVELOPMENT_TENANT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Azure application ID used for the prod account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_azure_application_id",
+      "value": "${{ secrets.AZURE_PRODUCTION_APPLICATION_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Azure password key used for the production account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_azure_password",
+      "value": "${{ secrets.AZURE_PRODUCTION_PASSWORD }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Azure subscription ID used for the production account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_azure_subscription_id",
+      "value": "${{ secrets.AZURE_PRODUCTION_SUBSCRIPTION_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Azure tenant ID used for the production account",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.production_azure_tenant_id",
       "value": "${{ secrets.AZURE_DEVELOPMENT_TENANT_ID }}"
     },
     {

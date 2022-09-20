@@ -42,3 +42,8 @@ jobs:
           development_azure_password: <%= development_azure_password %>
           development_azure_subscription_id: <%= development_azure_subscription_id %>
           development_azure_tenant_id: <%= development_azure_tenant_id %>
+
+          production_azure_application_id: <%= production_azure_application_id %>
+          production_azure_password: <%= production_azure_password %>
+          production_azure_subscription_id: <%= production_azure_subscription_id %>
+          production_azure_tenant_id: <%= production_azure_tenant_id %>

@@ -66,9 +66,22 @@ inputs:
     description: 'The Azure password key used for the development account'
     required: true
   development_azure_subscription_id:
-    description: 'The Azure subscription ID used for the production account'
+    description: 'The Azure subscription ID used for the development account'
     required: true
   development_azure_tenant_id:
+    description: 'The Azure tenant ID used for the development account'
+    required: true
+
+  production_azure_application_id:
+    description: 'The Azure application ID used for the production account'
+    required: true
+  production_azure_password:
+    description: 'The Azure password key used for the production account'
+    required: true
+  production_azure_subscription_id:
+    description: 'The Azure subscription ID used for the production account'
+    required: true
+  production_azure_tenant_id:
     description: 'The Azure tenant ID used for the production account'
     required: true
 
@@ -170,6 +183,10 @@ runs:
           -var="development_azure_password=${{ inputs.development_azure_password }}" \
           -var="development_azure_subscription_id=${{ inputs.development_azure_subscription_id }}" \
           -var="development_azure_tenant_id=${{ inputs.development_azure_tenant_id }}" \
+          -var="production_azure_application_id=${{ inputs.production_azure_application_id }}" \
+          -var="production_azure_password=${{ inputs.production_azure_password }}" \
+          -var="production_azure_subscription_id=${{ inputs.production_azure_subscription_id }}" \
+          -var="production_azure_tenant_id=${{ inputs.production_azure_tenant_id }}" \
           -var="development_environment_id=${{ inputs.development_environment_id }}" \
           -var="development_security_environment=${{ inputs.development_security_environment }}" \
           -var="production_environment_id=${{ inputs.production_environment_id }}" \

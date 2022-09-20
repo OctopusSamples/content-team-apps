@@ -60,12 +60,36 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "development_azure_subscription_id",
-                message: "The Azure subscription ID used for the production account",
+                message: "The Azure subscription ID used for the development account",
                 default: "${{ secrets.AZURE_DEVELOPMENT_SUBSCRIPTION_ID }}"
             },
             {
                 type: "input",
                 name: "development_azure_tenant_id",
+                message: "The Azure tenant ID used for the development account",
+                default: "${{ secrets.AZURE_DEVELOPMENT_TENANT_ID }}"
+            },
+            {
+                type: "input",
+                name: "production_azure_application_id",
+                message: "The Azure application ID used for the prod account",
+                default: "${{ secrets.AZURE_PRODUCTION_APPLICATION_ID }}"
+            },
+            {
+                type: "password",
+                name: "production_azure_password",
+                message: "The Azure password key used for the production account",
+                default: "${{ secrets.AZURE_PRODUCTION_PASSWORD }}"
+            },
+            {
+                type: "input",
+                name: "production_azure_subscription_id",
+                message: "The Azure subscription ID used for the production account",
+                default: "${{ secrets.AZURE_PRODUCTION_SUBSCRIPTION_ID }}"
+            },
+            {
+                type: "input",
+                name: "production_azure_tenant_id",
                 message: "The Azure tenant ID used for the production account",
                 default: "${{ secrets.AZURE_DEVELOPMENT_TENANT_ID }}"
             },
@@ -127,6 +151,10 @@ module.exports = class extends Generator {
             development_azure_password: this.answers["development_azure_password"],
             development_azure_subscription_id: this.answers["development_azure_subscription_id"],
             development_azure_tenant_id: this.answers["development_azure_tenant_id"],
+            production_azure_application_id: this.answers["production_azure_application_id"],
+            production_azure_password: this.answers["production_azure_password"],
+            production_azure_subscription_id: this.answers["production_azure_subscription_id"],
+            production_azure_tenant_id: this.answers["production_azure_tenant_id"],
             development_environment_id: this.answers["development_environment_id"],
             development_security_environment: this.answers["development_security_environment"],
             production_environment_id: this.answers["production_environment_id"],
