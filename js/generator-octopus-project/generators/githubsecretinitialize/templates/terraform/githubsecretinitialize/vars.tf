@@ -55,28 +55,28 @@ variable "development_aws_access_key" {
   type = string
   nullable = true
   sensitive = true
-  description = "The AWS access key used to create the account for the development environment"
+  description = "The AWS access key used to create the account for the development environment. This is optional if subsequent projects don't deploy anything to AWS."
 }
 
 variable "development_aws_secret_access_key" {
   type = string
   nullable = true
   sensitive = true
-  description = "The AWS secret access key used to create the account for the development environment"
+  description = "The AWS secret access key used to create the account for the development environment. This is optional if subsequent projects don't deploy anything to AWS."
 }
 
 variable "production_aws_access_key" {
   type = string
   nullable = true
   sensitive = true
-  description = "The AWS access key used to create the account for the production environment"
+  description = "The AWS access key used to create the account for the production environment. This is optional if subsequent projects don't deploy anything to AWS."
 }
 
 variable "production_aws_secret_access_key" {
   type = string
   nullable = true
   sensitive = true
-  description = "The AWS secret access key used to create the account for the production environment"
+  description = "The AWS secret access key used to create the account for the production environment. This is optional if subsequent projects don't deploy anything to AWS."
 }
 
 variable "github_app_id" {
