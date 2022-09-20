@@ -29,6 +29,12 @@ module.exports = class extends Generator {
             this.destinationPath(`terraform/githubsecretinitialize/secrets.tfvars.template`),
             null
         );
+
+        this.fs.copyTpl(
+            this.templatePath('terraform/githubsecretinitialize/README.md'),
+            this.destinationPath(`terraform/githubsecretinitialize/README.md`),
+            null
+        );
     }
 
     install() {
