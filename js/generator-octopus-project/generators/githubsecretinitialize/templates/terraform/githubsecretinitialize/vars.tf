@@ -113,3 +113,59 @@ variable "dockerhub_password" {
   sensitive = true
   description = "The DockerHub password"
 }
+
+variable "development_azure_application_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The dev azure account application ID. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "development_azure_password" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The dev azure account password. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "development_azure_subscription_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The dev azure account subscription id. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "development_azure_tenant_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The dev azure account tenant id. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "production_azure_application_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The production azure account application ID. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "production_azure_password" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The production azure account password. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "production_azure_subscription_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The production azure account subscription id. This is optional if subsequent projects don't deploy anything to Azure."
+}
+
+variable "production_azure_tenant_id" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The production azure account tenant id. This is optional if subsequent projects don't deploy anything to Azure."
+}

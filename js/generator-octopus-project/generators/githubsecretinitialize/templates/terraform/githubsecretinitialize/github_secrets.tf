@@ -98,3 +98,51 @@ resource "github_actions_secret" "dockerhub_password" {
   secret_name      = "DOCKERHUB_PASSWORD"
   plaintext_value  = var.dockerhub_password
 }
+
+resource "github_actions_secret" "development_azure_application_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_DEVELOPMENT_APPLICATION_ID"
+  plaintext_value  = var.development_azure_application_id
+}
+
+resource "github_actions_secret" "development_azure_password" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_DEVELOPMENT_PASSWORD"
+  plaintext_value  = var.development_azure_password
+}
+
+resource "github_actions_secret" "development_azure_subscription_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_DEVELOPMENT_SUBSCRIPTION_ID"
+  plaintext_value  = var.development_azure_subscription_id
+}
+
+resource "github_actions_secret" "development_azure_tenant_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_DEVELOPMENT_TENANT_ID"
+  plaintext_value  = var.development_azure_tenant_id
+}
+
+resource "github_actions_secret" "production_azure_application_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_PRODUCTION_APPLICATION_ID"
+  plaintext_value  = var.production_azure_application_id
+}
+
+resource "github_actions_secret" "production_azure_password" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_PRODUCTION_PASSWORD"
+  plaintext_value  = var.production_azure_password
+}
+
+resource "github_actions_secret" "production_azure_subscription_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_PRODUCTION_SUBSCRIPTION_ID"
+  plaintext_value  = var.production_azure_subscription_id
+}
+
+resource "github_actions_secret" "production_azure_tenant_id" {
+  repository       = var.github_repo
+  secret_name      = "AZURE_PRODUCTION_TENANT_ID"
+  plaintext_value  = var.production_azure_tenant_id
+}
