@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.47:octopusazureaccounts",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.48:octopusazureaccounts",
       "isVisible": false
     },
     {
