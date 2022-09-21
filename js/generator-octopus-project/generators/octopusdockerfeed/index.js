@@ -86,6 +86,8 @@ module.exports = class extends Generator {
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
+            dockerhub_username: this.answers["dockerhub_username"],
+            dockerhub_password: this.answers["dockerhub_password"],
             aws_region: this.answers["aws_region"],
             github_app_id: this.answers["github_app_id"],
             github_installation_id: this.answers["github_installation_id"],

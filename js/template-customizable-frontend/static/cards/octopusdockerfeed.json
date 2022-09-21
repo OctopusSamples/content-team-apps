@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.51:octopusdockerfeed",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.52:octopusdockerfeed",
       "isVisible": false
     },
     {
@@ -107,6 +107,26 @@
       "type": "Input.Text",
       "id": "answer.string.github_pem_file",
       "value": "${{ secrets.GH_PEM_FILE }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The DockerHub username.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.dockerhub_username",
+      "value": "${{ secrets.DOCKERHUB_USERNAME }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The DockerHub password.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.dockerhub_password",
+      "value": "${{ secrets.DOCKERHUB_PASSWORD }}"
     }
   ],
   "actions": [
