@@ -27,7 +27,6 @@ jobs:
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>
-          octopus_dockerhub_feed_id: <%= octopus_dockerhub_feed_id %>
           dockerhub_username: <%= dockerhub_username %>
           dockerhub_password: <%= dockerhub_password %>
 
