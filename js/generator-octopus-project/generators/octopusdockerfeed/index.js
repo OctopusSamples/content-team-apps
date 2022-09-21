@@ -62,6 +62,18 @@ module.exports = class extends Generator {
                 name: "github_pem_file",
                 message: "The base 64 encoded pem file used by Github Terraform provider",
                 default: "${{ secrets.GH_PEM_FILE }}"
+            },
+            {
+                type: "input",
+                name: "dockerhub_username",
+                message: "The DockerHub username.",
+                default: "${{ secrets.DOCKERHUB_USERNAME }}"
+            },
+            {
+                type: "password",
+                name: "dockerhub_password",
+                message: "The DockerHub password.",
+                default: "${{ secrets.DOCKERHUB_PASSWORD }}"
             }
         ]);
     }

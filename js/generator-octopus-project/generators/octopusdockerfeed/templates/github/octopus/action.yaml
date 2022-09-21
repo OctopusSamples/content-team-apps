@@ -44,6 +44,12 @@ inputs:
   production_security_environment:
     description: 'The production security environment ID'
     required: true
+  dockerhub_username:
+    description: 'The DockerHub username'
+    required: true
+  dockerhub_password:
+    description: 'The DockerHub password'
+    required: true
 
 # AWS inputs
 
@@ -171,6 +177,8 @@ runs:
           -var="development_security_environment=${{ inputs.development_security_environment }}" \
           -var="production_environment_id=${{ inputs.production_environment_id }}" \
           -var="production_security_environment=${{ inputs.production_security_environment }}" \
+          -var="dockerhub_username=${{ inputs.dockerhub_username }}" \
+          -var="dockerhub_password=${{ inputs.dockerhub_password }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}" \
           -var="octopus_dockerhub_feed_id=${{ github.octopus_dockerhub_feed_id }}"

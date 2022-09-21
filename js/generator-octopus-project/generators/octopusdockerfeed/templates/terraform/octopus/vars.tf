@@ -76,3 +76,17 @@ variable "github_owner" {
   type = string
   nullable = false
 }
+
+variable "dockerhub_username" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The DockerHub username"
+}
+
+variable "dockerhub_password" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The DockerHub password"
+}
