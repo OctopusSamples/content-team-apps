@@ -39,7 +39,7 @@ then
       --resource-group "$${FEATUREBRANCH}" \
       --plan "$${FEATUREBRANCH}sp" \
       --name "$${FEATUREBRANCH}wa" \
-      --deployment-container-image-name "#{Octopus.Action[Deploy WebApp].Package.PackageId}:#{Octopus.Action[Deploy WebApp].Package.PackageVersion}" \
+      --deployment-container-image-name "nginx" \
       --tags \
       	octopus-environment="#{Octopus.Environment.Name}" \
         octopus-role=Octofront \
