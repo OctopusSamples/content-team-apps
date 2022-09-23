@@ -16,7 +16,7 @@ else
 	# TAGS=$(az tag list --resource-id "/subscriptions/#{Octopus.Action.Azure.SubscriptionId}/resourcegroups/$${FEATUREBRANCH}")
 fi
 
-EXISTING_SP=$(az appservice plan list --resource-group "$${FEATUREBRANCH}")
+EXISTING_SP=$(az appservice plan list --resource-group "$${FEATUREBRANCH}" --query "[?name=='$${FEATUREBRANCH}sp']")
 echo "$${EXISTING_SP}" | jq -e 'select(.[] | length > 0)' > /dev/null
 if [[ $? != "0" ]]
 then
@@ -30,7 +30,7 @@ else
 	echo "Service plan already exists"
 fi
 
-EXISTING_WA=$(az webapp list --resource-group "$${FEATUREBRANCH}")
+EXISTING_WA=$(az webapp list --resource-group "$${FEATUREBRANCH}" --query "[?name=='$${FEATUREBRANCH}wa']")
 echo "$${EXISTING_WA}" | jq -e 'select(.[] | length > 0)' > /dev/null
 if [[ $? != "0" ]]
 then
@@ -42,7 +42,7 @@ then
       --deployment-container-image-name "nginx" \
       --tags \
       	octopus-environment="#{Octopus.Environment.Name}" \
-        octopus-role=Octofront \
+        octopus-role="Octofront,#{FixedFeatureBranch}" \
         octopus-space="#{Octopus.Space.Name}" \
         octopus-project="#{Octopus.Project.Name}" \
         octopus-feature-branch="$${FEATUREBRANCH}"

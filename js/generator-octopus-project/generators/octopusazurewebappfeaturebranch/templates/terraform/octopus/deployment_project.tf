@@ -60,7 +60,7 @@ resource "octopusdeploy_variable" "frontend_debug_variable" {
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "True"
+  value        = "False"
 }
 
 resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
@@ -69,7 +69,7 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "True"
+  value        = "False"
 }
 
 resource "octopusdeploy_variable" "frontend_featurebranch_variable" {
@@ -147,7 +147,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
     start_trigger        = "StartAfterPrevious"
     target_roles         = ["WebApp"]
     condition            = "Variable"
-    condition_expression = "#{Octopus.Machine.Roles | Contains #{Octopus.Action[Deploy WebApp].Package[].PackageVersion | VersionPreReleasePrefix}}"
+    condition_expression = "#{Octopus.Machine.Roles | Contains #{FixedFeatureBranch}}"
     action {
       action_type    = "Octopus.AzureAppService"
       name           = "Deploy WebApp"
