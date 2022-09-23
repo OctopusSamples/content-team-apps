@@ -4,8 +4,6 @@ FEATUREBRANCH="#{FixedFeatureBranch}"
 
 # Test if the resource group exists
 EXISTING_RG=$(az group list --query "[?name=='$${FEATUREBRANCH}']")
-echo $${EXISTING_RG}
-
 # jq -e returns a non-zero exit code if the last output value was false or null
 echo $${EXISTING_RG} | jq -e 'select(.[] | length > 0)' > /dev/null
 
