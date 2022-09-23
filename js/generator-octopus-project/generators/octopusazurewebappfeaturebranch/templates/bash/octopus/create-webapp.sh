@@ -22,7 +22,7 @@ if [[ $? != "0" ]]
 then
 	echo "Creating new service plan"
 	az appservice plan create \
-      --sku FREE \
+      --sku B1 \
       --name "$${FEATUREBRANCH}sp" \
       --resource-group "$${FEATUREBRANCH}" \
       --is-linux
