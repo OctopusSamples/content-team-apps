@@ -4,7 +4,10 @@ FEATUREBRANCH="#{FixedFeatureBranch}"
 
 # Test if the resource group exists
 EXISTING_RG=$(az group list --query "[?name=='$${FEATUREBRANCH}']")
-echo $${EXISTING_RG} | jq 'select(.[] | length > 0)' > /dev/null
+echo $${EXISTING_RG}
+
+# jq -e returns a non-zero exit code if the last output value was false or null
+echo $${EXISTING_RG} | jq -e 'select(.[] | length > 0)' > /dev/null
 
 if [[ $? != "0" ]]
 then
@@ -16,7 +19,7 @@ else
 fi
 
 EXISTING_SP=$(az appservice plan list --resource-group "$${FEATUREBRANCH}")
-echo "$${EXISTING_SP}" | jq 'select(.[] | length > 0)' > /dev/null
+echo "$${EXISTING_SP}" | jq -e 'select(.[] | length > 0)' > /dev/null
 if [[ $? != "0" ]]
 then
 	echo "Creating new service plan"
@@ -30,7 +33,7 @@ else
 fi
 
 EXISTING_WA=$(az webapp list --resource-group "$${FEATUREBRANCH}")
-echo "$${EXISTING_WA}" | jq 'select(.[] | length > 0)' > /dev/null
+echo "$${EXISTING_WA}" | jq -e 'select(.[] | length > 0)' > /dev/null
 if [[ $? != "0" ]]
 then
 	echo "Creating new web app"
