@@ -60,7 +60,7 @@ resource "octopusdeploy_variable" "frontend_debug_variable" {
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "False"
+  value        = "True"
 }
 
 resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
@@ -69,7 +69,25 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "False"
+  value        = "True"
+}
+
+resource "octopusdeploy_variable" "frontend_featurebranch_variable" {
+  name         = "FeatureBranch"
+  type         = "String"
+  description  = "The name of the feature branch."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value        = "#{Octopus.Action[Deploy WebApp].Package[].PackageVersion | VersionPreReleasePrefix}"
+}
+
+resource "octopusdeploy_variable" "frontend_fixedfeaturebranch_variable" {
+  name         = "FixedFeatureBranch"
+  type         = "String"
+  description  = "The name of the feature branch."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.deploy_frontend_project.id
+  value        = "#{if FeatureBranch}#{FeatureBranch}#{/if}#{unless FeatureBranch}master#{/unless}"
 }
 
 resource "octopusdeploy_variable" "dockerhub_username" {
