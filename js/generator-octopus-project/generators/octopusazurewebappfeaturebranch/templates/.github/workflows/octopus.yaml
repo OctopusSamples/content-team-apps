@@ -1,0 +1,50 @@
+name: <%= project_name %>
+
+on:
+  push:
+    paths:
+      - '.github/workflows/<%= project_name %>.yaml'
+      - 'github/<%= project_name %>/**'
+      - 'terraform/<%= project_name %>/**'
+      - 'bash/<%= project_name %>/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./github/<%= project_name %>
+        with:
+          project_name: <%= project_name %>
+          project_directory_name: <%= project_name %>
+          octopus_server: <%= octopus_server %>
+          octopus_apikey: <%= octopus_apikey %>
+          octopus_space_id: <%= octopus_space_id %>
+          octopus_development_environment_id: <%= octopus_development_environment_id %>
+          octopus_production_environment_id: <%= octopus_production_environment_id %>
+          octopus_development_security_environment_id: <%= octopus_development_security_environment_id %>
+          octopus_production_security_environment_id: <%= octopus_production_security_environment_id %>
+          octopus_project_name: <%= octopus_project_name %>
+          octopus_project_description: <%= octopus_project_description %>
+          octopus_lifecycle_id: <%= octopus_lifecycle_id %>
+          octopus_project_group_name: <%= octopus_project_group_name %>
+          existing_project_group: <%= existing_project_group %>
+          docker_image: <%= docker_image %>
+          docker_image_port: <%= docker_image_port %>
+          octopus_dockerhub_feed_id: <%= octopus_dockerhub_feed_id %>
+          dockerhub_password: <%= dockerhub_password %>
+          dockerhub_username: <%= dockerhub_username %>
+
+          # AWS vars
+          aws_access_key: <%= aws_access_key %>
+          aws_secret_key: <%= aws_secret_key %>
+          aws_region: <%= aws_region %>
+
+          # Azure vars
+          octopus_azure_development_account_id: <%= octopus_azure_development_account_id %>
+          octopus_azure_production_account_id: <%= octopus_azure_production_account_id %>
