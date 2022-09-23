@@ -24,7 +24,7 @@ resource "octopusdeploy_project" "deploy_frontend_project" {
   }
 }
 
-resource "octopusdeploy_account" "azure_account_development" {
+resource "octopusdeploy_variable" "azure_account_development" {
   name         = "Octopus.Azure.Account"
   type         = "AzureAccount"
   description  = "The development azure account. This is used for target discovery, and for general scripting."
@@ -39,7 +39,7 @@ resource "octopusdeploy_account" "azure_account_development" {
   }
 }
 
-resource "octopusdeploy_account" "azure_account_production" {
+resource "octopusdeploy_variable" "azure_account_production" {
   name         = "Octopus.Azure.Account"
   type         = "AzureAccount"
   description  = "The production azure account. This is used for target discovery, and for general scripting."
@@ -114,7 +114,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       properties = {
         "Octopus.Action.Script.ScriptSource" : "Inline"
         "Octopus.Action.Script.Syntax" : "Bash"
-        "Octopus.Action.Azure.AccountId" : "#{Azure.Account}"
+        "Octopus.Action.Azure.AccountId" : "#{Octopus.Azure.Account}"
         "Octopus.Action.Script.ScriptBody" : templatefile("../../bash/${var.project_name}/create-webapp.sh", {
 
         })
