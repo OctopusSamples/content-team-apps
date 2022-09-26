@@ -40,6 +40,12 @@ resource "github_actions_secret" "productiononly_lifecycle_id" {
   plaintext_value  = octopusdeploy_lifecycle.productiononly_lifecycle.id
 }
 
+resource "github_actions_secret" "developmentonly_lifecycle_id" {
+  repository       = var.github_repo
+  secret_name      = "OCTOPUS_DEVELOPMENT_ONLY_LIFECYCLE_ID"
+  plaintext_value  = octopusdeploy_lifecycle.developmentonly_lifecycle.id
+}
+
 resource "github_actions_secret" "administration_lifecycle_id" {
   repository       = var.github_repo
   secret_name      = "OCTOPUS_ADMINISTRATION_LIFECYCLE_ID"

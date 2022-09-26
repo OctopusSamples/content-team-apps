@@ -31,27 +31,6 @@ resource "octopusdeploy_variable" "azure_account_development" {
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
   value        = var.octopus_azure_development_account_id
-  scope {
-    environments = [
-      var.octopus_development_environment_id,
-      var.octopus_development_security_environment_id,
-    ]
-  }
-}
-
-resource "octopusdeploy_variable" "azure_account_production" {
-  name         = "Octopus.Azure.Account"
-  type         = "AzureAccount"
-  description  = "The production azure account. This is used for target discovery, and for general scripting."
-  is_sensitive = false
-  owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = var.octopus_azure_production_account_id
-  scope {
-    environments = [
-      var.octopus_production_environment_id,
-      var.octopus_production_security_environment_id,
-    ]
-  }
 }
 
 resource "octopusdeploy_variable" "frontend_debug_variable" {
@@ -121,10 +100,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       name           = "Create WebApp Instance"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        var.octopus_development_environment_id,
-        var.octopus_production_environment_id
-      ]
       container {
         feed_id = var.octopus_dockerhub_feed_id
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
@@ -153,10 +128,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       name           = "Deploy WebApp"
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
-      environments   = [
-        var.octopus_development_environment_id,
-        var.octopus_production_environment_id
-      ]
       container {
         feed_id = var.octopus_dockerhub_feed_id
         image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
@@ -192,10 +163,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       run_on_server                      = true
       worker_pool_id                     = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       name                               = "Check for Vulnerabilities"
-      environments                       = [
-        var.octopus_development_security_environment_id,
-        var.octopus_production_security_environment_id
-      ]
       script_body = templatefile("../../bash/${var.project_name}/docker-scan.sh", {
         docker_image : var.docker_image
       })

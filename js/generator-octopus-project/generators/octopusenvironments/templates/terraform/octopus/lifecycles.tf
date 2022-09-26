@@ -187,6 +187,45 @@ output "productiononly_lifecycle_id" {
   value = octopusdeploy_lifecycle.productiononly_lifecycle.id
 }
 
+resource "octopusdeploy_lifecycle" "developmentonly_lifecycle" {
+  description = "The development only lifecycle."
+  name        = "Development Only"
+
+  release_retention_policy {
+    quantity_to_keep    = 1
+    should_keep_forever = true
+    unit                = "Days"
+  }
+
+  tentacle_retention_policy {
+    quantity_to_keep    = 30
+    should_keep_forever = false
+    unit                = "Items"
+  }
+
+  phase {
+    automatic_deployment_targets = []
+    optional_deployment_targets  = [octopusdeploy_environment.development_environment.id]
+    name                         = octopusdeploy_environment.development_environment.name
+
+    release_retention_policy {
+      quantity_to_keep    = 30
+      should_keep_forever = true
+      unit                = "Days"
+    }
+
+    tentacle_retention_policy {
+      quantity_to_keep    = 30
+      should_keep_forever = false
+      unit                = "Items"
+    }
+  }
+}
+
+output "developmentonly_lifecycle_id" {
+  value = octopusdeploy_lifecycle.developmentonly_lifecycle.id
+}
+
 resource "octopusdeploy_lifecycle" "administration_lifecycle" {
   description = "The administration lifecycle."
   name        = "Administration"
