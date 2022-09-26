@@ -156,20 +156,20 @@ runs:
     # associated with new steps. The easiest fix is to delete the projects before recreating them.
     # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
     # deletes project releases.
-    - name: Delete existing projects
-      run: |
-        declare -a arr=("${{ inputs.octopus_project_name }}")
-        
-        for i in "${arr[@]}"
-        do
-          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
-          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
-          if [[ -n "$ID" && "$ID" != "null" ]]; then
-            echo "Deleting project $i"
-            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
-          fi
-        done
-      shell: bash
+#    - name: Delete existing projects
+#      run: |
+#        declare -a arr=("${{ inputs.octopus_project_name }}")
+#
+#        for i in "${arr[@]}"
+#        do
+#          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
+#          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
+#          if [[ -n "$ID" && "$ID" != "null" ]]; then
+#            echo "Deleting project $i"
+#            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+#          fi
+#        done
+#      shell: bash
 
     - name: Terraform Init
       env:
