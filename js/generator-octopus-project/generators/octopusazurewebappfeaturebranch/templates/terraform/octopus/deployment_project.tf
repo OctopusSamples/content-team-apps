@@ -35,11 +35,11 @@ resource "octopusdeploy_variable" "azure_account_development" {
 
 resource "octopusdeploy_variable" "azure_account_production" {
   name         = "Production Account"
-  type         = "AzureAccount"
-  description  = "Unused."
+  type         = "String"
+  description  = "Unused"
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = var.octopus_azure_production_account_id
+  value        = "unused"
 }
 
 resource "octopusdeploy_variable" "frontend_debug_variable" {
