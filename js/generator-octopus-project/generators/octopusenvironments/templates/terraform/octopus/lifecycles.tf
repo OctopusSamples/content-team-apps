@@ -144,8 +144,8 @@ resource "octopusdeploy_lifecycle" "simple_lifecycle" {
   }
 }
 
-output "infrastructure_lifecycle_id" {
-  value = octopusdeploy_lifecycle.infrastructure_lifecycle.id
+output "simple_lifecycle_id" {
+  value = octopusdeploy_lifecycle.simple_lifecycle.id
 }
 
 resource "octopusdeploy_lifecycle" "productiononly_lifecycle" {
