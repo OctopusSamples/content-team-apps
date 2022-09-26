@@ -34,7 +34,7 @@ resource "octopusdeploy_variable" "azure_account_development" {
 }
 
 resource "octopusdeploy_variable" "azure_account_production" {
-  name         = "Production Account"
+  name         = "Unused"
   type         = "String"
   description  = "Unused"
   is_sensitive = false
@@ -66,7 +66,7 @@ resource "octopusdeploy_variable" "frontend_featurebranch_variable" {
   description  = "The name of the feature branch."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "#{Octopus.Action[Deploy WebApp].Package[].PackageVersion | VersionPreReleasePrefix}"
+  value        = "#{Octopus.Action[Deploy WebApp].Package[].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\"}"
 }
 
 resource "octopusdeploy_variable" "frontend_fixedfeaturebranch_variable" {
