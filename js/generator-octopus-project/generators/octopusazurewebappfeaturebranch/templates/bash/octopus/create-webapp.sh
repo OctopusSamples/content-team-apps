@@ -51,7 +51,7 @@ then
       --deployment-container-image-name "nginx" \
       --tags \
       	octopus-environment="#{Octopus.Environment.Name}" \
-        octopus-role="Octofront,#{FixedFeatureBranch}" \
+        octopus-role="WebApp" \
         octopus-space="#{Octopus.Space.Name}" \
         octopus-project="#{Octopus.Project.Name}" \
         octopus-feature-branch="$${FEATUREBRANCH}"
