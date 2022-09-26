@@ -149,8 +149,8 @@ output "infrastructure_lifecycle_id" {
 }
 
 resource "octopusdeploy_lifecycle" "productiononly_lifecycle" {
-  description = "The product only lifecycle."
-  name        = "Product Only"
+  description = "The production only lifecycle."
+  name        = "Production Only"
 
   release_retention_policy {
     quantity_to_keep    = 1
