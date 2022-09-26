@@ -1,0 +1,35 @@
+name: <%= project_name %>
+
+on:
+  push:
+    branches-ignore:
+      - master
+    paths:
+      - '.github/workflows/<%= project_name %>.yaml'
+      - 'terraform/<%= project_name %>/**'
+      - 'github/<%= project_name %>/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        uses: ./github/<%= project_name %>
+        with:
+          project_name: <%= project_name %>
+          project_directory_name: <%= project_name %>
+          octopus_server: <%= octopus_server %>
+          octopus_apikey: <%= octopus_apikey %>
+          octopus_space_id: <%= octopus_space_id %>
+          project_id: <%= project_id %>
+          step_name: <%= step_name %>
+
+          # AWS vars
+          aws_access_key: <%= aws_access_key %>
+          aws_secret_key: <%= aws_secret_key %>
+          aws_region: <%= aws_region %>
