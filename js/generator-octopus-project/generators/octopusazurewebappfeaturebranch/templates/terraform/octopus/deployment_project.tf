@@ -34,18 +34,12 @@ resource "octopusdeploy_variable" "azure_account_development" {
 }
 
 resource "octopusdeploy_variable" "azure_account_production" {
-  name         = "Octopus.Azure.Account"
+  name         = "Production Account"
   type         = "AzureAccount"
-  description  = "The development azure account. This is used for target discovery, and for general scripting."
+  description  = "Unused."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = var.octopus_azure_development_account_id
-  scope {
-    environments = [
-      var.octopus_production_environment_id,
-      var.octopus_production_security_environment_id,
-    ]
-  }
+  value        = var.octopus_azure_production_account_id
 }
 
 resource "octopusdeploy_variable" "frontend_debug_variable" {

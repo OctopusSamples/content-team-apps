@@ -1,6 +1,6 @@
 resource "octopusdeploy_channel" "channel" {
   name       = "Feature branch ${var.featurebranch_name}"
-  project_id = var.project_id
+  project_id = data.octopusdeploy_projects.project.projects[0].id
   lifecycle_id = "${octopusdeploy_lifecycle.lifecycle.id}"
   description = "Deployment for ${var.featurebranch_name}"
   rule {

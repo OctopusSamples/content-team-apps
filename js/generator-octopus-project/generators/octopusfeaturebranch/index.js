@@ -47,9 +47,9 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "project_id",
+                name: "channel_project_name",
                 message: "The ID of the project to add the channel to",
-                default: "${{ secrets.PROJECT_ID }}"
+                default: "${{ secrets.PROJECT_NAME }}"
             },
             {
                 type: "input",
@@ -69,7 +69,7 @@ module.exports = class extends Generator {
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
             aws_region: this.answers["aws_region"],
-            project_id: this.answers["project_id"],
+            channel_project_name: this.answers["channel_project_name"],
             step_name: this.answers["step_name"],
         };
 

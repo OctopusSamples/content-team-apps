@@ -26,7 +26,7 @@ jobs:
           octopus_server: <%= octopus_server %>
           octopus_apikey: <%= octopus_apikey %>
           octopus_space_id: <%= octopus_space_id %>
-          project_id: <%= project_id %>
+          channel_project_name: <%= channel_project_name %>
           step_name: <%= step_name %>
 
           # AWS vars

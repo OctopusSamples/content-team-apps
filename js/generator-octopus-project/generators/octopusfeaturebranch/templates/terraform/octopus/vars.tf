@@ -19,7 +19,7 @@ variable "featurebranch_name" {
   nullable = false
 }
 
-variable "project_id" {
+variable "channel_project_name" {
   type = string
   nullable = false
 }

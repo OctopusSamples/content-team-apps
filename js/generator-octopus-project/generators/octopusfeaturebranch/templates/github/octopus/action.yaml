@@ -23,8 +23,8 @@ inputs:
   octopus_space_id:
     description: 'The ID of the Octopus space'
     required: true
-  project_id:
-    description: 'The project ID to add the channel rule to'
+  channel_project_name:
+    description: 'The project name to add the channel rule to'
     required: true
   step_name:
     description: 'The step name to attach the version rule to'
@@ -145,7 +145,7 @@ runs:
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
           -var="featurebranch_name=${{ steps.determine_version.outputs.preReleaseLabel }}" \
-          -var="project_id=${{ inputs.project_id }}" \
+          -var="channel_project_name=${{ inputs.channel_project_name }}" \
           -var="step_name=${{ inputs.step_name }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash
