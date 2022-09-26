@@ -91,9 +91,9 @@ output "application_lifecycle_id" {
   value = octopusdeploy_lifecycle.application_lifecycle.id
 }
 
-resource "octopusdeploy_lifecycle" "infrastructure_lifecycle" {
-  description = "The infrastructure lifecycle."
-  name        = "Infrastructure"
+resource "octopusdeploy_lifecycle" "simple_lifecycle" {
+  description = "The simple lifecycle."
+  name        = "Simple"
 
   release_retention_policy {
     quantity_to_keep    = 1
