@@ -136,8 +136,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
     package_requirement  = "LetOctopusDecide"
     start_trigger        = "StartAfterPrevious"
     target_roles         = ["WebApp"]
-    condition            = "Variable"
-    condition_expression = "#{Octopus.Machine.Roles | Contains #{FixedFeatureBranch}}"
+    condition            = "Success"
     action {
       action_type    = "Octopus.AzureAppService"
       name           = "Deploy WebApp"
