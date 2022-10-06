@@ -2,7 +2,7 @@ import React from 'react';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {loadConfig} from "./dynamicConfig";
+import {loadConfig} from "./utils/dynamicConfig";
 import {createRoot} from "react-dom/client";
 
 loadConfig().then((settings) => {
