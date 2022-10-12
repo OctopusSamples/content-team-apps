@@ -1,0 +1,29 @@
+name: Feature Branch Destroy
+
+on:
+  delete:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        if: github.event.ref_type == 'branch'
+        uses: ./github/<%= project_name %>destroy
+        with:
+          project_name: <%= project_name %>
+          project_directory_name: <%= project_name %>
+          octopus_server: <%= octopus_server %>
+          octopus_apikey: <%= octopus_apikey %>
+          octopus_space_id: <%= octopus_space_id %>
+          channel_project_name: <%= channel_project_name %>
+          step_name: <%= step_name %>
+
+          # AWS vars
+          aws_access_key: <%= aws_access_key %>
+          aws_secret_key: <%= aws_secret_key %>
+          aws_region: <%= aws_region %>

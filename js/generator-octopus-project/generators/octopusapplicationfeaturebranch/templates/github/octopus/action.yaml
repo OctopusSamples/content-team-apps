@@ -1,0 +1,154 @@
+name: Terraform Apply
+description: Create the Octopus environments and lifecycles
+inputs:
+  project_name:
+    description: |
+      The name of the project. This is used when building the Terraform state files, and typically matches the
+      directory name where the template project files are stored. 
+    required: true
+  project_directory_name:
+    description: |
+      The directory holding the template project files. This is typically the same as the project_name. But, for
+      resources that can be deployed multiple times (for instance multiple Docker registries, VMs etc), you can
+      call this action file multiple times with different values for project_name, while leaving project_directory_name
+      to point to the shared template project files. The end result is the workflow file has two steps, both calling this
+      same action file, where project_directory_name is the same, but project_name is different.
+    required: true
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the Octopus space'
+    required: true
+  channel_project_name:
+    description: 'The project name to add the channel rule to'
+    required: true
+  step_name:
+    description: 'The step name to attach the version rule to'
+    required: true
+
+# AWS inputs
+
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_key:
+    description: 'AWS Secret Key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+        
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
+    - id: fixed_branch_name
+      run: |
+        FIXED_BRANCH_NAME=${BRANCH_NAME//[^a-zA-Z0-9-]/-} 
+        echo "fixedbranch=$FIXED_BRANCH_NAME" >> $GITHUB_ENV
+      shell: bash
+
+    # Create the bucket used to hold the Terraform state.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket \
+            --bucket ${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }}-${{ env.fixedbranch }} \
+            --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb \
+            s3://${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }}-${{ env.fixedbranch }} \
+            --region ${{ inputs.aws_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    # This is because backend config con not have variables.
+    # See https://github.com/hashicorp/terraform/issues/13022
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
+        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
+        PROJECT_NAME: ${{ inputs.project_name }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+        FEATURE_BRANCH: ${{ env.fixedbranch }}
+      with:
+        input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+
+    - name: Show Backend
+      run: cat backend_aws.tf
+      working-directory: terraform/${{ inputs.project_directory_name }}
+      shell: bash
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/${{ inputs.project_directory_name }}
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply \
+          -input=false \
+          -auto-approve \
+          -var="octopus_server=${{ inputs.octopus_server }}" \
+          -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+          -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+          -var="featurebranch_name=${{ env.fixedbranch }}" \
+          -var="channel_project_name=${{ inputs.channel_project_name }}" \
+          -var="step_name=${{ inputs.step_name }}"
+      working-directory: terraform/${{ inputs.project_directory_name }}
+      shell: bash
