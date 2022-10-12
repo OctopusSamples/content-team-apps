@@ -1,5 +1,5 @@
 name: Terraform Apply
-description: Create the Octopus resources
+description: Create the Octopus environments and lifecycles
 inputs:
   project_name:
     description: |
@@ -23,47 +23,11 @@ inputs:
   octopus_space_id:
     description: 'The ID of the Octopus space'
     required: true
-  octopus_project_name:
-    description: 'The name of the Octopus project'
+  channel_project_name:
+    description: 'The project name to add the channel rule to'
     required: true
-  octopus_project_description:
-    description: 'The description of the Octopus project'
-    required: true
-  octopus_development_environment_id:
-    description: 'The development environment id'
-    required: true
-  octopus_production_environment_id:
-    description: 'The production environment id'
-    required: true
-  octopus_development_security_environment_id:
-    description: 'The development security environment id'
-    required: true
-  octopus_production_security_environment_id:
-    description: 'The production security environment id'
-    required: true
-  octopus_lifecycle_id:
-    description: 'The project lifecycle ID'
-    required: true
-  octopus_project_group_name:
-    description: 'The name of the Octopus project group'
-    required: true
-  existing_project_group:
-    description: 'Whether to create a new project group, or use an existing one'
-    required: true
-  octopus_dockerhub_feed_id:
-    description: 'The DockerHub feed ID'
-    required: true
-  docker_image:
-    description: 'The Docker image to deploy'
-    required: true
-  docker_image_port:
-    description: 'The port to expose in the pod'
-    required: true
-  dockerhub_username:
-    description: 'The DockerHub username'
-    required: true
-  dockerhub_password:
-    description: 'The DockerHub password'
+  step_name:
+    description: 'The step name to attach the version rule to'
     required: true
 
 # AWS inputs
@@ -78,20 +42,23 @@ inputs:
     description: 'The AWS region'
     required: true
 
-# Azure
-
-  octopus_azure_development_account_id:
-    description: 'The development Azure account id'
-    required: true
-  octopus_azure_production_account_id:
-    description: 'The production Azure account id'
-    required: true
-
 runs:
   using: "composite"
   steps:
-    - name: Clone code repo
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - id: determine_version
+      name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        additionalArguments: /overrideconfig mode=Mainline
 
     - uses: nelonoel/branch-name@v1.0.1
 
@@ -127,12 +94,12 @@ runs:
       run: |
         # Check to see if the bucket exists
         aws s3api head-bucket \
-            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }}-${{ steps.determine_version.outputs.preReleaseLabel }} \
             --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
           aws s3 mb \
-            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }}-${{ steps.determine_version.outputs.preReleaseLabel }} \
             --region ${{ inputs.aws_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
@@ -148,27 +115,14 @@ runs:
         GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+        FEATURE_BRANCH: ${{ steps.determine_version.outputs.preReleaseLabel }}
       with:
         input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
         output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
 
-    # There is a bug with the Terraform provider that means step package references are incorrectly
-    # associated with new steps. The easiest fix is to delete the projects before recreating them.
-    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
-    # deletes project releases.
-    - name: Delete existing projects
-      run: |
-        declare -a arr=("${{ inputs.octopus_project_name }}")
-
-        for i in "${arr[@]}"
-        do
-          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
-          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
-          if [[ -n "$ID" && "$ID" != "null" ]]; then
-            echo "Deleting project $i"
-            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
-          fi
-        done
+    - name: Show Backend
+      run: cat backend_aws.tf
+      working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash
 
     - name: Terraform Init
@@ -187,26 +141,11 @@ runs:
         terraform apply \
           -input=false \
           -auto-approve \
-          -var="project_name=${{ inputs.project_name }}" \
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
-          -var="octopus_project_name=${{ inputs.octopus_project_name }}" \
-          -var="octopus_project_description=${{ inputs.octopus_project_description }}" \
-          -var="octopus_lifecycle_id=${{ inputs.octopus_lifecycle_id }}" \
-          -var="octopus_development_environment_id=${{ inputs.octopus_development_environment_id }}" \
-          -var="octopus_production_environment_id=${{ inputs.octopus_production_environment_id }}" \
-          -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
-          -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
-          -var="octopus_project_group_name=${{ inputs.octopus_project_group_name }}" \
-          -var="existing_project_group=${{ inputs.existing_project_group }}" \
-          -var="octopus_azure_development_account_id=${{ inputs.octopus_azure_development_account_id }}" \
-          -var="octopus_azure_production_account_id=${{ inputs.octopus_azure_production_account_id }}" \
-          -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" \
-          -var="docker_image=${{ inputs.docker_image }}" \
-          -var="docker_image_port=${{ inputs.docker_image_port }}" \
-          -var="dockerhub_username=${{ inputs.dockerhub_username }}" \
-          -var="dockerhub_password=${{ inputs.dockerhub_password }}"
-
+          -var="featurebranch_name=${{ steps.determine_version.outputs.preReleaseLabel }}" \
+          -var="channel_project_name=${{ inputs.channel_project_name }}" \
+          -var="step_name=${{ inputs.step_name }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash

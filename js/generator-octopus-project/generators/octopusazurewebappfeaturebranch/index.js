@@ -104,7 +104,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_lifecycle_id",
                 message: "The lifecycle to assign to the project",
-                default: "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLE_ID }}"
+                default: "${{ secrets.OCTOPUS_DEVELOPMENT_ONLY_LIFECYCLE_ID }}"
             },
             {
                 type: "input",
