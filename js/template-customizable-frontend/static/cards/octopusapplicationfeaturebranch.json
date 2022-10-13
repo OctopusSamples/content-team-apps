@@ -1,0 +1,117 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project:octopusapplicationfeaturebranch",
+      "isVisible": false
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Project Name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.project_name",
+      "value": "octopusapplicationfeaturebranch"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.channel_project_name",
+      "value": "${{ secrets.PROJECT_NAME }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Your project name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.step_name",
+      "value": "${{ secrets.DEPLOYMENT_STEP_NAME }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS access key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_access_key",
+      "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS secret key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_secret_key",
+      "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The hostname of your Octopus instance.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_server",
+      "value": "${{ secrets.OCTOPUS_SERVER }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus API key.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_apikey",
+      "value": "${{ secrets.OCTOPUS_APIKEY }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The Octopus Space",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_space_id",
+      "value": "${{ secrets.OCTOPUS_SPACE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The AWS region to deploy the ECR repository in",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.aws_region",
+      "value": "us-west-1"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "< Back",
+      "verb": "openCard",
+      "data": {
+        "filename": "index.json"
+      }
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Download",
+      "verb": "downloadTemplate"
+    }
+  ]
+}

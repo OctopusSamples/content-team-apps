@@ -15,6 +15,31 @@
       "items": [
         {
           "type": "TextBlock",
+          "text": "This generator creates the Terraform and GitHub Action Workflows that are added to a code project to enable feature branching in Octopus.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "GitHub Repo Secrets",
+              "verb": "openCard",
+              "data": {
+                "filename": "octopusapplicationfeaturebranch.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
+        {
+          "type": "TextBlock",
           "text": "This generator creates a Terraform project to populate a GitHub repo with a standard set of secrets. Run this project before any others below in a new GitHub repo.",
           "wrap": true
         },
