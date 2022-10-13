@@ -20,7 +20,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Your project name",
+      "text": "The Octopus project name",
       "wrap": true
     },
     {
@@ -30,7 +30,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Your project name",
+      "text": "Your deployment step name",
       "wrap": true
     },
     {

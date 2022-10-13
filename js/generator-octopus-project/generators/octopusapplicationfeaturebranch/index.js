@@ -19,7 +19,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "step_name",
-                message: "Your project name",
+                message: "The deployment step name",
                 default: "${{ secrets.DEPLOYMENT_STEP_NAME }}"
             },
             {
