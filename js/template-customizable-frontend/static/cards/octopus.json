@@ -23,7 +23,7 @@
           "actions": [
             {
               "type": "Action.Execute",
-              "title": "GitHub Repo Secrets",
+              "title": "Application Feature Branch Management",
               "verb": "openCard",
               "data": {
                 "filename": "octopusapplicationfeaturebranch.json"
