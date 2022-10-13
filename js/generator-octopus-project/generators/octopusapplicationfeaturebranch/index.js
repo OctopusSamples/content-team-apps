@@ -63,6 +63,7 @@ module.exports = class extends Generator {
 
     writing() {
         const options = {
+            project_name: this.answers["project_name"],
             channel_project_name: this.answers["channel_project_name"],
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
