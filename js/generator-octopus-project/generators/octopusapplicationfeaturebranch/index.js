@@ -7,13 +7,13 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "project_name",
-                message: "The Project Name",
+                message: "The project Name",
                 default: "octopusapplicationfeaturebranch"
             },
             {
                 type: "input",
                 name: "channel_project_name",
-                message: "Your project name",
+                message: "The Octopus project name",
                 default: "${{ secrets.PROJECT_NAME }}"
             },
             {
