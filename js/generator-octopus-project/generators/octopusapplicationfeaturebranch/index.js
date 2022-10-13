@@ -8,7 +8,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "project_name",
                 message: "The project Name",
-                default: "octopusapplicationfeaturebranch"
+                default: "featurebranch"
             },
             {
                 type: "input",
@@ -55,7 +55,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "aws_region",
-                message: "The AWS region to deploy the ECR repository in",
+                message: "The AWS region to save the Terraform state bucket in.",
                 default: "us-west-1"
             }
         ]);

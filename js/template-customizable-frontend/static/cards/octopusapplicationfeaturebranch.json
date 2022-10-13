@@ -5,12 +5,17 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.57:octopusapplicationfeaturebranch",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.58:octopusapplicationfeaturebranch",
       "isVisible": false
     },
     {
       "type": "TextBlock",
-      "text": "The Project Name",
+      "text": "This templates generates a GitHub Action's workflow the scripts the creation of an environment, lifecycle, and channel per branch. It then cleans these resources up when the branch is deleted. Adding these files to an application project gives it the ability to deploy feature branches.",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "The project name. Leave this as the default unless you have a specific reason to change it.",
       "wrap": true
     },
     {
@@ -20,7 +25,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The Octopus project name",
+      "text": "The Octopus project name.",
       "wrap": true
     },
     {
@@ -30,7 +35,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Your deployment step name",
+      "text": "Your deployment step name. This is the step that the channel version rules are attached to in order to enforce the deployment of feature branch packages.",
       "wrap": true
     },
     {
@@ -40,7 +45,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS access key.",
+      "text": "The AWS access key used to save the Terraform state files in S3.",
       "wrap": true
     },
     {
@@ -50,7 +55,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS secret key.",
+      "text": "The AWS secret key used to save the Terraform state files in S3.",
       "wrap": true
     },
     {
@@ -90,7 +95,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS region to deploy the ECR repository in",
+      "text": "The AWS region to save the Terraform state bucket in.",
       "wrap": true
     },
     {
