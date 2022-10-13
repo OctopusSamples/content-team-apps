@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.56:octopusapplicationfeaturebranch",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.57:octopusapplicationfeaturebranch",
       "isVisible": false
     },
     {

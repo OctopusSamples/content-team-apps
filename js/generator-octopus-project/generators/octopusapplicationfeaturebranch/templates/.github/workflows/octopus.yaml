@@ -6,9 +6,9 @@ on:
     branches-ignore:
       - main
     paths:
-      - '.github/workflows/octopusapplicationfeaturebranch.yaml'
-      - 'terraform/octopusapplicationfeaturebranch/**'
-      - 'github/octopusapplicationfeaturebranch/**'
+      - '.github/workflows/<%= project_name %>.yaml'
+      - 'terraform/<%= project_name %>/**'
+      - 'github/<%= project_name %>/**'
   workflow_dispatch:
 
 jobs:
