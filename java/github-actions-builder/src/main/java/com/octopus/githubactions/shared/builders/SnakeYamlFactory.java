@@ -41,8 +41,8 @@ public final class SnakeYamlFactory {
       final PropertyUtils propUtil = new PropertyUtils() {
         @Override
         protected Set<Property> createPropertySet(final Class<? extends Object> type,
-            final BeanAccess bAccess) {
-          return getPropertiesMap(type, bAccess).values().stream().sequential()
+            final BeanAccess beanAccess) {
+          return getPropertiesMap(type, beanAccess).values().stream().sequential()
               .filter(
                   prop -> prop.isReadable() && (isAllowReadOnlyProperties() || prop.isWritable()))
               .sorted((t1, t2) -> {
