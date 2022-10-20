@@ -118,7 +118,7 @@ public class TemplateHandlerTest {
             .campaign("campaign")
             .build());
 
-    assertEquals(401, response.getCode());
+    assertEquals(200, response.getCode());
   }
 
   @Test

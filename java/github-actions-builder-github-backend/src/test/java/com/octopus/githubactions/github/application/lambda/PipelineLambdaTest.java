@@ -82,7 +82,7 @@ public class PipelineLambdaTest {
         Mockito.mock(Context.class)
     );
 
-    assertEquals(401, response.getStatusCode());
+    assertEquals(200, response.getStatusCode());
   }
 
   @Test

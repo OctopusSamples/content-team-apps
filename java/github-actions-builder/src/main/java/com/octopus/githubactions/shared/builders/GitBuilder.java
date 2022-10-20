@@ -156,16 +156,16 @@ public class GitBuilder {
   public Step uploadOctopusBuildInfo(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Generate Octopus Deploy build information")
-        .uses("xo-energy/action-octopus-build-information@v1.1.2")
+        .uses("OctopusDeploy/push-build-information-action@v1")
+        .env(new ImmutableMap.Builder<String, String>()
+            .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
+            .put("OCTOPUS_HOST", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .build())
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("octopus_api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
-                .put("octopus_project", accessor.getRepoName().getOrElse("application"))
-                .put("octopus_server", "${{ secrets.OCTOPUS_SERVER_URL }}")
-                .put("push_version", "${{ steps.determine_version.outputs.semVer }}")
-                .put("push_package_ids", accessor.getRepoName().getOrElse("application"))
-                .put("push_overwrite_mode", "OverwriteExisting")
-                .put("output_path", "octopus")
+                .put("version", "${{ steps.determine_version.outputs.semVer }}")
+                .put("packages", accessor.getRepoName().getOrElse("application"))
+                .put("overwrite_mode", "OverwriteExisting")
                 .build())
         .build();
   }
