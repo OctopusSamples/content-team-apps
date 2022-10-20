@@ -85,7 +85,7 @@ public class TemplateHandler {
   UsernameSplitter usernameSplitter;
 
   @Inject
-  @Named("always")
+  @Named("private")
   LoginLogic loginLogic;
 
   @Inject
