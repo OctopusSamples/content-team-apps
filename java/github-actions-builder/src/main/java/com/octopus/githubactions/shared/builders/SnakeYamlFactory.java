@@ -6,11 +6,19 @@ import com.octopus.githubactions.shared.builders.dsl.RunStep;
 import com.octopus.githubactions.shared.builders.dsl.UsesWith;
 import com.octopus.githubactions.shared.builders.dsl.Workflow;
 import com.octopus.githubactions.shared.builders.dsl.WorkflowDispatch;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
@@ -19,27 +27,65 @@ import org.yaml.snakeyaml.representer.Representer;
 public final class SnakeYamlFactory {
 
   /**
+   * A custom representer that ignores null entries and preserves the order of elements.
+   */
+  private static final class CustomRepresenter extends Representer {
+    private static final List<String> PROPERTY_ORDER = List.of("runsOn", "steps", "id", "name", "on", "uses", "ifProperty", "env", "with", "run", "shell");
+
+    private CustomRepresenter() {
+        super();
+        final PropertyUtils propUtil = new PropertyUtils() {
+          @Override
+          protected Set<Property> createPropertySet(final Class<? extends Object> type, final BeanAccess bAccess) {
+            return getPropertiesMap(type, bAccess).values().stream().sequential()
+                .filter(prop -> prop.isReadable() && (isAllowReadOnlyProperties() || prop.isWritable()))
+                .sorted((t1, t2) -> {
+                  if (StringUtils.equals(t1.getName(), t2.getName())) {
+                    return 0;
+                  }
+
+                  if (PROPERTY_ORDER.contains(t1.getName()) && !PROPERTY_ORDER.contains(t2.getName())) {
+                    return -1;
+                  }
+
+                  if (!PROPERTY_ORDER.contains(t1.getName()) && PROPERTY_ORDER.contains(t2.getName())) {
+                    return 1;
+                  }
+
+                  if (!PROPERTY_ORDER.contains(t1.getName()) && !PROPERTY_ORDER.contains(t2.getName())) {
+                    return StringUtils.compare(t1.getName(), t2.getName());
+                  }
+
+                  return PROPERTY_ORDER.indexOf(t1.getName()) < PROPERTY_ORDER.indexOf(t2.getName()) ? -1 : 1;
+                } )
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+          }
+        };
+        setPropertyUtils(propUtil);
+    }
+
+    @Override
+    protected NodeTuple representJavaBeanProperty(
+        final Object javaBean,
+        final Property property,
+        final Object propertyValue,
+        final Tag customTag) {
+      // if value of property is null, ignore it.
+      if (propertyValue == null) {
+        return null;
+      } else {
+        return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+      }
+    }
+  }
+
+  /**
    * Builds an instance of SnakeYAML configured to generate workflow DSLs.
    *
    * @return A configured instance of SnakeYAML.
    */
   public static Yaml getConfiguredYaml() {
-    final Representer representer =
-        new Representer() {
-          @Override
-          protected NodeTuple representJavaBeanProperty(
-              final Object javaBean,
-              final Property property,
-              final Object propertyValue,
-              final Tag customTag) {
-            // if value of property is null, ignore it.
-            if (propertyValue == null) {
-              return null;
-            } else {
-              return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-            }
-          }
-        };
+    final Representer representer = new CustomRepresenter();
 
     representer.addClassTag(Workflow.class, Tag.MAP);
     representer.addClassTag(UsesWith.class, Tag.MAP);
