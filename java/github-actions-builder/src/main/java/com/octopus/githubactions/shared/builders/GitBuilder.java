@@ -56,7 +56,7 @@ public class GitBuilder {
   public Step installOctopusCli() {
     return UsesWith.builder()
         .name("Install Octopus Deploy CLI")
-        .uses("OctopusDeploy/install-octocli@v1.1.1")
+        .uses("OctopusDeploy/install-octopus-cli-action@v1")
         .with(new ImmutableMap.Builder<String, String>().put("version", "latest").build())
         .build();
   }
@@ -138,13 +138,15 @@ public class GitBuilder {
   /** Build the step to push files to Octopus. */
   public Step pushToOctopus(@NonNull final String packages) {
     return UsesWith.builder()
-        .name("Push to Octopus")
-        .uses("OctopusDeploy/push-package-action@v1.1.1")
+        .name("Push packages to Octopus Deploy")
+        .uses("OctopusDeploy/push-package-action@v2")
+        .env(new ImmutableMap.Builder<String, String>()
+            .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
+            .put("OCTOPUS_HOST", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .build())
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
                 .put("packages", packages)
-                .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
                 .put("overwrite_mode", "OverwriteExisting")
                 .build())
         .build();
