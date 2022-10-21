@@ -37,7 +37,7 @@ public class GitBuilder {
   public Step gitVersionInstallStep() {
     return UsesWith.builder()
         .name("Install GitVersion")
-        .uses("gittools/actions/gitversion/setup@v0.9.7")
+        .uses("gittools/actions/gitversion/setup@v0.9.14")
         .with(new ImmutableMap.Builder<String, String>().put("versionSpec", "5.x").build())
         .build();
   }
@@ -47,7 +47,7 @@ public class GitBuilder {
     return UsesWith.builder()
         .name("Determine Version")
         .id("determine_version")
-        .uses("gittools/actions/gitversion/execute@v0.9.7")
+        .uses("gittools/actions/gitversion/execute@v0.9.14")
         .with(new ImmutableMap.Builder<String, String>().put("additionalArguments", "/overrideconfig mode=Mainline").build())
         .build();
   }
