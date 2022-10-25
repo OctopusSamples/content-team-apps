@@ -174,7 +174,7 @@ public class GitBuilder {
   public Step createOctopusRelease(@NonNull final RepoClient accessor, @NonNull final String packages) {
     return UsesWith.builder()
         .name("Create Octopus Release")
-        .uses("OctopusDeploy/create-release-action@v1.1.1")
+        .uses("OctopusDeploy/create-release-action@v1")
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
