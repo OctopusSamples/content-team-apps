@@ -88,22 +88,22 @@
       <artifactId>lombok</artifactId>
       <groupId>org.projectlombok</groupId>
       <scope>provided</scope>
-      <version>1.18.22</version>
+      <version>1.18.24</version>
     </dependency>
     <dependency>
       <groupId>dev.failsafe</groupId>
       <artifactId>failsafe</artifactId>
-      <version>3.2.3</version>
+      <version>3.2.4</version>
     </dependency>
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>
-      <version>9.18</version>
+      <version>9.25.6</version>
     </dependency>
     <dependency>
       <artifactId>joda-time</artifactId>
       <groupId>joda-time</groupId>
-      <version>2.10.13</version>
+      <version>2.12.0</version>
     </dependency>
     <dependency>
       <artifactId>vavr</artifactId>
@@ -118,7 +118,7 @@
     <dependency>
       <artifactId>commons-text</artifactId>
       <groupId>org.apache.commons</groupId>
-      <version>1.9</version>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <artifactId>commons-io</artifactId>
@@ -144,7 +144,7 @@
     <dependency>
       <artifactId>guava</artifactId>
       <groupId>com.google.guava</groupId>
-      <version>31.0.1-jre</version>
+      <version>31.1-jre</version>
     </dependency>
     <dependency>
       <artifactId>jackson-databind</artifactId>
@@ -154,12 +154,12 @@
     <dependency>
       <artifactId>jboss-logging</artifactId>
       <groupId>org.jboss.logging</groupId>
-      <version>3.4.2.Final</version>
+      <version>3.5.0.Final</version>
     </dependency>
     <dependency>
       <artifactId>microprofile-health-api</artifactId>
       <groupId>org.eclipse.microprofile.health</groupId>
-      <version>3.1</version>
+      <version>4.0</version>
     </dependency>
     <dependency>
       <artifactId>cdi-api</artifactId>
