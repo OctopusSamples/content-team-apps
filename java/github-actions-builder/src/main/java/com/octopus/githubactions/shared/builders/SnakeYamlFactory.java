@@ -94,7 +94,7 @@ public final class SnakeYamlFactory {
      * Represent any non-registered class as a map.
      */
     @Override
-    protected MappingNode representJavaBean(Set<Property> properties, Object javaBean) {
+    protected MappingNode representJavaBean(final Set<Property> properties, final Object javaBean) {
       if (!classTags.containsKey(javaBean.getClass())) {
         addClassTag(javaBean.getClass(), Tag.MAP);
       }
