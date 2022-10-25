@@ -19,6 +19,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
@@ -87,6 +88,19 @@ public final class SnakeYamlFactory {
         return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
       }
     }
+
+    /**
+     * https://stackoverflow.com/questions/19246027/how-to-hide-bean-type-in-snakeyaml
+     * Represent any non-registered class as a map.
+     */
+    @Override
+    protected MappingNode representJavaBean(Set<Property> properties, Object javaBean) {
+      if (!classTags.containsKey(javaBean.getClass())) {
+        addClassTag(javaBean.getClass(), Tag.MAP);
+      }
+
+      return super.representJavaBean(properties, javaBean);
+    }
   }
 
   /**
@@ -96,10 +110,6 @@ public final class SnakeYamlFactory {
    */
   public static Yaml getConfiguredYaml() {
     final Representer representer = new CustomRepresenter();
-
-    representer.addClassTag(Workflow.class, Tag.MAP);
-    representer.addClassTag(UsesWith.class, Tag.MAP);
-    representer.addClassTag(RunStep.class, Tag.MAP);
 
     final TypeDescription onDesc = new TypeDescription(On.class);
     onDesc.substituteProperty(
