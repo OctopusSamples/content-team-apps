@@ -40,7 +40,9 @@ public class RubyBuilder implements PipelineBuilder {
   @Override
   public String generate(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "RubyBuilder.generate(RepoClient)");
-    return GIT_BUILDER.getInitialComments() + "\n"
+    return "# For a detailed breakdown of this workflow, see https://octopus.com/docs/guides/deploy-ruby-app/to-nginx/using-octopus-onprem-github-builtin\n"
+        + "#\n"
+        + GIT_BUILDER.getInitialComments() + "\n"
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()

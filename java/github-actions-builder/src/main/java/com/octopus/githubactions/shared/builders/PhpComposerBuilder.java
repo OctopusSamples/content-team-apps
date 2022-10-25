@@ -38,7 +38,9 @@ public class PhpComposerBuilder implements PipelineBuilder {
   @Override
   public String generate(@NonNull final RepoClient accessor) {
     LOG.log(DEBUG, "PhpComposerBuilder.generate(RepoClient)");
-    return GIT_BUILDER.getInitialComments() + "\n"
+    return "# For a detailed breakdown of this workflow, see https://octopus.com/docs/guides/deploy-php-app/to-nginx/using-octopus-onprem-github-builtin\n"
+        + "#\n"
+        + GIT_BUILDER.getInitialComments() + "\n"
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
