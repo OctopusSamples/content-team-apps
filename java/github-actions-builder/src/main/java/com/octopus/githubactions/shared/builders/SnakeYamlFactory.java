@@ -111,24 +111,24 @@ public final class SnakeYamlFactory {
   public static Yaml getConfiguredYaml() {
     final Representer representer = new CustomRepresenter();
 
-    final TypeDescription onDesc = new TypeDescription(On.class);
+    final TypeDescription onDesc = new TypeDescription(On.class, Tag.MAP);
     onDesc.substituteProperty(
         "workflow_dispatch", WorkflowDispatch.class, "getWorkflowDispatch", "setWorkflowDispatch");
     onDesc.setExcludes("workflowDispatch");
     representer.addTypeDescription(onDesc);
 
-    final TypeDescription buildDesc = new TypeDescription(Build.class);
+    final TypeDescription buildDesc = new TypeDescription(Build.class, Tag.MAP);
     buildDesc.substituteProperty("runs-on", String.class, "getRunsOn", "setRunsOn");
     buildDesc.setExcludes("runsOn");
     representer.addTypeDescription(buildDesc);
 
-    final TypeDescription runDesc = new TypeDescription(RunStep.class);
+    final TypeDescription runDesc = new TypeDescription(RunStep.class, Tag.MAP);
     runDesc.substituteProperty("working-directory", String.class, "getWorkingDirectory",
         "setWorkingDirectory");
     runDesc.setExcludes("workingDirectory");
     representer.addTypeDescription(runDesc);
 
-    final TypeDescription usesWith = new TypeDescription(UsesWith.class);
+    final TypeDescription usesWith = new TypeDescription(UsesWith.class, Tag.MAP);
     usesWith.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
     usesWith.setExcludes("ifProperty");
     representer.addTypeDescription(usesWith);
