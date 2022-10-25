@@ -86,7 +86,7 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                         .add(GIT_BUILDER.checkOutStep())
                                         .add(UsesWith.builder()
                                             .name("Set up DotNET Core")
-                                            .uses("actions/setup-dotnet@v1")
+                                            .uses("actions/setup-dotnet@v3")
                                             .with(
                                                 new ImmutableMap.Builder<String, String>()
                                                     .put("dotnet-version", "3.1.x\n5.0.x\n6.0.x")

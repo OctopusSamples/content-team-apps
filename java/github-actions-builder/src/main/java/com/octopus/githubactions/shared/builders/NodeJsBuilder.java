@@ -62,7 +62,7 @@ public class NodeJsBuilder implements PipelineBuilder {
                                     new ImmutableList.Builder<Step>()
                                         .add(GIT_BUILDER.checkOutStep())
                                         .add(UsesWith.builder()
-                                            .uses("actions/setup-node@v2")
+                                            .uses("actions/setup-node@v3")
                                             .with(new ImmutableMap.Builder<String, String>().put("node-version", "lts/*").build())
                                             .build())
                                         .add(GIT_BUILDER.gitVersionInstallStep())
