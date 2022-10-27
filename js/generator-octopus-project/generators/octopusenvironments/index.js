@@ -29,6 +29,36 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "octopus_development_app_environment_name",
+                message: "The Octopus Development Environment Name",
+                default: "Development (App)"
+            },
+            {
+                type: "input",
+                name: "octopus_development_security_environment_name",
+                message: "The Octopus Development Security Environment Name",
+                default: "Development (Security)"
+            },
+            {
+                type: "input",
+                name: "octopus_production_app_environment_name",
+                message: "The Octopus Production Environment Name",
+                default: "Production (App)"
+            },
+            {
+                type: "input",
+                name: "octopus_production_security_environment_name",
+                message: "The Octopus Production Security Environment Name",
+                default: "Production (Security)"
+            },
+            {
+                type: "input",
+                name: "octopus_administration_environment_name",
+                message: "The Octopus Administration Environment Name",
+                default: "Administration"
+            },
+            {
+                type: "input",
                 name: "aws_access_key",
                 message: "The AWS access key.",
                 default: "${{ secrets.AWS_ACCESS_KEY_ID }}"
@@ -74,6 +104,11 @@ module.exports = class extends Generator {
             octopus_server: this.answers["octopus_server"],
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
+            octopus_development_app_environment_name: this.answers["octopus_development_app_environment_name"],
+            octopus_development_security_environment_name: this.answers["octopus_development_security_environment_name"],
+            octopus_production_app_environment_name: this.answers["octopus_production_app_environment_name"],
+            octopus_production_security_environment_name: this.answers["octopus_production_security_environment_name"],
+            octopus_administration_environment_name: this.answers["octopus_administration_environment_name"],
             aws_region: this.answers["aws_region"],
             github_app_id: this.answers["github_app_id"],
             github_installation_id: this.answers["github_installation_id"],

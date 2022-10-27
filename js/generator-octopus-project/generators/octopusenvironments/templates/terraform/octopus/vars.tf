@@ -24,31 +24,31 @@ variable "github_owner" {
   nullable = false
 }
 
-variable "development_app_environment" {
+variable "octopus_development_app_environment_name" {
   type = string
   nullable = false
   default = "Development (App)"
 }
 
-variable "development_security_environment" {
+variable "octopus_development_security_environment_name" {
   type = string
   nullable = false
   default = "Development (Security)"
 }
 
-variable "production_app_environment" {
+variable "octopus_production_app_environment_name" {
   type = string
   nullable = false
   default = "Production (App)"
 }
 
-variable "production_security_environment" {
+variable "octopus_production_security_environment_name" {
   type = string
   nullable = false
   default = "Production (Security)"
 }
 
-variable "administration_environment" {
+variable "octopus_administration_environment_name" {
   type = string
   nullable = false
   default = "Administration"

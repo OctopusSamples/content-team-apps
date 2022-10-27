@@ -33,8 +33,8 @@ resource "octopusdeploy_lifecycle" "application_lifecycle" {
   }
 
   phase {
-    automatic_deployment_targets = [length(data.octopusdeploy_environments.development.environments) != 0 ? data.octopusdeploy_environments.development.environments[0].id : octopusdeploy_environment.development_security_environment[0].id]
-    name                         = length(data.octopusdeploy_environments.development.environments) != 0 ? data.octopusdeploy_environments.development.environments[0].name : octopusdeploy_environment.development_security_environment[0].name
+    automatic_deployment_targets = [length(data.octopusdeploy_environments.development.environments) != 0 ? data.octopusdeploy_environments.development_security.environments[0].id : octopusdeploy_environment.development_security_environment[0].id]
+    name                         = length(data.octopusdeploy_environments.development.environments) != 0 ? data.octopusdeploy_environments.development_security.environments[0].name : octopusdeploy_environment.development_security_environment[0].name
     is_optional_phase            = true
 
     release_retention_policy {

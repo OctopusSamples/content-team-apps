@@ -35,6 +35,21 @@ inputs:
   octopus_space_id:
     description: 'The ID of the Octopus space'
     required: true
+  octopus_development_app_environment_name:
+    description: 'The name of the development environment'
+    required: true
+  octopus_development_security_environment_name:
+    description: 'The name of the development security environment'
+    required: true
+  octopus_production_app_environment_name:
+    description: 'The name of the production environment'
+    required: true
+  octopus_production_security_environment_name:
+    description: 'The name of the production security environment'
+    required: true
+  octopus_administration_environment_name:
+    description: 'The name of the administration environment'
+    required: true
 
 # AWS inputs
 
@@ -139,6 +154,11 @@ runs:
           -var="octopus_server=${{ inputs.octopus_server }}" \
           -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
           -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+          -var="octopus_development_app_environment_name=${{ inputs.octopus_development_app_environment_name }}" \
+          -var="octopus_development_security_environment_name=${{ inputs.octopus_development_security_environment_name }}" \
+          -var="octopus_production_app_environment_name=${{ inputs.octopus_production_app_environment_name }}" \
+          -var="octopus_production_security_environment_name=${{ inputs.octopus_production_security_environment_name }}" \
+          -var="octopus_administration_environment_name=${{ inputs.octopus_administration_environment_name }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
