@@ -42,7 +42,7 @@ module.exports = class extends Generator {
             {
                 type: "input",
                 name: "aws_region",
-                message: "The AWS region to deploy the ECR repository in",
+                message: "The AWS region to save the state file in",
                 default: "us-west-1"
             },
             {
