@@ -1,8 +1,16 @@
+locals {
+  frontend_package_name   = "microservices-demo-frontend"
+  frontend_resource_names = "frontend"
+  frontend_namespace      = "onlineboutique"
+  deployment_step         = "Deploy App"
+  deployment_role         = "demo-k8s-cluster"
+}
+
 resource "octopusdeploy_project" "frontend_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = "Deploys the backend service."
+  description                          = "Deploys the frontend web app."
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
@@ -14,7 +22,7 @@ resource "octopusdeploy_project" "frontend_project" {
   space_id                             = var.octopus_space_id
   included_library_variable_sets       = []
   versioning_strategy {
-    template = "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.LastPatch}.#{Octopus.Version.NextRevision}"
+    template = local.versioning_strategy
   }
 
   connectivity_policy {
@@ -24,7 +32,7 @@ resource "octopusdeploy_project" "frontend_project" {
   }
 }
 
-resource "octopusdeploy_channel" "feature_branch" {
+resource "octopusdeploy_channel" "frontend_feature_branch" {
   name        = "Feature Branches"
   project_id  = octopusdeploy_project.frontend_project.id
   description = "The channel through which feature branches are deployed"
@@ -33,13 +41,13 @@ resource "octopusdeploy_channel" "feature_branch" {
   rule {
     tag = ".+"
     action_package {
-      deployment_action = "Deploy App"
-      package_reference = local.backend_package_name
+      deployment_action = local.deployment_step
+      package_reference = local.frontend_package_name
     }
   }
 }
 
-resource "octopusdeploy_channel" "mainline" {
+resource "octopusdeploy_channel" "frontend_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.frontend_project.id
   description = "The channel through which mainline releases are deployed"
@@ -48,13 +56,13 @@ resource "octopusdeploy_channel" "mainline" {
   rule {
     tag = "^$"
     action_package {
-      deployment_action = "Deploy App"
-      package_reference = local.backend_package_name
+      deployment_action = local.deployment_step
+      package_reference = local.frontend_package_name
     }
   }
 }
 
-resource "octopusdeploy_variable" "debug_variable" {
+resource "octopusdeploy_variable" "frontend_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -63,7 +71,7 @@ resource "octopusdeploy_variable" "debug_variable" {
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "debug_evaluated_variable" {
+resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
@@ -72,23 +80,17 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
   value        = "False"
 }
 
-locals {
-  frontend_package_name   = "microservices-demo-frontend"
-  frontend_resource_names = "frontend"
-  frontend_namespace      = "onlineboutique"
-}
-
 resource "octopusdeploy_deployment_process" "deploy_frontend" {
   project_id = octopusdeploy_project.frontend_project.id
   step {
     condition           = "Success"
-    name                = "Deploy App"
+    name                = local.deployment_step
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
-    target_roles        = ["demo-k8s-cluster"]
+    target_roles        = [local.deployment_role]
     action {
       action_type    = "Octopus.KubernetesDeployContainers"
-      name           = "Deploy App"
+      name           = local.deployment_step
       run_on_server  = true
       worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
       environments   = [
@@ -105,7 +107,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       }
       container {
         feed_id = var.octopus_dockerhub_feed_id
-        image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
+        image   = local.worker_image
       }
       properties = {
         "Octopus.Action.KubernetesContainers.Replicas" : "1",
