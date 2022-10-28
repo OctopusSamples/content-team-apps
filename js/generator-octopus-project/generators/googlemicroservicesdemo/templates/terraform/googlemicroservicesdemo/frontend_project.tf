@@ -228,10 +228,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 port: "8080"
                 scheme: ""
                 httpHeaders:
-                [{
-                  key: "Cookie"
-                  value: "shop_session-id=x-liveness-probe"
-                }]
+                [
+                  {
+                    key: "Cookie"
+                    value: "shop_session-id=x-liveness-probe"
+                  }
+                ]
               }
               tcpSocket:
               {
@@ -279,10 +281,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               successThreshold: ""
               timeoutSeconds: ""
               type: null
-              exec:{
+              exec:
+              {
                 command:[]
               }
-              httpGet:{
+              httpGet:
+              {
                 host: ""
                 path: ""
                 port: ""
@@ -296,7 +300,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               }
             }
             Lifecycle: {}
-            SecurityContext:{allowPrivilegeEscalation: "false"
+            SecurityContext:
+            {
+              allowPrivilegeEscalation: "false"
               privileged: "false"
               readOnlyRootFilesystem: "true"
               runAsGroup: ""
@@ -304,8 +310,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               runAsUser: ""
               capabilities:
               {
-                add:[]
-                drop:["all"]
+                add: []
+                drop: ["all"]
               }
               seLinuxOptions:
               {
@@ -320,13 +326,15 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
         "Octopus.Action.KubernetesContainers.ServiceName" : "frontend",
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode([
-          {
-            name: "http"
-            port: "80"
-            targetPort: "8080"
-          }
-        ])
+        "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode(
+          [
+            {
+              name: "http"
+              port: "80"
+              targetPort: "8080"
+            }
+          ]
+        )
         "Octopus.Action.RunOnServer" : "true"
       }
     }
