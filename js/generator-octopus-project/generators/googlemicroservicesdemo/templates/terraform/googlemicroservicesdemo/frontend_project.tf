@@ -1,7 +1,7 @@
 locals {
   frontend_package_name   = "microservices-demo-frontend"
   frontend_resource_names = "frontend"
-  frontend_namespace      = "onlineboutique"
+  frontend_namespace      = "matthew-casperson-onlineboutique"
   deployment_step         = "Deploy App"
   deployment_role         = "demo-k8s-cluster"
 }
