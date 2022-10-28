@@ -1,5 +1,5 @@
 locals {
-  frontend_package_name   = "microservices-demo-frontend"
+  frontend_package_name   = "octopussamples/microservices-demo-frontend"
   frontend_resource_names = "frontend"
   frontend_namespace      = "matthew-casperson-onlineboutique"
   deployment_step         = "Deploy App"
@@ -42,7 +42,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_package_name
+      package_reference = local.frontend_resource_names
     }
   }
 }
@@ -57,7 +57,7 @@ resource "octopusdeploy_channel" "frontend_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_package_name
+      package_reference = local.frontend_resource_names
     }
   }
 }
@@ -194,7 +194,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             FieldRefEnvironmentVariables : []
             VolumeMounts : []
             AcquisitionLocation : "NotAcquired"
-            Name : "server"
+            Name : local.frontend_resource_names
             PackageId : local.frontend_package_name
             FeedId : var.octopus_dockerhub_feed_id
             Properties : {}
