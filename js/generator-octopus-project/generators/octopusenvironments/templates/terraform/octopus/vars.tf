@@ -53,3 +53,33 @@ variable "octopus_administration_environment_name" {
   nullable = false
   default = "Administration"
 }
+
+variable "octopus_development_app_environment_exists" {
+  type = bool
+  nullable = false
+  default = false
+}
+
+variable "octopus_development_security_environment_exists" {
+  type = bool
+  nullable = false
+  default = false
+}
+
+variable "octopus_production_app_environment_exists" {
+  type = bool
+  nullable = false
+  default = false
+}
+
+variable "octopus_production_security_environment_exists" {
+  type = bool
+  nullable = false
+  default = false
+}
+
+variable "octopus_administration_environment_exists" {
+  type = bool
+  nullable = false
+  default = false
+}

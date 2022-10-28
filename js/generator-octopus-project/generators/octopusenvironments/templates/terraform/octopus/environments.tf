@@ -33,7 +33,7 @@ resource "octopusdeploy_environment" "development_environment" {
   description                  = "An environment for the development team. This resource is created and managed by the [Octopus Terraform provider](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs). The Terraform files can be found in the [GitHub repo](https://github.com/${var.github_repo})."
   name                         = var.octopus_development_app_environment_name
   use_guided_failure           = false
-  count                        = length(data.octopusdeploy_environments.development.environments) != 0 ? 0 : 1
+  count                        = var.octopus_development_app_environment_exists ? 0 : 1
 }
 
 resource "octopusdeploy_environment" "development_security_environment" {
@@ -42,7 +42,7 @@ resource "octopusdeploy_environment" "development_security_environment" {
   name                         = var.octopus_development_security_environment_name
   use_guided_failure           = false
   depends_on                   = [octopusdeploy_environment.development_environment]
-  count                        = length(data.octopusdeploy_environments.development_security.environments) != 0 ? 0 : 1
+  count                        = var.octopus_development_security_environment_exists ? 0 : 1
 }
 
 resource "octopusdeploy_environment" "production_environment" {
@@ -51,7 +51,7 @@ resource "octopusdeploy_environment" "production_environment" {
   name                         = var.octopus_production_app_environment_name
   use_guided_failure           = false
   depends_on                   = [octopusdeploy_environment.development_security_environment]
-  count                        = length(data.octopusdeploy_environments.production_security.environments) != 0 ? 0 : 1
+  count                        = var.octopus_production_app_environment_exists ? 0 : 1
 }
 
 resource "octopusdeploy_environment" "production_security_environment" {
@@ -60,7 +60,7 @@ resource "octopusdeploy_environment" "production_security_environment" {
   name                         = var.octopus_production_security_environment_name
   use_guided_failure           = false
   depends_on                   = [octopusdeploy_environment.production_environment]
-  count                        = length(data.octopusdeploy_environments.production.environments) != 0 ? 0 : 1
+  count                        = var.octopus_production_security_environment_exists ? 0 : 1
 }
 
 resource "octopusdeploy_environment" "administration_environment" {
@@ -69,5 +69,5 @@ resource "octopusdeploy_environment" "administration_environment" {
   name                         = "Administration"
   use_guided_failure           = false
   depends_on                   = [octopusdeploy_environment.production_security_environment]
-  count                        = length(data.octopusdeploy_environments.administration.environments) != 0 ? 0 : 1
+  count                        = var.octopus_administration_environment_exists ? 0 : 1
 }

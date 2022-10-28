@@ -35,6 +35,12 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "octopus_development_app_environment_exists",
+                message: "Use the Existing Development Environment",
+                default: "false"
+            },
+            {
+                type: "input",
                 name: "octopus_development_security_environment_name",
                 message: "The Octopus Development Security Environment Name",
                 default: "Development (Security)"
@@ -44,6 +50,12 @@ module.exports = class extends Generator {
                 name: "octopus_production_app_environment_name",
                 message: "The Octopus Production Environment Name",
                 default: "Production (App)"
+            },
+            {
+                type: "input",
+                name: "octopus_production_app_environment_exists",
+                message: "Use the Existing Production Environment",
+                default: "false"
             },
             {
                 type: "input",
@@ -105,8 +117,10 @@ module.exports = class extends Generator {
             octopus_apikey: this.answers["octopus_apikey"],
             octopus_space_id: this.answers["octopus_space_id"],
             octopus_development_app_environment_name: this.answers["octopus_development_app_environment_name"],
+            octopus_development_app_environment_exists: this.answers["octopus_development_app_environment_exists"],
             octopus_development_security_environment_name: this.answers["octopus_development_security_environment_name"],
             octopus_production_app_environment_name: this.answers["octopus_production_app_environment_name"],
+            octopus_production_app_environment_exists: this.answers["octopus_production_app_environment_exists"],
             octopus_production_security_environment_name: this.answers["octopus_production_security_environment_name"],
             octopus_administration_environment_name: this.answers["octopus_administration_environment_name"],
             aws_region: this.answers["aws_region"],
