@@ -1,0 +1,160 @@
+name: Terraform Apply
+description: Create a Kubernetes deployment project
+inputs:
+  octopus_server:
+    description: 'Octopus cloud URL'
+    required: true
+  octopus_apikey:
+    description: 'Octopus API key'
+    required: true
+  octopus_space_id:
+    description: 'The ID of the app builder space'
+    required: true
+  octopus_space:
+    description: 'The name of the app builder space'
+    required: true
+  octopus_dockerhub_feed_id:
+    description: 'The ID of Dockerhub feed'
+    required: true
+  octopus_application_lifecycle_id:
+    description: 'The ID of Application lifecycle'
+    required: true
+  octopus_development_app_environment_id:
+    description: 'The ID of Development App environment'
+    required: true
+  octopus_development_security_environment_id:
+    description: 'The ID of Development Security environment'
+    required: true
+  octopus_production_app_environment_id:
+    description: 'The ID of Production App environment'
+    required: true
+  octopus_production_security_environment_id:
+    description: 'The ID of Production Security environment'
+    required: true
+  aws_access_key:
+    description: 'The AWS access key'
+    required: true
+  aws_secret_key:
+    description: 'The AWS secret key'
+    required: true
+  aws_region:
+    description: 'The AWS region'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone code repo
+      uses: actions/checkout@v3
+
+    - uses: nelonoel/branch-name@v1.0.1
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1
+      with:
+        version: latest
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@v1
+
+    - id: repository_owner_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository_owner }}
+
+    - id: repository_name_lower
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.event.repository.name }}
+
+    # Terraform does not support variables in backend configuration. However, a tool like App Builder can't know
+    # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
+    # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
+    # environment variables. This allows us to generate a unique backend configuration with each deployment.
+    - name: Create Terraform state S3 bucket
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        # Check to see if the bucket exists
+        aws s3api head-bucket \
+            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }} 2>/dev/null
+        # If not, create it
+        if [[ $? -ne 0 ]]; then        
+          aws s3 mb \
+            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --region ${{ inputs.aws_region }}
+          echo "Sleeping to ensure bucket is available"
+          sleep 60
+        fi
+      shell: "bash -l {0}" # Allow commands to fail by removing the default "-e" argument
+
+    # The Terraform state is stored in a cloud bucket which must be substituted into the backend configuration.
+    # This is because backend config con not have variables.
+    # See https://github.com/hashicorp/terraform/issues/13022
+    - uses: danielr1996/envsubst-action@1.1.0
+      env:
+        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
+        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
+        PROJECT_NAME: ${{ inputs.project_name }}
+        TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
+      with:
+        input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+        output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
+
+    # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
+    # we need to manually query the new space for the built-in feed ID.
+    - name: Find the Built-In Feed ID
+      id: octopus_builtin_feed_id
+      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)' | jq -r '.Items[0].Id')\""
+      shell: bash
+
+    # There is a bug with the Terraform provider that means step package references are incorrectly
+    # associated with new steps. The easiest fix is to delete the projects before recreating them.
+    # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
+    # deletes project releases.
+    - name: Delete existing projects
+      run: |
+        declare -a arr=("Google%20Frontend")
+        
+        for i in "${arr[@]}"
+        do
+          ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects?name=$i | jq -r ".Items[0].Id")
+          if [[ -n "$ID" && "$ID" != "null" ]]; then
+            echo "Deleting project $i"
+            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          fi
+        done
+      shell: bash
+
+    - name: Terraform Init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: terraform init
+      working-directory: terraform/${{ inputs.project_directory_name }}
+      shell: bash
+
+    - name: Terraform Apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+      run: |
+        terraform apply \
+        -auto-approve \
+        -var="octopus_server=${{ inputs.octopus_server }}" \
+        -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
+        -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+        -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" \
+        -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}" \
+        -var="octopus_dockerhub_feed_id=${{ inputs.octopus_k8s_feed_id }}" \
+        -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
+        -var="octopus_development_app_environment_id=${{ inputs.octopus_development_app_environment_id }}" \
+        -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
+        -var="octopus_production_app_environment_id=${{ inputs.octopus_production_app_environment_id }}" \
+        -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
+      working-directory: terraform/${{ inputs.project_directory_name }}
+      shell: bash
