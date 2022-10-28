@@ -75,6 +75,7 @@ resource "octopusdeploy_variable" "debug_evaluated_variable" {
 locals {
   frontend_package_name   = "microservices-demo-frontend"
   frontend_resource_names = "frontend"
+  frontend_namespace      = "onlineboutique"
 }
 
 resource "octopusdeploy_deployment_process" "deploy_frontend" {
@@ -119,8 +120,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
-        "Octopus.Action.KubernetesContainers.Namespace" : "onlinebotique",
-        "Octopus.Action.KubernetesContainers.DeploymentName" : "frontend",
+        "Octopus.Action.KubernetesContainers.Namespace" : local.frontend_namespace,
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.frontend_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
@@ -135,7 +136,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           {
             IsNew : true
             InitContainer : "False"
-            Ports : [{ value : "8080" }]
+            Ports :
+            [
+              {
+                value : "8080"
+              }
+            ]
             EnvironmentVariables :
             [
               {
@@ -179,159 +185,159 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 value : "1"
               }
             ]
-            SecretEnvironmentVariables: []
-            SecretEnvFromSource: []
-            ConfigMapEnvironmentVariables: []
-            ConfigMapEnvFromSource: []
-            FieldRefEnvironmentVariables: []
-            VolumeMounts: []
-            AcquisitionLocation: "NotAcquired"
-            Name: "server"
-            PackageId: "google-samples/microservices-demo/frontend"
-            FeedId: "Feeds-1231"
-            Properties: {}
-            Command: []
-            Args: []
-            Resources:
+            SecretEnvironmentVariables : []
+            SecretEnvFromSource : []
+            ConfigMapEnvironmentVariables : []
+            ConfigMapEnvFromSource : []
+            FieldRefEnvironmentVariables : []
+            VolumeMounts : []
+            AcquisitionLocation : "NotAcquired"
+            Name : "server"
+            PackageId : local.frontend_package_name
+            FeedId : var.octopus_dockerhub_feed_id
+            Properties : {}
+            Command : []
+            Args : []
+            Resources :
             {
-              requests:
+              requests :
               {
-                memory: "64Mi"
-                cpu: "100m"
-                ephemeralStorage: ""
+                memory : "64Mi"
+                cpu : "100m"
+                ephemeralStorage : ""
               }
-              limits:
+              limits :
               {
-                memory: "128Mi"
-                cpu: "200m"
-                ephemeralStorage: ""
-                nvidiaGpu: ""
-                amdGpu: ""
+                memory : "128Mi"
+                cpu : "200m"
+                ephemeralStorage : ""
+                nvidiaGpu : ""
+                amdGpu : ""
               }
             }
-            LivenessProbe:
+            LivenessProbe :
             {
-              failureThreshold: ""
-              initialDelaySeconds: "10"
-              periodSeconds: ""
-              successThreshold: ""
-              timeoutSeconds: ""
-              type: "HttpGet"
-              exec:
+              failureThreshold : ""
+              initialDelaySeconds : "10"
+              periodSeconds : ""
+              successThreshold : ""
+              timeoutSeconds : ""
+              type : "HttpGet"
+              exec :
               {
-                command:[]
+                command : []
               }
-              httpGet:
+              httpGet :
               {
-                host: ""
-                path: "/_healthz"
-                port: "8080"
-                scheme: ""
-                httpHeaders:
+                host : ""
+                path : "/_healthz"
+                port : "8080"
+                scheme : ""
+                httpHeaders :
                 [
                   {
-                    key: "Cookie"
-                    value: "shop_session-id=x-liveness-probe"
+                    key : "Cookie"
+                    value : "shop_session-id=x-liveness-probe"
                   }
                 ]
               }
-              tcpSocket:
+              tcpSocket :
               {
-                host: ""
-                port:""
+                host : ""
+                port : ""
               }
             }
-            ReadinessProbe:
+            ReadinessProbe :
             {
-              failureThreshold: ""
-              initialDelaySeconds: "10"
-              periodSeconds: ""
-              successThreshold: ""
-              timeoutSeconds: ""
-              type: "HttpGet"
-              exec:
+              failureThreshold : ""
+              initialDelaySeconds : "10"
+              periodSeconds : ""
+              successThreshold : ""
+              timeoutSeconds : ""
+              type : "HttpGet"
+              exec :
               {
-                command: []
+                command : []
               }
-              httpGet:
+              httpGet :
               {
-                host: ""
-                path: "/_healthz"
-                port: "8080"
-                scheme: ""
-                httpHeaders:
+                host : ""
+                path : "/_healthz"
+                port : "8080"
+                scheme : ""
+                httpHeaders :
                 [
                   {
-                    key:"Cookie"
-                    value: "shop_session-id=x-readiness-probe"
+                    key : "Cookie"
+                    value : "shop_session-id=x-readiness-probe"
                   }
                 ]
               }
-              tcpSocket:
+              tcpSocket :
               {
-                host: ""
-                port: ""
+                host : ""
+                port : ""
               }
             }
-            StartupProbe:
+            StartupProbe :
             {
-              failureThreshold: ""
-              initialDelaySeconds: ""
-              periodSeconds: ""
-              successThreshold: ""
-              timeoutSeconds: ""
-              type: null
-              exec:
+              failureThreshold : ""
+              initialDelaySeconds : ""
+              periodSeconds : ""
+              successThreshold : ""
+              timeoutSeconds : ""
+              type : null
+              exec :
               {
-                command:[]
+                command : []
               }
-              httpGet:
+              httpGet :
               {
-                host: ""
-                path: ""
-                port: ""
-                scheme: ""
-                httpHeaders:[]
+                host : ""
+                path : ""
+                port : ""
+                scheme : ""
+                httpHeaders : []
               }
-              tcpSocket:
+              tcpSocket :
               {
-                host: ""
-                port: ""
+                host : ""
+                port : ""
               }
             }
-            Lifecycle: {}
-            SecurityContext:
+            Lifecycle : {}
+            SecurityContext :
             {
-              allowPrivilegeEscalation: "false"
-              privileged: "false"
-              readOnlyRootFilesystem: "true"
-              runAsGroup: ""
-              runAsNonRoot: ""
-              runAsUser: ""
-              capabilities:
+              allowPrivilegeEscalation : "false"
+              privileged : "false"
+              readOnlyRootFilesystem : "true"
+              runAsGroup : ""
+              runAsNonRoot : ""
+              runAsUser : ""
+              capabilities :
               {
-                add: []
-                drop: ["all"]
+                add : []
+                drop : ["all"]
               }
-              seLinuxOptions:
+              seLinuxOptions :
               {
-                level: ""
-                role: ""
-                type: ""
-                user: ""
+                level : ""
+                role : ""
+                type : ""
+                user : ""
               }
             }
           }
         ])
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
-        "Octopus.Action.KubernetesContainers.ServiceName" : "frontend",
+        "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_resource_names,
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode(
           [
             {
-              name: "http"
-              port: "80"
-              targetPort: "8080"
+              name : "http"
+              port : "80"
+              targetPort : "8080"
             }
           ]
         )
