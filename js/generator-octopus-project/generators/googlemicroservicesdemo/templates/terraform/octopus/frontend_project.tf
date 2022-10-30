@@ -37,7 +37,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
   project_id  = octopusdeploy_project.frontend_project.id
   description = "The channel through which feature branches are deployed"
   depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
-  is_default  = true
+  is_default  = false
   rule {
     tag = ".+"
     action_package {

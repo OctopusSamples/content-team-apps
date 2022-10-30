@@ -128,7 +128,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Google%20Frontend")
+        declare -a arr=("Google%20Microservice%20Frontend")
         
         for i in "${arr[@]}"
         do
