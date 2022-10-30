@@ -1,6 +1,19 @@
 name: Terraform Apply
 description: Create a Kubernetes deployment project
 inputs:
+  project_name:
+    description: |
+      The name of the project. This is used when building the Terraform state files, and typically matches the
+      directory name where the template project files are stored.
+    required: true
+  project_directory_name:
+    description: |
+      The directory holding the template project files. This is typically the same as the project_name. But, for
+      resources that can be deployed multiple times (for instance multiple Docker registries, VMs etc), you can
+      call this action file multiple times with different values for project_name, while leaving project_directory_name
+      to point to the shared template project files. The end result is the workflow file has two steps, both calling this
+      same action file, where project_directory_name is the same, but project_name is different.
+    required: true
   octopus_server:
     description: 'Octopus cloud URL'
     required: true
@@ -9,9 +22,6 @@ inputs:
     required: true
   octopus_space_id:
     description: 'The ID of the app builder space'
-    required: true
-  octopus_space:
-    description: 'The name of the app builder space'
     required: true
   octopus_dockerhub_feed_id:
     description: 'The ID of Dockerhub feed'
