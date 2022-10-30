@@ -28,7 +28,7 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
-                name: "octopus_lifecycle_id",
+                name: "octopus_application_lifecycle_id",
                 message: "The lifecycle to assign to the project",
                 default: "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLE_ID }}"
             },
@@ -73,7 +73,13 @@ module.exports = class extends Generator {
                 name: "octopus_production_security_environment_id",
                 message: "The production security environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
-            }
+            },
+            {
+                type: "input",
+                name: "octopus_dockerhub_feed_id",
+                message: "The ID of the DockerHub feed",
+                default: "${{ secrets.OCTOPUS_DOCKERHUB_FEED_ID }}"
+            },
         ]);
     }
 

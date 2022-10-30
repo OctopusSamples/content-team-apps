@@ -36,7 +36,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
   name        = "Feature Branches"
   project_id  = octopusdeploy_project.frontend_project.id
   description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_project.frontend_project]
+  depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
   is_default  = true
   rule {
     tag = ".+"
@@ -51,7 +51,7 @@ resource "octopusdeploy_channel" "frontend_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.frontend_project.id
   description = "The channel through which mainline releases are deployed"
-  depends_on  = [octopusdeploy_project.frontend_project]
+  depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
   is_default  = true
   rule {
     tag = "^$"
@@ -138,14 +138,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           {
             IsNew : true
             InitContainer : "False"
-            Ports :
-            [
+            Ports : [
               {
                 value : "8080"
               }
             ]
-            EnvironmentVariables :
-            [
+            EnvironmentVariables : [
               {
                 key : "PORT"
                 value : "8080"
@@ -200,16 +198,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             Properties : {}
             Command : []
             Args : []
-            Resources :
-            {
-              requests :
-              {
+            Resources : {
+              requests : {
                 memory : "64Mi"
                 cpu : "100m"
                 ephemeralStorage : ""
               }
-              limits :
-              {
+              limits : {
                 memory : "128Mi"
                 cpu : "200m"
                 ephemeralStorage : ""
@@ -217,112 +212,95 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
                 amdGpu : ""
               }
             }
-            LivenessProbe :
-            {
+            LivenessProbe : {
               failureThreshold : ""
               initialDelaySeconds : "10"
               periodSeconds : ""
               successThreshold : ""
               timeoutSeconds : ""
               type : "HttpGet"
-              exec :
-              {
+              exec : {
                 command : []
               }
-              httpGet :
-              {
+              httpGet : {
                 host : ""
                 path : "/_healthz"
                 port : "8080"
                 scheme : ""
-                httpHeaders :
-                [
+                httpHeaders : [
                   {
                     key : "Cookie"
                     value : "shop_session-id=x-liveness-probe"
                   }
                 ]
               }
-              tcpSocket :
-              {
+              tcpSocket : {
                 host : ""
                 port : ""
               }
             }
-            ReadinessProbe :
-            {
+            ReadinessProbe : {
               failureThreshold : ""
               initialDelaySeconds : "10"
               periodSeconds : ""
               successThreshold : ""
               timeoutSeconds : ""
               type : "HttpGet"
-              exec :
-              {
+              exec : {
                 command : []
               }
-              httpGet :
-              {
+              httpGet : {
                 host : ""
                 path : "/_healthz"
                 port : "8080"
                 scheme : ""
-                httpHeaders :
-                [
+                httpHeaders : [
                   {
                     key : "Cookie"
                     value : "shop_session-id=x-readiness-probe"
                   }
                 ]
               }
-              tcpSocket :
-              {
+              tcpSocket : {
                 host : ""
                 port : ""
               }
             }
-            StartupProbe :
-            {
+            StartupProbe : {
               failureThreshold : ""
               initialDelaySeconds : ""
               periodSeconds : ""
               successThreshold : ""
               timeoutSeconds : ""
               type : null
-              exec :
-              {
+              exec : {
                 command : []
               }
-              httpGet :
-              {
+              httpGet : {
                 host : ""
                 path : ""
                 port : ""
                 scheme : ""
                 httpHeaders : []
               }
-              tcpSocket :
-              {
+              tcpSocket : {
                 host : ""
                 port : ""
               }
             }
             Lifecycle : {}
-            SecurityContext :
-            {
+            SecurityContext : {
               allowPrivilegeEscalation : "false"
               privileged : "false"
               readOnlyRootFilesystem : "true"
               runAsGroup : ""
               runAsNonRoot : ""
               runAsUser : ""
-              capabilities :
-              {
+              capabilities : {
                 add : []
                 drop : ["all"]
               }
-              seLinuxOptions :
-              {
+              seLinuxOptions : {
                 level : ""
                 role : ""
                 type : ""
@@ -334,15 +312,13 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
         "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_resource_names,
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode(
-          [
+        "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode([
             {
               name : "http"
               port : "80"
               targetPort : "8080"
             }
-          ]
-        )
+          ])
         "Octopus.Action.RunOnServer" : "true"
       }
     }
