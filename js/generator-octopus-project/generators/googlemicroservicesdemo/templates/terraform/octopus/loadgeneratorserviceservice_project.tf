@@ -403,6 +403,7 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
+        "Octopus.Action.KubernetesContainers.RestartPolicy": "Always",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.loadgenerator_resource_names,
         "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",

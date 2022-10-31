@@ -300,7 +300,7 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.checkoutservice_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
+        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.checkoutservice_resource_names}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",

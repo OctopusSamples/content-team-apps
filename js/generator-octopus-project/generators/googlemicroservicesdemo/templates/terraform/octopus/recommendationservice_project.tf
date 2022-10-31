@@ -281,7 +281,7 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.recommendationservice_resource_names,
         "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
+        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.recommendationservice_resource_names}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
