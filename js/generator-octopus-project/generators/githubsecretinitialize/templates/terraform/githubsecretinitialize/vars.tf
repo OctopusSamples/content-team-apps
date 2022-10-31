@@ -169,3 +169,10 @@ variable "production_azure_tenant_id" {
   sensitive = true
   description = "The production azure account tenant id. This is optional if subsequent projects don't deploy anything to Azure."
 }
+
+variable "github_packages_pat" {
+  type = string
+  nullable = true
+  sensitive = true
+  description = "The GitHub personal access token used to access GitHub Packages."
+}

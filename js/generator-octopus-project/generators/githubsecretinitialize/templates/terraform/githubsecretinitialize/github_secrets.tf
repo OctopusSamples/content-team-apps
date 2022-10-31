@@ -158,3 +158,10 @@ resource "github_actions_secret" "production_azure_tenant_id" {
   secret_name     = "AZURE_PRODUCTION_TENANT_ID"
   plaintext_value = var.production_azure_tenant_id
 }
+
+resource "github_actions_secret" "github_packages_pat" {
+  count           = var.github_packages_pat != "" ? 1 : 0
+  repository      = var.github_repo
+  secret_name     = "GH_PACKAGES_PAT"
+  plaintext_value = var.github_packages_pat
+}
