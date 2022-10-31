@@ -4,4 +4,6 @@ locals {
   namespace           = "matthew-casperson-onlineboutique"
   deployment_step     = "Deploy App"
   deployment_role     = "demo-k8s-cluster"
+  worker_pool_id      = data.octopusdeploy_worker_pools.vm_worker_pool.worker_pools[0].id
+  # worker_pool_id      = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
 }

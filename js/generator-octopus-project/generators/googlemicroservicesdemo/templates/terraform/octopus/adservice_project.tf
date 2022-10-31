@@ -238,7 +238,7 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
       action_type    = "Octopus.KubernetesDeployContainers"
       name           = local.deployment_step
       run_on_server  = true
-      worker_pool_id = data.octopusdeploy_worker_pools.ubuntu_worker_pool.worker_pools[0].id
+      worker_pool_id = local.worker_pool_id
       environments   = [
         var.octopus_development_app_environment_id,
         var.octopus_production_app_environment_id
