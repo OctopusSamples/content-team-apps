@@ -379,6 +379,13 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
       }
+      package {
+        name                      = "frontend-check"
+        package_id                = "busybox"
+        feed_id                   = var.octopus_dockerhub_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
       container {
         feed_id = var.octopus_dockerhub_feed_id
         image   = local.worker_image
