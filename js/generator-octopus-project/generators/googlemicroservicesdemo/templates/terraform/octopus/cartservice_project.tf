@@ -1,30 +1,22 @@
 locals {
-  adservice_package_name        = "octopussamples/adservice"
-  adservice_resource_names      = "adservice"
-  adservice_project_name        = "Google Microservice Ad Service"
-  adservice_project_description = "Deploys the ad service."
-  adservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"9555\",\"targetPort\":\"9555\"}]"
-  adservice_containers          = jsonencode([
+  cartservice_package_name        = "octopussamples/cartservice"
+  cartservice_resource_names      = "cartservice"
+  cartservice_project_name        = "Google Microservice Cart Service"
+  cartservice_project_description = "Deploys the cart service."
+  cartservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7070\",\"targetPort\":\"7070\"}]"
+  cartservice_containers          = jsonencode([
     {
       IsNew : true,
       InitContainer : "False",
       Ports : [
         {
-          value : "9555"
+          value : "7070"
         }
       ],
       EnvironmentVariables : [
         {
-          key : "PORT",
-          value : "9555"
-        },
-        {
-          key : "DISABLE_STATS",
-          value : "1"
-        },
-        {
-          key : "DISABLE_TRACING",
-          value : "1"
+          key : "REDIS_ADDR",
+          value : "redis-cart:6379"
         }
       ],
       SecretEnvironmentVariables : [],
@@ -34,8 +26,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.adservice_resource_names
-      PackageId : local.adservice_package_name
+      Name : local.cartservice_resource_names
+      PackageId : local.cartservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -44,12 +36,12 @@ locals {
       Args : [],
       Resources : {
         requests : {
-          memory : "180Mi",
+          memory : "64Mi",
           cpu : "200m",
           ephemeralStorage : ""
         },
         limits : {
-          memory : "300Mi",
+          memory : "128Mi",
           cpu : "300m",
           ephemeralStorage : "",
           nvidiaGpu : "",
@@ -58,15 +50,16 @@ locals {
       },
       LivenessProbe : {
         failureThreshold : "",
-        initialDelaySeconds : "20",
-        periodSeconds : "15",
+        initialDelaySeconds : "15",
+        periodSeconds : "10",
         successThreshold : "",
         timeoutSeconds : "",
         type : "Command",
         exec : {
           command : [
             "/bin/grpc_health_probe",
-            "-addr=:9555"
+            "-addr=:7070",
+            "-rpc-timeout=5s"
           ]
         },
         httpGet : {
@@ -83,15 +76,16 @@ locals {
       },
       ReadinessProbe : {
         failureThreshold : "",
-        initialDelaySeconds : "20",
-        periodSeconds : "15",
+        initialDelaySeconds : "15",
+        periodSeconds : "",
         successThreshold : "",
         timeoutSeconds : "",
         type : "Command",
         exec : {
           command : [
             "/bin/grpc_health_probe",
-            "-addr=:9555"
+            "-addr=:7070",
+            "-rpc-timeout=5s"
           ]
         },
         httpGet : {
@@ -153,17 +147,17 @@ locals {
   ])
 }
 
-resource "octopusdeploy_project" "adservice_project" {
+resource "octopusdeploy_project" "cartservice_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = local.adservice_project_description
+  description                          = local.cartservice_project_description
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = local.adservice_project_name
+  name                                 = local.cartservice_project_name
   project_group_id                     = octopusdeploy_project_group.google_microservice_demo.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -179,56 +173,56 @@ resource "octopusdeploy_project" "adservice_project" {
   }
 }
 
-resource "octopusdeploy_channel" "adservice_feature_branch" {
+resource "octopusdeploy_channel" "cartservice_feature_branch" {
   name        = "Feature Branches"
-  project_id  = octopusdeploy_project.adservice_project.id
+  project_id  = octopusdeploy_project.cartservice_project.id
   description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.adservice_deployment_process]
+  depends_on  = [octopusdeploy_deployment_process.cartservice_deployment_process]
   is_default  = false
   rule {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_resource_names
+      package_reference = local.cartservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_channel" "adservice_mainline" {
+resource "octopusdeploy_channel" "cartservice_mainline" {
   name        = "Mainline"
-  project_id  = octopusdeploy_project.adservice_project.id
+  project_id  = octopusdeploy_project.cartservice_project.id
   description = "The channel through which mainline releases are deployed"
-  depends_on  = [octopusdeploy_deployment_process.adservice_deployment_process]
+  depends_on  = [octopusdeploy_deployment_process.cartservice_deployment_process]
   is_default  = true
   rule {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_resource_names
+      package_reference = local.cartservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_variable" "adservice_debug_variable" {
+resource "octopusdeploy_variable" "cartservice_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.adservice_project.id
+  owner_id     = octopusdeploy_project.cartservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "adservice_debug_evaluated_variable" {
+resource "octopusdeploy_variable" "cartservice_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.adservice_project.id
+  owner_id     = octopusdeploy_project.cartservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
-  project_id = octopusdeploy_project.adservice_project.id
+resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
+  project_id = octopusdeploy_project.cartservice_project.id
   step {
     condition           = "Success"
     name                = local.deployment_step
@@ -246,8 +240,8 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.adservice_resource_names
-        package_id                = local.adservice_package_name
+        name                      = local.cartservice_resource_names
+        package_id                = local.cartservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -270,7 +264,7 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
-        "Octopus.Action.KubernetesContainers.DeploymentName" : local.adservice_resource_names,
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.cartservice_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
@@ -281,11 +275,11 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsNonRoot" : "true",
         "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]",
         "Octopus.Action.KubernetesContainers.PodServiceAccountName" : "default",
-        "Octopus.Action.KubernetesContainers.Containers" : local.adservice_containers,
+        "Octopus.Action.KubernetesContainers.Containers" : local.cartservice_containers,
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
-        "Octopus.Action.KubernetesContainers.ServiceName" : local.adservice_resource_names,
+        "Octopus.Action.KubernetesContainers.ServiceName" : local.cartservice_resource_names,
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : local.adservice_service_ports
+        "Octopus.Action.KubernetesContainers.ServicePorts" : local.cartservice_service_ports
         "Octopus.Action.RunOnServer" : "true"
       }
     }
