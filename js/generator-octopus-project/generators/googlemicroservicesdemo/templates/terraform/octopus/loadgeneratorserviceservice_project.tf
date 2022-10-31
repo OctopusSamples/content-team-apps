@@ -153,8 +153,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.loadgenerator_resource_names
-      PackageId : local.loadgenerator_package_name
+      Name : "frontend-check",
+      PackageId : "busybox"
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -163,15 +163,15 @@ locals {
         "/bin/sh",
         "-exc",
         <<EOF
-        echo "Init container pinging frontend: $${FRONTEND_ADDR}..."
+echo "Init container pinging frontend: $${FRONTEND_ADDR}..."
 
-        STATUSCODE=$(wget --server-response http://$${FRONTEND_ADDR} 2>&1 |
-        awk '/^  HTTP/{print $2}')
+STATUSCODE=$(wget --server-response http://$${FRONTEND_ADDR} 2>&1 |
+awk '/^  HTTP/{print $2}')
 
-        if test $STATUSCODE -ne 200; then
-            echo "Error: Could not reach frontend - Status code: $${STATUSCODE}"
-            exit 1
-        fi
+if test $STATUSCODE -ne 200; then
+    echo "Error: Could not reach frontend - Status code: $${STATUSCODE}"
+    exit 1
+fi
         EOF
       ],
       Args : [],
@@ -398,10 +398,11 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.loadgenerator_resource_names,
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"frontend\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.loadgenerator_resource_names}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",
