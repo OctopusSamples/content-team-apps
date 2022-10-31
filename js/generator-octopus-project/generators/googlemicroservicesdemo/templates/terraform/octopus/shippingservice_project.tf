@@ -1,46 +1,22 @@
 locals {
-  checkoutservice_package_name        = "octopussamples/checkoutservice"
-  checkoutservice_resource_names      = "checkoutservice"
-  checkoutservice_project_name        = "Google Microservice Checkout Service"
-  checkoutservice_project_description = "Deploys the checkout service."
-  checkoutservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5050\",\"targetPort\":\"5050\"}]"
-  checkoutservice_containers          = jsonencode([
+  shippingservice_package_name        = "octopussamples/shippingservice"
+  shippingservice_resource_names      = "shippingservice"
+  shippingservice_project_name        = "Google Microservice Shipping Service"
+  shippingservice_project_description = "Deploys the shipping service."
+  shippingservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
+  shippingservice_containers          = jsonencode([
     {
       IsNew : true,
       InitContainer : "False",
       Ports : [
         {
-          value : "5050"
+          value : "50051"
         }
       ],
       EnvironmentVariables : [
         {
           key : "PORT",
-          value : "5050"
-        },
-        {
-          key : "PRODUCT_CATALOG_SERVICE_ADDR",
-          value : "productcatalogservice:3550"
-        },
-        {
-          key : "SHIPPING_SERVICE_ADDR",
-          value : "shippingservice:50051"
-        },
-        {
-          key : "PAYMENT_SERVICE_ADDR",
-          value : "paymentservice:50051"
-        },
-        {
-          key : "EMAIL_SERVICE_ADDR",
-          value : "emailservice:5000"
-        },
-        {
-          key : "CURRENCY_SERVICE_ADDR",
-          value : "currencyservice:7000"
-        },
-        {
-          key : "CART_SERVICE_ADDR",
-          value : "cartservice:7070"
+          value : "50051"
         },
         {
           key : "DISABLE_STATS",
@@ -62,8 +38,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.checkoutservice_resource_names
-      PackageId : local.checkoutservice_package_name
+      Name : local.shippingservice_resource_names
+      PackageId : local.shippingservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -94,7 +70,7 @@ locals {
         exec : {
           command : [
             "/bin/grpc_health_probe",
-            "-addr=:5050"
+            "-addr=:50051"
           ]
         },
         httpGet : {
@@ -112,14 +88,14 @@ locals {
       ReadinessProbe : {
         failureThreshold : "",
         initialDelaySeconds : "",
-        periodSeconds : "",
+        periodSeconds : "5",
         successThreshold : "",
         timeoutSeconds : "",
         type : "Command",
         exec : {
           command : [
             "/bin/grpc_health_probe",
-            "-addr=:5050"
+            "-addr=:50051"
           ]
         },
         httpGet : {
@@ -181,17 +157,17 @@ locals {
   ])
 }
 
-resource "octopusdeploy_project" "checkoutservice_project" {
+resource "octopusdeploy_project" "shippingservice_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = local.checkoutservice_project_description
+  description                          = local.shippingservice_project_description
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = local.checkoutservice_project_name
+  name                                 = local.shippingservice_project_name
   project_group_id                     = octopusdeploy_project_group.google_microservice_demo.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -207,56 +183,56 @@ resource "octopusdeploy_project" "checkoutservice_project" {
   }
 }
 
-resource "octopusdeploy_channel" "checkoutservice_feature_branch" {
+resource "octopusdeploy_channel" "shippingservice_feature_branch" {
   name        = "Feature Branches"
-  project_id  = octopusdeploy_project.checkoutservice_project.id
+  project_id  = octopusdeploy_project.shippingservice_project.id
   description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.checkoutservice_deployment_process]
+  depends_on  = [octopusdeploy_deployment_process.shippingservice_deployment_process]
   is_default  = false
   rule {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_resource_names
+      package_reference = local.shippingservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_channel" "checkoutservice_mainline" {
+resource "octopusdeploy_channel" "shippingservice_mainline" {
   name        = "Mainline"
-  project_id  = octopusdeploy_project.checkoutservice_project.id
+  project_id  = octopusdeploy_project.shippingservice_project.id
   description = "The channel through which mainline releases are deployed"
-  depends_on  = [octopusdeploy_deployment_process.checkoutservice_deployment_process]
+  depends_on  = [octopusdeploy_deployment_process.shippingservice_deployment_process]
   is_default  = true
   rule {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_resource_names
+      package_reference = local.shippingservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_variable" "checkoutservice_debug_variable" {
+resource "octopusdeploy_variable" "shippingservice_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.checkoutservice_project.id
+  owner_id     = octopusdeploy_project.shippingservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "checkoutservice_debug_evaluated_variable" {
+resource "octopusdeploy_variable" "shippingservice_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.checkoutservice_project.id
+  owner_id     = octopusdeploy_project.shippingservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process" {
-  project_id = octopusdeploy_project.checkoutservice_project.id
+resource "octopusdeploy_deployment_process" "shippingservice_deployment_process" {
+  project_id = octopusdeploy_project.shippingservice_project.id
   step {
     condition           = "Success"
     name                = local.deployment_step
@@ -274,8 +250,8 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.checkoutservice_resource_names
-        package_id                = local.checkoutservice_package_name
+        name                      = local.shippingservice_resource_names
+        package_id                = local.shippingservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -298,7 +274,7 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
-        "Octopus.Action.KubernetesContainers.DeploymentName" : local.checkoutservice_resource_names,
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.shippingservice_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
@@ -309,11 +285,11 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsNonRoot" : "true",
         "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]",
         "Octopus.Action.KubernetesContainers.PodServiceAccountName" : "default",
-        "Octopus.Action.KubernetesContainers.Containers" : local.checkoutservice_containers,
+        "Octopus.Action.KubernetesContainers.Containers" : local.shippingservice_containers,
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
-        "Octopus.Action.KubernetesContainers.ServiceName" : local.checkoutservice_resource_names,
+        "Octopus.Action.KubernetesContainers.ServiceName" : local.shippingservice_resource_names,
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.ServicePorts" : local.checkoutservice_service_ports
+        "Octopus.Action.KubernetesContainers.ServicePorts" : local.shippingservice_service_ports
         "Octopus.Action.RunOnServer" : "true"
       }
     }
