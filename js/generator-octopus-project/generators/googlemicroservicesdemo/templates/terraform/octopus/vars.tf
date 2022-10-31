@@ -28,6 +28,11 @@ variable "octopus_application_lifecycle_id" {
   nullable = false
 }
 
+variable "octopus_production_only_lifecycle_id" {
+  type = string
+  nullable = false
+}
+
 variable "octopus_development_app_environment_id" {
   type = string
   nullable = false

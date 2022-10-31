@@ -7,7 +7,7 @@ resource "octopusdeploy_project" "completedeployment_project" {
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
-  lifecycle_id                         = var.octopus_application_lifecycle_id
+  lifecycle_id                         = var.octopus_production_only_lifecycle_id
   name                                 = "Complete Deployment"
   project_group_id                     = octopusdeploy_project_group.google_microservice_demo.id
   tenanted_deployment_participation    = "Untenanted"
@@ -87,12 +87,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.cartservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -115,12 +113,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.checkoutservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -143,12 +139,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.currencyservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -171,12 +165,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.emailservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -199,12 +191,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.frontend_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -227,12 +217,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.loadgenerator_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -255,12 +243,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.paymentservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -283,12 +269,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.productcatalogservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -311,12 +295,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.recommendationservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -339,12 +321,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.rediscartservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
@@ -367,12 +347,10 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_production_app_environment_id
       ]
       features = []
-      package {
-        name                      = ""
+      primary_package {
         package_id                = octopusdeploy_project.shippingservice_project.id
         feed_id                   = var.octopus_built_in_feed_id
         acquisition_location      = "NotAcquired"
-        extract_during_deployment = false
       }
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",

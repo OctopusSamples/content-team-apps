@@ -26,6 +26,7 @@ jobs:
           octopus_space_id: <%= octopus_space_id %>
           octopus_dockerhub_feed_id: <%= octopus_dockerhub_feed_id %>
           octopus_application_lifecycle_id: <%= octopus_application_lifecycle_id %>
+          octopus_production_only_lifecycle_id: <%= octopus_production_only_lifecycle_id %>
           octopus_development_app_environment_id: <%= octopus_development_app_environment_id %>
           octopus_development_security_environment_id: <%= octopus_development_security_environment_id %>
           octopus_production_app_environment_id: <%= octopus_production_app_environment_id %>

@@ -29,6 +29,9 @@ inputs:
   octopus_application_lifecycle_id:
     description: 'The ID of Application lifecycle'
     required: true
+  octopus_production_only_lifecycle_id:
+    description: 'The ID of Production Only lifecycle'
+    required: true
   octopus_development_app_environment_id:
     description: 'The ID of Development App environment'
     required: true
@@ -160,6 +163,7 @@ runs:
         -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" \
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}" \
+        -var="octopus_production_only_lifecycle_id=${{ inputs.octopus_production_only_lifecycle_id }}" \
         -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
         -var="octopus_development_app_environment_id=${{ inputs.octopus_development_app_environment_id }}" \
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
