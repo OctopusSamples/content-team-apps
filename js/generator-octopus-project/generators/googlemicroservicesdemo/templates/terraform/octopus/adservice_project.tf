@@ -271,6 +271,7 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.adservice_resource_names,
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
