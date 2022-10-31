@@ -46,6 +46,32 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
   project_id = octopusdeploy_project.completedeployment_project.id
   step {
     condition           = "Success"
+    name                = "Redis Cart Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Redis Cart Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      primary_package {
+        package_id                = octopusdeploy_project.rediscartservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.rediscartservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "Ad Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -178,58 +204,6 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
   }
   step {
     condition           = "Success"
-    name                = "Frontend"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = [local.deployment_role]
-    action {
-      action_type    = "Octopus.DeployRelease"
-      name           = "Frontend"
-      run_on_server  = true
-      environments   = [
-        var.octopus_development_app_environment_id,
-        var.octopus_production_app_environment_id
-      ]
-      features = []
-      primary_package {
-        package_id                = octopusdeploy_project.frontend_project.id
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "NotAcquired"
-      }
-      properties = {
-        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
-        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.frontend_project.id
-      }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Load Generator"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = [local.deployment_role]
-    action {
-      action_type    = "Octopus.DeployRelease"
-      name           = "Load Generator"
-      run_on_server  = true
-      environments   = [
-        var.octopus_development_app_environment_id,
-        var.octopus_production_app_environment_id
-      ]
-      features = []
-      primary_package {
-        package_id                = octopusdeploy_project.loadgenerator_project.id
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "NotAcquired"
-      }
-      properties = {
-        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
-        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.loadgenerator_project.id
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Payment Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -308,32 +282,6 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
   }
   step {
     condition           = "Success"
-    name                = "Redis Cart Service"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = [local.deployment_role]
-    action {
-      action_type    = "Octopus.DeployRelease"
-      name           = "Redis Cart Service"
-      run_on_server  = true
-      environments   = [
-        var.octopus_development_app_environment_id,
-        var.octopus_production_app_environment_id
-      ]
-      features = []
-      primary_package {
-        package_id                = octopusdeploy_project.rediscartservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
-        acquisition_location      = "NotAcquired"
-      }
-      properties = {
-        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
-        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.rediscartservice_project.id
-      }
-    }
-  }
-  step {
-    condition           = "Success"
     name                = "Shipping Service"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
@@ -355,6 +303,58 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       properties = {
         "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
         "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.shippingservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Frontend"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Frontend"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      primary_package {
+        package_id                = octopusdeploy_project.frontend_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.frontend_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Load Generator"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Load Generator"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      primary_package {
+        package_id                = octopusdeploy_project.loadgenerator_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.loadgenerator_project.id
       }
     }
   }
