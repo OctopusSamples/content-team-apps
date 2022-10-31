@@ -86,6 +86,12 @@ module.exports = class extends Generator {
                 message: "The ID of the DockerHub feed",
                 default: "${{ secrets.OCTOPUS_DOCKERHUB_FEED_ID }}"
             },
+            {
+                type: "input",
+                name: "github_package_pat",
+                message: "The GitHub Personal Access Token used to access package feeds",
+                default: "${{ secrets.GH_PACKAGES_PAT }}"
+            },
         ]);
     }
 
@@ -106,6 +112,7 @@ module.exports = class extends Generator {
             octopus_production_security_environment_id: this.answers["octopus_production_security_environment_id"],
             octopus_dockerhub_feed_id: this.answers["octopus_dockerhub_feed_id"],
             octopus_application_lifecycle_id: this.answers["octopus_application_lifecycle_id"],
+            github_package_pat: this.answers["github_package_pat"],
         };
 
         this.fs.copyTpl(

@@ -4,7 +4,6 @@ locals {
       docker pull appthreat/dep-scan
       echo "##octopus[stdout-default]"
 
-      TIMESTAMP=$(date +%s%3N)
       SUCCESS=0
       for x in $(find . -name bom.xml -type f -print); do
           echo "Scanning $${x}"

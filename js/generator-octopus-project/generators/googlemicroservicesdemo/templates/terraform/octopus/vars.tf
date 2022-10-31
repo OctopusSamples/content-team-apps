@@ -52,3 +52,8 @@ variable "octopus_production_security_environment_id" {
   type = string
   nullable = false
 }
+
+variable "github_package_pat" {
+  type = string
+  nullable = false
+}

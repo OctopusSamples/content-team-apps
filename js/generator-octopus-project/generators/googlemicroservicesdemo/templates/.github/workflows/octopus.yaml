@@ -31,6 +31,7 @@ jobs:
           octopus_development_security_environment_id: <%= octopus_development_security_environment_id %>
           octopus_production_app_environment_id: <%= octopus_production_app_environment_id %>
           octopus_production_security_environment_id: <%= octopus_production_security_environment_id %>
+          github_package_pat: <%= github_package_pat %>
 
           # AWS vars
           aws_access_key: <%= aws_access_key %>

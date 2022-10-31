@@ -32,28 +32,28 @@ resource "github_actions_secret" "production_environment" {
   repository      = var.github_repo
   secret_name     = "OCTOPUS_PRODUCTION_ENVIRONMENT_ID"
   plaintext_value = octopusdeploy_environment.production_environment[0].id
-  count           = var.octopus_production_security_environment_exists ? 0 : 1
+  count           = var.octopus_production_app_environment_exists ? 0 : 1
 }
 
 resource "github_actions_secret" "production_environment_existing" {
   repository      = var.github_repo
   secret_name     = "OCTOPUS_PRODUCTION_ENVIRONMENT_ID"
   plaintext_value = data.octopusdeploy_environments.production.environments[0].id
-  count           = var.octopus_production_security_environment_exists ? 1 : 0
+  count           = var.octopus_production_app_environment_exists ? 1 : 0
 }
 
 resource "github_actions_secret" "production_security_environment" {
   repository      = var.github_repo
   secret_name     = "OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID"
   plaintext_value = octopusdeploy_environment.development_security_environment[0].id
-  count           = var.octopus_production_app_environment_exists ? 0 : 1
+  count           = var.octopus_production_security_environment_exists ? 0 : 1
 }
 
 resource "github_actions_secret" "production_security_environment_existing" {
   repository      = var.github_repo
   secret_name     = "OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID"
   plaintext_value = data.octopusdeploy_environments.production_security.environments[0].id
-  count           = var.octopus_production_app_environment_exists ? 1 : 0
+  count           = var.octopus_production_security_environment_exists ? 1 : 0
 }
 
 resource "github_actions_secret" "simple_lifecycle_id" {

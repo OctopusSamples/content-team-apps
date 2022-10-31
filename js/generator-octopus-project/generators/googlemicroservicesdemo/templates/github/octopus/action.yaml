@@ -53,6 +53,9 @@ inputs:
   aws_region:
     description: 'The AWS region'
     required: true
+  github_package_pat:
+    description: 'The GitHub Personal Access Token used to access package feeds'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -161,6 +164,7 @@ runs:
         -var="octopus_server=${{ inputs.octopus_server }}" \
         -var="octopus_apikey=${{ inputs.octopus_apikey }}" \
         -var="octopus_space_id=${{ inputs.octopus_space_id }}" \
+        -var="github_package_pat=${{ inputs.github_package_pat }}" \
         -var="octopus_dockerhub_feed_id=${{ inputs.octopus_dockerhub_feed_id }}" \
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}" \
         -var="octopus_production_only_lifecycle_id=${{ inputs.octopus_production_only_lifecycle_id }}" \
