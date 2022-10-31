@@ -72,4 +72,312 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Cart Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Cart Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.cartservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.cartservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Checkout Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Checkout Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.checkoutservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.checkoutservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Currency Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Currency Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.currencyservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.currencyservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Email Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Email Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.emailservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.emailservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Frontend"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Frontend"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.frontend_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.frontend_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Load Generator"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Load Generator"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.loadgenerator_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.loadgenerator_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Payment Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Payment Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.paymentservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.paymentservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Product Catalog Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Product Catalog Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.productcatalogservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.productcatalogservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Recommendation Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Recommendation Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.recommendationservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.recommendationservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Redis Cart Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Redis Cart Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.rediscartservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.rediscartservice_project.id
+      }
+    }
+  }
+  step {
+    condition           = "Success"
+    name                = "Shipping Service"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.DeployRelease"
+      name           = "Shipping Service"
+      run_on_server  = true
+      environments   = [
+        var.octopus_development_app_environment_id,
+        var.octopus_production_app_environment_id
+      ]
+      features = []
+      package {
+        name                      = ""
+        package_id                = octopusdeploy_project.shippingservice_project.id
+        feed_id                   = var.octopus_built_in_feed_id
+        acquisition_location      = "NotAcquired"
+        extract_during_deployment = false
+      }
+      properties = {
+        "Octopus.Action.DeployRelease.DeploymentCondition": "Always",
+        "Octopus.Action.DeployRelease.ProjectId": octopusdeploy_project.shippingservice_project.id
+      }
+    }
+  }
 }
