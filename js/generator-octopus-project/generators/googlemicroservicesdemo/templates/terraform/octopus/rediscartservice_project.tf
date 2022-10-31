@@ -257,7 +257,6 @@ resource "octopusdeploy_deployment_process" "rediscartservice_deployment_process
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.rediscartservice_resource_names}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes": "[{\"Name\":\"redis-data\",\"Type\":\"EmptyDir\",\"EmptyDirMedium\":\"\"}]",
-        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsNonRoot" : "true",
