@@ -1,178 +1,150 @@
 locals {
-  frontend_package_name        = "octopussamples/frontend"
-  frontend_resource_names      = "frontend"
-  frontend_project_name        = "Google Microservice Frontend"
-  frontend_project_description = "Deploys the frontend web app."
-  frontend_containers          = jsonencode([
+  adservice_package_name        = "octopussamples/adservice"
+  adservice_resource_names      = "adservice"
+  adservice_project_name        = "Google Microservice Ad Service"
+  adservice_project_description = "Deploys the ad service."
+  adservice_containers          = jsonencode([
     {
-      IsNew : true
-      InitContainer : "False"
+      IsNew : true,
+      InitContainer : "False",
       Ports : [
         {
-          value : "8080"
+          value : "9555"
         }
-      ]
+      ],
       EnvironmentVariables : [
         {
-          key : "PORT"
-          value : "8080"
+          key : "PORT",
+          value : "9555"
         },
         {
-          key : "PRODUCT_CATALOG_SERVICE_ADDR"
-          value : "productcatalogservice:3550"
-        },
-        {
-          key : "CURRENCY_SERVICE_ADDR"
-          value : "currencyservice:7000"
-        },
-        {
-          key : "CART_SERVICE_ADDR"
-          value : "cartservice:7070"
-        },
-        {
-          key : "RECOMMENDATION_SERVICE_ADDR"
-          value : "recommendationservice:8080"
-        },
-        {
-          key : "SHIPPING_SERVICE_ADDR"
-          value : "shippingservice:50051"
-        },
-        {
-          key : "CHECKOUT_SERVICE_ADDR"
-          value : "checkoutservice:5050"
-        },
-        {
-          key : "AD_SERVICE_ADDR"
-          value : "adservice:9555"
-        },
-        {
-          key : "DISABLE_TRACING"
+          key : "DISABLE_STATS",
           value : "1"
         },
         {
-          key : "DISABLE_PROFILER"
+          key : "DISABLE_TRACING",
           value : "1"
         }
-      ]
-      SecretEnvironmentVariables : []
-      SecretEnvFromSource : []
-      ConfigMapEnvironmentVariables : []
-      ConfigMapEnvFromSource : []
-      FieldRefEnvironmentVariables : []
-      VolumeMounts : []
-      AcquisitionLocation : "NotAcquired"
-      Name : local.frontend_resource_names
-      PackageId : local.frontend_package_name
+      ],
+      SecretEnvironmentVariables : [],
+      SecretEnvFromSource : [],
+      ConfigMapEnvironmentVariables : [],
+      ConfigMapEnvFromSource : [],
+      FieldRefEnvironmentVariables : [],
+      VolumeMounts : [],
+      AcquisitionLocation : "NotAcquired",
+      Name : local.adservice_resource_names
+      PackageId : local.adservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
-      Properties : {}
-      Command : []
-      Args : []
+      Properties : {
+
+      },
+      Command : [],
+      Args : [],
       Resources : {
         requests : {
-          memory : "64Mi"
-          cpu : "100m"
+          memory : "180Mi",
+          cpu : "200m",
           ephemeralStorage : ""
-        }
+        },
         limits : {
-          memory : "128Mi"
-          cpu : "200m"
-          ephemeralStorage : ""
-          nvidiaGpu : ""
+          memory : "300Mi",
+          cpu : "300m",
+          ephemeralStorage : "",
+          nvidiaGpu : "",
           amdGpu : ""
         }
-      }
+      },
       LivenessProbe : {
-        failureThreshold : ""
-        initialDelaySeconds : "10"
-        periodSeconds : ""
-        successThreshold : ""
-        timeoutSeconds : ""
-        type : "HttpGet"
+        failureThreshold : "",
+        initialDelaySeconds : "20",
+        periodSeconds : "15",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "Command",
         exec : {
-          command : []
-        }
-        httpGet : {
-          host : ""
-          path : "/_healthz"
-          port : "8080"
-          scheme : ""
-          httpHeaders : [
-            {
-              key : "Cookie"
-              value : "shop_session-id=x-liveness-probe"
-            }
+          command : [
+            "/bin/grpc_health_probe",
+            "-addr= : 9555"
           ]
-        }
-        tcpSocket : {
-          host : ""
-          port : ""
-        }
-      }
-      ReadinessProbe : {
-        failureThreshold : ""
-        initialDelaySeconds : "10"
-        periodSeconds : ""
-        successThreshold : ""
-        timeoutSeconds : ""
-        type : "HttpGet"
-        exec : {
-          command : []
-        }
+        },
         httpGet : {
-          host : ""
-          path : "/_healthz"
-          port : "8080"
-          scheme : ""
-          httpHeaders : [
-            {
-              key : "Cookie"
-              value : "shop_session-id=x-readiness-probe"
-            }
-          ]
-        }
-        tcpSocket : {
-          host : ""
-          port : ""
-        }
-      }
-      StartupProbe : {
-        failureThreshold : ""
-        initialDelaySeconds : ""
-        periodSeconds : ""
-        successThreshold : ""
-        timeoutSeconds : ""
-        type : null
-        exec : {
-          command : []
-        }
-        httpGet : {
-          host : ""
-          path : ""
-          port : ""
-          scheme : ""
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
           httpHeaders : []
-        }
+        },
         tcpSocket : {
-          host : ""
+          host : "",
           port : ""
         }
-      }
-      Lifecycle : {}
-      SecurityContext : {
-        allowPrivilegeEscalation : "false"
-        privileged : "false"
-        readOnlyRootFilesystem : "true"
-        runAsGroup : ""
-        runAsNonRoot : ""
-        runAsUser : ""
-        capabilities : {
-          add : []
-          drop : ["all"]
+      },
+      ReadinessProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "20",
+        periodSeconds : "15",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "Command",
+        exec : {
+          command : [
+            "/bin/grpc_health_probe",
+            "-addr= : 9555"
+          ]
+        },
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : []
+        },
+        tcpSocket : {
+          host : "",
+          port : ""
         }
+      },
+      StartupProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : null,
+        exec : {
+          command : []
+        },
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : []
+        },
+        tcpSocket : {
+          host : "",
+          port : ""
+        }
+      },
+      Lifecycle : {
+
+      },
+      SecurityContext : {
+        allowPrivilegeEscalation : "false",
+        privileged : "false",
+        readOnlyRootFilesystem : "true",
+        runAsGroup : "",
+        runAsNonRoot : "",
+        runAsUser : "",
+        capabilities : {
+          add : [],
+          drop : ["all"]
+        },
         seLinuxOptions : {
-          level : ""
-          role : ""
-          type : ""
+          level : "",
+          role : "",
+          type : "",
           user : ""
         }
       }
@@ -180,17 +152,17 @@ locals {
   ])
 }
 
-resource "octopusdeploy_project" "frontend_project" {
+resource "octopusdeploy_project" "adservice_project" {
   auto_create_release                  = false
   default_guided_failure_mode          = "EnvironmentDefault"
   default_to_skip_if_already_installed = false
-  description                          = local.frontend_project_description
+  description                          = local.adservice_project_description
   discrete_channel_release             = false
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_application_lifecycle_id
-  name                                 = local.frontend_project_name
+  name                                 = local.adservice_project_name
   project_group_id                     = octopusdeploy_project_group.google_microservice_demo.id
   tenanted_deployment_participation    = "Untenanted"
   space_id                             = var.octopus_space_id
@@ -206,56 +178,56 @@ resource "octopusdeploy_project" "frontend_project" {
   }
 }
 
-resource "octopusdeploy_channel" "frontend_feature_branch" {
+resource "octopusdeploy_channel" "adservice_feature_branch" {
   name        = "Feature Branches"
-  project_id  = octopusdeploy_project.frontend_project.id
+  project_id  = octopusdeploy_project.adservice_project.id
   description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
+  depends_on  = [octopusdeploy_deployment_process.adservice_deployment_process]
   is_default  = false
   rule {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_resource_names
+      package_reference = local.adservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_channel" "frontend_mainline" {
+resource "octopusdeploy_channel" "adservice_mainline" {
   name        = "Mainline"
-  project_id  = octopusdeploy_project.frontend_project.id
+  project_id  = octopusdeploy_project.adservice_project.id
   description = "The channel through which mainline releases are deployed"
-  depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
+  depends_on  = [octopusdeploy_deployment_process.adservice_deployment_process]
   is_default  = true
   rule {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_resource_names
+      package_reference = local.adservice_resource_names
     }
   }
 }
 
-resource "octopusdeploy_variable" "frontend_debug_variable" {
+resource "octopusdeploy_variable" "adservice_debug_variable" {
   name         = "OctopusPrintVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.frontend_project.id
+  owner_id     = octopusdeploy_project.adservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
+resource "octopusdeploy_variable" "adservice_debug_evaluated_variable" {
   name         = "OctopusPrintEvaluatedVariables"
   type         = "String"
   description  = "A debug variable used to print all variables to the logs. See [here](https://octopus.com/docs/support/debug-problems-with-octopus-variables) for more information."
   is_sensitive = false
-  owner_id     = octopusdeploy_project.frontend_project.id
+  owner_id     = octopusdeploy_project.adservice_project.id
   value        = "False"
 }
 
-resource "octopusdeploy_deployment_process" "deploy_frontend" {
-  project_id = octopusdeploy_project.frontend_project.id
+resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
+  project_id = octopusdeploy_project.adservice_project.id
   step {
     condition           = "Success"
     name                = local.deployment_step
@@ -273,8 +245,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.frontend_resource_names
-        package_id                = local.frontend_package_name
+        name                      = local.adservice_resource_names
+        package_id                = local.adservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -297,7 +269,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
-        "Octopus.Action.KubernetesContainers.DeploymentName" : local.frontend_resource_names,
+        "Octopus.Action.KubernetesContainers.DeploymentName" : local.adservice_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
@@ -308,9 +280,9 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsNonRoot" : "true",
         "Octopus.Action.KubernetesContainers.PodSecuritySysctls" : "[]",
         "Octopus.Action.KubernetesContainers.PodServiceAccountName" : "default",
-        "Octopus.Action.KubernetesContainers.Containers" : local.frontend_containers,
+        "Octopus.Action.KubernetesContainers.Containers" : local.adservice_containers,
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsUser" : "1000",
-        "Octopus.Action.KubernetesContainers.ServiceName" : local.frontend_resource_names,
+        "Octopus.Action.KubernetesContainers.ServiceName" : local.adservice_resource_names,
         "Octopus.Action.KubernetesContainers.LoadBalancerAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.ServicePorts" : jsonencode([
           {
