@@ -26,9 +26,9 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.loadgenerator_resource_names
-      PackageId : local.loadgenerator_package_name
-      FeedId : var.octopus_dockerhub_feed_id
+      Name : local.loadgenerator_resource_names,
+      PackageId : local.loadgenerator_package_name,
+      FeedId : var.octopus_dockerhub_feed_id,
       Properties : {
 
       },
@@ -154,8 +154,8 @@ locals {
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
       Name : "frontend-check",
-      PackageId : "busybox"
-      FeedId : var.octopus_dockerhub_feed_id
+      PackageId : "busybox",
+      FeedId : var.octopus_dockerhub_feed_id,
       Properties : {
 
       },
