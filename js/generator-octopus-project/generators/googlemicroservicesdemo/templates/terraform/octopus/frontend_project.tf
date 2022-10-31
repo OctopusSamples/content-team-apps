@@ -1,7 +1,7 @@
 locals {
   frontend_package_name        = "octopussamples/frontend"
   frontend_resource_names      = "frontend"
-  frontend_project_name        = "Google Microservice Frontend"
+  frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
   frontend_containers          = jsonencode([
     {

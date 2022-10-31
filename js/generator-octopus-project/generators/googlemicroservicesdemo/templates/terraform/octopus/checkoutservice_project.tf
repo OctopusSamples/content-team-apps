@@ -1,7 +1,7 @@
 locals {
   checkoutservice_package_name        = "octopussamples/checkoutservice"
   checkoutservice_resource_names      = "checkoutservice"
-  checkoutservice_project_name        = "Google Microservice Checkout Service"
+  checkoutservice_project_name        = "Checkout Service"
   checkoutservice_project_description = "Deploys the checkout service."
   checkoutservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5050\",\"targetPort\":\"5050\"}]"
   checkoutservice_containers          = jsonencode([

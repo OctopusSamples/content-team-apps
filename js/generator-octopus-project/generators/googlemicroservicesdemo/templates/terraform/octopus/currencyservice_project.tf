@@ -1,7 +1,7 @@
 locals {
   currencyservice_package_name        = "octopussamples/currencyservice"
   currencyservice_resource_names      = "currencyservice"
-  currencyservice_project_name        = "Google Microservice Currency Service"
+  currencyservice_project_name        = "Currency Service"
   currencyservice_project_description = "Deploys the currency service."
   currencyservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7000\",\"targetPort\":\"7000\"}]"
   currencyservice_containers          = jsonencode([

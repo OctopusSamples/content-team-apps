@@ -1,7 +1,7 @@
 locals {
   paymentservice_package_name        = "octopussamples/paymentservice"
   paymentservice_resource_names      = "paymentservice"
-  paymentservice_project_name        = "Google Microservice Payment Service"
+  paymentservice_project_name        = "Payment Service"
   paymentservice_project_description = "Deploys the payment service."
   paymentservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
   paymentservice_containers          = jsonencode([{

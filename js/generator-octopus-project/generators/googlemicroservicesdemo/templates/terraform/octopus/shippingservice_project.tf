@@ -1,7 +1,7 @@
 locals {
   shippingservice_package_name        = "octopussamples/shippingservice"
   shippingservice_resource_names      = "shippingservice"
-  shippingservice_project_name        = "Google Microservice Shipping Service"
+  shippingservice_project_name        = "Shipping Service"
   shippingservice_project_description = "Deploys the shipping service."
   shippingservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
   shippingservice_containers          = jsonencode([

@@ -1,7 +1,7 @@
 locals {
   loadgenerator_package_name        = "octopussamples/loadgenerator"
   loadgenerator_resource_names      = "loadgenerator"
-  loadgenerator_project_name        = "Google Microservice Load Generator"
+  loadgenerator_project_name        = "Load Generator"
   loadgenerator_project_description = "Deploys the load generator."
   loadgenerator_service_ports       = "[]"
   loadgenerator_containers          = jsonencode([

@@ -1,7 +1,7 @@
 locals {
   cartservice_package_name        = "octopussamples/cartservice"
   cartservice_resource_names      = "cartservice"
-  cartservice_project_name        = "Google Microservice Cart Service"
+  cartservice_project_name        = "Cart Service"
   cartservice_project_description = "Deploys the cart service."
   cartservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7070\",\"targetPort\":\"7070\"}]"
   cartservice_containers          = jsonencode([

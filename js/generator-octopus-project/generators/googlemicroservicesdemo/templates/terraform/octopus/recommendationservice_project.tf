@@ -1,7 +1,7 @@
 locals {
   recommendationservice_package_name        = "octopussamples/recommendationservice"
   recommendationservice_resource_names      = "recommendationservice"
-  recommendationservice_project_name        = "Google Microservice Recommendation Service"
+  recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
   recommendationservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"8080\",\"targetPort\":\"8080\"}]"
   recommendationservice_containers          = jsonencode([

@@ -1,7 +1,7 @@
 locals {
   rediscartservice_package_name        = "redis"
   rediscartservice_resource_names      = "redis-cart"
-  rediscartservice_project_name        = "Google Microservice Redis Cart Service"
+  rediscartservice_project_name        = "Redis Cart Service"
   rediscartservice_project_description = "Deploys the redis cart service."
   rediscartservice_service_ports       = "[{\"name\":\"tls-redis\",\"port\":\"6379\",\"targetPort\":\"6379\"}]"
   rediscartservice_containers          = jsonencode([{
