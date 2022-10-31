@@ -90,7 +90,7 @@ locals {
         exec : {
           command : [
             "/bin/grpc_health_probe",
-            "-addr= : 9555"
+            "-addr=:9555"
           ]
         },
         httpGet : {
