@@ -1,138 +1,144 @@
 locals {
-  rediscartservice_package_id        = "redis"
-  rediscartservice_package_name      = "redis-cart"
+  rediscartservice_package_id          = "redis"
+  rediscartservice_package_name        = "redis-cart"
   rediscartservice_resource_names      = "redis-cart#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   rediscartservice_project_name        = "Redis Cart Service"
   rediscartservice_project_description = "Deploys the redis cart service."
   rediscartservice_service_ports       = "[{\"name\":\"tls-redis\",\"port\":\"6379\",\"targetPort\":\"6379\"}]"
-  rediscartservice_containers          = jsonencode([{
-    "IsNew":true,
-    "InitContainer":"False",
-    "Ports":[{
-      "value":"6379"
-    }],
-    "EnvironmentVariables":[],
-    "SecretEnvironmentVariables":[],
-    "SecretEnvFromSource":[],
-    "ConfigMapEnvironmentVariables":[],
-    "ConfigMapEnvFromSource":[],
-    "FieldRefEnvironmentVariables":[],
-    "VolumeMounts":[{
-      "key":"redis-data",
-      "value":"/data",
-      "option":""
-    }],
-    "AcquisitionLocation":"NotAcquired",
-    Name : local.rediscartservice_package_name
-    PackageId : local.rediscartservice_package_id
-    FeedId : var.octopus_dockerhub_feed_id
-    "Properties":{
+  rediscartservice_containers          = jsonencode([
+    {
+      "IsNew" : true,
+      "InitContainer" : "False",
+      "Ports" : [
+        {
+          "value" : "6379"
+        }
+      ],
+      "EnvironmentVariables" : [],
+      "SecretEnvironmentVariables" : [],
+      "SecretEnvFromSource" : [],
+      "ConfigMapEnvironmentVariables" : [],
+      "ConfigMapEnvFromSource" : [],
+      "FieldRefEnvironmentVariables" : [],
+      "VolumeMounts" : [
+        {
+          "key" : "redis-data",
+          "value" : "/data",
+          "option" : ""
+        }
+      ],
+      "AcquisitionLocation" : "NotAcquired",
+      Name : local.rediscartservice_package_name
+      PackageId : local.rediscartservice_package_id
+      FeedId : var.octopus_dockerhub_feed_id
+      "Properties" : {
 
-    },
-    "Command":[],
-    "Args":[],
-    "Resources":{
-      "requests":{
-        "memory":"200Mi",
-        "cpu":"70m",
-        "ephemeralStorage":""
       },
-      "limits":{
-        "memory":"256Mi",
-        "cpu":"125m",
-        "ephemeralStorage":"",
-        "nvidiaGpu":"",
-        "amdGpu":""
-      }
-    },
-    "LivenessProbe":{
-      "failureThreshold":"",
-      "initialDelaySeconds":"",
-      "periodSeconds":"5",
-      "successThreshold":"",
-      "timeoutSeconds":"",
-      "type":"TcpSocket",
-      "exec":{
-        "command":[]
+      "Command" : [],
+      "Args" : [],
+      "Resources" : {
+        "requests" : {
+          "memory" : "200Mi",
+          "cpu" : "70m",
+          "ephemeralStorage" : ""
+        },
+        "limits" : {
+          "memory" : "256Mi",
+          "cpu" : "125m",
+          "ephemeralStorage" : "",
+          "nvidiaGpu" : "",
+          "amdGpu" : ""
+        }
       },
-      "httpGet":{
-        "host":"",
-        "path":"",
-        "port":"",
-        "scheme":"",
-        "httpHeaders":[]
+      "LivenessProbe" : {
+        "failureThreshold" : "",
+        "initialDelaySeconds" : "",
+        "periodSeconds" : "5",
+        "successThreshold" : "",
+        "timeoutSeconds" : "",
+        "type" : "TcpSocket",
+        "exec" : {
+          "command" : []
+        },
+        "httpGet" : {
+          "host" : "",
+          "path" : "",
+          "port" : "",
+          "scheme" : "",
+          "httpHeaders" : []
+        },
+        "tcpSocket" : {
+          "host" : "",
+          "port" : "6379"
+        }
       },
-      "tcpSocket":{
-        "host":"",
-        "port":"6379"
-      }
-    },
-    "ReadinessProbe":{
-      "failureThreshold":"",
-      "initialDelaySeconds":"",
-      "periodSeconds":"5",
-      "successThreshold":"",
-      "timeoutSeconds":"",
-      "type":"TcpSocket",
-      "exec":{
-        "command":[]
+      "ReadinessProbe" : {
+        "failureThreshold" : "",
+        "initialDelaySeconds" : "",
+        "periodSeconds" : "5",
+        "successThreshold" : "",
+        "timeoutSeconds" : "",
+        "type" : "TcpSocket",
+        "exec" : {
+          "command" : []
+        },
+        "httpGet" : {
+          "host" : "",
+          "path" : "",
+          "port" : "",
+          "scheme" : "",
+          "httpHeaders" : []
+        },
+        "tcpSocket" : {
+          "host" : "",
+          "port" : "6379"
+        }
       },
-      "httpGet":{
-        "host":"",
-        "path":"",
-        "port":"",
-        "scheme":"",
-        "httpHeaders":[]
+      "StartupProbe" : {
+        "failureThreshold" : "",
+        "initialDelaySeconds" : "",
+        "periodSeconds" : "",
+        "successThreshold" : "",
+        "timeoutSeconds" : "",
+        "type" : null,
+        "exec" : {
+          "command" : []
+        },
+        "httpGet" : {
+          "host" : "",
+          "path" : "",
+          "port" : "",
+          "scheme" : "",
+          "httpHeaders" : []
+        },
+        "tcpSocket" : {
+          "host" : "",
+          "port" : ""
+        }
       },
-      "tcpSocket":{
-        "host":"",
-        "port":"6379"
-      }
-    },
-    "StartupProbe":{
-      "failureThreshold":"",
-      "initialDelaySeconds":"",
-      "periodSeconds":"",
-      "successThreshold":"",
-      "timeoutSeconds":"",
-      "type":null,
-      "exec":{
-        "command":[]
-      },
-      "httpGet":{
-        "host":"",
-        "path":"",
-        "port":"",
-        "scheme":"",
-        "httpHeaders":[]
-      },
-      "tcpSocket":{
-        "host":"",
-        "port":""
-      }
-    },
-    "Lifecycle":{
+      "Lifecycle" : {
 
-    },
-    "SecurityContext":{
-      "allowPrivilegeEscalation":"false",
-      "privileged":"false",
-      "readOnlyRootFilesystem":"true",
-      "runAsGroup":"",
-      "runAsNonRoot":"",
-      "runAsUser":"",
-      "capabilities":{
-        "add":[],
-        "drop":["all"]
       },
-      "seLinuxOptions":{
-        "level":"",
-        "role":"",
-        "type":"",
-        "user":""
+      "SecurityContext" : {
+        "allowPrivilegeEscalation" : "false",
+        "privileged" : "false",
+        "readOnlyRootFilesystem" : "true",
+        "runAsGroup" : "",
+        "runAsNonRoot" : "",
+        "runAsUser" : "",
+        "capabilities" : {
+          "add" : [],
+          "drop" : ["all"]
+        },
+        "seLinuxOptions" : {
+          "level" : "",
+          "role" : "",
+          "type" : "",
+          "user" : ""
+        }
       }
     }
-  }])
+  ])
 }
 
 resource "octopusdeploy_project" "rediscartservice_project" {
@@ -218,15 +224,16 @@ resource "octopusdeploy_deployment_process" "rediscartservice_deployment_process
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
-      features = ["Octopus.Features.KubernetesService"]
+      environments = []
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.rediscartservice_package_name
         package_id                = local.rediscartservice_package_id
@@ -257,7 +264,7 @@ resource "octopusdeploy_deployment_process" "rediscartservice_deployment_process
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.rediscartservice_resource_names}\"}",
-        "Octopus.Action.KubernetesContainers.CombinedVolumes": "[{\"Name\":\"redis-data\",\"Type\":\"EmptyDir\",\"EmptyDirMedium\":\"\"}]",
+        "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[{\"Name\":\"redis-data\",\"Type\":\"EmptyDir\",\"EmptyDirMedium\":\"\"}]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsNonRoot" : "true",

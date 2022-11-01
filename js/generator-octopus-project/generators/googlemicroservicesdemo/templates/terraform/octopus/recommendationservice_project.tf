@@ -1,6 +1,6 @@
 locals {
-  recommendationservice_package_id        = "octopussamples/recommendationservice"
-  recommendationservice_package_name      = "recommendationservice"
+  recommendationservice_package_id          = "octopussamples/recommendationservice"
+  recommendationservice_package_name        = "recommendationservice"
   recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
@@ -245,15 +245,16 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
-      features = ["Octopus.Features.KubernetesService"]
+      environments = []
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.recommendationservice_package_name
         package_id                = local.recommendationservice_package_id
@@ -280,7 +281,7 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.recommendationservice_resource_names,
-        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds" : "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",

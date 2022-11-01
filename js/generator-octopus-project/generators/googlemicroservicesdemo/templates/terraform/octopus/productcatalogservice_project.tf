@@ -249,7 +249,8 @@ resource "octopusdeploy_deployment_process" "productcatalogservice_deployment_pr
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
-      features = ["Octopus.Features.KubernetesService"]
+      environments = []
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.productcatalogservice_package_name
         package_id                = local.productcatalogservice_package_id

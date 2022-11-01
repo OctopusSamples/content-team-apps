@@ -245,6 +245,7 @@ resource "octopusdeploy_deployment_process" "emailservice_deployment_process" {
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
+      environments = []
       features = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.emailservice_package_name

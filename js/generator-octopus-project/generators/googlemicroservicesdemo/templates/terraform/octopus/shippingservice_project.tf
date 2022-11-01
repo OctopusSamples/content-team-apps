@@ -1,6 +1,6 @@
 locals {
-  shippingservice_package_id        = "octopussamples/shippingservice"
-  shippingservice_package_name      = "shippingservice"
+  shippingservice_package_id          = "octopussamples/shippingservice"
+  shippingservice_package_name        = "shippingservice"
   shippingservice_resource_names      = "shippingservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   shippingservice_project_name        = "Shipping Service"
   shippingservice_project_description = "Deploys the shipping service."
@@ -241,15 +241,16 @@ resource "octopusdeploy_deployment_process" "shippingservice_deployment_process"
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
-      features = ["Octopus.Features.KubernetesService"]
+      environments = []
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.shippingservice_package_name
         package_id                = local.shippingservice_package_id

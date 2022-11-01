@@ -239,6 +239,7 @@ resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
+      environments = []
       features = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.cartservice_package_name
