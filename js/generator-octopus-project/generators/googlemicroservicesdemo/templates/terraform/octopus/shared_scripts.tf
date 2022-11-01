@@ -33,6 +33,6 @@ locals {
         echo "No critical vulnerabilities were detected"
       fi
 
-      exit 0
+      exit $SUCCESS
     EOT
 }
