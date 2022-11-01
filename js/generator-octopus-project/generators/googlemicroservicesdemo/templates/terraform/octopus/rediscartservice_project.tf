@@ -1,6 +1,7 @@
 locals {
   rediscartservice_package_name        = "redis"
-  rediscartservice_resource_names      = "redis-cart"
+  rediscartservice_package_names      = "redis-cart"
+  rediscartservice_resource_names      = "redis-cart#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   rediscartservice_project_name        = "Redis Cart Service"
   rediscartservice_project_description = "Deploys the redis cart service."
   rediscartservice_service_ports       = "[{\"name\":\"tls-redis\",\"port\":\"6379\",\"targetPort\":\"6379\"}]"
@@ -22,7 +23,7 @@ locals {
       "option":""
     }],
     "AcquisitionLocation":"NotAcquired",
-    Name : local.rediscartservice_resource_names
+    Name : local.rediscartservice_package_names
     PackageId : local.rediscartservice_package_name
     FeedId : var.octopus_dockerhub_feed_id
     "Properties":{
@@ -170,7 +171,7 @@ resource "octopusdeploy_channel" "rediscartservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.rediscartservice_resource_names
+      package_reference = local.rediscartservice_package_names
     }
   }
 }
@@ -185,7 +186,7 @@ resource "octopusdeploy_channel" "rediscartservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.rediscartservice_resource_names
+      package_reference = local.rediscartservice_package_names
     }
   }
 }
@@ -227,7 +228,7 @@ resource "octopusdeploy_deployment_process" "rediscartservice_deployment_process
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.rediscartservice_resource_names
+        name                      = local.rediscartservice_package_names
         package_id                = local.rediscartservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

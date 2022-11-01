@@ -1,6 +1,7 @@
 locals {
   cartservice_package_name        = "octopussamples/cartservice"
-  cartservice_resource_names      = "cartservice"
+  cartservice_package_names      = "cartservice"
+  cartservice_resource_names      = "cartservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   cartservice_project_name        = "Cart Service"
   cartservice_project_description = "Deploys the cart service."
   cartservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7070\",\"targetPort\":\"7070\"}]"
@@ -26,7 +27,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.cartservice_resource_names
+      Name : local.cartservice_package_names
       PackageId : local.cartservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -183,7 +184,7 @@ resource "octopusdeploy_channel" "cartservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.cartservice_resource_names
+      package_reference = local.cartservice_package_names
     }
   }
 }
@@ -198,7 +199,7 @@ resource "octopusdeploy_channel" "cartservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.cartservice_resource_names
+      package_reference = local.cartservice_package_names
     }
   }
 }
@@ -240,7 +241,7 @@ resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.cartservice_resource_names
+        name                      = local.cartservice_package_names
         package_id                = local.cartservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

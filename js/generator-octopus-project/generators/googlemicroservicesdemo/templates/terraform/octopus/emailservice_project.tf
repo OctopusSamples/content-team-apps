@@ -1,6 +1,7 @@
 locals {
   emailservice_package_name        = "octopussamples/emailservice"
-  emailservice_resource_names      = "emailservice"
+  emailservice_package_names      = "emailservice"
+  emailservice_resource_names      = "emailservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   emailservice_project_name        = "Email Service"
   emailservice_project_description = "Deploys the email service."
   emailservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5000\",\"targetPort\":\"8080\"}]"
@@ -34,7 +35,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.emailservice_resource_names
+      Name : local.emailservice_package_names
       PackageId : local.emailservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -189,7 +190,7 @@ resource "octopusdeploy_channel" "emailservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.emailservice_resource_names
+      package_reference = local.emailservice_package_names
     }
   }
 }
@@ -204,7 +205,7 @@ resource "octopusdeploy_channel" "emailservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.emailservice_resource_names
+      package_reference = local.emailservice_package_names
     }
   }
 }
@@ -246,7 +247,7 @@ resource "octopusdeploy_deployment_process" "emailservice_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.emailservice_resource_names
+        name                      = local.emailservice_package_names
         package_id                = local.emailservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

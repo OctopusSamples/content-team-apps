@@ -1,6 +1,7 @@
 locals {
   productcatalogservice_package_name        = "octopussamples/productcatalogservice"
-  productcatalogservice_resource_names      = "productcatalogservice"
+  productcatalogservice_package_names      = "productcatalogservice"
+  productcatalogservice_resource_names      = "productcatalogservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   productcatalogservice_project_name        = "Product Catalog Service"
   productcatalogservice_project_description = "Deploys the product catalog service."
   productcatalogservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"3550\",\"targetPort\":\"3550\"}]"
@@ -33,7 +34,7 @@ locals {
     FieldRefEnvironmentVariables:[],
     VolumeMounts:[],
     AcquisitionLocation:"NotAcquired",
-    Name : local.productcatalogservice_resource_names
+    Name : local.productcatalogservice_package_names
     PackageId : local.productcatalogservice_package_name
     FeedId : var.octopus_dockerhub_feed_id
     Properties:{
@@ -183,7 +184,7 @@ resource "octopusdeploy_channel" "productcatalogservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.productcatalogservice_resource_names
+      package_reference = local.productcatalogservice_package_names
     }
   }
 }
@@ -198,7 +199,7 @@ resource "octopusdeploy_channel" "productcatalogservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.productcatalogservice_resource_names
+      package_reference = local.productcatalogservice_package_names
     }
   }
 }
@@ -240,7 +241,7 @@ resource "octopusdeploy_deployment_process" "productcatalogservice_deployment_pr
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.productcatalogservice_resource_names
+        name                      = local.productcatalogservice_package_names
         package_id                = local.productcatalogservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

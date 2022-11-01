@@ -1,6 +1,7 @@
 locals {
   adservice_package_name        = "octopussamples/adservice"
-  adservice_resource_names      = "adservice"
+  adservice_package_names      = "adservice"
+  adservice_resource_names      = "adservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   adservice_project_name        = "Ad Service"
   adservice_project_description = "Deploys the ad service."
   adservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"9555\",\"targetPort\":\"9555\"}]"
@@ -34,7 +35,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.adservice_resource_names
+      Name : local.adservice_package_names
       PackageId : local.adservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -189,7 +190,7 @@ resource "octopusdeploy_channel" "adservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_resource_names
+      package_reference = local.adservice_package_names
     }
   }
 }
@@ -204,7 +205,7 @@ resource "octopusdeploy_channel" "adservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_resource_names
+      package_reference = local.adservice_package_names
     }
   }
 }
@@ -246,7 +247,7 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.adservice_resource_names
+        name                      = local.adservice_package_names
         package_id                = local.adservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

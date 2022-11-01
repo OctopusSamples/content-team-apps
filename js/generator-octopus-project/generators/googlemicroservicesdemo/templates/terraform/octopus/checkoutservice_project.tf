@@ -1,6 +1,7 @@
 locals {
   checkoutservice_package_name        = "octopussamples/checkoutservice"
-  checkoutservice_resource_names      = "checkoutservice"
+  checkoutservice_package_names      = "checkoutservice"
+  checkoutservice_resource_names      = "checkoutservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   checkoutservice_project_name        = "Checkout Service"
   checkoutservice_project_description = "Deploys the checkout service."
   checkoutservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5050\",\"targetPort\":\"5050\"}]"
@@ -62,7 +63,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.checkoutservice_resource_names
+      Name : local.checkoutservice_package_names
       PackageId : local.checkoutservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -217,7 +218,7 @@ resource "octopusdeploy_channel" "checkoutservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_resource_names
+      package_reference = local.checkoutservice_package_names
     }
   }
 }
@@ -232,7 +233,7 @@ resource "octopusdeploy_channel" "checkoutservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_resource_names
+      package_reference = local.checkoutservice_package_names
     }
   }
 }
@@ -274,7 +275,7 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.checkoutservice_resource_names
+        name                      = local.checkoutservice_package_names
         package_id                = local.checkoutservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

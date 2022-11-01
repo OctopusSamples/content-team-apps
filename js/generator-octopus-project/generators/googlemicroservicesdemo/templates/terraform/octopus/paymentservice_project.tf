@@ -1,6 +1,7 @@
 locals {
   paymentservice_package_name        = "octopussamples/paymentservice"
-  paymentservice_resource_names      = "paymentservice"
+  paymentservice_package_names      = "paymentservice"
+  paymentservice_resource_names      = "paymentservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   paymentservice_project_name        = "Payment Service"
   paymentservice_project_description = "Deploys the payment service."
   paymentservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
@@ -33,7 +34,7 @@ locals {
     FieldRefEnvironmentVariables:[],
     VolumeMounts:[],
     AcquisitionLocation:"NotAcquired",
-    Name : local.paymentservice_resource_names
+    Name : local.paymentservice_package_names
     PackageId : local.paymentservice_package_name
     FeedId : var.octopus_dockerhub_feed_id
     Properties:{
@@ -183,7 +184,7 @@ resource "octopusdeploy_channel" "paymentservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.paymentservice_resource_names
+      package_reference = local.paymentservice_package_names
     }
   }
 }
@@ -198,7 +199,7 @@ resource "octopusdeploy_channel" "paymentservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.paymentservice_resource_names
+      package_reference = local.paymentservice_package_names
     }
   }
 }
@@ -240,7 +241,7 @@ resource "octopusdeploy_deployment_process" "paymentservice_deployment_process" 
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.paymentservice_resource_names
+        name                      = local.paymentservice_package_names
         package_id                = local.paymentservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

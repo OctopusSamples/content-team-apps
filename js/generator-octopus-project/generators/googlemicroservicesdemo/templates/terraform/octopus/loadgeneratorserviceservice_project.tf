@@ -1,6 +1,7 @@
 locals {
   loadgenerator_package_name        = "octopussamples/loadgenerator"
-  loadgenerator_resource_names      = "loadgenerator"
+  loadgenerator_package_names      = "loadgenerator"
+  loadgenerator_resource_names      = "loadgenerator#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   loadgenerator_project_name        = "Load Generator"
   loadgenerator_project_description = "Deploys the load generator."
   loadgenerator_service_ports       = "[]"
@@ -26,7 +27,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.loadgenerator_resource_names,
+      Name : local.loadgenerator_package_names,
       PackageId : local.loadgenerator_package_name,
       FeedId : var.octopus_dockerhub_feed_id,
       Properties : {
@@ -316,7 +317,7 @@ resource "octopusdeploy_channel" "loadgenerator_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.loadgenerator_resource_names
+      package_reference = local.loadgenerator_package_names
     }
   }
 }
@@ -331,7 +332,7 @@ resource "octopusdeploy_channel" "loadgenerator_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.loadgenerator_resource_names
+      package_reference = local.loadgenerator_package_names
     }
   }
 }
@@ -373,7 +374,7 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.loadgenerator_resource_names
+        name                      = local.loadgenerator_package_names
         package_id                = local.loadgenerator_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

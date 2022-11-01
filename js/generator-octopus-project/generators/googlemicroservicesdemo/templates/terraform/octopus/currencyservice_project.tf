@@ -1,6 +1,7 @@
 locals {
   currencyservice_package_name        = "octopussamples/currencyservice"
-  currencyservice_resource_names      = "currencyservice"
+  currencyservice_package_names      = "currencyservice"
+  currencyservice_resource_names      = "currencyservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   currencyservice_project_name        = "Currency Service"
   currencyservice_project_description = "Deploys the currency service."
   currencyservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7000\",\"targetPort\":\"7000\"}]"
@@ -39,7 +40,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.currencyservice_resource_names
+      Name : local.currencyservice_package_names
       PackageId : local.currencyservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -194,7 +195,7 @@ resource "octopusdeploy_channel" "currencyservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.currencyservice_resource_names
+      package_reference = local.currencyservice_package_names
     }
   }
 }
@@ -209,7 +210,7 @@ resource "octopusdeploy_channel" "currencyservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.currencyservice_resource_names
+      package_reference = local.currencyservice_package_names
     }
   }
 }
@@ -251,7 +252,7 @@ resource "octopusdeploy_deployment_process" "currencyservice_deployment_process"
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.currencyservice_resource_names
+        name                      = local.currencyservice_package_names
         package_id                = local.currencyservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

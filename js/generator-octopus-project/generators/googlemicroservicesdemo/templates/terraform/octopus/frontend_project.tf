@@ -1,6 +1,7 @@
 locals {
   frontend_package_name        = "octopussamples/frontend"
-  frontend_resource_names      = "frontend"
+  frontend_package_names      = "frontend"
+  frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
   frontend_containers          = jsonencode([
@@ -61,7 +62,7 @@ locals {
       FieldRefEnvironmentVariables : []
       VolumeMounts : []
       AcquisitionLocation : "NotAcquired"
-      Name : local.frontend_resource_names
+      Name : local.frontend_package_names
       PackageId : local.frontend_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {}
@@ -216,7 +217,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_resource_names
+      package_reference = local.frontend_package_names
     }
   }
 }
@@ -231,7 +232,7 @@ resource "octopusdeploy_channel" "frontend_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_resource_names
+      package_reference = local.frontend_package_names
     }
   }
 }
@@ -273,7 +274,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.frontend_resource_names
+        name                      = local.frontend_package_names
         package_id                = local.frontend_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"

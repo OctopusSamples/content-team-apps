@@ -1,6 +1,7 @@
 locals {
   recommendationservice_package_name        = "octopussamples/recommendationservice"
-  recommendationservice_resource_names      = "recommendationservice"
+  recommendationservice_package_names      = "recommendationservice"
+  recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
   recommendationservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"8080\",\"targetPort\":\"8080\"}]"
@@ -42,7 +43,7 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.recommendationservice_resource_names
+      Name : local.recommendationservice_package_names
       PackageId : local.recommendationservice_package_name
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
@@ -197,7 +198,7 @@ resource "octopusdeploy_channel" "recommendationservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.recommendationservice_resource_names
+      package_reference = local.recommendationservice_package_names
     }
   }
 }
@@ -212,7 +213,7 @@ resource "octopusdeploy_channel" "recommendationservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.recommendationservice_resource_names
+      package_reference = local.recommendationservice_package_names
     }
   }
 }
@@ -254,7 +255,7 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.recommendationservice_resource_names
+        name                      = local.recommendationservice_package_names
         package_id                = local.recommendationservice_package_name
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
