@@ -143,7 +143,7 @@ resource "octopusdeploy_project" "rediscartservice_project" {
   is_disabled                          = false
   is_discrete_channel_release          = false
   is_version_controlled                = false
-  lifecycle_id                         = var.octopus_application_lifecycle_id
+  lifecycle_id                         = var.octopus_simple_lifecycle_id
   name                                 = local.rediscartservice_project_name
   project_group_id                     = octopusdeploy_project_group.google_microservice_demo.id
   tenanted_deployment_participation    = "Untenanted"
@@ -268,36 +268,6 @@ resource "octopusdeploy_deployment_process" "rediscartservice_deployment_process
         "Octopus.Action.KubernetesContainers.ServicePorts" : local.rediscartservice_service_ports
         "Octopus.Action.RunOnServer" : "true"
       }
-    }
-  }
-  step {
-    condition           = "Success"
-    name                = "Check for Vulnerabilities"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      can_be_used_for_project_versioning = false
-      condition                          = "Success"
-      is_disabled                        = false
-      is_required                        = true
-      script_syntax                      = "Bash"
-      script_source                      = "Inline"
-      run_on_server                      = true
-      worker_pool_id                     = local.worker_pool_id
-      name                               = "Check for Vulnerabilities"
-      notes                              = "Scans the SBOM for any known vulnerabilities."
-      environments                       = [
-        var.octopus_development_security_environment_id,
-        var.octopus_production_security_environment_id
-      ]
-      package {
-        name                      = "rediscartservice-sbom"
-        package_id                = "microservices-demo:rediscartservice-sbom"
-        feed_id                   = octopusdeploy_maven_feed.github_maven_feed.id
-        acquisition_location      = "Server"
-        extract_during_deployment = true
-      }
-      script_body = local.vulnerability_scan
     }
   }
 }

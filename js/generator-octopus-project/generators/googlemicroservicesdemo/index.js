@@ -76,6 +76,12 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "octopus_simple_lifecycle_id",
+                message: "The simple lifecycle ID",
+                default: "${{ secrets.OCTOPUS_SIMPLE_LIFECYCLE_ID }}"
+            },
+            {
+                type: "input",
                 name: "octopus_production_security_environment_id",
                 message: "The production security environment ID",
                 default: "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
@@ -107,6 +113,7 @@ module.exports = class extends Generator {
             octopus_space_id: this.answers["octopus_space_id"],
             octopus_development_app_environment_id: this.answers["octopus_development_app_environment_id"],
             octopus_production_only_lifecycle_id: this.answers["octopus_production_only_lifecycle_id"],
+            octopus_simple_lifecycle_id: this.answers["octopus_simple_lifecycle_id"],
             octopus_development_security_environment_id: this.answers["octopus_development_security_environment_id"],
             octopus_production_app_environment_id: this.answers["octopus_production_app_environment_id"],
             octopus_production_security_environment_id: this.answers["octopus_production_security_environment_id"],
