@@ -344,8 +344,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         var.octopus_production_security_environment_id
       ]
       package {
-        name                      = "frontendservice-sbom"
-        package_id                = "microservices-demo:frontendservice-sbom"
+        name                      = "frontend-sbom"
+        package_id                = "microservices-demo:frontend-sbom"
         feed_id                   = octopusdeploy_maven_feed.github_maven_feed.id
         acquisition_location      = "Server"
         extract_during_deployment = true
