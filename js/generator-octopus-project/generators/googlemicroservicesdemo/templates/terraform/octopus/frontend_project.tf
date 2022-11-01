@@ -1,6 +1,6 @@
 locals {
   frontend_package_name        = "octopussamples/frontend"
-  frontend_package_names      = "frontend"
+  frontend_package_names       = "frontend"
   frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
@@ -255,6 +255,30 @@ resource "octopusdeploy_variable" "frontend_debug_evaluated_variable" {
   value        = "False"
 }
 
+resource "octopusdeploy_variable" "frontend_mainline_namespace" {
+  name         = "Namespace"
+  type         = "String"
+  description  = "The namespace used to deploy the mainline resources. These are placed in environment specific namespaces."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.frontend_project.id
+  value        = local.namespace
+  scope        = {
+    environments = [
+      var.octopus_development_app_environment_id,
+      var.octopus_production_app_environment_id
+    ]
+  }
+}
+
+resource "octopusdeploy_variable" "frontend_featurebranch_namespace" {
+  name         = "Namespace"
+  type         = "String"
+  description  = "The namespace used to deploy the feature branch resources. These are placed in the development namespace."
+  is_sensitive = false
+  owner_id     = octopusdeploy_project.frontend_project.id
+  value        = local.feature_branch_namespace
+}
+
 resource "octopusdeploy_deployment_process" "deploy_frontend" {
   project_id = octopusdeploy_project.frontend_project.id
   step {
@@ -264,11 +288,11 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
@@ -297,7 +321,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.NodeAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
-        "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
+        "Octopus.Action.KubernetesContainers.Namespace" : "#{Namespace}",
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.frontend_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
