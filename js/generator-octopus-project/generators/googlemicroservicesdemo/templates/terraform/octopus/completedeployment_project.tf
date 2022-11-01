@@ -58,7 +58,6 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
         var.octopus_development_app_environment_id,
         var.octopus_production_app_environment_id
       ]
-      environments = []
       features = []
       primary_package {
         package_id                = octopusdeploy_project.rediscartservice_project.id
