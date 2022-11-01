@@ -1,6 +1,6 @@
 locals {
-  paymentservice_package_name        = "octopussamples/paymentservice"
-  paymentservice_package_names      = "paymentservice"
+  paymentservice_package_id        = "octopussamples/paymentservice"
+  paymentservice_package_name      = "paymentservice"
   paymentservice_resource_names      = "paymentservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   paymentservice_project_name        = "Payment Service"
   paymentservice_project_description = "Deploys the payment service."
@@ -34,8 +34,8 @@ locals {
     FieldRefEnvironmentVariables:[],
     VolumeMounts:[],
     AcquisitionLocation:"NotAcquired",
-    Name : local.paymentservice_package_names
-    PackageId : local.paymentservice_package_name
+    Name : local.paymentservice_package_name
+    PackageId : local.paymentservice_package_id
     FeedId : var.octopus_dockerhub_feed_id
     Properties:{
 
@@ -184,7 +184,7 @@ resource "octopusdeploy_channel" "paymentservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.paymentservice_package_names
+      package_reference = local.paymentservice_package_name
     }
   }
 }
@@ -199,7 +199,7 @@ resource "octopusdeploy_channel" "paymentservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.paymentservice_package_names
+      package_reference = local.paymentservice_package_name
     }
   }
 }
@@ -241,8 +241,8 @@ resource "octopusdeploy_deployment_process" "paymentservice_deployment_process" 
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.paymentservice_package_names
-        package_id                = local.paymentservice_package_name
+        name                      = local.paymentservice_package_name
+        package_id                = local.paymentservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -270,7 +270,7 @@ resource "octopusdeploy_deployment_process" "paymentservice_deployment_process" 
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.paymentservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.paymentservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

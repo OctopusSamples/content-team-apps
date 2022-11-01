@@ -290,7 +290,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
       primary_package {
         acquisition_location = "Server"
         feed_id              = var.octopus_built_in_feed_id
-        package_id           = local.frontend_package_name
+        package_id           = local.frontend_package_id
         properties           = {
           "SelectionMode" : "immediate"
         }
@@ -323,7 +323,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId" : local.frontend_package_name
+        "Octopus.Action.Package.PackageId" : local.frontend_package_id
       }
     }
   }

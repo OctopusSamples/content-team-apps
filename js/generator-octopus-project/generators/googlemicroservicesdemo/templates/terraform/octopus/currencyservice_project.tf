@@ -1,6 +1,6 @@
 locals {
-  currencyservice_package_name        = "octopussamples/currencyservice"
-  currencyservice_package_names      = "currencyservice"
+  currencyservice_package_id        = "octopussamples/currencyservice"
+  currencyservice_package_name      = "currencyservice"
   currencyservice_resource_names      = "currencyservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   currencyservice_project_name        = "Currency Service"
   currencyservice_project_description = "Deploys the currency service."
@@ -40,8 +40,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.currencyservice_package_names
-      PackageId : local.currencyservice_package_name
+      Name : local.currencyservice_package_name
+      PackageId : local.currencyservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -195,7 +195,7 @@ resource "octopusdeploy_channel" "currencyservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.currencyservice_package_names
+      package_reference = local.currencyservice_package_name
     }
   }
 }
@@ -210,7 +210,7 @@ resource "octopusdeploy_channel" "currencyservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.currencyservice_package_names
+      package_reference = local.currencyservice_package_name
     }
   }
 }
@@ -252,8 +252,8 @@ resource "octopusdeploy_deployment_process" "currencyservice_deployment_process"
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.currencyservice_package_names
-        package_id                = local.currencyservice_package_name
+        name                      = local.currencyservice_package_name
+        package_id                = local.currencyservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -281,7 +281,7 @@ resource "octopusdeploy_deployment_process" "currencyservice_deployment_process"
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.currencyservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.currencyservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

@@ -1,6 +1,6 @@
 locals {
-  recommendationservice_package_name        = "octopussamples/recommendationservice"
-  recommendationservice_package_names      = "recommendationservice"
+  recommendationservice_package_id        = "octopussamples/recommendationservice"
+  recommendationservice_package_name      = "recommendationservice"
   recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
@@ -43,8 +43,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.recommendationservice_package_names
-      PackageId : local.recommendationservice_package_name
+      Name : local.recommendationservice_package_name
+      PackageId : local.recommendationservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -198,7 +198,7 @@ resource "octopusdeploy_channel" "recommendationservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.recommendationservice_package_names
+      package_reference = local.recommendationservice_package_name
     }
   }
 }
@@ -213,7 +213,7 @@ resource "octopusdeploy_channel" "recommendationservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.recommendationservice_package_names
+      package_reference = local.recommendationservice_package_name
     }
   }
 }
@@ -255,8 +255,8 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.recommendationservice_package_names
-        package_id                = local.recommendationservice_package_name
+        name                      = local.recommendationservice_package_name
+        package_id                = local.recommendationservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -284,7 +284,7 @@ resource "octopusdeploy_deployment_process" "recommendationservice_deployment_pr
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.recommendationservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.recommendationservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

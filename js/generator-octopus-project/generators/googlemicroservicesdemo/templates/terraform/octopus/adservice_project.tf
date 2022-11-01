@@ -1,6 +1,6 @@
 locals {
-  adservice_package_name        = "octopussamples/adservice"
-  adservice_package_names      = "adservice"
+  adservice_package_id          = "octopussamples/adservice"
+  adservice_package_name        = "adservice"
   adservice_resource_names      = "adservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   adservice_project_name        = "Ad Service"
   adservice_project_description = "Deploys the ad service."
@@ -35,8 +35,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.adservice_package_names
-      PackageId : local.adservice_package_name
+      Name : local.adservice_package_name
+      PackageId : local.adservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -190,7 +190,7 @@ resource "octopusdeploy_channel" "adservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_package_names
+      package_reference = local.adservice_package_name
     }
   }
 }
@@ -205,7 +205,7 @@ resource "octopusdeploy_channel" "adservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.adservice_package_names
+      package_reference = local.adservice_package_name
     }
   }
 }
@@ -237,18 +237,18 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.adservice_package_names
-        package_id                = local.adservice_package_name
+        name                      = local.adservice_package_name
+        package_id                = local.adservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -272,11 +272,11 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.adservice_resource_names,
-        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds" : "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.adservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.adservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

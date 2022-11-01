@@ -8,7 +8,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = "Frontend WebApp"
-      package_reference = local.frontend_package_name
+      package_reference = local.frontend_package_id
     }
     action_package {
       deployment_action = "Check for Vulnerabilities"
@@ -27,7 +27,7 @@ resource "octopusdeploy_channel" "frontend_mainline" {
     tag = "^$"
     action_package {
       deployment_action = "Frontend WebApp"
-      package_reference = local.frontend_package_name
+      package_reference = local.frontend_package_id
     }
     action_package {
       deployment_action = "Check for Vulnerabilities"

@@ -59,7 +59,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
 }
 
 locals {
-  frontend_package_name = "frontend"
+  frontend_package_id = "frontend"
   frontend_port         = "5000"
   # This needs to be under 32 characters, and yet still unique per user / environment. We trim a few strings to try and keep it under the limit.
   frontend_target_group_name = "ECS-FE-${substr(lower(var.github_repo_owner), 0, 10)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment | Substring 3}"
@@ -108,7 +108,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       package {
-        name                      = local.frontend_package_name
+        name                      = local.frontend_package_id
         package_id                = var.frontend_docker_image
         feed_id                   = var.octopus_k8s_feed_id
         acquisition_location      = "NotAcquired"
@@ -208,7 +208,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
               Properties:
                 ContainerDefinitions:
                   - Essential: true
-                    Image: '#{Octopus.Action.Package[${local.frontend_package_name}].Image}'
+                    Image: '#{Octopus.Action.Package[${local.frontend_package_id}].Image}'
                     Name: frontend
                     ResourceRequirements: []
                     Environment:

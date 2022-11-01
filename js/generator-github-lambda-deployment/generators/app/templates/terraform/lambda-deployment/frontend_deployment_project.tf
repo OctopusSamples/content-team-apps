@@ -89,7 +89,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
 locals {
   mainline_frontend_s3_bucket_stack = "OctopusBuilder-WebApp-S3Bucket-${lower(var.github_repo_owner)}-${local.fixed_environment}"
   frontend_stack                    = "OctopusBuilder-WebApp-${lower(var.github_repo_owner)}-${local.fixed_environment}"
-  frontend_package_name             = "javascript-frontend"
+  frontend_package_id             = "javascript-frontend"
   frontend_sbom_package_name        = "javascript-frontend-sbom"
   frontend_cloudformation_tags      = jsonencode([
     {
@@ -299,7 +299,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       primary_package {
         acquisition_location = "Server"
         feed_id              = var.octopus_built_in_feed_id
-        package_id           = local.frontend_package_name
+        package_id           = local.frontend_package_id
         properties           = {
           "SelectionMode" : "immediate"
         }
@@ -332,7 +332,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.AwsAccount.Variable" : "AWS Account"
         "Octopus.Action.Package.DownloadOnTentacle" : "False"
         "Octopus.Action.Package.FeedId" : var.octopus_built_in_feed_id
-        "Octopus.Action.Package.PackageId" : local.frontend_package_name
+        "Octopus.Action.Package.PackageId" : local.frontend_package_id
       }
     }
   }

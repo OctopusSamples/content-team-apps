@@ -1,6 +1,6 @@
 locals {
-  loadgenerator_package_name        = "octopussamples/loadgenerator"
-  loadgenerator_package_names      = "loadgenerator"
+  loadgenerator_package_id        = "octopussamples/loadgenerator"
+  loadgenerator_package_name      = "loadgenerator"
   loadgenerator_resource_names      = "loadgenerator#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   loadgenerator_project_name        = "Load Generator"
   loadgenerator_project_description = "Deploys the load generator."
@@ -27,8 +27,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.loadgenerator_package_names,
-      PackageId : local.loadgenerator_package_name,
+      Name : local.loadgenerator_package_name,
+      PackageId : local.loadgenerator_package_id,
       FeedId : var.octopus_dockerhub_feed_id,
       Properties : {
 
@@ -317,7 +317,7 @@ resource "octopusdeploy_channel" "loadgenerator_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.loadgenerator_package_names
+      package_reference = local.loadgenerator_package_name
     }
   }
 }
@@ -332,7 +332,7 @@ resource "octopusdeploy_channel" "loadgenerator_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.loadgenerator_package_names
+      package_reference = local.loadgenerator_package_name
     }
   }
 }
@@ -374,8 +374,8 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.loadgenerator_package_names
-        package_id                = local.loadgenerator_package_name
+        name                      = local.loadgenerator_package_name
+        package_id                = local.loadgenerator_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -411,7 +411,7 @@ resource "octopusdeploy_deployment_process" "loadgenerator_deployment_process" {
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.loadgenerator_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.loadgenerator_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

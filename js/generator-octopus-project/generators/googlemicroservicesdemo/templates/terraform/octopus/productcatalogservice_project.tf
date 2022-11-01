@@ -1,151 +1,161 @@
 locals {
-  productcatalogservice_package_name        = "octopussamples/productcatalogservice"
-  productcatalogservice_package_names      = "productcatalogservice"
+  productcatalogservice_package_id          = "octopussamples/productcatalogservice"
+  productcatalogservice_package_name        = "productcatalogservice"
   productcatalogservice_resource_names      = "productcatalogservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   productcatalogservice_project_name        = "Product Catalog Service"
   productcatalogservice_project_description = "Deploys the product catalog service."
   productcatalogservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"3550\",\"targetPort\":\"3550\"}]"
-  productcatalogservice_containers          = jsonencode([{
-    IsNew:true,
-    InitContainer:"False",
-    Ports:[{
-      value:"3550"
-    }],
-    EnvironmentVariables:[{
-      key:"PORT",
-      value:"3550"
-    },
-      {
-        key:"DISABLE_STATS",
-        value:"1"
-      },
-      {
-        key:"DISABLE_TRACING",
-        value:"1"
-      },
-      {
-        key:"DISABLE_PROFILER",
-        value:"1"
-      }],
-    SecretEnvironmentVariables:[],
-    SecretEnvFromSource:[],
-    ConfigMapEnvironmentVariables:[],
-    ConfigMapEnvFromSource:[],
-    FieldRefEnvironmentVariables:[],
-    VolumeMounts:[],
-    AcquisitionLocation:"NotAcquired",
-    Name : local.productcatalogservice_package_names
-    PackageId : local.productcatalogservice_package_name
-    FeedId : var.octopus_dockerhub_feed_id
-    Properties:{
+  productcatalogservice_containers          = jsonencode([
+    {
+      IsNew : true,
+      InitContainer : "False",
+      Ports : [
+        {
+          value : "3550"
+        }
+      ],
+      EnvironmentVariables : [
+        {
+          key : "PORT",
+          value : "3550"
+        },
+        {
+          key : "DISABLE_STATS",
+          value : "1"
+        },
+        {
+          key : "DISABLE_TRACING",
+          value : "1"
+        },
+        {
+          key : "DISABLE_PROFILER",
+          value : "1"
+        }
+      ],
+      SecretEnvironmentVariables : [],
+      SecretEnvFromSource : [],
+      ConfigMapEnvironmentVariables : [],
+      ConfigMapEnvFromSource : [],
+      FieldRefEnvironmentVariables : [],
+      VolumeMounts : [],
+      AcquisitionLocation : "NotAcquired",
+      Name : local.productcatalogservice_package_name
+      PackageId : local.productcatalogservice_package_id
+      FeedId : var.octopus_dockerhub_feed_id
+      Properties : {
 
-    },
-    Command:[],
-    Args:[],
-    Resources:{
-      requests:{
-        memory:"64Mi",
-        cpu:"100m",
-        ephemeralStorage:""
       },
-      limits:{
-        memory:"128Mi",
-        cpu:"200m",
-        ephemeralStorage:"",
-        nvidiaGpu:"",
-        amdGpu:""
-      }
-    },
-    LivenessProbe:{
-      failureThreshold:"",
-      initialDelaySeconds:"",
-      periodSeconds:"",
-      successThreshold:"",
-      timeoutSeconds:"",
-      type:"Command",
-      exec:{
-        command:["/bin/grpc_health_probe",
-          "-addr=:3550"]
+      Command : [],
+      Args : [],
+      Resources : {
+        requests : {
+          memory : "64Mi",
+          cpu : "100m",
+          ephemeralStorage : ""
+        },
+        limits : {
+          memory : "128Mi",
+          cpu : "200m",
+          ephemeralStorage : "",
+          nvidiaGpu : "",
+          amdGpu : ""
+        }
       },
-      httpGet:{
-        host:"",
-        path:"",
-        port:"",
-        scheme:"",
-        httpHeaders:[]
+      LivenessProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "Command",
+        exec : {
+          command : [
+            "/bin/grpc_health_probe",
+            "-addr=:3550"
+          ]
+        },
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : []
+        },
+        tcpSocket : {
+          host : "",
+          port : ""
+        }
       },
-      tcpSocket:{
-        host:"",
-        port:""
-      }
-    },
-    ReadinessProbe:{
-      failureThreshold:"",
-      initialDelaySeconds:"",
-      periodSeconds:"",
-      successThreshold:"",
-      timeoutSeconds:"",
-      type:"Command",
-      exec:{
-        command:["/bin/grpc_health_probe",
-          "-addr=:3550"]
+      ReadinessProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "Command",
+        exec : {
+          command : [
+            "/bin/grpc_health_probe",
+            "-addr=:3550"
+          ]
+        },
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : []
+        },
+        tcpSocket : {
+          host : "",
+          port : ""
+        }
       },
-      httpGet:{
-        host:"",
-        path:"",
-        port:"",
-        scheme:"",
-        httpHeaders:[]
+      StartupProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : null,
+        exec : {
+          command : []
+        },
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : []
+        },
+        tcpSocket : {
+          host : "",
+          port : ""
+        }
       },
-      tcpSocket:{
-        host:"",
-        port:""
-      }
-    },
-    StartupProbe:{
-      failureThreshold:"",
-      initialDelaySeconds:"",
-      periodSeconds:"",
-      successThreshold:"",
-      timeoutSeconds:"",
-      type:null,
-      exec:{
-        command:[]
-      },
-      httpGet:{
-        host:"",
-        path:"",
-        port:"",
-        scheme:"",
-        httpHeaders:[]
-      },
-      tcpSocket:{
-        host:"",
-        port:""
-      }
-    },
-    Lifecycle:{
+      Lifecycle : {
 
-    },
-    SecurityContext:{
-      allowPrivilegeEscalation:"false",
-      privileged:"false",
-      readOnlyRootFilesystem:"true",
-      runAsGroup:"",
-      runAsNonRoot:"",
-      runAsUser:"",
-      capabilities:{
-        add:[],
-        drop:["all"]
       },
-      seLinuxOptions:{
-        level:"",
-        role:"",
-        type:"",
-        user:""
+      SecurityContext : {
+        allowPrivilegeEscalation : "false",
+        privileged : "false",
+        readOnlyRootFilesystem : "true",
+        runAsGroup : "",
+        runAsNonRoot : "",
+        runAsUser : "",
+        capabilities : {
+          add : [],
+          drop : ["all"]
+        },
+        seLinuxOptions : {
+          level : "",
+          role : "",
+          type : "",
+          user : ""
+        }
       }
     }
-  }])
+  ])
 }
 
 resource "octopusdeploy_project" "productcatalogservice_project" {
@@ -184,7 +194,7 @@ resource "octopusdeploy_channel" "productcatalogservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.productcatalogservice_package_names
+      package_reference = local.productcatalogservice_package_name
     }
   }
 }
@@ -199,7 +209,7 @@ resource "octopusdeploy_channel" "productcatalogservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.productcatalogservice_package_names
+      package_reference = local.productcatalogservice_package_name
     }
   }
 }
@@ -231,18 +241,18 @@ resource "octopusdeploy_deployment_process" "productcatalogservice_deployment_pr
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.productcatalogservice_package_names
-        package_id                = local.productcatalogservice_package_name
+        name                      = local.productcatalogservice_package_name
+        package_id                = local.productcatalogservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -266,11 +276,11 @@ resource "octopusdeploy_deployment_process" "productcatalogservice_deployment_pr
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.productcatalogservice_resource_names,
-        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds" : "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.productcatalogservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.productcatalogservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

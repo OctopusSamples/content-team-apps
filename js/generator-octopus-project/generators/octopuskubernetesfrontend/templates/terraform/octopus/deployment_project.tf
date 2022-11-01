@@ -61,7 +61,7 @@ resource "octopusdeploy_variable" "dockerhub_password" {
 }
 
 locals {
-  frontend_package_name = "frontend"
+  frontend_package_id = "frontend"
   frontend_service_name = "frontend-service"
   frontend_ingress_name = "frontend-ingress"
 }
@@ -85,7 +85,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       ]
       features = ["Octopus.Features.KubernetesService", "Octopus.Features.KubernetesIngress"]
       package {
-        name                      = local.frontend_package_name
+        name                      = local.frontend_package_id
         package_id                = var.docker_image
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
@@ -99,7 +99,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.Containers" : jsonencode([
           {
-            Name : local.frontend_package_name
+            Name : local.frontend_package_id
             Ports : [
               {
                 key : "web"
@@ -264,7 +264,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       ]
       script_body = templatefile("../../bash/${var.project_name}/docker-scan.sh", {
         image : var.docker_image
-        frontend : local.frontend_package_name
+        frontend : local.frontend_package_id
       })
     }
   }

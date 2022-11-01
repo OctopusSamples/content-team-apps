@@ -62,9 +62,9 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable_featurebranch" {
 locals {
   frontend_proxy_package_name = "proxy"
   # This is the package semver prerelease label up until the first period, so a version of "1.0.0-MYBranch.1" becomes "mybranch"
-  frontend_dns_branch_name = "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
+  frontend_dns_branch_name = "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_id}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower}"
   # This is the first 10 characters of the prerelease, used in names that have limited characters
-  frontend_trimmed_dns_branch_name = "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_name}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower | Substring 10}"
+  frontend_trimmed_dns_branch_name = "#{Octopus.Action[Frontend WebApp].Package[${local.frontend_package_id}].PackageVersion | VersionPreRelease | Replace \"\\..*\" \"\" | ToLower | Substring 10}"
   # The stack names can be 128 chars long
   frontend_cf_stack_name = "ECS-FE-${lower(var.github_repo_owner)}-#{Octopus.Action[Get AWS Resources].Output.FixedEnvironment}-${local.frontend_dns_branch_name}"
   # This needs to be under 32 characters, and yet still unique per user / environment / branch. We trim a few strings to try and keep it under the limit.
@@ -117,7 +117,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
         data.octopusdeploy_environments.production.environments[0].id
       ]
       package {
-        name                      = local.frontend_package_name
+        name                      = local.frontend_package_id
         package_id                = var.frontend_docker_image
         feed_id                   = var.octopus_k8s_feed_id
         acquisition_location      = "NotAcquired"
@@ -389,7 +389,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
               Properties:
                 ContainerDefinitions:
                   - Essential: true
-                    Image: '#{Octopus.Action.Package[${local.frontend_package_name}].Image}'
+                    Image: '#{Octopus.Action.Package[${local.frontend_package_id}].Image}'
                     Name: frontend
                     ResourceRequirements: []
                     Environment:

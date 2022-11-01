@@ -1,6 +1,6 @@
 locals {
-  cartservice_package_name        = "octopussamples/cartservice"
-  cartservice_package_names      = "cartservice"
+  cartservice_package_id          = "octopussamples/cartservice"
+  cartservice_package_name        = "cartservice"
   cartservice_resource_names      = "cartservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   cartservice_project_name        = "Cart Service"
   cartservice_project_description = "Deploys the cart service."
@@ -27,8 +27,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.cartservice_package_names
-      PackageId : local.cartservice_package_name
+      Name : local.cartservice_package_name
+      PackageId : local.cartservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -184,7 +184,7 @@ resource "octopusdeploy_channel" "cartservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.cartservice_package_names
+      package_reference = local.cartservice_package_name
     }
   }
 }
@@ -199,7 +199,7 @@ resource "octopusdeploy_channel" "cartservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.cartservice_package_names
+      package_reference = local.cartservice_package_name
     }
   }
 }
@@ -231,18 +231,18 @@ resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.cartservice_package_names
-        package_id                = local.cartservice_package_name
+        name                      = local.cartservice_package_name
+        package_id                = local.cartservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -266,11 +266,11 @@ resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
         "Octopus.Action.KubernetesContainers.PodAntiAffinity" : "[]",
         "Octopus.Action.KubernetesContainers.Namespace" : local.namespace,
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.cartservice_resource_names,
-        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds": "5",
+        "Octopus.Action.KubernetesContainers.TerminationGracePeriodSeconds" : "5",
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.cartservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.cartservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

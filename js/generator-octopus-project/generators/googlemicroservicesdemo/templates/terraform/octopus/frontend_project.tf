@@ -1,6 +1,6 @@
 locals {
-  frontend_package_name        = "octopussamples/frontend"
-  frontend_package_names       = "frontend"
+  frontend_package_id        = "octopussamples/frontend"
+  frontend_package_name       = "frontend"
   frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
@@ -62,8 +62,8 @@ locals {
       FieldRefEnvironmentVariables : []
       VolumeMounts : []
       AcquisitionLocation : "NotAcquired"
-      Name : local.frontend_package_names
-      PackageId : local.frontend_package_name
+      Name : local.frontend_package_name
+      PackageId : local.frontend_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {}
       Command : []
@@ -217,7 +217,7 @@ resource "octopusdeploy_channel" "frontend_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_package_names
+      package_reference = local.frontend_package_name
     }
   }
 }
@@ -232,7 +232,7 @@ resource "octopusdeploy_channel" "frontend_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.frontend_package_names
+      package_reference = local.frontend_package_name
     }
   }
 }
@@ -262,7 +262,7 @@ resource "octopusdeploy_variable" "frontend_mainline_namespace" {
   is_sensitive = false
   owner_id     = octopusdeploy_project.frontend_project.id
   value        = local.namespace
-  scope        = {
+  scope {
     environments = [
       var.octopus_development_app_environment_id,
       var.octopus_production_app_environment_id
@@ -298,8 +298,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.frontend_package_names
-        package_id                = local.frontend_package_name
+        name                      = local.frontend_package_name
+        package_id                = local.frontend_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -326,7 +326,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"frontend\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.frontend_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

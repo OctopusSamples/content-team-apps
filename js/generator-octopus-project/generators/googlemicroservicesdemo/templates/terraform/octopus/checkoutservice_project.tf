@@ -1,6 +1,6 @@
 locals {
-  checkoutservice_package_name        = "octopussamples/checkoutservice"
-  checkoutservice_package_names      = "checkoutservice"
+  checkoutservice_package_id          = "octopussamples/checkoutservice"
+  checkoutservice_package_name        = "checkoutservice"
   checkoutservice_resource_names      = "checkoutservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   checkoutservice_project_name        = "Checkout Service"
   checkoutservice_project_description = "Deploys the checkout service."
@@ -63,8 +63,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.checkoutservice_package_names
-      PackageId : local.checkoutservice_package_name
+      Name : local.checkoutservice_package_name
+      PackageId : local.checkoutservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -218,7 +218,7 @@ resource "octopusdeploy_channel" "checkoutservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_package_names
+      package_reference = local.checkoutservice_package_name
     }
   }
 }
@@ -233,7 +233,7 @@ resource "octopusdeploy_channel" "checkoutservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_package_names
+      package_reference = local.checkoutservice_package_name
     }
   }
 }
@@ -265,18 +265,18 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
     start_trigger       = "StartAfterPrevious"
     target_roles        = [local.deployment_role]
     action {
-      action_type    = "Octopus.KubernetesDeployContainers"
-      name           = local.deployment_step
-      run_on_server  = true
-      worker_pool_id = local.worker_pool_id
-      excluded_environments   = [
+      action_type           = "Octopus.KubernetesDeployContainers"
+      name                  = local.deployment_step
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.checkoutservice_package_names
-        package_id                = local.checkoutservice_package_name
+        name                      = local.checkoutservice_package_name
+        package_id                = local.checkoutservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -303,7 +303,7 @@ resource "octopusdeploy_deployment_process" "checkoutservice_deployment_process"
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.checkoutservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.checkoutservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",

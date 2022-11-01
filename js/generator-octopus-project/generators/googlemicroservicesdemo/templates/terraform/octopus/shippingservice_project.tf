@@ -1,6 +1,6 @@
 locals {
-  shippingservice_package_name        = "octopussamples/shippingservice"
-  shippingservice_package_names      = "shippingservice"
+  shippingservice_package_id        = "octopussamples/shippingservice"
+  shippingservice_package_name      = "shippingservice"
   shippingservice_resource_names      = "shippingservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   shippingservice_project_name        = "Shipping Service"
   shippingservice_project_description = "Deploys the shipping service."
@@ -39,8 +39,8 @@ locals {
       FieldRefEnvironmentVariables : [],
       VolumeMounts : [],
       AcquisitionLocation : "NotAcquired",
-      Name : local.shippingservice_package_names
-      PackageId : local.shippingservice_package_name
+      Name : local.shippingservice_package_name
+      PackageId : local.shippingservice_package_id
       FeedId : var.octopus_dockerhub_feed_id
       Properties : {
 
@@ -194,7 +194,7 @@ resource "octopusdeploy_channel" "shippingservice_feature_branch" {
     tag = ".+"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.shippingservice_package_names
+      package_reference = local.shippingservice_package_name
     }
   }
 }
@@ -209,7 +209,7 @@ resource "octopusdeploy_channel" "shippingservice_mainline" {
     tag = "^$"
     action_package {
       deployment_action = local.deployment_step
-      package_reference = local.shippingservice_package_names
+      package_reference = local.shippingservice_package_name
     }
   }
 }
@@ -251,8 +251,8 @@ resource "octopusdeploy_deployment_process" "shippingservice_deployment_process"
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
-        name                      = local.shippingservice_package_names
-        package_id                = local.shippingservice_package_name
+        name                      = local.shippingservice_package_name
+        package_id                = local.shippingservice_package_id
         feed_id                   = var.octopus_dockerhub_feed_id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
@@ -279,7 +279,7 @@ resource "octopusdeploy_deployment_process" "shippingservice_deployment_process"
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
         "Octopus.Action.KubernetesContainers.PodAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
-        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.shippingservice_resource_names}\"}",
+        "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.shippingservice_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
         "Octopus.Action.KubernetesContainers.PodSecurityFsGroup" : "1000",
         "Octopus.Action.KubernetesContainers.PodSecurityRunAsGroup" : "1000",
