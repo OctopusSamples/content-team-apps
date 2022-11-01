@@ -290,4 +290,34 @@ resource "octopusdeploy_deployment_process" "emailservice_deployment_process" {
       }
     }
   }
+  step {
+    condition           = "Success"
+    name                = "Check for Vulnerabilities"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    run_script_action {
+      can_be_used_for_project_versioning = false
+      condition                          = "Success"
+      is_disabled                        = false
+      is_required                        = true
+      script_syntax                      = "Bash"
+      script_source                      = "Inline"
+      run_on_server                      = true
+      worker_pool_id                     = local.worker_pool_id
+      name                               = "Check for Vulnerabilities"
+      notes                              = "Scans the SBOM for any known vulnerabilities."
+      environments                       = [
+        var.octopus_development_security_environment_id,
+        var.octopus_production_security_environment_id
+      ]
+      package {
+        name                      = "emailservice-sbom"
+        package_id                = "microservices-demo:emailservice-sbom"
+        feed_id                   = octopusdeploy_maven_feed.github_maven_feed.id
+        acquisition_location      = "Server"
+        extract_during_deployment = true
+      }
+      script_body = local.vulnerability_scan
+    }
+  }
 }
