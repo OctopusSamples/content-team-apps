@@ -80,9 +80,9 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       action_type    = "Octopus.DeployRelease"
       name           = "Ad Service"
       run_on_server  = true
-      environments   = [
-        var.octopus_development_app_environment_id,
-        var.octopus_production_app_environment_id
+      excluded_environments   = [
+        var.octopus_development_security_environment_id,
+        var.octopus_production_security_environment_id
       ]
       features = []
       package {

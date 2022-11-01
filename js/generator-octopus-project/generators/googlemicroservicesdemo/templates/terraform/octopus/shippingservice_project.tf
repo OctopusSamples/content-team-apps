@@ -244,9 +244,9 @@ resource "octopusdeploy_deployment_process" "shippingservice_deployment_process"
       name           = local.deployment_step
       run_on_server  = true
       worker_pool_id = local.worker_pool_id
-      environments   = [
-        var.octopus_development_app_environment_id,
-        var.octopus_production_app_environment_id
+      excluded_environments   = [
+        var.octopus_development_security_environment_id,
+        var.octopus_production_security_environment_id
       ]
       features = ["Octopus.Features.KubernetesService"]
       package {
