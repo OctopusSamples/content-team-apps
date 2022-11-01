@@ -1,7 +1,7 @@
 locals {
   checkoutservice_package_name        = "octopussamples/checkoutservice"
   checkoutservice_package_names      = "checkoutservice"
-  checkoutservice_resource_names      = "checkoutservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  checkoutservice_resource_names      = "checkoutservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   checkoutservice_project_name        = "Checkout Service"
   checkoutservice_project_description = "Deploys the checkout service."
   checkoutservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5050\",\"targetPort\":\"5050\"}]"

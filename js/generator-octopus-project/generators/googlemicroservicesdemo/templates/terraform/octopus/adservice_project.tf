@@ -1,7 +1,7 @@
 locals {
   adservice_package_name        = "octopussamples/adservice"
   adservice_package_names      = "adservice"
-  adservice_resource_names      = "adservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  adservice_resource_names      = "adservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   adservice_project_name        = "Ad Service"
   adservice_project_description = "Deploys the ad service."
   adservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"9555\",\"targetPort\":\"9555\"}]"

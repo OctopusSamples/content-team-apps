@@ -1,7 +1,7 @@
 locals {
   frontend_package_name        = "octopussamples/frontend"
   frontend_package_names      = "frontend"
-  frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
   frontend_containers          = jsonencode([

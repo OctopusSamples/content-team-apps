@@ -1,7 +1,7 @@
 locals {
   productcatalogservice_package_name        = "octopussamples/productcatalogservice"
   productcatalogservice_package_names      = "productcatalogservice"
-  productcatalogservice_resource_names      = "productcatalogservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  productcatalogservice_resource_names      = "productcatalogservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   productcatalogservice_project_name        = "Product Catalog Service"
   productcatalogservice_project_description = "Deploys the product catalog service."
   productcatalogservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"3550\",\"targetPort\":\"3550\"}]"

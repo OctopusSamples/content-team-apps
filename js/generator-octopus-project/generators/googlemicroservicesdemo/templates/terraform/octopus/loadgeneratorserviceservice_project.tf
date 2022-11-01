@@ -1,7 +1,7 @@
 locals {
   loadgenerator_package_name        = "octopussamples/loadgenerator"
   loadgenerator_package_names      = "loadgenerator"
-  loadgenerator_resource_names      = "loadgenerator#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  loadgenerator_resource_names      = "loadgenerator#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   loadgenerator_project_name        = "Load Generator"
   loadgenerator_project_description = "Deploys the load generator."
   loadgenerator_service_ports       = "[]"

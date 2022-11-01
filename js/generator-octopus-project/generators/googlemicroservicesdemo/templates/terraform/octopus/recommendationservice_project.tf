@@ -1,7 +1,7 @@
 locals {
   recommendationservice_package_name        = "octopussamples/recommendationservice"
   recommendationservice_package_names      = "recommendationservice"
-  recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
   recommendationservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"8080\",\"targetPort\":\"8080\"}]"

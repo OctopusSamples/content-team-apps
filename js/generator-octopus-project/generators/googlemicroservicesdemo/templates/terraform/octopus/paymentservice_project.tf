@@ -1,7 +1,7 @@
 locals {
   paymentservice_package_name        = "octopussamples/paymentservice"
   paymentservice_package_names      = "paymentservice"
-  paymentservice_resource_names      = "paymentservice#{unless Octopus.Release.Channel.Name == \"MainLine\"}-#{Octopus.Release.Channel.Name}#{/unless}"
+  paymentservice_resource_names      = "paymentservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   paymentservice_project_name        = "Payment Service"
   paymentservice_project_description = "Deploys the payment service."
   paymentservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
