@@ -104,7 +104,6 @@ module.exports = class extends Generator {
     writing() {
         const options = {
             project_name: this.answers["project_name"],
-            existing_project_group: this.answers["existing_project_group"],
             aws_access_key: this.answers["aws_access_key"],
             aws_secret_key: this.answers["aws_secret_key"],
             aws_region: this.answers["aws_region"],
