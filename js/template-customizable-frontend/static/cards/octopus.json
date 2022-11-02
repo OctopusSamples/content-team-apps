@@ -307,6 +307,31 @@
           ]
         }
       ]
+    },
+    {
+      "type": "Container",
+      "style": "default",
+      "spacing": "large",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "This generator produces Terraform files that create Octopus projects deploying Google's microservice demo.",
+          "wrap": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "Google Microservice Stack",
+              "verb": "openCard",
+              "data": {
+                "filename": "octopusmicroservicedemo.json"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "actions": [

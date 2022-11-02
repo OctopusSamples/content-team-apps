@@ -5,7 +5,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.60:octopusenvironments",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.60:googlemicroservicesdemo",
       "isVisible": false
     },
     {
@@ -16,7 +16,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.project_name",
-      "value": "octopusenvironments"
+      "value": "googlemicroservicesdemo"
     },
     {
       "type": "TextBlock",
@@ -50,73 +50,13 @@
     },
     {
       "type": "TextBlock",
-      "text": "The Octopus Development Environment Name",
+      "text": "The lifecycle to assign to the project",
       "wrap": true
     },
     {
       "type": "Input.Text",
-      "id": "answer.string.octopus_development_app_environment_name",
-      "value": "Development (App)"
-    },
-    {
-      "type": "TextBlock",
-      "text": "Use the Existing Development Environment",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_development_app_environment_exists",
-      "value": "false"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus Development Security Environment Name",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_development_security_environment_name",
-      "value": "Development (Security)"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus Production Environment Name",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_app_environment_name",
-      "value": "Production (App)"
-    },
-    {
-      "type": "TextBlock",
-      "text": "Use the Existing Production Environment",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_app_environment_exists",
-      "value": "false"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus Production Security Environment Name",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_security_environment_name",
-      "value": "Production (Security)"
-    },
-    {
-      "type": "TextBlock",
-      "text": "The Octopus Administration Environment Name",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_administration_environment_name",
-      "value": "Administration"
+      "id": "answer.string.octopus_application_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_APPLICATION_LIFECYCLE_ID }}"
     },
     {
       "type": "TextBlock",
@@ -140,7 +80,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "The AWS region to save the state file in",
+      "text": "The AWS region to create the state bucket in",
       "wrap": true
     },
     {
@@ -150,33 +90,83 @@
     },
     {
       "type": "TextBlock",
-      "text": "The GitHub App ID used by the Github Terraform provider",
+      "text": "The development environment ID",
       "wrap": true
     },
     {
       "type": "Input.Text",
-      "id": "answer.string.github_app_id",
-      "value": "${{ secrets.GH_APP_ID }}"
+      "id": "answer.string.octopus_development_app_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_ENVIRONMENT_ID }}"
     },
     {
       "type": "TextBlock",
-      "text": "The GitHub Installation ID used by the Github Terraform provider",
+      "text": "The development security environment ID",
       "wrap": true
     },
     {
       "type": "Input.Text",
-      "id": "answer.string.github_installation_id",
-      "value": "${{ secrets.GH_INSTALLATION_ID }}"
+      "id": "answer.string.octopus_development_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_DEVELOPMENT_SECURITY_ENVIRONMENT_ID }}"
     },
     {
       "type": "TextBlock",
-      "text": "The base 64 encoded pem file used by Github Terraform provider",
+      "text": "The production environment ID",
       "wrap": true
     },
     {
       "type": "Input.Text",
-      "id": "answer.string.github_pem_file",
-      "value": "${{ secrets.GH_PEM_FILE }}"
+      "id": "answer.string.octopus_production_app_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production only lifecycle ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_only_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_ONLY_LIFECYCLE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The simple lifecycle ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_simple_lifecycle_id",
+      "value": "${{ secrets.OCTOPUS_SIMPLE_LIFECYCLE_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The production security environment ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_production_security_environment_id",
+      "value": "${{ secrets.OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The ID of the DockerHub feed",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.octopus_dockerhub_feed_id",
+      "value": "${{ secrets.OCTOPUS_DOCKERHUB_FEED_ID }}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "The GitHub Personal Access Token used to access package feeds",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "answer.string.github_package_pat",
+      "value": "${{ secrets.GH_PACKAGES_PAT }}"
     }
   ],
   "actions": [
