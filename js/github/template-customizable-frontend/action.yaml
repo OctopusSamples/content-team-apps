@@ -244,7 +244,7 @@ runs:
       working-directory: js/octopus-template-generator
 
     - name: Generate SBOM
-      run: cyclonedx-bom
+      run: cyclonedx-npm --output-file bom.xml
       shell: bash
       working-directory: js/template-customizable-frontend
 
