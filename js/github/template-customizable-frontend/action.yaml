@@ -239,7 +239,7 @@ runs:
         octopus_space: "Content Team"
 
     - name: Install CycloneDX
-      run: npm install -g @cyclonedx/bom
+      run: npm install --global @cyclonedx/cyclonedx-npm
       shell: bash
       working-directory: js/octopus-template-generator
 
