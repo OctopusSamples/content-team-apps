@@ -34,10 +34,10 @@ module.exports = class extends Generator {
                 default: "Development (App)"
             },
             {
-                type: "input",
+                type: "confirm",
                 name: "octopus_development_app_environment_exists",
                 message: "Use the Existing Development Environment",
-                default: "false"
+                default: false
             },
             {
                 type: "input",
@@ -52,10 +52,10 @@ module.exports = class extends Generator {
                 default: "Production (App)"
             },
             {
-                type: "input",
+                type: "confirm",
                 name: "octopus_production_app_environment_exists",
                 message: "Use the Existing Production Environment",
-                default: "false"
+                default: false
             },
             {
                 type: "input",

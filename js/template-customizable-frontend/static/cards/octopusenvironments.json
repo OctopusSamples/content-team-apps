@@ -3,15 +3,15 @@
   "version": "1.0",
   "body": [
     {
+      "type": "Input.Text",
+      "id": "generator",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.61:octopusenvironments",
+      "isVisible": false
+    },
+    {
       "type": "TextBlock",
       "text": "This project creates a collection of common environments and lifecycles. It can optionally read existing environments with the 'Use the Existing Development Environment' and 'Use the Existing Production Environment' options. These options have been set to true by default, meaning the space that this project is deployed to is expected to already have the environments 'Development' and 'Production'. Set the options to false to create all environments from scratch.",
       "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.60:octopusenvironments",
-      "isVisible": false
     },
     {
       "type": "TextBlock",
@@ -61,7 +61,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.octopus_development_app_environment_name",
-      "value": "Development"
+      "value": "Development (App)"
     },
     {
       "type": "TextBlock",
@@ -69,9 +69,9 @@
       "wrap": true
     },
     {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_development_app_environment_exists",
-      "value": "true"
+      "type": "Input.Toggle",
+      "id": "answer.boolean.octopus_development_app_environment_exists",
+      "value": false
     },
     {
       "type": "TextBlock",
@@ -91,7 +91,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.octopus_production_app_environment_name",
-      "value": "Production"
+      "value": "Production (App)"
     },
     {
       "type": "TextBlock",
@@ -99,9 +99,9 @@
       "wrap": true
     },
     {
-      "type": "Input.Text",
-      "id": "answer.string.octopus_production_app_environment_exists",
-      "value": "true"
+      "type": "Input.Toggle",
+      "id": "answer.boolean.octopus_production_app_environment_exists",
+      "value": false
     },
     {
       "type": "TextBlock",
