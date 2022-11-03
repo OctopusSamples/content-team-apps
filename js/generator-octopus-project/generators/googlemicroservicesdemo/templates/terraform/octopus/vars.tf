@@ -62,3 +62,10 @@ variable "github_package_pat" {
   type = string
   nullable = false
 }
+
+variable "namespace_prefix" {
+  type = string
+  nullable = false
+  default = ""
+  description = "The prefix of the namespace used to hold the microservice demo. For example, you may set this to you own name to create an isolated deployment in a shared cluster."
+}

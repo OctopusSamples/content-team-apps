@@ -59,6 +59,9 @@ inputs:
   github_package_pat:
     description: 'The GitHub Personal Access Token used to access package feeds'
     required: true
+  namespace_prefix:
+    description: 'The prefix of the namespace used to hold the microservice demo. For example, you may set this to you own name to create an isolated deployment in a shared cluster.'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -176,6 +179,7 @@ runs:
         -var="octopus_development_app_environment_id=${{ inputs.octopus_development_app_environment_id }}" \
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
         -var="octopus_production_app_environment_id=${{ inputs.octopus_production_app_environment_id }}" \
-        -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}"
+        -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
+        -var="namespace_prefix=${{ inputs.namespace_prefix }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash

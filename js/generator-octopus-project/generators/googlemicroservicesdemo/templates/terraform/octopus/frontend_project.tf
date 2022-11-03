@@ -351,6 +351,47 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
   }
   step {
     condition           = "Success"
+    name                = "Expose Frontend via LoadBalancer"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type           = "Octopus.KubernetesDeployRawYaml"
+      name                  = "Expose Frontend via LoadBalancer"
+      run_on_server         = true
+      worker_pool_id        = local.worker_pool_id
+      excluded_environments = [
+        var.octopus_development_security_environment_id,
+        var.octopus_production_security_environment_id
+      ]
+      environments = []
+      container {
+        feed_id = var.octopus_dockerhub_feed_id
+        image   = local.worker_image
+      }
+      properties = {
+        "Octopus.Action.Script.ScriptSource": "Inline",
+        "Octopus.Action.KubernetesContainers.CustomResourceYaml": <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${local.frontend_resource_names}-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: ${local.frontend_package_name}
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+EOF
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Namespace}",
+        "Octopus.Action.RunOnServer": "true"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "Check for Vulnerabilities"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"

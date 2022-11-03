@@ -98,6 +98,12 @@ module.exports = class extends Generator {
                 message: "The GitHub Personal Access Token used to access package feeds",
                 default: "${{ secrets.GH_PACKAGES_PAT }}"
             },
+            {
+                type: "input",
+                name: "namespace_prefix",
+                message: "The prefix of the namespace used to hold the microservice demo. For example, you may set this to you own name to create an isolated deployment in a shared cluster.",
+                default: "#{Octopus.Space.Name | Replace \"[^A-Za-z0-9]\" \"-\" | ToLower}"
+            },
         ]);
     }
 
@@ -119,6 +125,7 @@ module.exports = class extends Generator {
             octopus_dockerhub_feed_id: this.answers["octopus_dockerhub_feed_id"],
             octopus_application_lifecycle_id: this.answers["octopus_application_lifecycle_id"],
             github_package_pat: this.answers["github_package_pat"],
+            namespace_prefix: this.answers["namespace_prefix"],
         };
 
         this.fs.copyTpl(
