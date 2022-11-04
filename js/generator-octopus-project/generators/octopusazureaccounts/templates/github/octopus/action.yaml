@@ -118,17 +118,21 @@ runs:
     # beforehand which S3 bucket will hold the state, as each deployment requires a unique bucket.
     # To work around this the envsubst tool is used to rewrite the file defining the Terraform backend based on
     # environment variables. This allows us to generate a unique backend configuration with each deployment.
-    - name: Create Terraform state S3 bucket
+    - id: create_s3_bucket
+      name: Create Terraform state S3 bucket
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
         # Make sure the strings are not too long, as s3 buckets can only be 63 chars in length
-        REPO_OWNER=${{ steps.repository_owner_lower.outputs.lowercase }}
+        REPO_OWNER="${{ steps.repository_owner_lower.outputs.lowercase }}"
         TRIMMED_REPO_OWNER=${REPO_OWNER:0:10}
-        REPO_NAME=${{ steps.repository_name_lower.outputs.lowercase }}
+        REPO_NAME="${{ steps.repository_name_lower.outputs.lowercase }}"
         TRIMMED_REPO_NAME=${REPO_NAME:0:20}
-        
+
+        echo "TRIMMED_REPO_OWNER=${TRIMMED_REPO_OWNER}" >> $GITHUB_OUTPUT
+        echo "TRIMMED_REPO_NAME=${TRIMMED_REPO_NAME}" >> $GITHUB_OUTPUT
+
         # Check to see if the bucket exists
         aws s3api head-bucket \
             --bucket ${TRIMMED_REPO_OWNER}-${TRIMMED_REPO_NAME}-${{ inputs.project_name }} \
@@ -148,8 +152,8 @@ runs:
     # See https://github.com/hashicorp/terraform/issues/13022
     - uses: danielr1996/envsubst-action@1.1.0
       env:
-        GITHUB_OWNER: ${{ steps.repository_owner_lower.outputs.lowercase }}
-        GITHUB_REPO: ${{ steps.repository_name_lower.outputs.lowercase }}
+        GITHUB_OWNER: ${{ steps.create_s3_bucket.outputs.TRIMMED_REPO_OWNER }}
+        GITHUB_REPO: ${{ steps.create_s3_bucket.outputs.TRIMMED_REPO_NAME }}
         PROJECT_NAME: ${{ inputs.project_name }}
         TERRAFORM_BUCKET_REGION: ${{ inputs.aws_region }}
       with:
