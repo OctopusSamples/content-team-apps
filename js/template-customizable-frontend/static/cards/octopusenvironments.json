@@ -96,12 +96,12 @@
     {
       "type": "TextBlock",
       "text": "Use the Existing Production Environment",
-      "wrap": "true"
+      "wrap": true
     },
     {
       "type": "Input.Toggle",
       "id": "answer.boolean.octopus_production_app_environment_exists",
-      "value": true
+      "value": "true"
     },
     {
       "type": "TextBlock",
