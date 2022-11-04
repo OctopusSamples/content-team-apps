@@ -61,7 +61,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.octopus_development_app_environment_name",
-      "value": "Development (App)"
+      "value": "Development"
     },
     {
       "type": "TextBlock",
@@ -71,7 +71,7 @@
     {
       "type": "Input.Toggle",
       "id": "answer.boolean.octopus_development_app_environment_exists",
-      "value": false
+      "value": true
     },
     {
       "type": "TextBlock",
@@ -91,7 +91,7 @@
     {
       "type": "Input.Text",
       "id": "answer.string.octopus_production_app_environment_name",
-      "value": "Production (App)"
+      "value": "Production"
     },
     {
       "type": "TextBlock",
@@ -101,7 +101,7 @@
     {
       "type": "Input.Toggle",
       "id": "answer.boolean.octopus_production_app_environment_exists",
-      "value": false
+      "value": true
     },
     {
       "type": "TextBlock",
