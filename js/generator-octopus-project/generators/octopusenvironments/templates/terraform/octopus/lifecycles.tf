@@ -127,8 +127,8 @@ resource "octopusdeploy_lifecycle" "simple_lifecycle" {
 
   phase {
     automatic_deployment_targets = []
-    optional_deployment_targets  = [var.octopus_development_app_environment_exists ? data.octopusdeploy_environments.production.environments[0].id : octopusdeploy_environment.production_environment[0].id]
-    name                         = var.octopus_development_app_environment_exists ? data.octopusdeploy_environments.development.environments[0].name : octopusdeploy_environment.production_environment[0].name
+    optional_deployment_targets  = [var.octopus_production_app_environment_exists ? data.octopusdeploy_environments.production.environments[0].id : octopusdeploy_environment.production_environment[0].id]
+    name                         = var.octopus_production_app_environment_exists ? data.octopusdeploy_environments.production.environments[0].name : octopusdeploy_environment.production_environment[0].name
 
     release_retention_policy {
       quantity_to_keep    = 30
