@@ -207,21 +207,6 @@ resource "octopusdeploy_project" "frontend_project" {
   }
 }
 
-resource "octopusdeploy_channel" "frontend_feature_branch" {
-  name        = "Feature Branches"
-  project_id  = octopusdeploy_project.frontend_project.id
-  description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.deploy_frontend]
-  is_default  = false
-  rule {
-    tag = ".+"
-    action_package {
-      deployment_action = local.deployment_step
-      package_reference = local.frontend_package_name
-    }
-  }
-}
-
 resource "octopusdeploy_channel" "frontend_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.frontend_project.id

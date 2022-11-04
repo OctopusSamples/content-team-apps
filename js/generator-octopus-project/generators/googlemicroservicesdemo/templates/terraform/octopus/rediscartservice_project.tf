@@ -167,21 +167,6 @@ resource "octopusdeploy_project" "rediscartservice_project" {
   }
 }
 
-resource "octopusdeploy_channel" "rediscartservice_feature_branch" {
-  name        = "Feature Branches"
-  project_id  = octopusdeploy_project.rediscartservice_project.id
-  description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.rediscartservice_deployment_process]
-  is_default  = false
-  rule {
-    tag = ".+"
-    action_package {
-      deployment_action = local.deployment_step
-      package_reference = local.rediscartservice_package_name
-    }
-  }
-}
-
 resource "octopusdeploy_channel" "rediscartservice_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.rediscartservice_project.id

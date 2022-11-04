@@ -184,21 +184,6 @@ resource "octopusdeploy_project" "shippingservice_project" {
   }
 }
 
-resource "octopusdeploy_channel" "shippingservice_feature_branch" {
-  name        = "Feature Branches"
-  project_id  = octopusdeploy_project.shippingservice_project.id
-  description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.shippingservice_deployment_process]
-  is_default  = false
-  rule {
-    tag = ".+"
-    action_package {
-      deployment_action = local.deployment_step
-      package_reference = local.shippingservice_package_name
-    }
-  }
-}
-
 resource "octopusdeploy_channel" "shippingservice_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.shippingservice_project.id

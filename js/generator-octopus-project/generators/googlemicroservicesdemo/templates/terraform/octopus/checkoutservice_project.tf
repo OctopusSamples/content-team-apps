@@ -208,21 +208,6 @@ resource "octopusdeploy_project" "checkoutservice_project" {
   }
 }
 
-resource "octopusdeploy_channel" "checkoutservice_feature_branch" {
-  name        = "Feature Branches"
-  project_id  = octopusdeploy_project.checkoutservice_project.id
-  description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.checkoutservice_deployment_process]
-  is_default  = false
-  rule {
-    tag = ".+"
-    action_package {
-      deployment_action = local.deployment_step
-      package_reference = local.checkoutservice_package_name
-    }
-  }
-}
-
 resource "octopusdeploy_channel" "checkoutservice_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.checkoutservice_project.id

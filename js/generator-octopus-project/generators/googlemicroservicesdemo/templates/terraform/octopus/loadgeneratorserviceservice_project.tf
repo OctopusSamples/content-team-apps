@@ -307,21 +307,6 @@ resource "octopusdeploy_project" "loadgenerator_project" {
   }
 }
 
-resource "octopusdeploy_channel" "loadgenerator_feature_branch" {
-  name        = "Feature Branches"
-  project_id  = octopusdeploy_project.loadgenerator_project.id
-  description = "The channel through which feature branches are deployed"
-  depends_on  = [octopusdeploy_deployment_process.loadgenerator_deployment_process]
-  is_default  = false
-  rule {
-    tag = ".+"
-    action_package {
-      deployment_action = local.deployment_step
-      package_reference = local.loadgenerator_package_name
-    }
-  }
-}
-
 resource "octopusdeploy_channel" "loadgenerator_mainline" {
   name        = "Mainline"
   project_id  = octopusdeploy_project.loadgenerator_project.id
