@@ -345,7 +345,6 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
             targetPort : "8080"
           }
         ])
-        "Octopus.Action.RunOnServer" : "true"
       }
     }
   }
@@ -386,7 +385,6 @@ spec:
     targetPort: 8080
 EOF
         "Octopus.Action.KubernetesContainers.Namespace": "#{Namespace}",
-        "Octopus.Action.RunOnServer": "true"
       }
     }
   }
