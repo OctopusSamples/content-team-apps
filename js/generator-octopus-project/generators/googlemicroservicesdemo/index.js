@@ -102,7 +102,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "namespace_prefix",
                 message: "The prefix of the namespace used to hold the microservice demo. For example, you may set this to you own name to create an isolated deployment in a shared cluster.",
-                default: '#{Octopus.Space.Name | Replace "[^A-Za-z0-9]" "-" | ToLower}-'
+                default: '#{Octopus.Space.Name | Replace \\"[^A-Za-z0-9]\\" \\"-\\" | ToLower}-'
             },
         ]);
     }
