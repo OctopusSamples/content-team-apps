@@ -71,7 +71,7 @@
     {
       "type": "Input.Toggle",
       "id": "answer.boolean.octopus_development_app_environment_exists",
-      "value": true
+      "value": "true"
     },
     {
       "type": "TextBlock",
@@ -96,7 +96,7 @@
     {
       "type": "TextBlock",
       "text": "Use the Existing Production Environment",
-      "wrap": true
+      "wrap": "true"
     },
     {
       "type": "Input.Toggle",
