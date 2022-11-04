@@ -45,7 +45,7 @@ resource "github_actions_secret" "production_environment_existing" {
 resource "github_actions_secret" "production_security_environment" {
   repository      = var.github_repo
   secret_name     = "OCTOPUS_PRODUCTION_SECURITY_ENVIRONMENT_ID"
-  plaintext_value = octopusdeploy_environment.development_security_environment[0].id
+  plaintext_value = octopusdeploy_environment.production_security_environment[0].id
   count           = var.octopus_production_security_environment_exists ? 0 : 1
 }
 
