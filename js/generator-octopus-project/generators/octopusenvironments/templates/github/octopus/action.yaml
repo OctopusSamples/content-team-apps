@@ -107,14 +107,20 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
       run: |
+        # Make sure the strings are not too long, as s3 buckets can only be 63 chars in length
+        REPO_OWNER=${{ steps.repository_owner_lower.outputs.lowercase }}
+        TRIMMED_REPO_OWNER=${REPO_OWNER:10}
+        REPO_NAME=${{ steps.repository_name_lower.outputs.lowercase }}
+        TRIMMED_REPO_NAME=${REPO_NAME:20}
+        
         # Check to see if the bucket exists
         aws s3api head-bucket \
-            --bucket ${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            --bucket ${TRIMMED_REPO_OWNER}-${TRIMMED_REPO_NAME}-${{ inputs.project_name }} \
             --region ${{ inputs.aws_region }} 2>/dev/null
         # If not, create it
         if [[ $? -ne 0 ]]; then        
           aws s3 mb \
-            s3://${{ steps.repository_owner_lower.outputs.lowercase }}-${{ steps.repository_name_lower.outputs.lowercase }}-${{ inputs.project_name }} \
+            s3://${TRIMMED_REPO_OWNER}-${TRIMMED_REPO_NAME}-${{ inputs.project_name }} \
             --region ${{ inputs.aws_region }}
           echo "Sleeping to ensure bucket is available"
           sleep 60
