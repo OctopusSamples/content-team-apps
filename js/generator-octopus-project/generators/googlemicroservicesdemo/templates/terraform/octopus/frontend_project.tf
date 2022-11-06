@@ -1,6 +1,6 @@
 locals {
-  frontend_package_id        = "octopussamples/frontend"
-  frontend_package_name       = "frontend"
+  frontend_package_id          = "octopussamples/frontend"
+  frontend_package_name        = "frontend"
   frontend_resource_names      = "frontend#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   frontend_project_name        = "Frontend"
   frontend_project_description = "Deploys the frontend web app."
@@ -282,7 +282,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         var.octopus_production_security_environment_id
       ]
       environments = []
-      features = ["Octopus.Features.KubernetesService"]
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.frontend_package_name
         package_id                = local.frontend_package_id
@@ -310,7 +310,12 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         "Octopus.Action.KubernetesContainers.Namespace" : "#{Namespace}",
         "Octopus.Action.KubernetesContainers.DeploymentName" : local.frontend_resource_names,
         "Octopus.Action.KubernetesContainers.DnsConfigOptions" : "[]",
-        "Octopus.Action.KubernetesContainers.PodAnnotations" : "[{\"key\":\"sidecar.istio.io/rewriteAppHTTPProbers\",\"value\":\"true\"}]",
+        "Octopus.Action.KubernetesContainers.PodAnnotations" : jsonencode([
+          {
+            key : "sidecar.istio.io/rewriteAppHTTPProbers",
+            value : "true"
+          }
+        ]),
         "Octopus.Action.KubernetesContainers.DeploymentAnnotations" : "[]",
         "Octopus.Action.KubernetesContainers.DeploymentLabels" : "{\"app\":\"${local.frontend_package_name}\"}",
         "Octopus.Action.KubernetesContainers.CombinedVolumes" : "[]",
@@ -354,8 +359,8 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
         image   = local.worker_image
       }
       properties = {
-        "Octopus.Action.Script.ScriptSource": "Inline",
-        "Octopus.Action.KubernetesContainers.CustomResourceYaml": <<EOF
+        "Octopus.Action.Script.ScriptSource" : "Inline",
+        "Octopus.Action.KubernetesContainers.CustomResourceYaml" : <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -369,7 +374,7 @@ spec:
     port: 80
     targetPort: 8080
 EOF
-        "Octopus.Action.KubernetesContainers.Namespace": "#{Namespace}",
+        "Octopus.Action.KubernetesContainers.Namespace" : "#{Namespace}",
       }
     }
   }
