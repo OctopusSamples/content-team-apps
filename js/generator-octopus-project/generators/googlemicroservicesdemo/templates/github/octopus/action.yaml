@@ -150,7 +150,7 @@ runs:
     # deletes project releases.
     - name: Delete existing projects
       run: |
-        declare -a arr=("Complete%20Deployment")
+        declare -a arr=("Complete%20Deployment" "Frontend")
 
         for i in "${arr[@]}"
         do
