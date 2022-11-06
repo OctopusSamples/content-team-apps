@@ -4,8 +4,14 @@ locals {
   adservice_resource_names      = "adservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   adservice_project_name        = "Ad Service"
   adservice_project_description = "Deploys the ad service."
-  adservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"9555\",\"targetPort\":\"9555\"}]"
-  adservice_containers          = jsonencode([
+  adservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "9555",
+      targetPort : "9555"
+    }
+  ])
+  adservice_containers = jsonencode([
     {
       IsNew : true,
       InitContainer : "False",
@@ -231,7 +237,7 @@ resource "octopusdeploy_deployment_process" "adservice_deployment_process" {
         var.octopus_production_security_environment_id
       ]
       environments = []
-      features = ["Octopus.Features.KubernetesService"]
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.adservice_package_name
         package_id                = local.adservice_package_id

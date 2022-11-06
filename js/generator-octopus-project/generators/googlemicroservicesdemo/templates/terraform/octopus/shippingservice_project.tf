@@ -4,7 +4,13 @@ locals {
   shippingservice_resource_names      = "shippingservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   shippingservice_project_name        = "Shipping Service"
   shippingservice_project_description = "Deploys the shipping service."
-  shippingservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"50051\",\"targetPort\":\"50051\"}]"
+  shippingservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "50051",
+      targetPort : "50051"
+    }
+  ])
   shippingservice_containers          = jsonencode([
     {
       IsNew : true,

@@ -4,7 +4,13 @@ locals {
   emailservice_resource_names      = "emailservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   emailservice_project_name        = "Email Service"
   emailservice_project_description = "Deploys the email service."
-  emailservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"5000\",\"targetPort\":\"8080\"}]"
+  emailservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "5000",
+      targetPort : "8080"
+    }
+  ])
   emailservice_containers          = jsonencode([
     {
       IsNew : true,

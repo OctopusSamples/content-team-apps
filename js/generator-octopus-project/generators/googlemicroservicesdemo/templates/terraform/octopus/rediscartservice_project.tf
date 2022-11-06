@@ -4,137 +4,158 @@ locals {
   rediscartservice_resource_names      = "redis-cart#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   rediscartservice_project_name        = "Redis Cart Service"
   rediscartservice_project_description = "Deploys the redis cart service."
-  rediscartservice_service_ports       = "[{\"name\":\"tls-redis\",\"port\":\"6379\",\"targetPort\":\"6379\"}]"
-  rediscartservice_containers          = jsonencode([
+  rediscartservice_service_ports       = jsonencode([
     {
-      "IsNew" : true,
-      "InitContainer" : "False",
-      "Ports" : [
+      name : "tls-redis",
+      port : "6379",
+      targetPort : "6379"
+    }
+  ])
+  rediscartservice_containers = jsonencode([
+    {
+      IsNew : true,
+      InitContainer : "False",
+      Ports : [
         {
-          "value" : "6379"
+          value : "6379"
         }
       ],
-      "EnvironmentVariables" : [],
-      "SecretEnvironmentVariables" : [],
-      "SecretEnvFromSource" : [],
-      "ConfigMapEnvironmentVariables" : [],
-      "ConfigMapEnvFromSource" : [],
-      "FieldRefEnvironmentVariables" : [],
-      "VolumeMounts" : [
+      EnvironmentVariables : [
+      ],
+      SecretEnvironmentVariables : [
+      ],
+      SecretEnvFromSource : [
+      ],
+      ConfigMapEnvironmentVariables : [
+      ],
+      ConfigMapEnvFromSource : [
+      ],
+      FieldRefEnvironmentVariables : [
+      ],
+      VolumeMounts : [
         {
-          "key" : "redis-data",
-          "value" : "/data",
-          "option" : ""
+          key : "redis-data",
+          value : "/data",
+          option : ""
         }
       ],
-      "AcquisitionLocation" : "NotAcquired",
-      Name : local.rediscartservice_package_name
-      PackageId : local.rediscartservice_package_id
-      FeedId : var.octopus_dockerhub_feed_id
-      "Properties" : {
-
+      AcquisitionLocation : "NotAcquired",
+      Name : "redis",
+      PackageId : "redis",
+      FeedId : "Feeds-1193",
+      Properties : {
       },
-      "Command" : [],
-      "Args" : [],
-      "Resources" : {
-        "requests" : {
-          "memory" : "200Mi",
-          "cpu" : "70m",
-          "ephemeralStorage" : ""
+      Command : [
+      ],
+      Args : [
+      ],
+      Resources : {
+        requests : {
+          memory : "200Mi",
+          cpu : "70m",
+          ephemeralStorage : ""
         },
-        "limits" : {
-          "memory" : "256Mi",
-          "cpu" : "125m",
-          "ephemeralStorage" : "",
-          "nvidiaGpu" : "",
-          "amdGpu" : ""
+        limits : {
+          memory : "256Mi",
+          cpu : "125m",
+          ephemeralStorage : "",
+          nvidiaGpu : "",
+          amdGpu : ""
         }
       },
-      "LivenessProbe" : {
-        "failureThreshold" : "",
-        "initialDelaySeconds" : "",
-        "periodSeconds" : "5",
-        "successThreshold" : "",
-        "timeoutSeconds" : "",
-        "type" : "TcpSocket",
-        "exec" : {
-          "command" : []
+      LivenessProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "5",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "TcpSocket",
+        exec : {
+          command : [
+          ]
         },
-        "httpGet" : {
-          "host" : "",
-          "path" : "",
-          "port" : "",
-          "scheme" : "",
-          "httpHeaders" : []
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : [
+          ]
         },
-        "tcpSocket" : {
-          "host" : "",
-          "port" : "6379"
+        tcpSocket : {
+          host : "",
+          port : "6379"
         }
       },
-      "ReadinessProbe" : {
-        "failureThreshold" : "",
-        "initialDelaySeconds" : "",
-        "periodSeconds" : "5",
-        "successThreshold" : "",
-        "timeoutSeconds" : "",
-        "type" : "TcpSocket",
-        "exec" : {
-          "command" : []
+      ReadinessProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "5",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : "TcpSocket",
+        exec : {
+          command : [
+          ]
         },
-        "httpGet" : {
-          "host" : "",
-          "path" : "",
-          "port" : "",
-          "scheme" : "",
-          "httpHeaders" : []
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : [
+          ]
         },
-        "tcpSocket" : {
-          "host" : "",
-          "port" : "6379"
+        tcpSocket : {
+          host : "",
+          port : "6379"
         }
       },
-      "StartupProbe" : {
-        "failureThreshold" : "",
-        "initialDelaySeconds" : "",
-        "periodSeconds" : "",
-        "successThreshold" : "",
-        "timeoutSeconds" : "",
-        "type" : null,
-        "exec" : {
-          "command" : []
+      StartupProbe : {
+        failureThreshold : "",
+        initialDelaySeconds : "",
+        periodSeconds : "",
+        successThreshold : "",
+        timeoutSeconds : "",
+        type : null,
+        exec : {
+          command : [
+          ]
         },
-        "httpGet" : {
-          "host" : "",
-          "path" : "",
-          "port" : "",
-          "scheme" : "",
-          "httpHeaders" : []
+        httpGet : {
+          host : "",
+          path : "",
+          port : "",
+          scheme : "",
+          httpHeaders : [
+          ]
         },
-        "tcpSocket" : {
-          "host" : "",
-          "port" : ""
+        tcpSocket : {
+          host : "",
+          port : ""
         }
       },
-      "Lifecycle" : {
-
+      Lifecycle : {
       },
-      "SecurityContext" : {
-        "allowPrivilegeEscalation" : "false",
-        "privileged" : "false",
-        "readOnlyRootFilesystem" : "true",
-        "runAsGroup" : "",
-        "runAsNonRoot" : "",
-        "runAsUser" : "",
-        "capabilities" : {
-          "add" : [],
-          "drop" : ["all"]
+      SecurityContext : {
+        allowPrivilegeEscalation : "false",
+        privileged : "false",
+        readOnlyRootFilesystem : "true",
+        runAsGroup : "",
+        runAsNonRoot : "",
+        runAsUser : "",
+        capabilities : {
+          add : [
+          ],
+          drop : [
+            "all"
+          ]
         },
-        "seLinuxOptions" : {
-          "level" : "",
-          "role" : "",
-          "type" : "",
-          "user" : ""
+        seLinuxOptions : {
+          level : "",
+          role : "",
+          type : "",
+          user : ""
         }
       }
     }

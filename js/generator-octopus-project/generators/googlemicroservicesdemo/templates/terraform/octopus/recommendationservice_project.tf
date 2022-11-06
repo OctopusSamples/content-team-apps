@@ -4,7 +4,13 @@ locals {
   recommendationservice_resource_names      = "recommendationservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   recommendationservice_project_name        = "Recommendation Service"
   recommendationservice_project_description = "Deploys the recommendation service."
-  recommendationservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"8080\",\"targetPort\":\"8080\"}]"
+  recommendationservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "8080",
+      targetPort : "8080"
+    }
+  ])
   recommendationservice_containers          = jsonencode([
     {
       IsNew : true,

@@ -4,7 +4,13 @@ locals {
   currencyservice_resource_names      = "currencyservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   currencyservice_project_name        = "Currency Service"
   currencyservice_project_description = "Deploys the currency service."
-  currencyservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7000\",\"targetPort\":\"7000\"}]"
+  currencyservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "7000",
+      targetPort : "7000"
+    }
+  ])
   currencyservice_containers          = jsonencode([
     {
       IsNew : true,

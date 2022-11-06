@@ -4,8 +4,14 @@ locals {
   cartservice_resource_names      = "cartservice#{unless Octopus.Release.Channel.Name == \"Mainline\"}-#{Octopus.Release.Channel.Name}#{/unless}"
   cartservice_project_name        = "Cart Service"
   cartservice_project_description = "Deploys the cart service."
-  cartservice_service_ports       = "[{\"name\":\"grpc\",\"port\":\"7070\",\"targetPort\":\"7070\"}]"
-  cartservice_containers          = jsonencode([
+  cartservice_service_ports       = jsonencode([
+    {
+      name : "grpc",
+      port : "7070",
+      targetPort : "7070"
+    }
+  ])
+  cartservice_containers = jsonencode([
     {
       IsNew : true,
       InitContainer : "False",
@@ -225,7 +231,7 @@ resource "octopusdeploy_deployment_process" "cartservice_deployment_process" {
         var.octopus_production_security_environment_id
       ]
       environments = []
-      features = ["Octopus.Features.KubernetesService"]
+      features     = ["Octopus.Features.KubernetesService"]
       package {
         name                      = local.cartservice_package_name
         package_id                = local.cartservice_package_id
