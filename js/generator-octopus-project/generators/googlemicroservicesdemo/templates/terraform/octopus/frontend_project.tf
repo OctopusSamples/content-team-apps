@@ -380,6 +380,36 @@ EOF
   }
   step {
     condition           = "Success"
+    name                = "Get Services"
+    package_requirement = "LetOctopusDecide"
+    start_trigger       = "StartAfterPrevious"
+    target_roles        = [local.deployment_role]
+    action {
+      action_type    = "Octopus.KubernetesRunScript"
+      name           = "Get Services"
+      notes          = "List the Frontend web app services."
+      run_on_server  = true
+      worker_pool_id = local.worker_pool_id
+      excluded_environments = [
+        var.octopus_development_security_environment_id,
+        var.octopus_production_security_environment_id
+      ]
+      environments = []
+      container {
+        feed_id = var.octopus_dockerhub_feed_id
+        image   = "octopusdeploy/worker-tools:3-ubuntu.18.04"
+      }
+      properties = {
+        "Octopus.Action.Script.ScriptSource" : "Inline"
+        "Octopus.Action.Script.Syntax" : "Bash"
+        "Octopus.Action.Script.ScriptBody" : "kubectl get service"
+        "OctopusUseBundledTooling" : "False"
+        "Octopus.Action.KubernetesContainers.Namespace": "#{Namespace}"
+      }
+    }
+  }
+  step {
+    condition           = "Success"
     name                = "Check for Vulnerabilities"
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
