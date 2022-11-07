@@ -112,6 +112,41 @@
               value=" in this post we look at: The history of GitOps, GitOps goals and ideals, The limitations of GitOps, The tools that support GitOps, The practical implications of adopting GitOps in your own organization"/>
         </insert>
     </changeSet>
+    <changeSet author="mcasperson" id="8">
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="The importance of Continuous Delivery"/>
+            <column name="web"
+              value="https://www.dropbox.com/s/ca80kc8hb64ttya/importance-of-cd.pdf?dl=1"/>
+            <column name="image"
+              value="https://user-images.githubusercontent.com/160104/200215794-ee00c136-09e5-44a1-948f-3f2b07465be4.png"/>
+            <column name="description"
+              value="In this white paper, you learn Continuous Delivery principles that will help you meet and exceed your goals."/>
+        </insert>
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="An introduction to build servers and Continuous Integration"/>
+            <column name="web"
+              value="https://www.dropbox.com/s/2ln1ij7fuqca6hh/map-deployment-pipeline.pdf?dl=1"/>
+            <column name="image"
+              value="https://user-images.githubusercontent.com/160104/200216377-aa2f7d34-ebf0-414f-ab98-a96a27a691b7.png"/>
+            <column name="description"
+              value="Our white paper, How to map your deployment pipeline, addresses the challenges of adopting DevOps for any size team using any tech stack."/>
+        </insert>
+        <insert tableName="product">
+            <column name="dataPartition" value="main"/>
+            <column name="name"
+              value="What is GitOps?"/>
+            <column name="web"
+              value="https://www.dropbox.com/s/8to2n5l6w70lzui/measuring-cd-and-devops.pdf?dl=1"/>
+            <column name="image"
+              value="https://user-images.githubusercontent.com/160104/200216425-ea9c0f8c-d9ae-4a94-bee9-4a01c37d9a59.png"/>
+            <column name="description"
+              value="Our white paper, Measuring Continuous Delivery and DevOps, helps you measure the impact of software delivery improvements."/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
 
