@@ -199,7 +199,7 @@ runs:
       working-directory: js/octopus-template-generator
 
     - name: Generate SBOM
-      run: cyclonedx-npm --output-file bom.xml
+      run: cyclonedx-npm --ignore-npm-errors --output-file bom.xml
       shell: bash
       working-directory: js/app-generator
 
