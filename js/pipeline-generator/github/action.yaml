@@ -45,7 +45,7 @@ runs:
       working-directory: js/pipeline-generator
 
     - name: Install CycloneDX
-      run: npm install -g @cyclonedx/bom
+      run: npm install --global @cyclonedx/cyclonedx-npm
       shell: bash
       working-directory: js/pipeline-generator
 

@@ -83,7 +83,7 @@ runs:
       working-directory: js/frontend
 
     - name: Instance CycloneDX
-      run: npm install -g @cyclonedx/bom
+      run: npm install --global @cyclonedx/cyclonedx-npm
       shell: bash
 
     # This step generates a Source Bill of Materials (SBOM) package that captures all the dependencies compiled
