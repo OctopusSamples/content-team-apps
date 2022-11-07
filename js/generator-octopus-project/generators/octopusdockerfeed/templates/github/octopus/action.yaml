@@ -50,6 +50,12 @@ inputs:
   dockerhub_password:
     description: 'The DockerHub password'
     required: true
+  dockerhub_feed_name:
+    description: 'The DockerHub feed name'
+    required: true
+  existing_dockerhub_feed:
+    description: 'Use an existing feed'
+    required: true
 
 # AWS inputs
 
@@ -191,6 +197,7 @@ runs:
           -var="dockerhub_password=${{ inputs.dockerhub_password }}" \
           -var="github_repo=${{ github.event.repository.name }}" \
           -var="github_owner=${{ github.repository_owner }}" \
-          -var="octopus_dockerhub_feed_id=${{ github.octopus_dockerhub_feed_id }}"
+          -var="dockerhub_feed_name=${{ inputs.dockerhub_feed_name }}" \
+          -var="existing_dockerhub_feed=${{ inputs.existing_dockerhub_feed }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash

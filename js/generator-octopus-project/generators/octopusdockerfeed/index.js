@@ -65,6 +65,18 @@ module.exports = class extends Generator {
             },
             {
                 type: "input",
+                name: "dockerhub_feed_name",
+                message: "The name of the DockerHub feed.",
+                default: "Docker Hub"
+            },
+            {
+                type: "confirm",
+                name: "existing_dockerhub_feed",
+                message: "Use an existing feed",
+                default: false
+            },
+            {
+                type: "input",
                 name: "dockerhub_username",
                 message: "The DockerHub username.",
                 default: "${{ secrets.DOCKERHUB_USERNAME }}"
@@ -92,6 +104,8 @@ module.exports = class extends Generator {
             github_app_id: this.answers["github_app_id"],
             github_installation_id: this.answers["github_installation_id"],
             github_pem_file: this.answers["github_pem_file"],
+            dockerhub_feed_name: this.answers["dockerhub_feed_name"],
+            existing_dockerhub_feed: this.answers["existing_dockerhub_feed"],
         };
 
         this.fs.copyTpl(

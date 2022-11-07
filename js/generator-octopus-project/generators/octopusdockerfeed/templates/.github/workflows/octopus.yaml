@@ -29,6 +29,8 @@ jobs:
           octopus_space_id: <%= octopus_space_id %>
           dockerhub_username: <%= dockerhub_username %>
           dockerhub_password: <%= dockerhub_password %>
+          existing_dockerhub_feed: <%= existing_dockerhub_feed %>
+          dockerhub_feed_name: <%= dockerhub_feed_name %>
 
           # AWS vars
           aws_access_key: <%= aws_access_key %>

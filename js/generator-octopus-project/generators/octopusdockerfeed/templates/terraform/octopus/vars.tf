@@ -62,11 +62,6 @@ variable "production_security_environment" {
   nullable = false
 }
 
-variable "octopus_dockerhub_feed_id" {
-  type = string
-  nullable = false
-}
-
 variable "github_repo" {
   type = string
   nullable = false
@@ -89,4 +84,16 @@ variable "dockerhub_password" {
   nullable = true
   sensitive = true
   description = "The DockerHub password"
+}
+
+variable "dockerhub_feed_name" {
+  type = string
+  nullable = false
+  default = "Docker Hub"
+}
+
+variable "existing_dockerhub_feed" {
+  type = bool
+  nullable = false
+  description = "Reuse an existing Docker Hub feed by the same name"
 }
