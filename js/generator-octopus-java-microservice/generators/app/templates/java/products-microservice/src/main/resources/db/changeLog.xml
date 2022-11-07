@@ -127,7 +127,7 @@
         <insert tableName="product">
             <column name="dataPartition" value="main"/>
             <column name="name"
-              value="An introduction to build servers and Continuous Integration"/>
+              value="How to map your deployment pipeline"/>
             <column name="web"
               value="https://www.dropbox.com/s/2ln1ij7fuqca6hh/map-deployment-pipeline.pdf?dl=1"/>
             <column name="image"
@@ -138,7 +138,7 @@
         <insert tableName="product">
             <column name="dataPartition" value="main"/>
             <column name="name"
-              value="What is GitOps?"/>
+              value="Measuring Continuous Delivery and DevOps"/>
             <column name="web"
               value="https://www.dropbox.com/s/8to2n5l6w70lzui/measuring-cd-and-devops.pdf?dl=1"/>
             <column name="image"
