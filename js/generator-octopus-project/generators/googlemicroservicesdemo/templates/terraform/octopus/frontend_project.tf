@@ -220,6 +220,13 @@ resource "octopusdeploy_channel" "frontend_mainline" {
       package_reference = local.frontend_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.frontend_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "frontend_debug_variable" {
@@ -410,7 +417,7 @@ EOF
   }
   step {
     condition           = "Success"
-    name                = "Check for Vulnerabilities"
+    name                = local.check_for_vulnerabilities_step
     package_requirement = "LetOctopusDecide"
     start_trigger       = "StartAfterPrevious"
     run_script_action {
@@ -422,15 +429,15 @@ EOF
       script_source                      = "Inline"
       run_on_server                      = true
       worker_pool_id                     = local.worker_pool_id
-      name                               = "Check for Vulnerabilities"
+      name                               = local.check_for_vulnerabilities_step
       notes                              = "Scans the SBOM for any known vulnerabilities."
       environments                       = [
         var.octopus_development_security_environment_id,
         var.octopus_production_security_environment_id
       ]
       package {
-        name                      = "frontend-sbom"
-        package_id                = "microservices-demo:frontend-sbom"
+        name                      = "${local.frontend_package_name}-sbom"
+        package_id                = "microservices-demo:${local.frontend_package_name}-sbom"
         feed_id                   = octopusdeploy_maven_feed.github_maven_feed.id
         acquisition_location      = "Server"
         extract_during_deployment = true

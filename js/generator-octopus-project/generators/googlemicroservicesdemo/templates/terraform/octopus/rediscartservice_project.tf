@@ -40,9 +40,9 @@ locals {
         }
       ],
       AcquisitionLocation : "NotAcquired",
-      Name : "redis",
-      PackageId : "redis",
-      FeedId : "Feeds-1193",
+      Name : local.rediscartservice_package_name,
+      PackageId : local.rediscartservice_package_id,
+      FeedId : var.octopus_dockerhub_feed_id,
       Properties : {
       },
       Command : [
