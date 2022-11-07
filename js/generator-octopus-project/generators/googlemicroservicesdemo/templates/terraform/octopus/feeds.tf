@@ -6,3 +6,9 @@ resource "octopusdeploy_maven_feed" "github_maven_feed" {
   name                           = "GitHub Maven Feed"
   username                       = "bob"
 }
+
+data "octopusdeploy_feeds" "built-in-feed" {
+  feed_type    = "BuiltIn"
+  skip         = 0
+  take         = 1
+}

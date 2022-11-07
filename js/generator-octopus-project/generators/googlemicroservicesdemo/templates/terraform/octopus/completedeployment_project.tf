@@ -61,7 +61,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.rediscartservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -88,7 +88,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       package {
         name                      = ""
         package_id                = octopusdeploy_project.adservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
         extract_during_deployment = false
       }
@@ -115,7 +115,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.cartservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -141,7 +141,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.checkoutservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -167,7 +167,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.currencyservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -193,7 +193,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.emailservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -219,7 +219,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.paymentservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -245,7 +245,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.productcatalogservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -271,7 +271,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.recommendationservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -297,7 +297,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.shippingservice_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -323,7 +323,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.frontend_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {
@@ -349,7 +349,7 @@ resource "octopusdeploy_deployment_process" "completedeployment_deployment_proce
       features = []
       primary_package {
         package_id                = octopusdeploy_project.loadgenerator_project.id
-        feed_id                   = var.octopus_built_in_feed_id
+        feed_id                   = data.octopusdeploy_feeds.built-in-feed.feeds[0].id
         acquisition_location      = "NotAcquired"
       }
       properties = {

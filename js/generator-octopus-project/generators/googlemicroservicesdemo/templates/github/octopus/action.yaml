@@ -137,13 +137,6 @@ runs:
         input: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
         output: terraform/${{ inputs.project_directory_name }}/backend_aws.tf
 
-    # At the time of creating this workflow the Octopus terraform provider did not have a data source for feeds, so
-    # we need to manually query the new space for the built-in feed ID.
-    - name: Find the Built-In Feed ID
-      id: octopus_builtin_feed_id
-      run: "echo \"::set-output name=octopus_builtin_feed_id::$(curl --silent -H 'X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}' '${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/feeds?name=Octopus%20Server%20(built-in)' | jq -r '.Items[0].Id')\""
-      shell: bash
-
     # There is a bug with the Terraform provider that means step package references are incorrectly
     # associated with new steps. The easiest fix is to delete the projects before recreating them.
     # Note that you will likely want to remove this step if you intend to update projects via Terraform, as this
@@ -185,7 +178,6 @@ runs:
         -var="octopus_application_lifecycle_id=${{ inputs.octopus_application_lifecycle_id }}" \
         -var="octopus_simple_lifecycle_id=${{ inputs.octopus_simple_lifecycle_id }}" \
         -var="octopus_production_only_lifecycle_id=${{ inputs.octopus_production_only_lifecycle_id }}" \
-        -var="octopus_built_in_feed_id=${{ steps.octopus_builtin_feed_id.outputs.octopus_builtin_feed_id }}" \
         -var="octopus_development_app_environment_id=${{ inputs.octopus_development_app_environment_id }}" \
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
         -var="octopus_production_app_environment_id=${{ inputs.octopus_production_app_environment_id }}" \
