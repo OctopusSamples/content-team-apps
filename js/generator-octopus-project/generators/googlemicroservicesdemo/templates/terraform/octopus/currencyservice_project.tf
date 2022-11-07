@@ -204,6 +204,13 @@ resource "octopusdeploy_channel" "currencyservice_mainline" {
       package_reference = local.currencyservice_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.currencyservice_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "currencyservice_debug_variable" {

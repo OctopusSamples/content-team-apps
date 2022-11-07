@@ -320,6 +320,13 @@ resource "octopusdeploy_channel" "loadgenerator_mainline" {
       package_reference = local.loadgenerator_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.loadgenerator_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "loadgenerator_debug_variable" {

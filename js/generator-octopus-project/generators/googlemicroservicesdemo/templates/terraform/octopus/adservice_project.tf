@@ -199,6 +199,13 @@ resource "octopusdeploy_channel" "adservice_mainline" {
       package_reference = local.adservice_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.adservice_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "adservice_debug_variable" {
