@@ -2,7 +2,7 @@
   "name": "@octopus-content-team/generator-octopus-project",
   "description": "A Yeoman generator to build common Octopus projects.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
-  "version": "0.1.76",
+  "version": "0.1.77",
   "files": [
     "generators"
   ],

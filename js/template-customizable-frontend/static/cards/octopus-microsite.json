@@ -10,7 +10,7 @@
     {
       "type": "Input.Text",
       "id": "generator",
-      "value": "@octopus-content-team/generator-octopus-project@0.1.76:microsite",
+      "value": "@octopus-content-team/generator-octopus-project@0.1.77:microsite",
       "isVisible": false
     },
     {
