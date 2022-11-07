@@ -199,7 +199,7 @@ runs:
         github_token: ${{ inputs.github_token }}
 
     - name: Generate SBOM
-      run: cyclonedx-bom
+      run: cyclonedx-node -o bom.xml
       shell: bash
       working-directory: js/octopus-template-generator
 

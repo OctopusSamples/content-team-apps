@@ -50,7 +50,7 @@ runs:
       working-directory: js/pipeline-generator
 
     - name: Generate SBOM
-      run: cyclonedx-bom
+      run: cyclonedx-node -o bom.xml
       shell: bash
       working-directory: js/pipeline-generator
 
