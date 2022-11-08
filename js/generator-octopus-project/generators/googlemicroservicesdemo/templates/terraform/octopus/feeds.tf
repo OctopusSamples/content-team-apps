@@ -1,7 +1,7 @@
 resource "octopusdeploy_maven_feed" "github_maven_feed" {
   download_attempts              = 10
   download_retry_backoff_seconds = 20
-  feed_uri                       = "https://maven.pkg.github.com/OctopusSamples/google-microservices-demo"
+  feed_uri                       = "https://maven.pkg.github.com/${var.github_owner}/google-microservices-demo"
   password                       = var.github_package_pat
   name                           = "GitHub Maven Feed"
   username                       = "bob"

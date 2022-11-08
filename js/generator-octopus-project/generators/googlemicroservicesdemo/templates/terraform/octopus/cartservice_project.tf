@@ -193,6 +193,13 @@ resource "octopusdeploy_channel" "cartservice_mainline" {
       package_reference = local.cartservice_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.cartservice_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "cartservice_debug_variable" {

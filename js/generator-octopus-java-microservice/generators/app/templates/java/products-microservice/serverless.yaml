@@ -1,0 +1,39 @@
+service: products-microservice
+
+provider:
+  name: aws
+  runtime: java11
+  region: us-west-1
+  environment:
+    DATABASE_HOSTNAME:
+    DATABASE_PORT:
+    DATABASE_NAME:
+    DATABASE_USERNAME:
+    DATABASE_PASSWORD:
+
+package:
+  artifact: target/function.zip
+
+functions:
+  hello:
+    handler: not.used
+    runtime: provided
+    events:
+      - http:
+          path: /api/products
+          method: get
+      - http:
+          path: /api/products/{id}
+          method: get
+      - http:
+          path: /api/products
+          method: post
+      - http:
+          path: /health/products/get
+          method: get
+      - http:
+          path: /health/products/{id}/get
+          method: get
+      - http:
+          path: /api/products/post
+          method: get

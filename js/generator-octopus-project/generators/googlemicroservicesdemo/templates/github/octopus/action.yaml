@@ -182,6 +182,7 @@ runs:
         -var="octopus_development_security_environment_id=${{ inputs.octopus_development_security_environment_id }}" \
         -var="octopus_production_app_environment_id=${{ inputs.octopus_production_app_environment_id }}" \
         -var="octopus_production_security_environment_id=${{ inputs.octopus_production_security_environment_id }}" \
+        -var="github_owner=${{ github.repository_owner }}" \
         -var="namespace_prefix=${{ inputs.namespace_prefix }}"
       working-directory: terraform/${{ inputs.project_directory_name }}
       shell: bash

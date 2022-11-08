@@ -203,6 +203,13 @@ resource "octopusdeploy_channel" "productcatalogservice_mainline" {
       package_reference = local.productcatalogservice_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.productcatalogservice_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "productcatalogservice_debug_variable" {

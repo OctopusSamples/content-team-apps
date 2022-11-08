@@ -64,3 +64,8 @@ variable "namespace_prefix" {
   default = ""
   description = "The prefix of the namespace used to hold the microservice demo. For example, you may set this to you own name to create an isolated deployment in a shared cluster."
 }
+
+variable "github_owner" {
+  type = string
+  nullable = false
+}

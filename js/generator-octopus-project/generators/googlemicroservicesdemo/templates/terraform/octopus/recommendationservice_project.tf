@@ -207,6 +207,13 @@ resource "octopusdeploy_channel" "recommendationservice_mainline" {
       package_reference = local.recommendationservice_package_name
     }
   }
+  rule {
+    tag = "^$"
+    action_package {
+      deployment_action = local.check_for_vulnerabilities_step
+      package_reference = "${local.recommendationservice_package_name}-sbom"
+    }
+  }
 }
 
 resource "octopusdeploy_variable" "recommendationservice_debug_variable" {
