@@ -57,7 +57,7 @@
     "@loopback/service-proxy": "^4.1.1",
     "@octopus-content-team/generator-github-complete-ecs-deployment": "0.1.166",
     "@octopus-content-team/generator-github-complete-eks-deployment": "0.1.258",
-    "@octopus-content-team/generator-github-complete-lambda-deployment": "0.1.47",
+    "@octopus-content-team/generator-github-complete-lambda-deployment": "0.1.48",
     "adm-zip": "^0.5.9",
     "blueimp-md5": "^2.19.0",
     "inquirer": "^8.0.0",

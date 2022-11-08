@@ -31,7 +31,7 @@ module.exports = class extends Generator {
         this.composeWith(require.resolve('@octopus-content-team/generator-octopus-reverse-proxy/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-space/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-github-shared-infrastructure/generators/app'), args);
-        this.composeWith(require.resolve('@octopus-content-team/generator-github-lambda-project/generators/app'), args);
+        this.composeWith(require.resolve('@octopus-content-team/generator-github-lambda-deployment/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-ecr-feed/generators/app'), args);
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "products-service"});
         this.composeWith(require.resolve('@octopus-content-team/generator-aws-ecr/generators/app'), {...args, repository: "octopus-frontend"});
