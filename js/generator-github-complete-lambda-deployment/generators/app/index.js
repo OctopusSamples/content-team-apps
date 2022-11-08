@@ -52,8 +52,8 @@ module.exports = class extends Generator {
             this.destinationPath('images/diagram.png'));
 
         this.fs.copyTpl(
-            this.templatePath('.github/workflows/octopus-project.yaml'),
-            this.destinationPath('.github/workflows/octopus-project.yaml'),
+            this.templatePath('.github/workflows/lambda-deployment.yaml'),
+            this.destinationPath('.github/workflows/lambda-deployment.yaml'),
             {
                 octopus_space: spaceName,
                 s3_bucket_suffix: this.options["s3BucketSuffix"],

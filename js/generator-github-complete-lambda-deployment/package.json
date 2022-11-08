@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-lambda-deployment",
-  "version": "0.1.48",
+  "version": "0.1.49",
   "description": "",
   "files": [
     "generators"
