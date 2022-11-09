@@ -150,7 +150,7 @@ runs:
             echo "Emptying project deploy process $DEPLOYMENT_PROCESS_ID for project $i"
             DEPLOYMENT_PROCESS=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/deploymentprocesses/${DEPLOYMENT_PROCESS_ID})
             EMPTY_DEPLOYMENT_PROCESS=$(echo ${DEPLOYMENT_PROCESS} | jq 'del(.Steps[])')
-            curl --silent -X PUT -d "${EMPTY_DEPLOYMENT_PROCESS}" -H "Content-Type: application/json" -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/deploymentprocesses/${DEPLOYMENT_PROCESS_ID}
+            NEW_DEPLOYMENT_PROCESS=$(curl --silent -X PUT -d "${EMPTY_DEPLOYMENT_PROCESS}" -H "Content-Type: application/json" -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/deploymentprocesses/${DEPLOYMENT_PROCESS_ID})
           fi
         done
       shell: bash
