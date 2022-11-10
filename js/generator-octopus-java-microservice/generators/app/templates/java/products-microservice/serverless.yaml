@@ -39,21 +39,27 @@ functions:
       - http:
           path: /api/products
           method: get
+          cors: true
       - http:
           path: /api/products/{id}
           method: get
+          cors: true
       - http:
           path: /api/products
           method: post
+          cors: true
       - http:
           path: /health/products/get
           method: get
+          cors: true
       - http:
           path: /health/products/{id}/get
           method: get
+          cors: true
       - http:
           path: /api/products/post
           method: get
+          cors: true
 
 custom:
   AURORA:
