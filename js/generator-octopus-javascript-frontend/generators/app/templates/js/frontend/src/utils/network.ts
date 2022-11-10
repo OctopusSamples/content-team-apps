@@ -22,7 +22,7 @@ export function isBranchingEnabled() {
 
 export function getBranchingRules() {
     if (isBranchingEnabled()) {
-        const rules: RedirectRule[] = JSON.parse( getSavedBranchingRules() || "[]")
+        const rules: RedirectRule[] = JSON.parse(getSavedBranchingRules() || "[]")
         return rules
             .filter(r => r.path.trim() && r.destination.trim())
             .map(r => "route[" + r.path + "]=" + r.destination).join(";")
@@ -106,12 +106,18 @@ export function getJsonApi<T>(url: string, partition?: string | null, retryCount
             }
             if ((retryCount || 0) <= GET_RETRIES) {
                 /*
-                 Some lambdas are slow, and initial requests timeout with a 504 response.
-                 We automatically retry these requests.
+                  Some lambdas are slow, usually when they first start and wake up a paused serverless database.
+                  This means initial requests timeout with a 504 response. We automatically retry these requests.
                  */
                 return getJsonApi<T>(url, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
+        })
+        .catch(error => {
+            if ((retryCount || 0) <= GET_RETRIES) {
+                return getJsonApi<T>(url, partition, (retryCount || 0) + 1, ignoreReturn);
+            }
+            return Promise.reject(error);
         });
 }
 
@@ -150,6 +156,12 @@ export function patchJsonApi<T>(resource: string, url: string, partition?: strin
                 return patchJsonApi<T>(resource, url, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
+        })
+        .catch(error => {
+            if ((retryCount || 0) <= GET_RETRIES) {
+                return patchJsonApi<T>(resource, url, partition, (retryCount || 0) + 1, ignoreReturn);
+            }
+            return Promise.reject(error);
         });
 }
 
@@ -214,5 +226,11 @@ export function deleteJsonApi(url: string, partition: string | null, retryCount?
                 return deleteJsonApi(url, partition, (retryCount || 0) + 1, ignoreReturn);
             }
             return Promise.reject(response);
+        })
+        .catch(error => {
+            if ((retryCount || 0) <= GET_RETRIES) {
+                return deleteJsonApi(url, partition, (retryCount || 0) + 1, ignoreReturn);
+            }
+            return Promise.reject(error);
         });
 }
