@@ -5,19 +5,36 @@ provider:
   runtime: java11
   region: us-west-1
   environment:
-    DATABASE_HOSTNAME:
-    DATABASE_PORT:
-    DATABASE_NAME:
-    DATABASE_USERNAME:
-    DATABASE_PASSWORD:
+    DATABASE_HOSTNAME: ${self:custom.AURORA.HOST}
+    DATABASE_PORT: ${self:custom.AURORA.PORT}
+    DATABASE_NAME: ${self:custom.AURORA.DB_NAME}
+    DATABASE_USERNAME: ${self:custom.AURORA.USERNAME}
+    DATABASE_PASSWORD: ${self:custom.AURORA.PASSWORD}
 
 package:
   artifact: target/function.zip
 
 functions:
-  hello:
+  productsdb:
     handler: not.used
     runtime: provided
+    environment:
+      LAMBDA_NAME: DatabaseInit
+    vpc:
+      securityGroupIds:
+        - !GetAtt ServerlessVPC.DefaultSecurityGroup
+      subnetIds:
+        - !Ref ServerlessSubnetC
+        - !Ref ServerlessSubnetD
+  products:
+    handler: not.used
+    runtime: provided
+    vpc:
+      securityGroupIds:
+        - !GetAtt ServerlessVPC.DefaultSecurityGroup
+      subnetIds:
+        - !Ref ServerlessSubnetC
+        - !Ref ServerlessSubnetD
     events:
       - http:
           path: /api/products
@@ -37,3 +54,102 @@ functions:
       - http:
           path: /api/products/post
           method: get
+
+custom:
+  AURORA:
+    DB_NAME: aurora${sls:stage}
+    USERNAME: admin
+    PASSWORD: Password01!
+    HOST:
+      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Address]
+    PORT:
+      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Port]
+    VPC_CIDR: 10
+
+# Build a public/private VPC with 4 subnets: 2 private hosting the Aurora database, and 2 public
+# hosting the lambdas.
+# Then build a serverless Aurora v2 database.
+resources:
+  Resources:
+    InternetGateway:
+      Type: AWS::EC2::InternetGateway
+    VPCGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId: !Ref ServerlessVPC
+        InternetGatewayId: !Ref InternetGateway
+    PublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref ServerlessVPC
+    PublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId: !Ref PublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId: !Ref InternetGateway
+    SubnetRouteTableAssociationPublic1:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref ServerlessSubnetC
+        RouteTableId: !Ref PublicRouteTable
+    SubnetRouteTableAssociationPublic2:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref ServerlessSubnetD
+        RouteTableId: !Ref PublicRouteTable
+    ServerlessVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.0.0/16
+        EnableDnsSupport: true
+        EnableDnsHostnames: true
+        InstanceTenancy: default
+    ServerlessSubnetA:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref ServerlessVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.0.0/24
+    ServerlessSubnetB:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref ServerlessVPC
+        AvailabilityZone: ${self:provider.region}b
+        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.1.0/24
+    ServerlessSubnetC:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref ServerlessVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.2.0/24
+    ServerlessSubnetD:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref ServerlessVPC
+        AvailabilityZone: ${self:provider.region}b
+        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.3.0/24
+    AuroraSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: "Aurora Subnet Group"
+        SubnetIds:
+          - !Ref ServerlessSubnetA
+          - !Ref ServerlessSubnetB
+    AuroraRDSCluster:
+      Type: 'AWS::RDS::DBCluster'
+      Properties:
+        Engine: aurora-mysql
+        DBClusterIdentifier: product-service-cluster
+        EngineVersion: 5.7.mysql_aurora.2.11.0
+        MasterUsername: ${self:custom.AURORA.USERNAME}
+        MasterUserPassword: ${self:custom.AURORA.PASSWORD}
+        DatabaseName: ${self:custom.AURORA.DB_NAME}
+        DBSubnetGroupName: !Ref AuroraSubnetGroup
+        ServerlessV2ScalingConfiguration:
+          MinCapacity: 0.5
+          MaxCapacity: 2
