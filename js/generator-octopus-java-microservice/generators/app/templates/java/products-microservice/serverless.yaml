@@ -39,27 +39,69 @@ functions:
       - http:
           path: /api/products
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
       - http:
           path: /api/products/{id}
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
       - http:
           path: /api/products
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
       - http:
           path: /health/products/get
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
       - http:
           path: /health/products/{id}/get
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
       - http:
           path: /api/products/post
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - Routing
+              - Data-Partition
+            allowCredentials: false
 
 custom:
   AURORA:
