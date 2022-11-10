@@ -24,7 +24,7 @@ functions:
   productsdb:
     handler: not.used
     runtime: provided
-    timeout: 60
+    timeout: 300
     environment:
       LAMBDA_NAME: DatabaseInit
     vpc:
