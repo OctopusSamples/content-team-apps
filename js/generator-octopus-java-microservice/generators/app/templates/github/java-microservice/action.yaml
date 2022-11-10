@@ -219,6 +219,24 @@ runs:
       shell: bash
       working-directory: java/products-microservice
 
+    - name: Build and deploy serverless package
+      run: |
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas
+          zip products-service.${{ steps.determine_version.outputs.semVer }}.zip serverless.yaml target/function.zip
+          mvn deploy:deploy-file \
+            --batch-mode \
+            -Dfile=products-service.${{ steps.determine_version.outputs.semVer }}.zip \
+            -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}" \
+            -DgroupId=com.octopus \
+            -DartifactId=products-service \
+            -Dversion=${{ steps.determine_version.outputs.semVer }} \
+            -Dpackaging=zip
+        fi
+      shell: bash
+      working-directory: java/products-microservice
+
     - name: Build and push lambda package
       run: |
         if [[ -z "${{ inputs.image_tag }}" ]]

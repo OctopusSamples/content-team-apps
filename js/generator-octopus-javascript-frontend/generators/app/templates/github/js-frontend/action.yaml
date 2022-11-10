@@ -121,6 +121,23 @@ runs:
       shell: bash
       working-directory: js/frontend
 
+    - name: Build and deploy serverless package
+      run: |
+        if [[ -z "${{ inputs.image_tag }}" ]]
+        then
+          zip -r octopus-frontend.${{ steps.determine_version.outputs.semVer }}.zip serverless.yaml build public/config.json.dot
+          mvn deploy:deploy-file \
+            --batch-mode \
+            -Dfile=octopus-frontend.${{ steps.determine_version.outputs.semVer }}.zip \
+            -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}" \
+            -DgroupId=com.octopus \
+            -DartifactId=octopus-frontend \
+            -Dversion=${{ steps.determine_version.outputs.semVer }} \
+            -Dpackaging=zip
+        fi
+      shell: bash
+      working-directory: js/frontend
+
     - name: Build image
       uses: mamezou-tech/buildpacks-action@master
       if: inputs.image_tag != ''
