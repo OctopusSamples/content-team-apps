@@ -279,7 +279,7 @@ runs:
         --space "${{ inputs.octopus_space }}"
         --package products:${{ steps.determine_version.outputs.semVer }}
         --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
-        --deployTo "Development (App)"
+        --deployTo "Development"
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting

@@ -167,7 +167,7 @@ runs:
       run: >
         octo create-release
         --project "EKS Cluster"
-        --deployTo "Development (App)"
+        --deployTo "Development"
         --version "1.0.0"
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}

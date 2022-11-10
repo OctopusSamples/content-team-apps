@@ -31,7 +31,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_development_app_environment_name",
                 message: "The Octopus Development Environment Name",
-                default: "Development (App)"
+                default: "Development"
             },
             {
                 type: "confirm",
@@ -49,7 +49,7 @@ module.exports = class extends Generator {
                 type: "input",
                 name: "octopus_production_app_environment_name",
                 message: "The Octopus Production Environment Name",
-                default: "Production (App)"
+                default: "Production"
             },
             {
                 type: "confirm",

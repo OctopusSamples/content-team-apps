@@ -244,7 +244,7 @@ runs:
         --space "${{ inputs.octopus_space }}"
         --package frontend:${{ steps.determine_version.outputs.semVer }}
         --package javascript-frontend-sbom:${{ steps.determine_version.outputs.semVer }}
-        --deployTo "Development (App)"
+        --deployTo "Development"
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting

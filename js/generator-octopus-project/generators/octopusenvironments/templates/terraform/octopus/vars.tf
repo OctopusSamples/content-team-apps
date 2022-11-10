@@ -27,7 +27,7 @@ variable "github_owner" {
 variable "octopus_development_app_environment_name" {
   type = string
   nullable = false
-  default = "Development (App)"
+  default = "Development"
 }
 
 variable "octopus_development_security_environment_name" {
@@ -39,7 +39,7 @@ variable "octopus_development_security_environment_name" {
 variable "octopus_production_app_environment_name" {
   type = string
   nullable = false
-  default = "Production (App)"
+  default = "Production"
 }
 
 variable "octopus_production_security_environment_name" {
