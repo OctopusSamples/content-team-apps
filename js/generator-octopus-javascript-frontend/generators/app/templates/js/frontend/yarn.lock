@@ -2335,10 +2335,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^18.1.0":
-  version "18.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.0.tgz#b13f8d098e4b0c45df4f1ed123833143b0c71141"
-  integrity sha512-49897Y0UiCGmxZqpC8Blrf6meL8QUla6eb+BBhn69dTXlmuOlzkfr7HHY/O8J25e1lTUMs+YYxSlVDAaGHCOLg==
+"@types/react-dom@^18.0.0":
+  version "18.0.8"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.8.tgz#d2606d855186cd42cc1b11e63a71c39525441685"
+  integrity sha512-C3GYO0HLaOkk9dDAz3Dl4sbe4AKUGTCfFIZsz3n/82dPNN8Du533HzKatDxeUYWu24wJgMP1xICqkWk1YOLOIw==
   dependencies:
     "@types/react" "*"
 
@@ -2380,19 +2380,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*":
+"@types/react@*", "@types/react@^18.0.0":
   version "18.0.25"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.25.tgz#8b1dcd7e56fe7315535a4af25435e0bb55c8ae44"
   integrity sha512-xD6c0KDT4m7n9uD4ZHi02lzskaiqcBxf4zi+tXZY98a04wvc0hi/TcCPC2FOESZi51Nd7tlUeOJY8RofL799/g==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
-"@types/react@^18.1.0":
-  version "18.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.0.tgz#4be8aa3a2d04afc3ac2cc1ca43d39b0bd412890c"
-  integrity sha512-7+K7zEQYu7NzOwQGLR91KwWXXDzmTFODRVizJyIALf6RfLv2GDpqpknX64pvRVILXCpXi7O/pua8NGk44dLvJw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -4191,6 +4182,11 @@ dot-case@^3.0.4:
   dependencies:
     no-case "^3.0.4"
     tslib "^2.0.3"
+
+dot@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/dot/-/dot-1.1.3.tgz#351360e00a748bce9a1f8f27c00c394a7e4e1e9f"
+  integrity sha512-/nt74Rm+PcfnirXGEdhZleTwGC2LMnuKTeeTIlI82xb5loBBoXNYzr2ezCroPSMtilK8EZIfcNZwOcHN+ib1Lg==
 
 dotenv-expand@^5.1.0:
   version "5.1.0"
@@ -8731,6 +8727,13 @@ serve-static@1.15.0:
     escape-html "~1.0.3"
     parseurl "~1.3.3"
     send "0.18.0"
+
+serverless-plugin-dot-template@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/serverless-plugin-dot-template/-/serverless-plugin-dot-template-1.0.0.tgz#6809f672dcef88fdbaf50c100c0b64347a8cc5ad"
+  integrity sha512-DQMfUilLoJG7N4fe3k4eMTmtAcgTG0msNpUpXcqP1R34MBdpcKM7CsanrFrRlc6OhMVLLvh1udztKmg0TFM+wg==
+  dependencies:
+    dot "^1.1.3"
 
 serverless-s3-sync@^3.1.0:
   version "3.1.0"

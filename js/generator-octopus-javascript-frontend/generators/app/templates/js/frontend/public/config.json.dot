@@ -1,0 +1,9 @@
+{
+  "basename": "",
+  "branch": "main",
+  "title": "Octopub",
+  "productEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
+  "productHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
+  "auditEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
+  "auditHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }}
+}
