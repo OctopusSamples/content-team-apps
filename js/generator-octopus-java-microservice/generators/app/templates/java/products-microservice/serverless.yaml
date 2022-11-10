@@ -193,7 +193,9 @@ resources:
       Properties:
         Engine: aurora-mysql
         DBClusterIdentifier: product-service-cluster
-        EngineVersion: 5.7.mysql_aurora.2.11.0
+        # Get engine versions with:
+        # aws rds describe-orderable-db-instance-options --engine aurora-mysql --db-instance-class db.serverless --region us-west-1 --query 'OrderableDBInstanceOptions[].[EngineVersion]' --output text
+        EngineVersion: 8.0.mysql_aurora.3.02.1
         MasterUsername: ${self:custom.AURORA.USERNAME}
         MasterUserPassword: ${self:custom.AURORA.PASSWORD}
         DatabaseName: ${self:custom.AURORA.DB_NAME}
