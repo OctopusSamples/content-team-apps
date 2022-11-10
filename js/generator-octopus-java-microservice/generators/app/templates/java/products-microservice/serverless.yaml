@@ -22,19 +22,19 @@ functions:
       LAMBDA_NAME: DatabaseInit
     vpc:
       securityGroupIds:
-        - !GetAtt ServerlessVPC.DefaultSecurityGroup
+        - !Ref InstanceSecurityGroup
       subnetIds:
-        - !Ref ServerlessSubnetC
-        - !Ref ServerlessSubnetD
+        - !Ref SubnetA
+        - !Ref SubnetB
   products:
     handler: not.used
     runtime: provided
     vpc:
       securityGroupIds:
-        - !GetAtt ServerlessVPC.DefaultSecurityGroup
+        - !Ref InstanceSecurityGroup
       subnetIds:
-        - !Ref ServerlessSubnetC
-        - !Ref ServerlessSubnetD
+        - !Ref SubnetA
+        - !Ref SubnetB
     events:
       - http:
           path: /api/products
@@ -109,9 +109,9 @@ custom:
     USERNAME: admin
     PASSWORD: Password01!
     HOST:
-      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Address]
+      Fn::GetAtt: [RDSCluster, Endpoint.Address]
     PORT:
-      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Port]
+      Fn::GetAtt: [RDSCluster, Endpoint.Port]
     VPC_CIDR: 10
 
 # Build a public/private VPC with 4 subnets: 2 private hosting the Aurora database, and 2 public
@@ -119,87 +119,81 @@ custom:
 # Then build a serverless Aurora v2 database.
 resources:
   Resources:
-    InternetGateway:
-      Type: AWS::EC2::InternetGateway
-    VPCGatewayAttachment:
-      Type: AWS::EC2::VPCGatewayAttachment
+    VPC:
+      Type: "AWS::EC2::VPC"
       Properties:
-        VpcId: !Ref ServerlessVPC
-        InternetGatewayId: !Ref InternetGateway
-    PublicRouteTable:
-      Type: AWS::EC2::RouteTable
+        CidrBlock: "10.0.0.0/16"
+        Tags:
+          - Key: "Name"
+            Value: "Product microservice"
+
+    SubnetA:
+      Type: "AWS::EC2::Subnet"
       Properties:
-        VpcId: !Ref ServerlessVPC
-    PublicRoute:
-      Type: AWS::EC2::Route
+        AvailabilityZone: !Select
+          - 0
+          - !GetAZs
+            Ref: 'AWS::Region'
+        VpcId: !Ref "VPC"
+        CidrBlock: "10.0.0.0/24"
+
+    SubnetB:
+      Type: "AWS::EC2::Subnet"
       Properties:
-        RouteTableId: !Ref PublicRouteTable
-        DestinationCidrBlock: 0.0.0.0/0
-        GatewayId: !Ref InternetGateway
-    SubnetRouteTableAssociationPublic1:
-      Type: AWS::EC2::SubnetRouteTableAssociation
+        AvailabilityZone: !Select
+          - 1
+          - !GetAZs
+            Ref: 'AWS::Region'
+        VpcId: !Ref "VPC"
+        CidrBlock: "10.0.1.0/24"
+
+    RouteTable:
+      Type: "AWS::EC2::RouteTable"
       Properties:
-        SubnetId: !Ref ServerlessSubnetC
-        RouteTableId: !Ref PublicRouteTable
-    SubnetRouteTableAssociationPublic2:
-      Type: AWS::EC2::SubnetRouteTableAssociation
+        VpcId: !Ref "VPC"
+
+    SubnetGroup:
+      Type: "AWS::RDS::DBSubnetGroup"
       Properties:
-        SubnetId: !Ref ServerlessSubnetD
-        RouteTableId: !Ref PublicRouteTable
-    ServerlessVPC:
-      Type: AWS::EC2::VPC
-      Properties:
-        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.0.0/16
-        EnableDnsSupport: true
-        EnableDnsHostnames: true
-        InstanceTenancy: default
-    ServerlessSubnetA:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId: !Ref ServerlessVPC
-        AvailabilityZone: ${self:provider.region}a
-        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.0.0/24
-    ServerlessSubnetB:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId: !Ref ServerlessVPC
-        AvailabilityZone: ${self:provider.region}b
-        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.1.0/24
-    ServerlessSubnetC:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId: !Ref ServerlessVPC
-        AvailabilityZone: ${self:provider.region}a
-        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.2.0/24
-    ServerlessSubnetD:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId: !Ref ServerlessVPC
-        AvailabilityZone: ${self:provider.region}b
-        CidrBlock: ${self:custom.AURORA.VPC_CIDR}.0.3.0/24
-    AuroraSubnetGroup:
-      Type: AWS::RDS::DBSubnetGroup
-      Properties:
-        DBSubnetGroupDescription: "Aurora Subnet Group"
+        DBSubnetGroupName: "subnetgroup"
+        DBSubnetGroupDescription: "Subnet Group"
         SubnetIds:
-          - !Ref ServerlessSubnetA
-          - !Ref ServerlessSubnetB
-    AuroraRDSCluster:
-      Type: 'AWS::RDS::DBCluster'
+          - !Ref "SubnetA"
+          - !Ref "SubnetB"
+
+    InstanceSecurityGroup:
+      Type: "AWS::EC2::SecurityGroup"
       Properties:
-        Engine: aurora-mysql
-        DBClusterIdentifier: product-service-cluster
-        # Get engine versions with:
-        # aws rds describe-orderable-db-instance-options --engine aurora-mysql --db-instance-class db.serverless --region us-west-1 --query 'OrderableDBInstanceOptions[].[EngineVersion]' --output text
-        EngineVersion: 8.0.mysql_aurora.3.02.1
-        MasterUsername: ${self:custom.AURORA.USERNAME}
-        MasterUserPassword: ${self:custom.AURORA.PASSWORD}
-        DatabaseName: ${self:custom.AURORA.DB_NAME}
-        DBSubnetGroupName: !Ref AuroraSubnetGroup
-        ServerlessV2ScalingConfiguration:
-          MinCapacity: 0.5
-          MaxCapacity: 2
+        GroupName: "Example Security Group"
+        GroupDescription: "RDS traffic"
+        VpcId: !Ref "VPC"
+        SecurityGroupEgress:
+          - IpProtocol: "-1"
+            CidrIp: "0.0.0.0/0"
+
+    InstanceSecurityGroupIngress:
+      Type: "AWS::EC2::SecurityGroupIngress"
+      DependsOn: "InstanceSecurityGroup"
+      Properties:
+        GroupId: !Ref "InstanceSecurityGroup"
+        IpProtocol: "tcp"
+        FromPort: "0"
+        ToPort: "65535"
+        SourceSecurityGroupId: !Ref "InstanceSecurityGroup"
+
+    RDSCluster:
+      Type: "AWS::RDS::DBCluster"
+      Properties:
+        DBSubnetGroupName: !Ref "SubnetGroup"
+        MasterUsername: "admin"
+        MasterUserPassword: "Password01!"
+        DatabaseName: "products"
+        Engine: "aurora"
+        EngineMode: "serverless"
+        VpcSecurityGroupIds:
+          - !Ref "InstanceSecurityGroup"
+        ScalingConfiguration:
+          AutoPause: true
+          MaxCapacity: 16
+          MinCapacity: 2
+          SecondsUntilAutoPause: 300
