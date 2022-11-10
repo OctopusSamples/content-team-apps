@@ -3,9 +3,14 @@ plugins:
   - serverless-s3-sync
   - serverless-plugin-dot-template
 
+params:
+  default:
+    # Note this value must be changed for each deployment, as S3 buckets must have globally unique names
+    tenantName: ""
+    siteName: ${param:tenantName}octopub-frontend
+
 custom:
-  # Note this value must be changed for each deployment, as S3 buckets must have globally unique names
-  siteName: octopub-frontend
+
   dotTemplate:
     name: Frontend Config
     input: public/config.json.dot
@@ -17,13 +22,14 @@ custom:
       auditEndpoint: /api/audits
       auditHealthEndpoint: /health/audits
   s3Sync:
-    - bucketName: ${self:custom.siteName}
+    - bucketName: ${param:siteName}
       localDir: build
 
 provider:
   name: aws
   runtime: nodejs16.x
   region: us-west-1
+  stackName: ${param:tenantName}octopub-frontend-${sls:stage}
 
 resources:
   Resources:
@@ -31,7 +37,7 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         AccessControl: PublicRead
-        BucketName: ${self:custom.siteName}
+        BucketName: ${param:siteName}
         WebsiteConfiguration:
           IndexDocument: index.html
     StaticSiteS3BucketPolicy:

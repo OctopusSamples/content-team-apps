@@ -1,9 +1,15 @@
 service: products-microservice
 
+params:
+  default:
+    # Note this value must be changed for each deployment, as S3 buckets must have globally unique names
+    tenantName: ""
+
 provider:
   name: aws
   runtime: java11
   region: us-west-1
+  stackName: ${param:tenantName}products-microservice-${sls:stage}
   environment:
     DATABASE_HOSTNAME: ${self:custom.AURORA.HOST}
     DATABASE_PORT: ${self:custom.AURORA.PORT}
