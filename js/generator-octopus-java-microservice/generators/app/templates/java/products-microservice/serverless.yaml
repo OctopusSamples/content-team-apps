@@ -20,6 +20,7 @@ functions:
     runtime: provided
     environment:
       LAMBDA_NAME: DatabaseInit
+      LIQUIBASE_SECURE_PARSING: false
     vpc:
       securityGroupIds:
         - !Ref InstanceSecurityGroup
