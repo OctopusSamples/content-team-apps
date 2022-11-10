@@ -24,6 +24,7 @@ functions:
   productsdb:
     handler: not.used
     runtime: provided
+    timeout: 60
     environment:
       LAMBDA_NAME: DatabaseInit
     vpc:
@@ -35,6 +36,7 @@ functions:
   products:
     handler: not.used
     runtime: provided
+    timeout: 30
     vpc:
       securityGroupIds:
         - !Ref InstanceSecurityGroup
