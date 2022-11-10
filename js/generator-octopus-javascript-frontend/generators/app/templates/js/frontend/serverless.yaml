@@ -11,10 +11,11 @@ custom:
     input: public/config.json.dot
     output: build/config.json
     vars:
+      # Get the product service endpoint from the previously deployed cloud formation stack
       serviceEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/api/products
       productHealthEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/health/products
-      auditEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/api/audits
-      auditHealthEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/health/audits
+      auditEndpoint: /api/audits
+      auditHealthEndpoint: /health/audits
   s3Sync:
     - bucketName: ${self:custom.siteName}
       localDir: build
