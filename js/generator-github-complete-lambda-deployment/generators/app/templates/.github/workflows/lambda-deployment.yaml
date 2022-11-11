@@ -144,8 +144,8 @@ jobs:
           terraform_bucket_region: ${{ secrets.TERRAFORM_BUCKET_REGION }}
 
       - name: Create Lambda Deployment Project
-        if: contains(steps.changed-files.outputs.all_modified_files, 'octopus-project')
-        uses: ./github/octopus-project
+        if: contains(steps.changed-files.outputs.all_modified_files, 'lambda-deployment')
+        uses: ./github/lambda-deployment
         with:
           octopus_server: ${{ secrets.OCTOPUS_SERVER }}
           octopus_apikey: ${{ secrets.OCTOPUS_APIKEY }}
