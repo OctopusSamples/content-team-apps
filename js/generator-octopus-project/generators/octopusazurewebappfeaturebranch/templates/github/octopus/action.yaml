@@ -172,11 +172,12 @@ runs:
 
         for i in "${arr[@]}"
         do
-          # See https://stackoverflow.com/a/32980082/157605 for details on the --data-urlencode option
-          ID=$(curl -G --data-urlencode "name=$i" --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects | jq -r ".Items[0].Id")
-          if [[ -n "$ID" && "$ID" != "null" ]]; then
-            echo "Deleting project $i"
-            curl --silent -X DELETE -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects/${ID}
+          DEPLOYMENT_PROCESS_ID=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/projects?name=$i | jq -r ".Items[0].DeploymentProcessId")
+          if [[ -n "$DEPLOYMENT_PROCESS_ID" && "$DEPLOYMENT_PROCESS_ID" != "null" ]]; then
+            echo "Emptying project deploy process $DEPLOYMENT_PROCESS_ID for project $i"
+            DEPLOYMENT_PROCESS=$(curl --silent -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/deploymentprocesses/${DEPLOYMENT_PROCESS_ID})
+            EMPTY_DEPLOYMENT_PROCESS=$(echo ${DEPLOYMENT_PROCESS} | jq 'del(.Steps[])')
+            NEW_DEPLOYMENT_PROCESS=$(curl --silent -X PUT -d "${EMPTY_DEPLOYMENT_PROCESS}" -H "Content-Type: application/json" -H "X-Octopus-ApiKey: ${{ inputs.octopus_apikey }}" ${{ inputs.octopus_server }}/api/${{ inputs.octopus_space_id }}/deploymentprocesses/${DEPLOYMENT_PROCESS_ID})
           fi
         done
       shell: bash
