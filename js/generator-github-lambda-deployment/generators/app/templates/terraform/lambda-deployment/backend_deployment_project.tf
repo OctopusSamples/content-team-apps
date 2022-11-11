@@ -369,8 +369,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "StageURL" $${STAGE_URL}
 
           if [[ -z "$${STAGE_URL}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
+            echo "Performing deployment for the first time, so there is no stage"
           fi
 
           DNS_NAME=$(aws cloudformation \
@@ -382,8 +381,7 @@ resource "octopusdeploy_deployment_process" "deploy_backend" {
           set_octopusvariable "DNSName" $${DNS_NAME}
 
           if [[ -z "$${DNS_NAME}" ]]; then
-            echo "Run the API Gateway project first"
-            exit 1
+            echo "Performing deployment for the first time, so there is no stage"
           fi
 
           # The presence of this output tells us if this is the first deployment or not.
