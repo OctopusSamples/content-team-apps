@@ -269,11 +269,6 @@ const Done: FC<JourneyProps> = (props): ReactElement => {
                             When the GitHub Actions workflow is completed, your Octopus instance is fully populated and ready to perform your first deployment.
                         </p>
                         <p>
-                            We'd also love your feedback! Please leave a comment
-                            on <a href={"https://oc.to/D7mBDj"} target={"_blank"} rel={"noreferrer"}>this GitHub issue</a> to
-                            to let us know how the Octopus Workflow Builder worked for you.
-                        </p>
-                        <p>
                             Watch the videos below to learn how to make the most of your Octopus instance.
                         </p>
                         <h3>Introduction</h3>

@@ -252,6 +252,8 @@ runs:
       shell: bash
       working-directory: java/products-microservice
 
+    # The default package version below is used to allow the dumb-reverse-proxy to
+    # be deployed without DockerHub credentials.
     - name: Create a release
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
@@ -260,6 +262,7 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
+        --defaultPackageVersion "0.1.57"
         --package products:${{ steps.determine_version.outputs.semVer }}
         --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
         --version ${{ steps.determine_version.outputs.semVer }}
