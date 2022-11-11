@@ -50,7 +50,7 @@ runs:
         fetch-depth: '0'
         
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.9.15
       with:
         versionSpec: 5.x
 
