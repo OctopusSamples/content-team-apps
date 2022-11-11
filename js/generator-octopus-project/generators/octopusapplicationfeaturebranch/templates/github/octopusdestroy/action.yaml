@@ -50,7 +50,7 @@ runs:
         fetch-depth: '0'
 
     - name: Install Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
 
     - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@v1
