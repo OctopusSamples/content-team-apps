@@ -1,6 +1,7 @@
 name: ECS Deployment
 permissions:
   contents: write
+  packages: write
 'on':
   workflow_dispatch: {}
   push:

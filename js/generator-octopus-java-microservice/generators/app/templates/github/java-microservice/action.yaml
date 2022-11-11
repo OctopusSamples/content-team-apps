@@ -228,7 +228,7 @@ runs:
           mvn deploy:deploy-file \
             --batch-mode \
             -Dfile=products-service.${{ steps.determine_version.outputs.semVer }}.zip \
-            -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}" \
+            -Durl="https://${{ github.actor }}:${{ inputs.github_token }}@maven.pkg.github.com/${{ github.repository }}" \
             -DgroupId=com.octopus \
             -DartifactId=products-service \
             -Dversion=${{ steps.determine_version.outputs.semVer }} \
