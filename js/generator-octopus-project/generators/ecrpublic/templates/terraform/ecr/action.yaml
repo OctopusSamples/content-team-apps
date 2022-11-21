@@ -64,7 +64,7 @@ runs:
     - uses: nelonoel/branch-name@v1.0.1
 
     - name: Install Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
 
     - name: Install Octopus CLI
       uses: OctopusDeploy/install-octopus-cli-action@v1.1.1
