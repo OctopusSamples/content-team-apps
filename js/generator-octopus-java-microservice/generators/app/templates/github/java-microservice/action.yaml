@@ -56,7 +56,7 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.9.15
       with:
         versionSpec: 5.x
 
@@ -241,8 +241,6 @@ runs:
       run: |
         if [[ -z "${{ inputs.image_tag }}" ]]
         then
-          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas
-          ls -la target
           mv target/function.zip products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip
           octo push \
             --package products-microservice-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
@@ -254,6 +252,8 @@ runs:
       shell: bash
       working-directory: java/products-microservice
 
+    # The default package version below is used to allow the dumb-reverse-proxy to
+    # be deployed without DockerHub credentials.
     - name: Create a release
       if: ${{ env.BRANCH_NAME == 'main' }}
       run: >
@@ -262,8 +262,10 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --package products:${{ steps.determine_version.outputs.semVer }}
-        --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
+        --defaultPackageVersion "0.1.57"
+        --package "Backend Service:products:${{ steps.determine_version.outputs.semVer }}"
+        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"
+        --package "products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}"
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting
         --deploymentTimeout 00:30:00
@@ -277,8 +279,10 @@ runs:
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
-        --package products:${{ steps.determine_version.outputs.semVer }}
-        --package products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}
+        --defaultPackageVersion "0.1.57"
+        --package "Backend Service:products:${{ steps.determine_version.outputs.semVer }}"
+        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"
+        --package "products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}"
         --deployTo "Development"
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}

@@ -171,6 +171,7 @@ runs:
         --project "API Gateway"
         --deployTo "Development"
         --version "1.0.0"
+        --ignoreExisting
         --server ${{ inputs.octopus_server }}
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
