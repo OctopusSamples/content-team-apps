@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-octopus-reverse-proxy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Yeoman generator to create a reverse proxy in Go suitable for containers and Lambdas.",
   "homepage": "https://github.com/OctopusSamples/content-team-apps",
   "files": [

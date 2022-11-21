@@ -45,7 +45,7 @@ runs:
       uses: actions/checkout@v2
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-access-key-id: ${{ inputs.aws_access_key }}
         aws-secret-access-key: ${{ inputs.aws_secret_key }}
