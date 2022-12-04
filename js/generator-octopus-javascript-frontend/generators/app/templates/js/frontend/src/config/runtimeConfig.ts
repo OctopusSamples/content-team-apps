@@ -8,4 +8,5 @@ export interface RuntimeSettings {
     auditHealthEndpoint: string;
     title: string;
     overrideTheme: string;
+    frontendVersion: string;
 }

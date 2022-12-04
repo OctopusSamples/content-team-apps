@@ -6,5 +6,6 @@
   "productHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
   "auditEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
   "auditHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
-  "overrideTheme": {{= JSON.stringify(vars.overrideTheme) }}
+  "overrideTheme": {{= JSON.stringify(vars.overrideTheme) }},
+  "frontendVersion": {{= JSON.stringify(vars.frontendVersion) }}
 }

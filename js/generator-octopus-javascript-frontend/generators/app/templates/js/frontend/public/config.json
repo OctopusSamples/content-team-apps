@@ -6,5 +6,6 @@
   "productHealthEndpoint": "/health/products",
   "auditEndpoint": "/api/audits",
   "auditHealthEndpoint": "/health/audits",
-  "overrideTheme": ""
+  "overrideTheme": "",
+  "frontendVersion": "v0.1.0"
 }

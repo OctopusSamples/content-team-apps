@@ -70,6 +70,7 @@ const Header: FC<HeaderProps> = ({
                             {context.settings.title}
                         </Typography>
                     </Link>
+                    &nbsp;{context.settings.frontendVersion}
                 </div>
                 {context.developerMode && <div>
                     <IconButton onClick={() => history('/audits')} size="large">
