@@ -18,6 +18,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: update version
+        run: cat <<< "$(jq '.frontendVersion = "v0.1.${{ github.run_number }}"' js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json)" > js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json
+        shell: bash
       - name: Build image
         uses: mamezou-tech/buildpacks-action@master
         with:
