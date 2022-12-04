@@ -21,11 +21,20 @@ jobs:
       - name: update version
         run: cat <<< "$(jq '.frontendVersion = "v0.1.${{ github.run_number }}"' js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json)" > js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json
         shell: bash
-      - name: Build image
+      - name: Build latest image
         uses: mamezou-tech/buildpacks-action@master
         with:
           image: 'octopussamples/frontend-webapp'
           tag: 'latest'
+          path: 'js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend'
+          builder: 'heroku/buildpacks:20'
+          buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
+          env: NODE_OPTIONS=--openssl-legacy-provider
+      - name: Build versioned image
+        uses: mamezou-tech/buildpacks-action@master
+        with:
+          image: 'octopussamples/frontend-webapp'
+          tag: 'v0.1.${{ github.run_number }}'
           path: 'js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend'
           builder: 'heroku/buildpacks:20'
           buildpacks: 'heroku/nodejs https://cnb-shim.herokuapp.com/v1/heroku-community/static'
