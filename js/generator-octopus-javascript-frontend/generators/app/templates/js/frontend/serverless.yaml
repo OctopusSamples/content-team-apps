@@ -11,6 +11,7 @@ params:
 
 custom:
 
+  # Process a https://olado.github.io/doT/index.html doT template file
   dotTemplate:
     name: Frontend Config
     input: public/config.json.dot
@@ -21,6 +22,8 @@ custom:
       productHealthEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/health/products
       auditEndpoint: /api/audits
       auditHealthEndpoint: /health/audits
+      title: Octopub
+      frontendVersion: v0.1.0
   s3Sync:
     - bucketName: ${param:siteName}
       localDir: build
