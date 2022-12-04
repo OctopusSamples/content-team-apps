@@ -7,4 +7,5 @@ export interface RuntimeSettings {
     productHealthEndpoint: string;
     auditHealthEndpoint: string;
     title: string;
+    overrideTheme: string;
 }

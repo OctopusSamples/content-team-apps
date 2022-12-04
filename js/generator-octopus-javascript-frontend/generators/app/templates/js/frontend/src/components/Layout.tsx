@@ -35,10 +35,11 @@ const useStyles = makeStyles((theme: Theme) => {
 // define interface to represent component props
 interface LayoutProps {
     toggleTheme: () => void;
+    enableToggle: boolean;
 }
 
 // functional component
-const Layout: FC<LayoutProps> = ({toggleTheme}: LayoutProps) => {
+const Layout: FC<LayoutProps> = ({toggleTheme, enableToggle}: LayoutProps) => {
     const classes = useStyles();
     const {useDefaultTheme} = useContext(AppContext);
     return (
@@ -47,6 +48,7 @@ const Layout: FC<LayoutProps> = ({toggleTheme}: LayoutProps) => {
             <Header
                 toggleTheme={toggleTheme}
                 useDefaultTheme={useDefaultTheme === undefined ? true : useDefaultTheme}
+                enableToggle={enableToggle}
             />
             <main
                 className={clsx(classes.content)}

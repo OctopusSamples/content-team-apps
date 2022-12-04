@@ -1,7 +1,7 @@
 import React, {createContext, useReducer, useState} from "react";
 import {createTheme, responsiveFontSizes, StyledEngineProvider, Theme, ThemeProvider,} from "@mui/material/styles";
 import {Helmet} from "react-helmet";
-import {darkTheme, lightTheme} from "./theme/appTheme";
+import {darkTheme, lightTheme, colouredThemes} from "./theme/appTheme";
 import {RuntimeSettings} from "./config/runtimeConfig";
 import Layout from "./components/Layout";
 import {HashRouter, Route, Routes} from "react-router-dom";
@@ -40,8 +40,11 @@ function App(settings: RuntimeSettings) {
         },
         localStorage.getItem('defaultTheme') !== "false");
 
-    // define custom theme
-    let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
+    // In the absence of a theme override, use either the light or dark theme
+    const defaultTheme = useDefaultTheme ? lightTheme : darkTheme;
+    // If an override is specified, try to load it, falling back to the default theme
+    const overrideTheme = settings.overrideTheme ? colouredThemes[settings.overrideTheme] : defaultTheme;
+    let theme: Theme = createTheme(settings.overrideTheme ? overrideTheme : defaultTheme);
     theme = responsiveFontSizes(theme);
 
     const [developerMode, setDeveloperMode] = useState<boolean>(localStorage.getItem("developerMode") === "true");
@@ -66,7 +69,7 @@ function App(settings: RuntimeSettings) {
                 <ThemeProvider theme={theme}>
                     <HashRouter>
                         <Routes>
-                            <Route element={ <Layout toggleTheme={toggle}/>}>
+                            <Route element={ <Layout toggleTheme={toggle} enableToggle={!settings.overrideTheme}/>}>
                                 <Route path={"/"} element={<Home/>}/>
                                 <Route path={"/settings"} element={<Settings/>}/>
                                 <Route path={"/book/:bookId"} element={<Book/>}/>

@@ -1,4 +1,5 @@
 import {createTheme, Theme} from "@mui/material";
+import {blue, indigo, green, lightGreen, pink, purple, deepOrange, orange} from '@mui/material/colors';
 
 // define light theme colors
 export const lightTheme: Theme = createTheme({
@@ -29,3 +30,31 @@ export const darkTheme: Theme = createTheme({
         },
     },
 });
+
+// general colour themes
+export const colouredThemes: { [key: string]: Theme; } = {
+    "blue": createTheme({
+        palette: {
+            primary: indigo,
+            secondary: blue,
+        },
+    }),
+    "green": createTheme({
+        palette: {
+            primary: green,
+            secondary: lightGreen,
+        },
+    }),
+    "pink": createTheme({
+        palette: {
+            primary: pink,
+            secondary: purple,
+        },
+    }),
+    "orange": createTheme({
+        palette: {
+            primary: deepOrange,
+            secondary: orange,
+        },
+    }),
+};

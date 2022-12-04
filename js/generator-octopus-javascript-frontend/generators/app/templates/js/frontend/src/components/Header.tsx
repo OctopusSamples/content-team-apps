@@ -46,11 +46,13 @@ const useStyles = makeStyles((theme: Theme) => {
 interface HeaderProps {
     toggleTheme: () => void;
     useDefaultTheme: boolean;
+    enableToggle: boolean;
 }
 
 const Header: FC<HeaderProps> = ({
                                      toggleTheme,
-                                     useDefaultTheme
+                                     useDefaultTheme,
+                                     enableToggle
                                  }: HeaderProps) => {
     const classes = useStyles();
     const context = useContext(AppContext);
@@ -91,17 +93,19 @@ const Header: FC<HeaderProps> = ({
                         </Tooltip>
                     </IconButton>
                 </div>}
-                <IconButton onClick={toggleTheme} size="large">
-                    {useDefaultTheme ? (
-                        <Tooltip title="Switch to dark mode" placement="bottom">
-                            <Brightness3Icon/>
-                        </Tooltip>
-                    ) : (
-                        <Tooltip title="Switch to light mode" placement="bottom">
-                            <Brightness7Icon/>
-                        </Tooltip>
-                    )}
-                </IconButton>
+                {enableToggle &&
+                    <IconButton onClick={toggleTheme} size="large">
+                        {useDefaultTheme ? (
+                            <Tooltip title="Switch to dark mode" placement="bottom">
+                                <Brightness3Icon/>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip title="Switch to light mode" placement="bottom">
+                                <Brightness7Icon/>
+                            </Tooltip>
+                        )}
+                    </IconButton>
+                }
             </Toolbar>
         </AppBar>
     );

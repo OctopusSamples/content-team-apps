@@ -1,2 +1,2 @@
-https://www.welcomedeveloper.com/react-typescript-material-design
-https://github.com/danilocastronz/weldev-project-react-mui-ts-bp
+This is a sample Octopub TypeScript frontend web application that displays the books and publications from a backend 
+Octopub service.

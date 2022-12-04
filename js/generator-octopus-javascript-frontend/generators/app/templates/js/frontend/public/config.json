@@ -5,5 +5,6 @@
   "productEndpoint": "/api/products",
   "productHealthEndpoint": "/health/products",
   "auditEndpoint": "/api/audits",
-  "auditHealthEndpoint": "/health/audits"
+  "auditHealthEndpoint": "/health/audits",
+  "overrideTheme": ""
 }
