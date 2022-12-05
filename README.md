@@ -81,6 +81,8 @@ After a minute or so open the frontend at http://localhost:5000.
 
 ### AWS Lambda
 
+A deployed example of this application can be found [here](https://octopub-frontend.s3.amazonaws.com/index.html).
+
 Zip artifacts have been uploaded to a Maven feed hosted by GitHub packages.
 
 Unfortunately you [can not download packages without authentication](https://github.com/orgs/community/discussions/26634). So you need to generate a GitHub Personal Access Token that has the package read permission.
