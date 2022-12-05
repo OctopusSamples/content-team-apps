@@ -1,0 +1,41 @@
+# Builds the sample product JavaScript app embedded in the Yeoman template as a Serverless package 
+# and publishes it to the github maven feed.
+
+name: Sample frontend webapp serverless build
+on:
+  push:
+    branches: main
+
+permissions:
+  packages: write
+
+jobs:
+  login:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Dependencies
+        run: yarn install
+        shell: bash
+        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
+      - name: Install Dependencies
+        run: yarn build
+        shell: bash
+        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
+      - name: Create Serverless Package
+        run: zip ../frontend-webapp-serverless.zip .
+        shell: bash
+        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/build
+      - name: Push package to Maven feed
+        run: >
+          ./mvnw deploy:deploy-file
+          -Dfile=frontend-webapp-serverless.zip
+          -DgroupId=com.octopus
+          -DartifactId=frontend-webapp-serverless
+          -Dversion=1.0.${{ github.run_number }}
+          -Dpackaging=zip
+          -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}"
+        shell: bash
+        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
