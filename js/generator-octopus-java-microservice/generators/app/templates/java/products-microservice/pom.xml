@@ -322,5 +322,19 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>azurefunctions</id>
+      <activation>
+        <property>
+          <name>azurefunctions</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-azure-functions-http</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>
