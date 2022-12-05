@@ -1,5 +1,5 @@
 {
-  "scriptFile" : "../products-microservice-runner.jar",
+  "scriptFile" : "../target/products-microservice-runner.jar",
   "entryPoint" : "io.quarkus.azure.functions.resteasy.runtime.Function.run",
   "bindings" : [ {
     "type" : "httpTrigger",
