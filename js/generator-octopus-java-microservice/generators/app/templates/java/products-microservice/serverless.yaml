@@ -78,7 +78,7 @@ functions:
               - Data-Partition
             allowCredentials: false
       - http:
-          path: /health/products/get
+          path: /health/products/GET
           method: get
           cors:
             origin: '*'
@@ -89,7 +89,7 @@ functions:
               - Data-Partition
             allowCredentials: false
       - http:
-          path: /health/products/{id}/get
+          path: /health/products/{id}/GET
           method: get
           cors:
             origin: '*'
@@ -100,7 +100,7 @@ functions:
               - Data-Partition
             allowCredentials: false
       - http:
-          path: /api/products/post
+          path: /health/products/POST
           method: get
           cors:
             origin: '*'
