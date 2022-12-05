@@ -126,11 +126,11 @@ serverless deploy --param="tenantName=tenantname"
 popd
 ```
 
-Retrieve the hostname of the S3 bucket holding the frontend web application:
+Retrieve the hostname of the S3 bucket holding the frontend web application, replacing `tenantname` with the parameter passed into the `serverless deploy` commands above:
 
 ```
 aws cloudformation describe-stacks \
-	--stack-name octopub-frontend-dev \
+    --stack-name <tenantname>octopub-frontend-dev \
     --query "Stacks[0].Outputs[?OutputKey=='StaticSiteDomain'].OutputValue" \
     --output text
 ```
