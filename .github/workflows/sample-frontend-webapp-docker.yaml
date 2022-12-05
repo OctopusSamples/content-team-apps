@@ -42,3 +42,7 @@ jobs:
       - name: Push to DockerHub
         run: docker push octopussamples/frontend-webapp
         shell: bash    
+      - name: Push versioned tag to DockerHub
+        run: docker push octopussamples/frontend-webapp:v0.1.${{ github.run_number }}
+        shell: bash    
+
