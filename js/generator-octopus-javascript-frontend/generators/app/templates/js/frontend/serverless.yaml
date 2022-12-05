@@ -18,7 +18,7 @@ custom:
     output: build/config.json
     vars:
       # Get the product service endpoint from the previously deployed cloud formation stack
-      serviceEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/api/products
+      productServiceEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/api/products
       productHealthEndpoint: ${cf:products-microservice-${sls:stage}.ServiceEndpoint}/health/products
       auditEndpoint: /api/audits
       auditHealthEndpoint: /health/audits

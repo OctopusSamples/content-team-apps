@@ -2,10 +2,10 @@
   "basename": "",
   "branch": "main",
   "title": {{= JSON.stringify(vars.title) }},
-  "productEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
-  "productHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
-  "auditEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
-  "auditHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
+  "productEndpoint": {{= JSON.stringify(vars.productServiceEndpoint) }},
+  "productHealthEndpoint": {{= JSON.stringify(vars.productHealthEndpoint) }},
+  "auditEndpoint": {{= JSON.stringify(vars.auditEndpoint) }},
+  "auditHealthEndpoint": {{= JSON.stringify(vars.auditHealthEndpoint) }},
   "overrideTheme": {{= JSON.stringify(vars.overrideTheme) }},
   "frontendVersion": {{= JSON.stringify(vars.frontendVersion) }}
 }
