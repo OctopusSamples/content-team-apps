@@ -24,6 +24,10 @@ jobs:
         run: yarn build
         shell: bash
         working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
+      - name: Update package version
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.custom.dotTemplate.vars.frontendVersion = "v1.0.${{ github.run_number }}"' 'js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/serverless.yaml'
       - name: Create Serverless Package
         run: zip -r frontend-webapp-serverless.zip public build serverless.yaml
         shell: bash
