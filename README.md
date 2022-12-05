@@ -125,3 +125,14 @@ serverless plugin install -n serverless-plugin-dot-template
 serverless deploy
 popd
 ```
+
+Retrieve the hostname of the S3 bucket holding the frontend web application:
+
+```
+aws cloudformation describe-stacks \
+	--stack-name octopub-frontend-dev \
+    --query "Stacks[0].Outputs[?OutputKey=='StaticSiteDomain'].OutputValue" \
+    --output text
+```
+
+Then open https://domain/index.html to view the web app.

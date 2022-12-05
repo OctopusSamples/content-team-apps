@@ -24,6 +24,7 @@ custom:
       auditHealthEndpoint: /health/audits
       title: Octopub
       frontendVersion: v0.1.0
+      overrideTheme: ""
   s3Sync:
     - bucketName: ${param:siteName}
       localDir: build
