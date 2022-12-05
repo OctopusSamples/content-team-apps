@@ -7,7 +7,7 @@ on:
     branches: main
 
 permissions:
-  packages: read/write
+  packages: write
 
 jobs:
   login:
