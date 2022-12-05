@@ -120,6 +120,8 @@ serverless deploy
 popd
 
 pushd frontend-webapp-serverless
+serverless plugin install -n serverless-s3-sync
+serverless plugin install -n serverless-plugin-dot-template
 serverless deploy
 popd
 ```
