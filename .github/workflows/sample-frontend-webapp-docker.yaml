@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: update version
-        run: cat <<< "$(jq '.frontendVersion = "v0.1.${{ github.run_number }}"' js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json)" > js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json
+        run: cat <<< "$(jq '.frontendVersion = "v1.0.${{ github.run_number }}"' js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json)" > js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/public/config.json
         shell: bash
       - name: Build latest image
         uses: mamezou-tech/buildpacks-action@master
@@ -33,6 +33,6 @@ jobs:
       - name: Push to DockerHub
         run: |
           docker push octopussamples/frontend-webapp
-          docker image tag octopussamples/frontend-webapp octopussamples/frontend-webapp:v0.1.${{ github.run_number }}
-          docker push octopussamples/frontend-webapp:v0.1.${{ github.run_number }}
+          docker image tag octopussamples/frontend-webapp octopussamples/frontend-webapp:v1.0.${{ github.run_number }}
+          docker push octopussamples/frontend-webapp:v1.0.${{ github.run_number }}
         shell: bash    

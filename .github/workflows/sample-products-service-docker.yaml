@@ -37,6 +37,6 @@ jobs:
           docker build -f src/main/docker/Dockerfile.legacy-jar -t octopussamples/product-service-mysql .
           docker push octopussamples/product-service-mysql
           docker image tag octopussamples/product-service-mysql octopussamples/product-service-mysql:v0.1.${{ github.run_number }}
-          docker push octopussamples/product-service-mysql:v0.1.${{ github.run_number }}
+          docker push octopussamples/product-service-mysql:v1.0.${{ github.run_number }}
         shell: bash
         working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice    
