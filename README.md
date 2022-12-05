@@ -115,8 +115,11 @@ unzip products-service-lambda.zip -d products-service-lambda
 Deploy the apps with serverless.io:
 
 ```bash
-cd products-service-lambda
+pushd products-service-lambda
 serverless deploy
-cd ../frontend-webapp-serverless
+popd
+
+pushd frontend-webapp-serverless
 serverless deploy
+popd
 ```
