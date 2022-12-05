@@ -30,7 +30,7 @@ jobs:
         working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
       - name: Push package to Maven feed
         run: >
-          ./mvnw deploy:deploy-file
+          mvn deploy:deploy-file
           -Dfile=frontend-webapp-serverless.zip
           -DgroupId=com.octopus
           -DartifactId=frontend-webapp-serverless
