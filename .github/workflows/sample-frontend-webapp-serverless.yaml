@@ -20,14 +20,14 @@ jobs:
         run: yarn install
         shell: bash
         working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
-      - name: Install Dependencies
+      - name: Build App
         run: yarn build
         shell: bash
         working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
       - name: Create Serverless Package
-        run: zip ../frontend-webapp-serverless.zip .
+        run: zip -r frontend-webapp-serverless.zip public build serverless.yaml
         shell: bash
-        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend/build
+        working-directory: js/generator-octopus-javascript-frontend/generators/app/templates/js/frontend
       - name: Push package to Maven feed
         run: >
           ./mvnw deploy:deploy-file
