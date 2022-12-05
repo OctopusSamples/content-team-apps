@@ -1,7 +1,7 @@
 {
   "basename": "",
   "branch": "main",
-  "title": "{{= JSON.stringify(vars.title) }}",
+  "title": {{= JSON.stringify(vars.title) }},
   "productEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
   "productHealthEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},
   "auditEndpoint": {{= JSON.stringify(vars.serviceEndpoint) }},

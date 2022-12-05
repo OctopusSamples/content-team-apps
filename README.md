@@ -112,17 +112,17 @@ unzip frontend-webapp-serverless.zip -d frontend-webapp-serverless
 unzip products-service-lambda.zip -d products-service-lambda
 ```
 
-Deploy the apps with serverless.io:
+Deploy the apps with serverless.io, replacing `tenantname` with a short, unique tenant name:
 
 ```bash
 pushd products-service-lambda
-serverless deploy
+serverless deploy --param="tenantName=tenantname"
 popd
 
 pushd frontend-webapp-serverless
 serverless plugin install -n serverless-s3-sync
 serverless plugin install -n serverless-plugin-dot-template
-serverless deploy
+serverless deploy --param="tenantName=tenantname"
 popd
 ```
 
