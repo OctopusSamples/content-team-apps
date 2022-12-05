@@ -1,0 +1,46 @@
+# Builds the sample product Java app embedded in the Yeoman template as an Azure function and
+# publishes it to the github maven feed.
+
+name: Sample product service Azure Function build
+on:
+  push:
+    branches: main
+
+permissions:
+  packages: write
+
+jobs:
+  login:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Build with Maven
+        run: ./mvnw -P "azurefunctions" --batch-mode package --file pom.xml
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java
+      - name: Create Azure Function Package
+        run: |
+          rm -rf /tmp/octopubproductservice
+          mkdir /tmp/octopubproductservice
+          mkdir /tmp/octopubproductservice/octopubproductservice
+          cp target/products-microservice-runner.jar /tmp/octopubproductservice
+          cp azure-config/host.json /tmp/octopubproductservice
+          cp azure-config/function.json /tmp/octopubproductservice/octopubproductservice
+          pushd /tmp/octopubproductservice
+          zip -r product-service-azure.zip .
+          popd
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice
+      - name: Push package to Maven feed
+        run: >
+          ./mvnw deploy:deploy-file
+          -Dfile=/tmp/octopubproductservice/product-service-azure.zip
+          -DgroupId=com.octopus
+          -DartifactId=products-service-azurefunc
+          -Dversion=1.0.${{ github.run_number }}
+          -Dpackaging=zip
+          -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}"
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice
