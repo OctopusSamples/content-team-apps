@@ -3,9 +3,9 @@
 # https://learn.microsoft.com/en-us/azure/azure-functions/scripts/functions-cli-create-serverless
 # This script creates a new Azure function and deploys the products service.
 
-# You need to run the following first:
+# You need to run the following first, where the subscription ID is for "Team Sales Engineering - Sandbox":
 # az login
-# az account set --subscription "Team Sales Engineering - Sandbox"
+# az account set --subscription "3b50dcf4-f74d-442e-93cb-301b13e1e2d5"
 
 REGION=australiaeast
 RESOURCE_GROUP=octopubproductservice
@@ -24,4 +24,6 @@ az functionapp create \
   --os-type linux \
   --runtime java \
   --runtime-version 11.0
-func azure functionapp publish $FUNCTION_NAME --java
+func azure functionapp publish $FUNCTION_NAME \
+  --java \
+  --subscription "3b50dcf4-f74d-442e-93cb-301b13e1e2d5"
