@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# https://learn.microsoft.com/en-us/azure/azure-functions/scripts/functions-cli-create-serverless
-# This script creates a new Azure function and deploys the products service.
+# The process of deploying a compiled function package is surprisingly difficult and undocumented,
+# especially for Java. The official way to do this is with the maven azure-functions-maven-plugin
+# plugin, but this requires that you rebuild your code each time, which we consider to be an
+# anti-pattern.
+#
+# This script creates the resource group, storage account, and azure function. It then
+# uploads the Java package, creates a long lived SAS token, and defines the
+# WEBSITE_RUN_FROM_PACKAGE setting to the SAS url.
+#
+# This emulates the process implemented by the RunFromBlobFunctionDeployHandler
+# (https://github.com/microsoft/azure-maven-plugins/blob/develop/azure-toolkit-libs/azure-toolkit-appservice-lib/src/main/java/com/microsoft/azure/toolkit/lib/appservice/deploy/RunFromBlobFunctionDeployHandler.java)
+# class used by the maven plugin.
 
 # You need to run the following first, where the subscription ID is for "Team Sales Engineering - Sandbox":
 # az login
@@ -48,10 +58,11 @@ az storage blob upload \
   --container-name java-functions-run-from-packages \
   --name product-service-azure.zip \
   --file /tmp/octopubproductservice/product-service-azure.zip \
+  --overwrite \
   --auth-mode key
 # Create a SAS key for the function package
 URL=$(az storage blob generate-sas \
-  --account-name octopubproductservice \
+  --account-name $STORAGE_ACCOUNT \
   --container-name java-functions-run-from-packages \
   --name product-service-azure.zip \
   --permissions r \
@@ -63,6 +74,6 @@ FIXED_URL=$(echo $URL | jq -r '.')
 # The raw string is set as the WEBSITE_RUN_FROM_PACKAGE value, which indicates Azure
 # must download the function from the URL.
 az functionapp config appsettings set \
-  --name octopubproductservice \
-  --resource-group octopubproductservice \
+  --name $FUNCTION_NAME \
+  --resource-group $RESOURCE_GROUP \
   --settings "WEBSITE_RUN_FROM_PACKAGE=$FIXED_URL"
