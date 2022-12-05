@@ -53,3 +53,70 @@ Visit the [wiki](https://github.com/OctopusSamples/content-team-apps/wiki/Octopu
 
 * [Github Actions Workflow Generator](https://githubactionsworkflowgenerator.octopus.com/#/)
 * [Jenkins Pipeline Generator](https://jenkinspipelinegenerator.octopus.com/#/)
+
+## Using Sample Apps
+
+This repo produces sample web apps that are designed to easily demonstrate Octopus features like:
+
+* Tenant deployments
+* Rollbacks
+* Config file modification
+* Feature branches
+* Kubernetes, ECS deployments
+* AWS Lambda deployments
+* Serverless.io deployments
+* Microservices
+* Testable deployments (i.e. health checks)
+
+The sections below document how to run the sample apps on various platforms.
+
+### Docker
+
+The following instructions are used to run the sample apps locally:
+
+1. `cd docker\octopub`
+2. `docker compose up`
+
+After a minute or so open the frontend at http://localhost:5000.
+
+### AWS Lambda
+
+Zip artifacts have been uploaded to a Maven feed hosted by GitHub packages.
+
+Unfortunately you [can not download packages without authentication](https://github.com/orgs/community/discussions/26634). So you need to generate a GitHub Personal Access Token that has the package read permission.
+
+Download the latest version of the frontend web app with:
+
+```bash
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+  "-DrepoUrl=https://github_user:personal_access_token@maven.pkg.github.com/OctopusSamples/content-team-apps" \
+  "-Dartifact=com.octopus:frontend-webapp-serverless:LATEST:zip" \
+  "-Ddest=frontend-webapp-serverless.zip"
+```
+
+Download the latest version of the product microservice with:
+
+```bash
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+  "-DrepoUrl=https://github_user:personal_access_token@maven.pkg.github.com/OctopusSamples/content-team-apps" \
+  "-Dartifact=com.octopus:products-service-lambda:LATEST:zip" \
+  "-Ddest=products-service-lambda.zip"
+```
+
+Unzip the packages:
+
+```bash
+mkdir frontend-webapp-serverless
+mkdir products-service-lambda
+unzip frontend-webapp-serverless.zip -d frontend-webapp-serverless
+unzip products-service-lambda.zip -d products-service-lambda
+```
+
+Deploy the apps with serverless.io:
+
+```bash
+cd products-service-lambda
+serverless deploy
+cd ../frontend-webapp-serverless
+serverless deploy
+```
