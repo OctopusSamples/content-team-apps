@@ -33,5 +33,5 @@ jobs:
           -Dversion=1.0.${{ github.run_number }}
           -Dpackaging=zip
           -Durl="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/${{ github.repository }}"
-      shell: bash
-      working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice
+        shell: bash
+        working-directory: js/generator-octopus-java-microservice/generators/app/templates/java/products-microservice
