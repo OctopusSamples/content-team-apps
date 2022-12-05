@@ -6,5 +6,6 @@
   "productHealthEndpoint": "http://localhost:8083/health/products",
   "auditEndpoint": "http://localhost:8083/api/audits",
   "auditHealthEndpoint": "http://localhost:8083/health/audits",
+  "overrideTheme": "",
   "frontendVersion": "v0.1.0"
 }
