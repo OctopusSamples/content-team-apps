@@ -181,6 +181,10 @@ az functionapp create \
   --os-type linux \
   --runtime java \
   --runtime-version 11.0
+# Create the container
+az storage container create \
+  --name java-functions-run-from-packages \
+  --account-name $STORAGE_ACCOUNT
 # Upload the function package
 az storage blob upload \
   --account-name $STORAGE_ACCOUNT \
