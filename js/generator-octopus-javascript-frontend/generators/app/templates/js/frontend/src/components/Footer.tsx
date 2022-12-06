@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) => {
                 flex: 1,
                 display: "flex",
                 justifyContent: "center",
-                background: theme.palette.background.paper,
+                background: theme.palette.primary.main,
                 minHeight: FOOTER_HEIGHT,
             },
             footer: {
