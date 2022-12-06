@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: products
+  name: products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: products
+    spec:
+      containers:
+      - image: octopussamples/product-service
+        name: product-service
+        ports:
+          - name: web
+            containerPort: 8083
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: products
+  name: products
+spec:
+  ports:
+  - name: "web"
+    port: 8083
+    protocol: TCP
+    targetPort: 8083
+  selector:
+    app: products
+  type: LoadBalancer
+---
+# The IP addresses of the backend services need to change to reflect the IP address or hostname
+# of the products service above.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  config: |
+    {
+      "basename": "",
+      "branch": "main",
+      "title": "Octopub",
+      "productEndpoint": "http://172.21.255.200:8083/api/products",
+      "productHealthEndpoint": "http://172.21.255.200:8083/health/products",
+      "auditEndpoint": "http://localhost:8083/api/audits",
+      "auditHealthEndpoint": "http://localhost:8083/health/audits",
+      "overrideTheme": "",
+      "frontendVersion": "v0.1.0"
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - image: octopussamples/frontend-webapp
+        name: frontend
+        ports:
+          - name: web
+            containerPort: 5000
+        volumeMounts:
+          - name: frontend-config
+            mountPath: /workspace/build/config.json
+            subPath: config
+        resources: {}
+      volumes:
+      - name: frontend-config
+        configMap:
+          name: frontend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  ports:
+  - name: "web"
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: frontend
+  type: LoadBalancer
