@@ -1,3 +1,10 @@
+# Make sure to replace the contents of the config map "frontend-config" with the backend service loadbalancer IP or hostname. 
+# You most likely won't know the loadbalancer IP until you deploy this YAML once, so the process is:
+# 1. Deploy the YAML
+# 2. Find the backend loadbalancer IP
+# 3. Update the config map
+# 4. Redeploy the yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
