@@ -81,3 +81,8 @@ az functionapp config appsettings set \
   --name $FUNCTION_NAME \
   --resource-group $RESOURCE_GROUP \
   --settings "WEBSITE_RUN_FROM_PACKAGE=$FIXED_URL"
+# Enable CORS
+az functionapp cors add \
+  -g $RESOURCE_GROUP \
+  -n $FUNCTION_NAME \
+  --allowed-origins "*"
