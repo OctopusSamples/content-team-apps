@@ -260,7 +260,8 @@ az storage blob service-properties update \
 az storage blob upload-batch \
   -s build \
   -d '$web' \
-  --account-name $STORAGE_ACCOUNT
+  --account-name $STORAGE_ACCOUNT \
+  --overwrite
 az storage account show \
   -n $STORAGE_ACCOUNT \
   -g $RESOURCE_GROUP \
