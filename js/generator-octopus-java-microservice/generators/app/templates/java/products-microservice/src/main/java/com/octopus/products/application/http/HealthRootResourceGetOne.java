@@ -1,6 +1,7 @@
 package com.octopus.products.application.http;
 
 import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+import com.octopus.Constants;
 import com.octopus.products.application.Paths;
 import com.octopus.products.domain.handlers.HealthHandler;
 import javax.enterprise.context.RequestScoped;
@@ -9,6 +10,8 @@ import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /** A resource to respond to health check requests. */
@@ -27,6 +30,7 @@ public class HealthRootResourceGetOne {
    */
   @GET
   @Path("{id}/GET")
+  @Produces({Constants.JsonApi.JSONAPI_CONTENT_TYPE, MediaType.APPLICATION_JSON})
   @Transactional
   public Response healthIndividualGet(@PathParam("id") final String id) throws DocumentSerializationException {
     return Response
