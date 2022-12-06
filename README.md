@@ -141,6 +141,8 @@ Then open https://domain/index.html to view the web app.
 
 ## Azure Functions
 
+### Backend
+
 Download the latest version of the product microservice with:
 
 ```bash
@@ -210,4 +212,53 @@ az functionapp config appsettings set \
   --name $FUNCTION_NAME \
   --resource-group $RESOURCE_GROUP \
   --settings "WEBSITE_RUN_FROM_PACKAGE=$FIXED_URL"
-```  
+```
+
+### Frontend
+
+Download the latest version of the frontend web app with:
+
+```bash
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+  "-DrepoUrl=https://github_user:personal_access_token@maven.pkg.github.com/OctopusSamples/content-team-apps" \
+  "-Dartifact=com.octopus:frontend-webapp-serverless:LATEST:zip" \
+  "-Ddest=frontend-webapp-serverless.zip"
+```
+
+Unzip the packages:
+
+```bash
+mkdir frontend-webapp-serverless
+unzip frontend-webapp-serverless.zip -d frontend-webapp-serverless
+```
+
+Edit the config file to point to the backend Azure function:
+
+```bash
+cat <<< $(jq '.productEndpoint = "https://octopubproductservice.azurewebsites.net/api/products"' build/config.json) > build/config.json
+cat <<< $(jq '.productHealthEndpoint = "https://octopubproductservice.azurewebsites.net/health/products"' build/config.json) > build/config.json
+```
+
+[Upload the static web app to the storage account](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-how-to?tabs=azure-cli):
+
+```bash
+# Change this to be unique
+RESOURCE_GROUP=octopubproductservice
+# Change this to be unique
+STORAGE_ACCOUNT=octopubproductservice
+
+az storage blob service-properties update \
+  --account-name $STORAGE_ACCOUNT \
+  --static-website \
+  --404-document error.html \
+  --index-document index.html
+az storage blob upload-batch \
+  -s build \
+  -d '$web' \
+  --account-name $STORAGE_ACCOUNT
+az storage account show \
+  -n $STORAGE_ACCOUNT \
+  -g $RESOURCE_GROUP \
+  --query "primaryEndpoints.web" \
+  --output tsv
+```
