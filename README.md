@@ -150,8 +150,9 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
   "-Ddest=product-service-azure.zip"
 ```
 
-Create a resource group, storage account, and function. Then upload the ZIP file, create an SAS token, and
-set the `WEBSITE_RUN_FROM_PACKAGE` setting to the SAS URL. See [here](https://stackoverflow.com/questions/74695741/how-can-i-deploy-a-prepackaged-quarkus-azure-functions-app/74695742#74695742) for more details on this process:
+Create a resource group, storage account, and function. Then upload the ZIP file, create an SAS token, and set the `WEBSITE_RUN_FROM_PACKAGE` setting to the SAS URL. Ensure you change the `RESOURCE_GROUP`, `FUNCTION_NAME`, and `STORAGE_ACCOUNT` names to be unique.
+
+See [here](https://stackoverflow.com/questions/74695741/how-can-i-deploy-a-prepackaged-quarkus-azure-functions-app/74695742#74695742) for more details on this process:
 
 ```bash
 REGION=australiaeast
