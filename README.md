@@ -138,3 +138,71 @@ aws cloudformation describe-stacks \
 ```
 
 Then open https://domain/index.html to view the web app.
+
+## Azure Functions
+
+Download the latest version of the product microservice with:
+
+```bash
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+  "-DrepoUrl=https://github_user:personal_access_token@maven.pkg.github.com/OctopusSamples/content-team-apps" \
+  "-Dartifact=com.octopus:products-service-azurefunc:LATEST:zip" \
+  "-Ddest=product-service-azure.zip"
+```
+
+Create a resource group, storage account, and function. Then upload the ZIP file, create an SAS token, and
+set the `WEBSITE_RUN_FROM_PACKAGE` setting to the SAS URL. See [here](https://stackoverflow.com/questions/74695741/how-can-i-deploy-a-prepackaged-quarkus-azure-functions-app/74695742#74695742) for more details on this process:
+
+```bash
+REGION=australiaeast
+# Change this to be unique
+RESOURCE_GROUP=octopubproductservice
+# Change this to be unique
+FUNCTION_NAME=octopubproductservice
+# Change this to be unique
+STORAGE_ACCOUNT=octopubproductservice
+STORAGE_SKU="Standard_LRS"
+ZIP_FILE=product-service-azure.zip
+CURRENT_DATE=$(date +%Y%m%d)
+SAS_EXPIRY=$(date -d "$CURRENT_DATE +10 years" +%Y-%m-%d)
+
+# Create a resource group
+az group create --location $REGION --name $RESOURCE_GROUP
+# Create a storage account
+az storage account create --name $STORAGE_ACCOUNT --resource-group $RESOURCE_GROUP --sku $STORAGE_SKU
+# Create a function app
+az functionapp create \
+  --name $FUNCTION_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --storage-account $STORAGE_ACCOUNT \
+  --consumption-plan-location $REGION \
+  --functions-version 4 \
+  --os-type linux \
+  --runtime java \
+  --runtime-version 11.0
+# Upload the function package
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --container-name java-functions-run-from-packages \
+  --name product-service-azure.zip \
+  --file $ZIP_FILE \
+  --overwrite \
+  --auth-mode key
+# Create a SAS key for the function package
+URL=$(az storage blob generate-sas \
+  --account-name $STORAGE_ACCOUNT \
+  --container-name java-functions-run-from-packages \
+  --name $ZIP_FILE \
+  --permissions r \
+  --expiry $SAS_EXPIRY \
+  --auth-mode key \
+  --full-uri)
+# The URL is quoted. We treat this as a JSON string, and use jq to return the raw string
+FIXED_URL=$(echo $URL | jq -r '.')
+# The raw string is set as the WEBSITE_RUN_FROM_PACKAGE value, which indicates Azure
+# must download the function from the URL.
+az functionapp config appsettings set \
+  --name $FUNCTION_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings "WEBSITE_RUN_FROM_PACKAGE=$FIXED_URL"
+```  

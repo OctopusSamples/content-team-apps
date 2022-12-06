@@ -57,14 +57,14 @@ az storage blob upload \
   --account-name $STORAGE_ACCOUNT \
   --container-name java-functions-run-from-packages \
   --name product-service-azure.zip \
-  --file /tmp/octopubproductservice/product-service-azure.zip \
+  --file /tmp/octopubproductservice/$ZIP_FILE \
   --overwrite \
   --auth-mode key
 # Create a SAS key for the function package
 URL=$(az storage blob generate-sas \
   --account-name $STORAGE_ACCOUNT \
   --container-name java-functions-run-from-packages \
-  --name product-service-azure.zip \
+  --name $ZIP_FILE \
   --permissions r \
   --expiry $SAS_EXPIRY \
   --auth-mode key \
