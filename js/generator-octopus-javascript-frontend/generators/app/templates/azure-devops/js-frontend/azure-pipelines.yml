@@ -1,13 +1,12 @@
 trigger:
   branches:
     include:
-    - main
-    - master
+      - main
+      - master
   paths:
     include:
-      - java/**/*
-      - systemd/java-microservice/*
-      - azure-devops/java-microservice/*
+      - js/**/*
+      - azure-devops/js-frontend/*
 
 pool:
   vmImage: ubuntu-latest
@@ -23,7 +22,7 @@ parameters:
     type: string
   - name: OctopusProject
     displayName: The ID of the Octopus project
-    default: 'Projects-3448'
+    default: 'Projects-3449'
     type: string
 
 stages:
@@ -35,31 +34,20 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - task: Bash@3
-            displayName: "Populate Local Maven Repo"
-            inputs:
-              targetType: inline
-              script: |
-                # Download and extract a local maven repo cache. This speeds up build times.
-                # Regenerate this by doing a "./mvnw install" and then "7z a repository.7z -r repository"                
-                curl https://octopus-sales-engineering.s3.ap-southeast-2.amazonaws.com/repository.7z -o ~/repository.7z
-                mkdir -p ~/.m2
-                cd ~/.m2
-                7z x -aoa ~/repository.7z
-          - task: Bash@3
             displayName: "Install Libraries"
             inputs:
               targetType: inline
-              script: ./mvnw clean install --batch-mode -DskipTests
-              workingDirectory: java
+              script: npm install
+              workingDirectory: js/frontend
           - task: Bash@3
             displayName: "Build Application"
             inputs:
               targetType: inline
-              script: ./mvnw clean package --batch-mode -DskipTests
-              workingDirectory: java/products-microservice
-          - publish: './java/products-microservice/target/products-microservice-runner.jar'
+              script: npm build
+              workingDirectory: js/frontend
+          - publish: './js/frontend/build'
             displayName: 'Capture Artifacts'
-            artifact: javaJar
+            artifact: jsBuild
   - stage: deploy
     displayName: Deploy
     jobs:
@@ -69,13 +57,7 @@ stages:
         steps:
           # Download the artifact generated in the last stage
           - download: current
-            artifact: javaJar
-          # Copy the artifact generated in the last stage back into the working dir
-          - task: Bash@3
-            displayName: "Copy Artifact"
-            inputs:
-              targetType: inline
-              script: 'cp "$(Pipeline.Workspace)/javaJar/products-microservice-runner.jar" .'
+            artifact: jsBuild
           # The Octopus CLI needs to be installed to support the push, create release, and deploy release steps
           - task: OctoInstaller@5
             inputs:
@@ -84,20 +66,18 @@ stages:
           # ready to be used to the Octopus built in feed.
           - task: OctopusPack@4
             inputs:
-              PackageId: 'products-service'
+              PackageId: 'octopub-frontend'
               PackageFormat: 'Zip'
               PackageVersion: '1.0.$(Build.BuildNumber)'
-              SourcePath: '.'
-              Include: |
-                products-microservice-runner.jar
-                systemd/java-microservice/products-service.service
+              SourcePath: '$(Pipeline.Workspace)'
+              Include: "**"
               Overwrite: true
           # Push the package to the built-in feed.
           - task: OctopusPush@5
             inputs:
               OctoConnectedServiceName: ${{ parameters.OctopusServer }}
               Space: ${{ parameters.OctopusSpace }}
-              Package: 'products-service.1.0.$(Build.BuildNumber).zip'
+              Package: 'octopub-frontend.1.0.$(Build.BuildNumber).zip'
               Replace: 'true'
           # Create a release in Octopus.
           - task: OctopusCreateRelease@5
