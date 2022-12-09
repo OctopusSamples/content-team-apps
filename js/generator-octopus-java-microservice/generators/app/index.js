@@ -19,7 +19,7 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             },
             null,
-            {globOptions: {ignore: ["**/target", "**/*.iml", "**/.idea", "**/.gitignorefile"], dot: true}}
+            {globOptions: {ignore: ["**/target", "**/*.iml", "**/.idea", "**/.gitignorefile", "**/.serverless"], dot: true}}
         );
 
         this.fs.copyTpl(
@@ -43,6 +43,30 @@ module.exports = class extends Generator {
                 aws_region: this.options["aws_region"]
             }
         )
+
+        this.fs.copyTpl(
+            this.templatePath('azure-devops/**/*'),
+            this.destinationPath('azure-devops'),
+            {
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
+                aws_region: this.options["aws_region"]
+            },
+            null,
+            {globOptions: {dot: true}}
+        );
+
+        this.fs.copyTpl(
+            this.templatePath('systemd/**/*'),
+            this.destinationPath('systemd'),
+            {
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
+                aws_region: this.options["aws_region"]
+            },
+            null,
+            {globOptions: {dot: true}}
+        );
 
         this.fs.copyTpl(
             this.templatePath('.devcontainer/java/devcontainer.json'),

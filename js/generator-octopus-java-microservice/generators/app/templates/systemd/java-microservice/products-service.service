@@ -1,0 +1,17 @@
+# Copy to /etc/systemd/system/products-service.service
+# sudo systemctl daemon-reload
+# sudo systemctl start products-service.service
+
+[Unit]
+Description=Octopub Products Service
+
+[Service]
+WorkingDirectory=/opt/products-service
+ExecStart=/bin/java -jar products-microservice-runner.jar
+User=root
+Type=simple
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

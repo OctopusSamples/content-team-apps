@@ -1,0 +1,99 @@
+trigger:
+  - main
+  - master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  # This is the name of the Octopus connection defined in Azure DevOps
+  - name: OctopusServer
+    value: Octopus
+  # This is the ID of the space we are working with
+  - name: OctopusSpace
+    value: 'Spaces-1370'
+  # This is the ID of the project we are working with
+  - name: OctopusProject
+    value: 'Projects-3448'
+
+stages:
+  - stage: build
+    displayName: Build
+    jobs:
+      - job: build_app
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: Bash@3
+            displayName: "Populate Local Maven Repo"
+            inputs:
+              targetType: inline
+              script: |
+                # Download and extract a local maven repo cache. This speeds up build times.
+                # Regenerate this by doing a "./mvnw install" and then "7z a repository.7z -r repository"                
+                curl https://octopus-sales-engineering.s3.ap-southeast-2.amazonaws.com/repository.7z -o ~/repository.7z
+                mkdir -p ~/.m2
+                cd ~/.m2
+                7z x -aoa ~/repository.7z
+          - task: Bash@3
+            displayName: "Install Libraries"
+            inputs:
+              targetType: inline
+              script: ./mvnw clean install --batch-mode -DskipTests
+              workingDirectory: java
+          - task: Bash@3
+            displayName: "Build Application"
+            inputs:
+              targetType: inline
+              script: ./mvnw clean package --batch-mode -DskipTests
+              workingDirectory: java/products-microservice
+          - publish: './java/products-microservice/target/products-microservice-runner.jar'
+            displayName: 'Capture Artifacts'
+            artifact: javaJar
+  - stage: deploy
+    displayName: Deploy
+    jobs:
+      - job: deploy_app
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - download: current
+            artifact: javaJar
+          # The Octopus CLI needs to be installed to support the push, create release, and deploy release steps
+          - task: OctoInstaller@5
+            inputs:
+              version: '*'
+          # Create a package with a filename that captures the package id and version. This package is then
+          # ready to be pused to the Octopus built in feed.
+          - task: OctopusPack@4
+            inputs:
+              PackageId: 'products-service'
+              PackageFormat: 'Zip'
+              PackageVersion: '1.0.$(Build.BuildNumber)'
+              SourcePath: '$(Pipeline.Workspace)/javaJar'
+              Include: |
+                products-microservice-runner.jar
+                systemd/java-microservice/products-service.service
+              Overwrite: true
+          # Push the package to the built in feed.
+          - task: OctopusPush@5
+            inputs:
+              OctoConnectedServiceName: ${{ variables.OctopusServer }}
+              Space: ${{ variables.OctopusSpace }}
+              Package: 'products-service.1.0.$(Build.BuildNumber).zip'
+              Replace: 'true'
+          # Create a release in Octopus.
+          - task: OctopusCreateRelease@5
+            inputs:
+              OctoConnectedServiceName: ${{ variables.OctopusServer }}
+              Space: ${{ variables.OctopusSpace }}
+              ProjectName: ${{ variables.OctopusProject }}
+              ReleaseNumber: '1.0.$(Build.BuildNumber)'
+          # Deploy the release in Octopus.
+          - task: OctopusDeployRelease@5
+            inputs:
+              OctoConnectedServiceName: ${{ variables.OctopusServer }}
+              Space: ${{ variables.OctopusSpace }}
+              Project: ${{ variables.OctopusProject }}
+              ReleaseNumber: '1.0.$(Build.BuildNumber)'
+              Environments: 'Development'
