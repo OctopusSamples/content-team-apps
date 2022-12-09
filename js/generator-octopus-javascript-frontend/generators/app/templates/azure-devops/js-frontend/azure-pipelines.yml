@@ -37,13 +37,13 @@ stages:
             displayName: "Install Libraries"
             inputs:
               targetType: inline
-              script: npm install
+              script: yarn install
               workingDirectory: js/frontend
           - task: Bash@3
             displayName: "Build Application"
             inputs:
               targetType: inline
-              script: npm build
+              script: yarn build
               workingDirectory: js/frontend
           - publish: './js/frontend/build'
             displayName: 'Capture Artifacts'
@@ -69,7 +69,7 @@ stages:
               PackageId: 'octopub-frontend'
               PackageFormat: 'Zip'
               PackageVersion: '1.0.$(Build.BuildNumber)'
-              SourcePath: '$(Pipeline.Workspace)'
+              SourcePath: '$(Pipeline.Workspace)/jsBuild'
               Include: "**"
               Overwrite: true
           # Push the package to the built-in feed.
