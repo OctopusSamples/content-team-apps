@@ -1,0 +1,2 @@
+steps:
+  - script: sudo cp -r $(Pipeline.Workspace)/jsBuild/* /var/www/html

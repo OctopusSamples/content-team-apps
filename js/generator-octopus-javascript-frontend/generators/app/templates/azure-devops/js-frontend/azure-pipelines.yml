@@ -45,6 +45,12 @@ stages:
               targetType: inline
               script: yarn build
               workingDirectory: js/frontend
+          - task: Bash@3
+            displayName: "Update Build Version"
+            inputs:
+              targetType: inline
+              script: cat <<< $(jq '.frontendVersion = "1.0.$(Build.BuildNumber)"' build/config.json) > build/config.json
+              workingDirectory: js/frontend
           - publish: './js/frontend/build'
             displayName: 'Capture Artifacts'
             artifact: jsBuild
