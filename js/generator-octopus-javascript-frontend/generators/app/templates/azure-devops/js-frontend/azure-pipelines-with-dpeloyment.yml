@@ -82,6 +82,7 @@ stages:
               onTimeout: 'reject'
       - deployment: DeployWeb
         displayName: Deploy Web App
+        dependsOn: ManualApprovalTest
         environment:
           name: Test
           resourceType: VirtualMachine
@@ -94,7 +95,7 @@ stages:
   - stage: ProductionDeploy
     displayName: Deploy to Production
     jobs:
-      - job: ManualApprovalTest
+      - job: ManualApprovalProd
         displayName: "Manual Approval"
         pool: server
         steps:
@@ -105,6 +106,7 @@ stages:
               onTimeout: 'reject'
       - deployment: DeployWeb
         displayName: Deploy Web App
+        dependsOn: ManualApprovalProd
         environment:
           name: Production
           resourceType: VirtualMachine
