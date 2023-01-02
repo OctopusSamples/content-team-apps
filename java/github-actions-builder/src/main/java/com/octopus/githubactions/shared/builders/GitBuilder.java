@@ -107,7 +107,7 @@ public class GitBuilder {
   public Step tagRepo() {
     return UsesWith.builder()
         .name("Tag Release")
-        .uses("mathieudutour/github-tag-action@v6.0")
+        .uses("mathieudutour/github-tag-action@v6.1")
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("custom_tag", "${{ steps.determine_version.outputs.semVer }}")
