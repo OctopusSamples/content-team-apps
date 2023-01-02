@@ -156,7 +156,7 @@ public class GitBuilder {
   public Step uploadOctopusBuildInfo(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Generate Octopus Deploy build information")
-        .uses("OctopusDeploy/push-build-information-action@v1")
+        .uses("OctopusDeploy/push-build-information-action@v3")
         .env(new ImmutableMap.Builder<String, String>()
             .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
             .put("OCTOPUS_HOST", "${{ secrets.OCTOPUS_SERVER_URL }}")
