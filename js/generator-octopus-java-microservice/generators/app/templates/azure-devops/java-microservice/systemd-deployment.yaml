@@ -1,0 +1,11 @@
+steps:
+  - script: |
+      # Copy the web serivce
+      sudo mkdir -p /opt/products-service
+      sudo cp $(Pipeline.Workspace)/javaJar/products-microservice-runner.jar /opt/products-service
+
+      # Install the systemd service
+      sudo cp $(Build.SourcesDirectory)/systemd/java-microservice/products-service.service /etc/systemd/system
+      sudo systemctl daemon-reload
+      sudo systemctl restart products-service.service
+      sudo systemctl enable products-service.service

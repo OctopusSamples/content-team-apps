@@ -1,0 +1,118 @@
+trigger:
+  branches:
+    include:
+      - main
+      - master
+  paths:
+    include:
+      - js/**/*
+      - azure-devops/js-frontend/*
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: OctopusServer
+    displayName: The name of the Octopus connection
+    default: Octopus
+    type: string
+  - name: OctopusSpace
+    displayName: The ID of the Octopus space
+    default: 'Spaces-1370'
+    type: string
+  - name: OctopusProject
+    displayName: The ID of the Octopus project
+    default: 'Projects-3449'
+    type: string
+
+stages:
+  - stage: build
+    displayName: Build
+    jobs:
+      - job: build_app
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: Bash@3
+            displayName: "Install Libraries"
+            inputs:
+              targetType: inline
+              script: yarn install
+              workingDirectory: js/frontend
+          - task: Bash@3
+            displayName: "Build Application"
+            inputs:
+              targetType: inline
+              script: yarn build
+              workingDirectory: js/frontend
+          - task: Bash@3
+            displayName: "Update Build Version"
+            inputs:
+              targetType: inline
+              script: cat <<< $(jq '.frontendVersion = "1.0.$(Build.BuildNumber)"' build/config.json) > build/config.json
+              workingDirectory: js/frontend
+          - publish: './js/frontend/build'
+            displayName: 'Capture Artifacts'
+            artifact: jsBuild
+  - stage: DevelopmentDeploy
+    displayName: Deploy to Development
+    jobs:
+      - deployment: DeployWeb
+        displayName: Deploy Web App
+        environment:
+          name: Development
+          resourceType: VirtualMachine
+          tags: web
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: apache-deployment.yaml
+  - stage: TestDeploy
+    displayName: Deploy to Test
+    jobs:
+      - job: ManualApprovalTest
+        displayName: "Manual Approval"
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              notifyUsers: matthew.casperson@octopus.com
+              instructions: Allow the deployment to progress to the Test environment?
+              onTimeout: 'reject'
+      - deployment: DeployWeb
+        displayName: Deploy Web App
+        dependsOn: ManualApprovalTest
+        environment:
+          name: Test
+          resourceType: VirtualMachine
+          tags: web
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: apache-deployment.yaml
+  - stage: ProductionDeploy
+    displayName: Deploy to Production
+    jobs:
+      - job: ManualApprovalProd
+        displayName: "Manual Approval"
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              notifyUsers: matthew.casperson@octopus.com
+              instructions: Allow the deployment to progress to the Production environment?
+              onTimeout: 'reject'
+      - deployment: DeployWeb
+        displayName: Deploy Web App
+        dependsOn: ManualApprovalProd
+        environment:
+          name: Production
+          resourceType: VirtualMachine
+          tags: web
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: apache-deployment.yaml
