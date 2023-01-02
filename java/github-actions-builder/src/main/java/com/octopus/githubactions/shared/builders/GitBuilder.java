@@ -142,7 +142,7 @@ public class GitBuilder {
         .uses("OctopusDeploy/push-package-action@v2")
         .env(new ImmutableMap.Builder<String, String>()
             .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
-            .put("OCTOPUS_HOST", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
             .build())
         .with(
             new ImmutableMap.Builder<String, String>()
@@ -159,7 +159,7 @@ public class GitBuilder {
         .uses("OctopusDeploy/push-build-information-action@v3")
         .env(new ImmutableMap.Builder<String, String>()
             .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
-            .put("OCTOPUS_HOST", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
             .build())
         .with(
             new ImmutableMap.Builder<String, String>()
