@@ -591,7 +591,9 @@ func (r *LenientAPIGatewayProxyResponse) toAPIGatewayProxyResponse() (events.API
 	statusCode, err := strconv.Atoi(r.StatusCode)
 
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+		}, err
 	}
 
 	return events.APIGatewayProxyResponse{
