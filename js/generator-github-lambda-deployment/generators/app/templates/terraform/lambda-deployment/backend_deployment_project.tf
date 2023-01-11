@@ -59,7 +59,7 @@ resource "octopusdeploy_variable" "postman_raw_url_variable" {
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_backend_project.id
-  value        = "#{Octopus.Action[Get Stack Outputs].Output.StageURL}api/products/"
+  value        = "#{Octopus.Action[Get Stack Outputs].Output.StageURL}api/products"
 }
 
 resource "octopusdeploy_variable" "postman_raw_host_variable" {
@@ -95,7 +95,7 @@ resource "octopusdeploy_variable" "postman_raw_path_variable" {
   description  = "A structured variable replacement for the Postman test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_backend_project.id
-  value        = "[\"${local.fixed_environment_upper}\", \"api\", \"products\", \"\"]"
+  value        = "[\"${local.fixed_environment_upper}\", \"api\", \"products\"]"
 }
 
 resource "octopusdeploy_variable" "postman_header_variable" {
