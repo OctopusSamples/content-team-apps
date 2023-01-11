@@ -81,7 +81,7 @@ pipeline {
           // Set the build number on the generated artifact.
           sh '''
             ./mvnw --batch-mode build-helper:parse-version versions:set \
-            -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.incrementalVersion}.${BUILD_NUMBER}
+            -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.${BUILD_NUMBER}
           '''
           sh(script: './mvnw --batch-mode -DskipTests clean compile', returnStdout: true)
           script {

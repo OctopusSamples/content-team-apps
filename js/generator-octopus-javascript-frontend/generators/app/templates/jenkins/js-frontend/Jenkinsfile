@@ -100,7 +100,7 @@ pipeline {
                 env.VERSION_MAJORMINORPATCH = props.GitVersion_MajorMinorPatch
                 env.VERSION_SHA = props.GitVersion_Sha
               } else {
-                env.VERSION_SEMVER = "1.0.0." + env.BUILD_NUMBER
+                env.VERSION_SEMVER = "1.0." + env.BUILD_NUMBER
               }
           }
           script {
