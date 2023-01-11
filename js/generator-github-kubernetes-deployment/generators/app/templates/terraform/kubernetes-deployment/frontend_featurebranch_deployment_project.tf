@@ -250,6 +250,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
 
           # Load balancers can take a minute or so before their DNS is propagated.
           # A status code of 000 means curl could not resolve the DNS name, so we wait for a bit until DNS is updated.
+          echo "Testing http://#{Octopus.Action[Display the Ingress URL].Output.DNSName}/index.html"
           echo "Waiting for DNS to propagate. This can take a while for a new ingress load balancer."
           for i in {1..30}
           do
