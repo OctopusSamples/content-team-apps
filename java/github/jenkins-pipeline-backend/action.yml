@@ -78,7 +78,7 @@ runs:
       working-directory: java/jenkins-pipeline-builder-github-backend
 
     - name: Build with Maven
-      run: ./mvnw --batch-mode clean package --file pom.xml -Plambda -Pnative -DskipTests "-Dquarkus.profile=prod"
+      run: ./mvnw --batch-mode clean package --file pom.xml -Plambda -Pnative -DskipTests "-Dquarkus.profile=prod" -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
       shell: bash
       working-directory: java/jenkins-pipeline-builder-github-backend
 
