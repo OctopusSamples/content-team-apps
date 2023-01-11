@@ -264,9 +264,9 @@ runs:
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
         --defaultPackageVersion "1.0.0"
-        --package "Backend Service:products:${{ steps.determine_version.outputs.semVer }}"
-        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"
+        --package "products-microservice-lambda:${{ steps.determine_version.outputs.semVer }}"
         --package "products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}"
+        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"        
         --version ${{ steps.determine_version.outputs.semVer }}
         --ignoreExisting
         --deploymentTimeout 00:30:00
@@ -281,9 +281,9 @@ runs:
         --apiKey ${{ inputs.octopus_apikey }}
         --space "${{ inputs.octopus_space }}"
         --defaultPackageVersion "1.0.0"
-        --package "Backend Service:products:${{ steps.determine_version.outputs.semVer }}"
-        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"
+        --package "products-microservice-lambda:${{ steps.determine_version.outputs.semVer }}"
         --package "products-microservice-sbom:${{ steps.determine_version.outputs.semVer }}"
+        --package "Postman Integration Test:products-microservice-postman:${{ steps.determine_version.outputs.semVer }}"        
         --deployTo "Development"
         --waitForDeployment
         --version ${{ steps.determine_version.outputs.semVer }}
