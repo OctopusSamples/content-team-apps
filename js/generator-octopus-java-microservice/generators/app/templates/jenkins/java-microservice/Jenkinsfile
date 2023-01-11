@@ -156,7 +156,7 @@ pipeline {
     stage('Package Lambda') {
       steps {
         dir("${env.WORKSPACE}/java") {
-          sh(script: './mvnw --batch-mode package -DskipTests -Plambda')
+          sh(script: './mvnw --batch-mode package -DskipTests -P "lambda,native" -Dquarkus.profile=faas')
         }
       }
     }
