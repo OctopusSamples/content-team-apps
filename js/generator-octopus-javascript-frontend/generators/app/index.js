@@ -45,6 +45,18 @@ module.exports = class extends Generator {
         );
 
         this.fs.copyTpl(
+            this.templatePath('jenkins/**/*'),
+            this.destinationPath('jenkins'),
+            {
+                s3_bucket_suffix: this.options["s3_bucket_suffix"],
+                aws_state_bucket_region: this.options["aws_state_bucket_region"],
+                aws_region: this.options["aws_region"]
+            },
+            null,
+            {globOptions: {dot: true}}
+        );
+
+        this.fs.copyTpl(
             this.templatePath('.devcontainer/js/devcontainer.json'),
             this.destinationPath('.devcontainer/js/devcontainer.json'),
             {
