@@ -36,6 +36,8 @@ pipeline {
     stage ('Add tools') {
         steps {
             sh "echo \"OctoCLI: ${tool('OctoCLI')}\""
+            sh "echo \"GraalVM: ${tool('GraalVM')}\""
+            sh "${tool('GraalVM')}/bin/gu install native-image"
         }
     }
     stage('Environment') {
@@ -139,7 +141,7 @@ pipeline {
         }
       }
     }
-    stage('Publish JAR') {      
+    stage('Publish JAR') {
       steps {
         // This stage assumes you perform the deployment with Octopus Deploy.
         // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.
@@ -156,7 +158,7 @@ pipeline {
     stage('Package Lambda') {
       steps {
         dir("${env.WORKSPACE}/java") {
-          sh(script: './mvnw --batch-mode package -DskipTests -P "lambda,native" -Dquarkus.profile=faas')
+          sh(script: "GRAALVM_HOME=${tool('GraalVM')} ./mvnw --batch-mode package -DskipTests -P 'lambda,native' -Dquarkus.profile=faas")
         }
       }
     }
@@ -207,10 +209,10 @@ pipeline {
         }
       }
     }
-    stage('Deployment') {      
+    stage('Deployment') {
       steps {
         // This stage assumes you perform the deployment with Octopus Deploy.
-        // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.        
+        // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.
         octopusPushBuildInformation(additionalArgs: '',
           commentParser: 'GitHub',
           overwriteMode: 'OverwriteExisting',
