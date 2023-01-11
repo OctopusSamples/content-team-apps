@@ -14,7 +14,7 @@ pipeline {
   parameters {
     // Parameters are only available after the first run. See https://issues.jenkins.io/browse/JENKINS-41929 for more details.
     string(defaultValue: 'Spaces-1', description: '', name: 'SpaceId', trim: true)
-    string(defaultValue: 'Octopub Frontend', description: '', name: 'ProjectName', trim: true)
+    string(defaultValue: 'Frontend WebApp', description: '', name: 'ProjectName', trim: true)
     string(defaultValue: 'Development', description: '', name: 'EnvironmentName', trim: true)
     string(defaultValue: 'Octopus', description: '', name: 'ServerId', trim: true)
   }
