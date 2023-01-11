@@ -119,11 +119,11 @@ pipeline {
                 includePaths: "**/*.html\n**/*.htm\n**/*.css\n**/*.js\n**/*.min\n**/*.map\n**/*.sql\n**/*.png\n**/*.jpg\n**/*.jpeg\n**/*.gif\n**/*.json\n**/*.env\n**/*.txt\n**/Procfile",
                 overwriteExisting: true,
                 packageFormat: 'zip',
-                packageId: 'OctopubFrontend',
+                packageId: 'javascript-frontend',
                 packageVersion: env.VERSION_SEMVER,
                 toolId: 'Default',
                 verboseLogging: false)
-              env.ARTIFACTS = "OctopubFrontend.${env.VERSION_SEMVER}.zip"
+              env.ARTIFACTS = "javascript-frontend.${env.VERSION_SEMVER}.zip"
           }
         }
       }

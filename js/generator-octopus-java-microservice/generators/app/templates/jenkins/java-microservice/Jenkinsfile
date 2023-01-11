@@ -129,7 +129,7 @@ pipeline {
             if (largestFile != null) {
               env.ORIGINAL_ARTIFACT = largestFile.path
               // Create a filename based on the repository name, the new version, and the original file extension.
-              env.ARTIFACTS = "OctopubProducts." + env.VERSION_SEMVER + largestFile.path.substring(largestFile.path.lastIndexOf("."), largestFile.path.length())
+              env.ARTIFACTS = "products-microservice." + env.VERSION_SEMVER + largestFile.path.substring(largestFile.path.lastIndexOf("."), largestFile.path.length())
               echo 'Found artifact at ' + largestFile.path
               echo 'This path is available from the ARTIFACTS environment variable.'
             }
@@ -183,7 +183,7 @@ pipeline {
             if (largestFile != null) {
               env.ORIGINAL_ARTIFACT = largestFile.path
               // Create a filename based on the repository name, the new version, and the original file extension.
-              env.ARTIFACTS = "OctopubProductsLambda." + env.VERSION_SEMVER + largestFile.path.substring(largestFile.path.lastIndexOf("."), largestFile.path.length())
+              env.ARTIFACTS = "products-microservice-lambda." + env.VERSION_SEMVER + largestFile.path.substring(largestFile.path.lastIndexOf("."), largestFile.path.length())
               echo 'Found artifact at ' + largestFile.path
               echo 'This path is available from the ARTIFACTS environment variable.'
             }
