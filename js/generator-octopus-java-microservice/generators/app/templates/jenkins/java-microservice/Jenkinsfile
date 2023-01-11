@@ -99,14 +99,14 @@ pipeline {
         }
       }
     }
-    stage('Package') {
+    stage('Package JAR') {
       steps {
         dir("${env.WORKSPACE}/java") {
           sh(script: './mvnw --batch-mode package -DskipTests')
         }
       }
     }
-    stage('Repackage') {
+    stage('Repackage JAR') {
       steps {
         dir("${env.WORKSPACE}/java/products-microservice") {
           // This scans through the build tool output directory and find the largest file, which we assume is the artifact that was intended to be deployed.
@@ -139,7 +139,7 @@ pipeline {
         }
       }
     }
-    stage('Deployment') {      
+    stage('Publish JAR') {      
       steps {
         // This stage assumes you perform the deployment with Octopus Deploy.
         // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.
@@ -151,6 +151,66 @@ pipeline {
             spaceId: params.SpaceId,
             toolId: 'Default')
         }
+      }
+    }
+    stage('Package Lambda') {
+      steps {
+        dir("${env.WORKSPACE}/java") {
+          sh(script: './mvnw --batch-mode package -DskipTests -Plambda')
+        }
+      }
+    }
+    stage('Repackage Lambda') {
+      steps {
+        dir("${env.WORKSPACE}/java/products-microservice") {
+          // This scans through the build tool output directory and find the largest file, which we assume is the artifact that was intended to be deployed.
+          // The path to this file is saved in and environment variable called JAVA_ARTIFACT, which can be consumed by subsequent custom deployment steps.
+          script {
+            // Find the matching artifacts
+            def extensions = ['zip']
+            def files = []
+            for(extension in extensions) {
+              findFiles(glob: 'target/**.' + extension).each{files << it}
+            }
+            echo 'Found ' + files.size() + ' potential artifacts'
+            // Assume the largest file is the artifact we intend to deploy
+            def largestFile = null
+            for (i = 0; i < files.size(); ++i) {
+              if (largestFile == null || files[i].length > largestFile.length) {
+                largestFile = files[i]
+              }
+            }
+            if (largestFile != null) {
+              env.ORIGINAL_ARTIFACT = largestFile.path
+              // Create a filename based on the repository name, the new version, and the original file extension.
+              env.ARTIFACTS = "OctopubProductsLambda." + env.VERSION_SEMVER + largestFile.path.substring(largestFile.path.lastIndexOf("."), largestFile.path.length())
+              echo 'Found artifact at ' + largestFile.path
+              echo 'This path is available from the ARTIFACTS environment variable.'
+            }
+            // Octopus requires files to have a specific naming format. So copy the original artifact into a file with the correct name.
+            sh(script: 'cp ${ORIGINAL_ARTIFACT} ${ARTIFACTS}')
+          }
+        }
+      }
+    }
+    stage('Publish Lambda') {
+      steps {
+        // This stage assumes you perform the deployment with Octopus Deploy.
+        // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.
+        dir("${env.WORKSPACE}/java/products-microservice") {
+          octopusPushPackage(additionalArgs: '',
+            packagePaths: env.ARTIFACTS.split(":").join("\n"),
+            overwriteMode: 'OverwriteExisting',
+            serverId: params.ServerId,
+            spaceId: params.SpaceId,
+            toolId: 'Default')
+        }
+      }
+    }
+    stage('Deployment') {      
+      steps {
+        // This stage assumes you perform the deployment with Octopus Deploy.
+        // The steps shown below can be replaced with your own custom steps to deploy to other platforms if needed.        
         octopusPushBuildInformation(additionalArgs: '',
           commentParser: 'GitHub',
           overwriteMode: 'OverwriteExisting',
