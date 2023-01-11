@@ -1,6 +1,6 @@
 {
   "name": "@octopus-content-team/generator-github-complete-lambda-deployment",
-  "version": "0.1.62",
+  "version": "0.1.63",
   "description": "",
   "files": [
     "generators"
@@ -15,7 +15,7 @@
     "@octopus-content-team/generator-octopus-reverse-proxy": "0.1.3",
     "@octopus-content-team/generator-github-shared-space": "0.1.28",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.21",
-    "@octopus-content-team/generator-github-lambda-deployment": "0.1.30",
+    "@octopus-content-team/generator-github-lambda-deployment": "0.1.31",
     "@octopus-content-team/generator-aws-ecr": "0.1.29",
     "@octopus-content-team/generator-ecr-feed": "0.1.4"
   },
