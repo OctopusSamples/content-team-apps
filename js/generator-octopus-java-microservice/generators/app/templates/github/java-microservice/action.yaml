@@ -223,7 +223,8 @@ runs:
       run: |
         if [[ -z "${{ inputs.image_tag }}" ]]
         then
-          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas
+          # Need to compile in docker image to fix https://github.com/quarkusio/quarkus/issues/25897
+          ./mvnw --batch-mode package -P "lambda,native" -DskipTests -Dquarkus.profile=faas -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
           zip products-service.${{ steps.determine_version.outputs.semVer }}.zip serverless.yaml target/function.zip
           mvn deploy:deploy-file \
             --batch-mode \
