@@ -82,9 +82,9 @@ runs:
 
     - name: Build and push lambda package
       run: |
-        zip reverse-proxy-lambda.${{ steps.determine_version.outputs.semVer }}.zip main
+        zip reverse-proxy-lambda.1.0.0.zip main
         octo push \
-            --package reverse-proxy-lambda.${{ steps.determine_version.outputs.semVer }}.zip \
+            --package reverse-proxy-lambda.1.0.0.zip \
             --server ${{ inputs.octopus_server }} \
             --apiKey ${{ inputs.octopus_apikey }} \
             --space "${{ inputs.octopus_space }}" \
