@@ -84,6 +84,7 @@ runs:
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
+    # Need to compile in docker image to fix https://github.com/quarkusio/quarkus/issues/25897
     - name: Build with Maven
       run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests -Dquarkus.profile=prod -DskipTests "-Dquarkus.profile=prod" -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
       shell: bash
