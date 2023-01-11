@@ -14,7 +14,7 @@
     "@octopus-content-team/generator-octopus-js-frontend": "0.1.45",
     "@octopus-content-team/generator-github-shared-space": "0.1.28",
     "@octopus-content-team/generator-github-shared-infrastructure": "0.1.21",
-    "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.116",
+    "@octopus-content-team/generator-github-kubernetes-deployment": "0.1.117",
     "@octopus-content-team/generator-aws-ecr": "0.1.29",
     "@octopus-content-team/generator-ecr-feed": "0.1.4"
   },
