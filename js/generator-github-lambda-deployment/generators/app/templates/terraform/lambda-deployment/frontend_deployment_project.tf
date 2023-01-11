@@ -83,7 +83,7 @@ resource "octopusdeploy_variable" "cypress_baseurl_variable" {
   description  = "A structured variable replacement for the Cypress test."
   is_sensitive = false
   owner_id     = octopusdeploy_project.deploy_frontend_project.id
-  value        = "http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-us-west-1.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
+  value        = "http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-${var.aws_region}.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}"
 }
 
 locals {
@@ -363,7 +363,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend" {
           echo "Waiting for DNS to propagate. This can take a while for a new load balancer."
           for i in {1..30}
           do
-              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-us-west-1.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/index.html)
+              CODE=$(curl -o /dev/null -s -w "%%{http_code}\n" http://#{Octopus.Action[Create S3 bucket].Output.AwsOutputs[Bucket]}.s3-website-${var.aws_region}.amazonaws.com/#{Octopus.Action[Upload Frontend].Package[].PackageId}.#{Octopus.Action[Upload Frontend].Package[].PackageVersion}/index.html)
               if [[ "$${CODE}" == "200" ]]
               then
                 break

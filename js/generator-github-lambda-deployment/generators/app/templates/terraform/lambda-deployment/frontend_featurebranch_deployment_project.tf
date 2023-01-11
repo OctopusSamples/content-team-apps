@@ -406,7 +406,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                       - ''
                       - - 'http://'
                         - Ref: BucketName
-                        - .s3-website-us-west-1.amazonaws.com/
+                        - .s3-website-${var.aws_region}.amazonaws.com/
                         - Ref: PackageId
                         - .
                         - Ref: PackageVersion
@@ -463,7 +463,7 @@ resource "octopusdeploy_deployment_process" "deploy_frontend_featurebranch" {
                       - ''
                       - - 'http://'
                         - Ref: BucketName
-                        - .s3-website-us-west-1.amazonaws.com/
+                        - .s3-website-${var.aws_region}.amazonaws.com/
                         - Ref: PackageId
                         - .
                         - Ref: PackageVersion
