@@ -17,6 +17,7 @@
       "cognitoDeveloperGroup": "Developers",
       "cognitoLogin": "",
       "jwk": {
+        "importantnoteforsecurityresearchers": "An important note for 'security researchers'. Please, please, please do not contact us claiming to have found a security issue because things that look like keys are embedded in this file. You will just embarrass yourself. The keys below are *public* keys! You can see the same keys at the public URL https://cognito-idp.us-west-1.amazonaws.com/us-west-1_diLto6MM3/.well-known/jwks.json. See https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html for more details on why these keys exist.",
         "keys": [
           {
             "alg": "RS256",
