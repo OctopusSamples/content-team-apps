@@ -1,6 +1,7 @@
 package com.octopus.githubactions.shared.builders;
 
 import com.google.common.collect.ImmutableMap;
+import com.octopus.githubactions.shared.builders.dsl.Permissions;
 import com.octopus.githubactions.shared.builders.dsl.Step;
 import com.octopus.githubactions.shared.builders.dsl.UsesWith;
 import com.octopus.repoclients.RepoClient;
@@ -236,4 +237,14 @@ public class GitBuilder {
                 .build())
         .build();
   }
+
+  /** Build the permissions object. */
+  public Permissions buildPermissions() {
+    return Permissions.builder()
+        .contents("write")
+        .idToken("write")
+        .checks("write")
+        .build();
+  }
 }
+

@@ -48,6 +48,7 @@ public class GoBuilder implements PipelineBuilder {
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
+                .permissions(GIT_BUILDER.buildPermissions())
                 .name("Go Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                     .build())

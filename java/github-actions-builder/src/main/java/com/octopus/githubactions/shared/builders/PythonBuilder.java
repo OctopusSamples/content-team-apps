@@ -44,6 +44,7 @@ public class PythonBuilder implements PipelineBuilder {
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
+                .permissions(GIT_BUILDER.buildPermissions())
                 .name("Python Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                     .build())

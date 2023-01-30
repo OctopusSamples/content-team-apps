@@ -2,6 +2,7 @@ package com.octopus.githubactions.shared.builders;
 
 import com.octopus.githubactions.shared.builders.dsl.Build;
 import com.octopus.githubactions.shared.builders.dsl.On;
+import com.octopus.githubactions.shared.builders.dsl.Permissions;
 import com.octopus.githubactions.shared.builders.dsl.RunStep;
 import com.octopus.githubactions.shared.builders.dsl.UsesWith;
 import com.octopus.githubactions.shared.builders.dsl.Workflow;
@@ -132,6 +133,11 @@ public final class SnakeYamlFactory {
     usesWith.substituteProperty("if", String.class, "getIfProperty", "setIfProperty");
     usesWith.setExcludes("ifProperty");
     representer.addTypeDescription(usesWith);
+
+    final TypeDescription permissions = new TypeDescription(Permissions.class, Tag.MAP);
+    permissions.substituteProperty("id-token", String.class, "getIdToken", "setIdToken");
+    permissions.setExcludes("idToken");
+    representer.addTypeDescription(permissions);
 
     final DumperOptions options = new DumperOptions();
     options.setDefaultFlowStyle(FlowStyle.BLOCK);

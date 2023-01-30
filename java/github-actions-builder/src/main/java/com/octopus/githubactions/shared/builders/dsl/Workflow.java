@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class Workflow {
 
+  private Permissions permissions;
   private String name;
   private On on;
   private Jobs jobs;

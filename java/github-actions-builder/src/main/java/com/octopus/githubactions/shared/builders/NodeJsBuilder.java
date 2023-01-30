@@ -52,6 +52,7 @@ public class NodeJsBuilder implements PipelineBuilder {
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
+                .permissions(GIT_BUILDER.buildPermissions())
                 .name("Node.js Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                     .build())

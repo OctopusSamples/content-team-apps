@@ -50,6 +50,7 @@ public class JavaMavenBuilder implements PipelineBuilder {
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
+                .permissions(GIT_BUILDER.buildPermissions())
                 .name("Java Maven Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                     .build())

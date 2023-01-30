@@ -40,6 +40,7 @@ public class GenericBuilder implements PipelineBuilder {
         + SnakeYamlFactory.getConfiguredYaml()
         .dump(
             Workflow.builder()
+                .permissions(GIT_BUILDER.buildPermissions())
                 .name("Generic Build")
                 .on(On.builder().push(new Push()).workflowDispatch(new WorkflowDispatch())
                     .build())
