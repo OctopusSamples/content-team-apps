@@ -9,6 +9,7 @@ on:
     - 'java/pipeline-builder-utils/**'
     - 'java/github-actions-builder-github-backend/**'
     - 'java/github-actions-builder/**'
+    - 'github/github-actions-backend/**'
   workflow_dispatch:
 
 jobs:
