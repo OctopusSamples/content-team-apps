@@ -6,6 +6,7 @@ import com.github.jasminb.jsonapi.StringIdHandler;
 import com.octopus.githubactions.shared.builders.dsl.Build;
 import com.octopus.githubactions.shared.builders.dsl.Jobs;
 import com.octopus.githubactions.shared.builders.dsl.On;
+import com.octopus.githubactions.shared.builders.dsl.Permissions;
 import com.octopus.githubactions.shared.builders.dsl.Push;
 import com.octopus.githubactions.shared.builders.dsl.RunStep;
 import com.octopus.githubactions.shared.builders.dsl.UsesWith;
@@ -26,6 +27,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     RunStep.class,
     UsesWith.class,
     Workflow.class,
+    Permissions.class,
     WorkflowDispatch.class,
     TimestampDeserializer.class,
     Audit.class,
