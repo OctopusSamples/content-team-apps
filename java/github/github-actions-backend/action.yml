@@ -95,15 +95,15 @@ runs:
       shell: bash
       working-directory: java/github-actions-builder-github-backend
 
-    - name: Generate JaCoCo Badges
-      if: ${{ env.BRANCH_NAME == 'main' }}
-      id: jacocoMod1
-      uses: cicirello/jacoco-badge-generator@v2.8.1
-      with:
-        generate-branches-badge: true
-        jacoco-csv-file: java/github-actions-builder-github-backend/target/jacoco-report/jacoco.csv
-        coverage-badge-filename: github.svg
-        branches-badge-filename: githubbranches.svg
+#    - name: Generate JaCoCo Badges
+#      if: ${{ env.BRANCH_NAME == 'main' }}
+#      id: jacocoMod1
+#      uses: cicirello/jacoco-badge-generator@v2.8.1
+#      with:
+#        generate-branches-badge: true
+#        jacoco-csv-file: java/github-actions-builder-github-backend/target/jacoco-report/jacoco.csv
+#        coverage-badge-filename: github.svg
+#        branches-badge-filename: githubbranches.svg
 
     - name: Update resources
       if: ${{ env.BRANCH_NAME == 'main' }}
