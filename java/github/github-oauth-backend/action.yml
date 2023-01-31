@@ -72,7 +72,7 @@ runs:
       working-directory: java/github-oauth-backend
 
     - name: Build with Maven for web
-      run: mvn --batch-mode clean package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod
+      run: mvn --batch-mode clean package --file pom.xml -Pnative -DskipTests -Dquarkus.profile=prod -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
       shell: bash
       working-directory: java/github-oauth-backend
 

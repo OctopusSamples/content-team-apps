@@ -74,7 +74,7 @@ runs:
       working-directory: java/github-repo-proxy
 
     - name: Build with Maven for web
-      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -DskipTests "-Dquarkus.profile=prod"
+      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -DskipTests "-Dquarkus.profile=prod" -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
       shell: bash
       working-directory: java/github-repo-proxy
 
@@ -88,7 +88,7 @@ runs:
       working-directory: java/github-repo-proxy
 
     - name: Build with Maven for lambda
-      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests "-Dquarkus.profile=prod"
+      run: ./mvnw --batch-mode clean package --file pom.xml -Pnative -Plambda -DskipTests "-Dquarkus.profile=prod" -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17
       shell: bash
       working-directory: java/github-repo-proxy
 
