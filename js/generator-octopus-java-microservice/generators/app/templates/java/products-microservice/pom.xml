@@ -132,8 +132,25 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>octopus-sales-public-snapshot</id>
+      <url>s3://octopus-sales-public-maven-repo/snapshot</url>
+    </snapshotRepository>
+    <repository>
+      <id>octopus-sales-public-release</id>
+      <url>s3://octopus-sales-public-maven-repo/release</url>
+    </repository>
+  </distributionManagement>
   <build>
     <finalName>products-microservice</finalName>
+    <extensions>
+      <extension>
+        <groupId>com.github.ehsaniara</groupId>
+        <artifactId>maven-repository-aws-s3</artifactId>
+        <version>1.2.11</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
