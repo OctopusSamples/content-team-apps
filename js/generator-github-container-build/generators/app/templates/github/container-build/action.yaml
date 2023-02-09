@@ -37,7 +37,7 @@ runs:
     - name: Log in to the Container registry
       uses: docker/login-action@latest
       with:
-        registry: gchr.io
+        registry: ghcr.io
         username: ${{ inputs.actor }}
         password: ${{ inputs.github_token }}
 
