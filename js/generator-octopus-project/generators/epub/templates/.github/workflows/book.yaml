@@ -89,7 +89,9 @@ jobs:
           VERSION: 0.1.${{ github.run_number }}
         run: |-
           cd scripts
-          ./create-k8skdp.sh
+          dos2unix create-epub-kdp.sh
+          chmod +x create-epub-kdp.sh
+          ./create-epub-kdp.sh
 
       - name: Upload Printable EPUB Release Asset
         id: upload-release-asset-printable-epub
