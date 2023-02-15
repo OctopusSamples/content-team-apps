@@ -140,10 +140,10 @@ public class GitBuilder {
   public Step pushToOctopus(@NonNull final String packages) {
     return UsesWith.builder()
         .name("Push packages to Octopus Deploy")
-        .uses("OctopusDeploy/push-package-action@v2")
+        .uses("OctopusDeploy/push-package-action@v3")
         .env(new ImmutableMap.Builder<String, String>()
             .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
-            .put("OCTOPUS_CLI_SERVER", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
             .build())
         .with(
             new ImmutableMap.Builder<String, String>()
@@ -176,13 +176,14 @@ public class GitBuilder {
   public Step createOctopusRelease(@NonNull final RepoClient accessor, @NonNull final String packages) {
     return UsesWith.builder()
         .name("Create Octopus Release")
-        .uses("OctopusDeploy/create-release-action@v1")
+        .uses("OctopusDeploy/create-release-action@v3")
+        .env(new ImmutableMap.Builder<String, String>()
+                .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
+                .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
+                .build())
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("api_key", "${{ secrets.OCTOPUS_API_TOKEN }}")
                 .put("project", accessor.getRepoName().getOrElse("application"))
-                .put("server", "${{ secrets.OCTOPUS_SERVER_URL }}")
-                .put("deploy_to", "Development")
                 .put("packages", packages)
                 .build())
         .build();
