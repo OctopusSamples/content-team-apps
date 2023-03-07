@@ -37,7 +37,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
 
     return getClient()
         .of(httpClient -> postResponse(httpClient, url, body, List.of())
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP POST response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
@@ -66,7 +66,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
             url,
             body,
             headers)
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP POST response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
@@ -97,7 +97,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
             url,
             body,
             buildHeaders(username, password))
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP POST response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
@@ -118,7 +118,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
 
     return getClient()
         .of(httpClient -> putResponse(httpClient, url, body, List.of())
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP PUT response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
@@ -147,7 +147,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
             url,
             body,
             headers)
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP PUT response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));
@@ -178,7 +178,7 @@ public class ReadWriteHttpClientImpl extends ReadOnlyHttpClientImpl {
             url,
             body,
             buildHeaders(username, password))
-            .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+            .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
             .get())
         .onSuccess(c -> LOG.log(DEBUG, "HTTP PUT response body: " + c))
         .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()));

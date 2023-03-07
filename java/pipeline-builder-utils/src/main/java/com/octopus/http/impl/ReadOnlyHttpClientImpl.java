@@ -54,7 +54,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
         s ->
             getClient()
                 .of(httpClient -> getResponse(httpClient, url, List.of())
-                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
                     .get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
                 .onFailure(e -> LOG.log(DEBUG, "Exception message: " + e.toString())));
@@ -96,7 +96,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
                     httpClient,
                     url,
                     headers)
-                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
                     .get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
                 .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString())));
@@ -117,7 +117,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
                 .of(httpClient -> getResponse(
                     httpClient, url,
                     headers)
-                    .of(response -> EntityUtils.toString(checkSuccess(response).getEntity()))
+                    .of(response -> EntityUtils.toString(checkSuccess(response, url).getEntity()))
                     .get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP GET response body: " + c))
                 .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString())));
@@ -137,7 +137,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
         generateCacheKey("HEAD", url, null),
         s ->
             getClient()
-                .of(httpClient -> headResponse(httpClient, url, List.of()).of(this::checkSuccess)
+                .of(httpClient -> headResponse(httpClient, url, List.of()).of(r -> checkSuccess(r, url))
                     .get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
                 .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
@@ -164,7 +164,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
                     httpClient,
                     url,
                     headers)
-                    .of(this::checkSuccess)
+                    .of(r -> checkSuccess(r, url))
                     .get())
                 .isSuccess()
     );
@@ -186,7 +186,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
                 .of(httpClient -> headResponse(
                     httpClient, url,
                     buildHeaders(username, password))
-                    .of(this::checkSuccess).get())
+                    .of(r -> checkSuccess(r, url)).get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
                 .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
                 .isSuccess());
@@ -205,7 +205,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
                 .of(httpClient -> headResponse(
                     httpClient, url,
                     headers)
-                    .of(this::checkSuccess).get())
+                    .of(r -> checkSuccess(r, url)).get())
                 .onSuccess(c -> LOG.log(DEBUG, "HTTP HEAD request was successful."))
                 .onFailure(e -> LOG.log(ERROR, "Exception message: " + e.toString()))
                 .isSuccess());
@@ -276,7 +276,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
     return sb.toString();
   }
 
-  protected CloseableHttpResponse checkSuccess(@NonNull final CloseableHttpResponse response)
+  protected CloseableHttpResponse checkSuccess(@NonNull final CloseableHttpResponse response, @NonNull final String url)
       throws Exception {
     LOG.log(DEBUG, "StringHttpClient.checkSuccess(CloseableHttpResponse)");
 
@@ -287,6 +287,7 @@ public class ReadOnlyHttpClientImpl implements ReadOnlyHttpClient {
     }
 
     LOG.log(ERROR, "Response code " + code + " did not indicate success");
+    LOG.log(ERROR, url);
     LOG.log(ERROR, EntityUtils.toString(response.getEntity()));
     throw new Exception("Response code " + code + " did not indicate success");
   }
