@@ -50,7 +50,8 @@ public class OctopusClient {
   public Try<String> createEnvironment(final String name) {
     return STRING_HTTP_CLIENT.post(url + "/api/Spaces-1/environments",
             "{\"Name\": \"" + name + "\"}",
-            List.of(new BasicHeader("X-Octopus-ApiKey", getApiKey())));
+            List.of(new BasicHeader("X-Octopus-ApiKey", getApiKey()),
+                    new BasicHeader("Content-Type", "application/javascript")));
   }
 
   public Try<String> createProject(final String name, final String projectGroupId,
@@ -59,7 +60,8 @@ public class OctopusClient {
             "{\"Name\": \"" + name + "\", \"ProjectGroupId\": \"" + projectGroupId
                 + "\", \"LifeCycleId\": \""
                 + lifecycleId + "\"}",
-            List.of(new BasicHeader("X-Octopus-ApiKey", getApiKey())));
+            List.of(new BasicHeader("X-Octopus-ApiKey", getApiKey()),
+                    new BasicHeader("Content-Type", "application/javascript")));
   }
 
   public String addStepToProject(final String projectName) {
