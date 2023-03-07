@@ -81,7 +81,7 @@ public class GoBuilder implements PipelineBuilder {
                                             RunStep.builder()
                                                 .name("List Dependencies")
                                                 .shell("bash")
-                                                .run("go list > dependencies.txt")
+                                                .run("go list -m all > dependencies.txt")
                                                 .build())
                                         .add(GIT_BUILDER.collectDependencies())
                                         .add(
