@@ -103,7 +103,7 @@ public class GoBuilder implements PipelineBuilder {
                 .name("sh")
                 .args(new ImmutableList.Builder<Argument>()
                     .add(new Argument("script",
-                        "go list > dependencies.txt",
+                        "go list -m all > dependencies.txt",
                         ArgType.STRING))
                     .build())
                 .build())
