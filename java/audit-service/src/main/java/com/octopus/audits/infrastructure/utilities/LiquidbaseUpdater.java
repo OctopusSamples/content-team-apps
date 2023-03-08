@@ -6,6 +6,8 @@ import java.sql.Statement;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import io.quarkus.logging.Log;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -46,6 +48,7 @@ public class LiquidbaseUpdater {
   }
 
   private void clearLock(final Connection connection) throws SQLException {
+    Log.info("Clearing the database change lock");
     String query = "UPDATE DATABASECHANGELOGLOCK SET locked=false, lockgranted=null, lockedby=null WHERE id=1;";
     try (final Statement stmt = connection.createStatement()) {
       stmt.execute(query);
