@@ -48,6 +48,14 @@ public class LiquidbaseUpdater {
   }
 
   private void clearLock(final Connection connection) throws SQLException {
+    try (final Statement stmt = connection.createStatement()) {
+      stmt.executeQuery("SELECT * FROM DATABASECHANGELOGLOCK");
+    } catch (final Exception ex) {
+      // if this fails, assume the lock table doesn't exist
+      Log.info("The table DATABASECHANGELOGLOCK does not appear to exist");
+      return;
+    }
+
     Log.info("Clearing the database change lock");
     String query = "UPDATE DATABASECHANGELOGLOCK SET locked=false, lockgranted=null, lockedby=null WHERE id=1;";
     try (final Statement stmt = connection.createStatement()) {
