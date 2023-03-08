@@ -60,7 +60,7 @@ public class LiquidbaseUpdater {
     String query = "UPDATE DATABASECHANGELOGLOCK SET locked=false, lockgranted=null, lockedby=null WHERE id=1;";
     try (final Statement stmt = connection.createStatement()) {
       stmt.execute(query);
-    } catch (final SQLException ex) {
+    } catch (final Exception ex) {
       Log.error(ex.toString());
       throw ex;
     }
