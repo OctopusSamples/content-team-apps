@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import io.quarkus.logging.Log;
 import liquibase.exception.LiquibaseException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,6 +34,8 @@ public class DatabaseInit implements RequestHandler<Map<String, Object>, ProxyRe
       liquidbaseUpdater.update(clearLock(stringObjectMap));
       return new ProxyResponse("200", "ok");
     } catch (final LiquibaseException | SQLException ex) {
+      Log.error("Failed to execute the database migrations. Will retry.");
+      Log.error(ex.toString());
       return handleRequest(stringObjectMap, context);
     }
   }
