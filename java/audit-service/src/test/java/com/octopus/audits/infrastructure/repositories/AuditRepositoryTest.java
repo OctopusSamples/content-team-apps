@@ -24,7 +24,7 @@ public class AuditRepositoryTest {
 
   @BeforeAll
   public void setup() throws SQLException, LiquibaseException {
-    liquidbaseUpdater.update();
+    liquidbaseUpdater.update(true);
   }
 
   @Test
