@@ -85,7 +85,7 @@ public class GitBuilder {
    * In order to use github releases from an Octopus feed, the release tags must be valid semver.
    * So we embed the run_number and run_attempt in the metadata.
    */
-  public Step createGitHubRelease() {
+  public Step createGitHubRelease(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Create Release")
         .id("create_release")
@@ -98,8 +98,8 @@ public class GitBuilder {
             new ImmutableMap.Builder<String, String>()
                 .put("tag_name", "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                 .put("release_name", "Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}")
-                .put("draft", "false")
-                .put("prerelease", "false")
+                .put("draft", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
+                .put("prerelease", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
                 .build())
         .build();
   }

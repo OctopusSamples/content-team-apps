@@ -117,7 +117,7 @@ public class JavaGradleBuilder implements PipelineBuilder {
                                                         + "echo \"::set-output name=artifact::${path##*/}\"")
                                                 .build())
                                         .add(GIT_BUILDER.tagRepo())
-                                        .add(GIT_BUILDER.createGitHubRelease())
+                                        .add(GIT_BUILDER.createGitHubRelease(accessor))
                                         .add(
                                             GIT_BUILDER.uploadToGitHubRelease(
                                                 "${{ steps.get_artifact.outputs.artifact }}",

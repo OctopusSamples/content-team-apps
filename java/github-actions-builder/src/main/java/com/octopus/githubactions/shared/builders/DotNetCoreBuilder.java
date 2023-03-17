@@ -217,8 +217,8 @@ public class DotNetCoreBuilder implements PipelineBuilder {
                                                         "${{ steps.package.outputs.artifacts_new_line }}")
                                                     .put("tag_name",
                                                         "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
-                                                    .put("draft", "false")
-                                                    .put("prerelease", "false")
+                                                    .put("draft", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
+                                                    .put("prerelease", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
                                                     .put("target_commitish", "${{ github.sha }}")
                                                     .build())
                                             .build())

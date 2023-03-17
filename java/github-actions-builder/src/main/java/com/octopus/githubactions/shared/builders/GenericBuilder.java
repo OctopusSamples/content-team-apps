@@ -72,7 +72,7 @@ public class GenericBuilder implements PipelineBuilder {
                                                         + " --include '**/*'")
                                                 .build())
                                         .add(GIT_BUILDER.tagRepo())
-                                        .add(GIT_BUILDER.createGitHubRelease())
+                                        .add(GIT_BUILDER.createGitHubRelease(accessor))
                                         .add(
                                             GIT_BUILDER.uploadToGitHubRelease(
                                                 accessor.getRepoName().getOrElse("application")
