@@ -98,8 +98,8 @@ public class GitBuilder {
             new ImmutableMap.Builder<String, String>()
                 .put("tag_name", "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                 .put("release_name", "Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}")
-                .put("draft", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
-                .put("prerelease", "${{ github.ref == 'refs/heads/'" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
+                .put("draft", "${{ github.ref == 'refs/heads/" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
+                .put("prerelease", "${{ github.ref == 'refs/heads/" + accessor.getDefaultBranches().get(0) + " && 'false' || 'true' }}")
                 .build())
         .build();
   }
