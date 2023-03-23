@@ -38,6 +38,7 @@ const Footer = () => {
     return (
         <div className={classes.root}>
             <Link
+                id="footer"
                 href={"http://octopus.com"}
                 target="_blank"
                 className={classes.footer}
