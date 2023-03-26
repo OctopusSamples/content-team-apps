@@ -8,9 +8,13 @@ import com.octopus.repoclients.RepoClient;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
-/** Contains a number of common steps shared between builders. */
+/**
+ * Contains a number of common steps shared between builders.
+ */
 public class GitBuilder {
-  /** Builds the common top level comments for the workflow. */
+  /**
+   * Builds the common top level comments for the workflow.
+   */
   public String getInitialComments() {
     return "# The following workflow provides an opinionated template you can customize for your own needs.\n"
         + "#\n"
@@ -26,7 +30,9 @@ public class GitBuilder {
         + "# Get a trial Octopus instance from https://octopus.com/start\n";
   }
 
-  /** Build the checkout step. */
+  /**
+   * Build the checkout step.
+   */
   public Step checkOutStep() {
     return UsesWith.builder()
         .uses("actions/checkout@v3")
@@ -34,7 +40,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the GitVersion installation step. */
+  /**
+   * Build the GitVersion installation step.
+   */
   public Step gitVersionInstallStep() {
     return UsesWith.builder()
         .name("Install GitVersion")
@@ -43,7 +51,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the step to calculate the versions from git. */
+  /**
+   * Build the step to calculate the versions from git.
+   */
   public Step getVersionCalculate() {
     return UsesWith.builder()
         .name("Determine Version")
@@ -53,7 +63,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the Octopus CLI installation step. */
+  /**
+   * Build the Octopus CLI installation step.
+   */
   public Step installOctopusCli() {
     return UsesWith.builder()
         .name("Install Octopus Deploy CLI")
@@ -62,7 +74,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the test processing step. */
+  /**
+   * Build the test processing step.
+   */
   public Step buildJunitReport(@NonNull final String name, @NonNull final String path) {
     return UsesWith.builder()
         .name("Report")
@@ -89,22 +103,20 @@ public class GitBuilder {
     return UsesWith.builder()
         .name("Create Release")
         .id("create_release")
-        .uses("actions/create-release@v1")
-        .env(
-            new ImmutableMap.Builder<String, String>()
-                .put("GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}")
-                .build())
+        .uses("softprops/action-gh-release@v1")
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("tag_name", "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
                 .put("release_name", "Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}")
                 .put("draft", "${{ github.ref == 'refs/heads/" + accessor.getDefaultBranches().get(0) + "' && 'false' || 'true' }}")
-                .put("prerelease", "${{ github.ref == 'refs/heads/" + accessor.getDefaultBranches().get(0) + "' && 'false' || 'true' }}")
+                .put("name", "${{ github.ref == 'refs/heads/" + accessor.getDefaultBranches().get(0) + "' && 'false' || 'true' }}")
                 .build())
         .build();
   }
 
-  /** Tag the repo with the release. */
+  /**
+   * Tag the repo with the release.
+   */
   public Step tagRepo() {
     return UsesWith.builder()
         .name("Tag Release")
@@ -117,26 +129,24 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the step to upload file to the github release. */
+  /**
+   * Build the step to upload file to the github release.
+   */
   public Step uploadToGitHubRelease(@NonNull final String path, @NonNull final String name) {
     return UsesWith.builder()
         .name("Upload Release Asset")
-        .uses("actions/upload-release-asset@v1")
-        .env(
-            new ImmutableMap.Builder<String, String>()
-                .put("GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}")
-                .build())
+        .uses("softprops/action-gh-release@v1")
         .with(
             new ImmutableMap.Builder<String, String>()
-                .put("upload_url", "${{ steps.create_release.outputs.upload_url }}")
-                .put("asset_path", path)
-                .put("asset_name", name)
-                .put("asset_content_type", "application/octet-stream")
+                .put("tag_name", "${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}")
+                .put("files", path)
                 .build())
         .build();
   }
 
-  /** Build the step to push files to Octopus. */
+  /**
+   * Build the step to push files to Octopus.
+   */
   public Step pushToOctopus(@NonNull final String packages) {
     return UsesWith.builder()
         .name("Push packages to Octopus Deploy")
@@ -154,7 +164,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the step to push Octopus build information. */
+  /**
+   * Build the step to push Octopus build information.
+   */
   public Step uploadOctopusBuildInfo(@NonNull final RepoClient accessor) {
     return UsesWith.builder()
         .name("Generate Octopus Deploy build information")
@@ -173,16 +185,18 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the step to create an Octopus release. */
+  /**
+   * Build the step to create an Octopus release.
+   */
   public Step createOctopusRelease(@NonNull final RepoClient accessor, @NonNull final String packages) {
     return UsesWith.builder()
         .name("Create Octopus Release")
         .uses("OctopusDeploy/create-release-action@v3")
         .env(new ImmutableMap.Builder<String, String>()
-                .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
-                .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
-                .put("OCTOPUS_SPACE", "${{ secrets.OCTOPUS_SPACE }}")
-                .build())
+            .put("OCTOPUS_API_KEY", "${{ secrets.OCTOPUS_API_TOKEN }}")
+            .put("OCTOPUS_URL", "${{ secrets.OCTOPUS_SERVER_URL }}")
+            .put("OCTOPUS_SPACE", "${{ secrets.OCTOPUS_SPACE }}")
+            .build())
         .with(
             new ImmutableMap.Builder<String, String>()
                 .put("project", accessor.getRepoName().getOrElse("application"))
@@ -195,7 +209,9 @@ public class GitBuilder {
     return collectDependencies(null);
   }
 
-  /** Build the dependency collection step. */
+  /**
+   * Build the dependency collection step.
+   */
   public Step collectDependencies(final String workingDirectory) {
     final String directory = StringUtils.isBlank(workingDirectory)
         ? "" : workingDirectory + "/";
@@ -214,7 +230,9 @@ public class GitBuilder {
     return collectDependencyUpdates(null);
   }
 
-  /** Build the dependency updates collection step. */
+  /**
+   * Build the dependency updates collection step.
+   */
   public Step collectDependencyUpdates(final String workingDirectory) {
     final String directory = StringUtils.isBlank(workingDirectory)
         ? "" : workingDirectory + "/";
@@ -229,7 +247,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the java installation step. */
+  /**
+   * Build the java installation step.
+   */
   public Step installJava() {
     return UsesWith.builder()
         .name("Set up JDK 1.17")
@@ -242,7 +262,9 @@ public class GitBuilder {
         .build();
   }
 
-  /** Build the permissions object. */
+  /**
+   * Build the permissions object.
+   */
   public Permissions buildPermissions() {
     return Permissions.builder()
         .contents("write")
