@@ -54,6 +54,7 @@ public class GoBuilder implements PipelineBuilder {
                 .name("stages")
                 .children(new ImmutableList.Builder<Element>()
                     .add(createEnvironmentStage())
+                    .add(GIT_BUILDER.createWorkspaceCleanupStep())
                     .add(GIT_BUILDER.createCheckoutStep(accessor))
                     .add(createDependenciesStep(accessor))
                     .add(createTestStep())

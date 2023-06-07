@@ -23,6 +23,10 @@ public class FunctionManyArgs extends ElementWithChildren {
     final List<Element> safeChildren = getSafeChildren();
     safeChildren.forEach(c -> c.parent = this);
 
+    if (args == null || args.size() == 0) {
+      return getIndent() + name + "()";
+    }
+
     final String delimiter = args.size() > MAX_ARGS_SINGLE_LINE ? ",\n" + getIndent() + "  " : ", ";
 
     return getIndent() + name + "("

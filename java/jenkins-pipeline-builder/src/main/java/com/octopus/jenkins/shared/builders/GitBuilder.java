@@ -62,6 +62,23 @@ public class GitBuilder {
   }
 
   /**
+   * Creates the steps to perform clean the workspace.
+   *
+   * @return A list of Elements that build the checkout steps.
+   */
+  public Element createWorkspaceCleanupStep() {
+    return Function1ArgTrailingLambda.builder().name("stage")
+        .arg("Cleanup")
+        .children(createStepsElement(new ImmutableList.Builder<Element>()
+            .add(Comment.builder()
+                .content("Clean up the workspace")
+                .build())
+            .add(FunctionManyArgs.builder().name("cleanWs").build())
+            .build())
+        ).build();
+  }
+
+  /**
    * Creates the steps to perform a git checkout.
    *
    * @param accessor The repo accessor defining the repo to checkout.
