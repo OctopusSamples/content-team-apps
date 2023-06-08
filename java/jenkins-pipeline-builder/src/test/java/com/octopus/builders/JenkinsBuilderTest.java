@@ -109,11 +109,12 @@ public class JenkinsBuilderTest {
   public GenericContainer jenkins = new GenericContainer(new ImageFromDockerfile("jenkinspipelinestest", false)
       .withDockerfileFromBuilder(builder ->
           builder
-              .from("jenkins/jenkins:2.319.3")
+              .from("jenkins/jenkins:lts")
               .user("root")
               // install plugins
               .run("jenkins-plugin-cli --plugins "
                   + "pipeline-utility-steps:2.15.4 "
+                  + "ws-cleanup:0.45 "
                   + "gradle:2.8 "
                   + "maven-plugin:3.22 "
                   + "jdk-tool:66.vd8fa_64ee91b_d "

@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class JenkinsClient {
@@ -77,11 +78,16 @@ public class JenkinsClient {
   }
 
   private boolean isBuilding(final Document doc) {
-    return doc.getDocumentElement()
-        .getElementsByTagName("building")
-        .item(0)
-        .getTextContent()
-        .equals("true");
+    final NodeList building = doc.getDocumentElement()
+        .getElementsByTagName("building");
+
+    if (building.getLength() != 0) {
+        return building.item(0)
+          .getTextContent()
+          .equals("true");
+    }
+
+    return true;
   }
 
   public boolean isSuccess(final Document doc) {
